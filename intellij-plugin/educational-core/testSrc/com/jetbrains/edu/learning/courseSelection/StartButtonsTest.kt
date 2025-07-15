@@ -5,7 +5,6 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.configuration.PlainTextConfigurator
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.EduCourse
-import com.jetbrains.edu.learning.marketplace.newProjectUI.MarketplacePlatformProvider
 import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
 import kotlinx.coroutines.CoroutineScope
 import org.junit.Test

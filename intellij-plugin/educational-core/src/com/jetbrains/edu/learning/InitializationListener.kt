@@ -16,7 +16,6 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.PathUtil
 import com.intellij.util.PlatformUtils
-import com.jetbrains.edu.learning.agreement.UserAgreementManager
 import com.jetbrains.edu.learning.authUtils.OAuthUtils.isBuiltinPortValid
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -41,7 +40,6 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
   }
 
   private fun init() {
-    UserAgreementManager.getInstance()
     if (isUnitTestMode) return
 
     val port = BuiltInServerManager.getInstance().port

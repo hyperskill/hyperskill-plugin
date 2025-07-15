@@ -34,8 +34,6 @@
               topic="com.intellij.openapi.fileEditor.FileEditorManagerListener$Before"/>
     <listener class="com.jetbrains.edu.learning.storage.LearningObjectsPersister"
               topic="com.jetbrains.edu.learning.CourseSetListener"/>
-    <listener class="com.jetbrains.edu.learning.marketplace.lti.LTICourseSetListener"
-              topic="com.jetbrains.edu.learning.CourseSetListener"/>
   </projectListeners>
 
   <extensionPoints>
@@ -108,12 +106,6 @@
   </extensionPoints>
 
   <actions>
-    <action id="Educational.Agreement.ShowUserAgreementDialog"
-            class="com.jetbrains.edu.learning.agreement.action.ShowUserAgreementDialog"
-            internal="true"/>
-    <action id="Educational.Agreement.ResetUserAgreementSettings"
-            class="com.jetbrains.edu.learning.agreement.action.ResetUserAgreementSettings"
-            internal="true"/>
     <action id="Educational.ImportLocalCourse" class="com.jetbrains.edu.learning.actions.ImportLocalCourseAction"/>
     <action id="Educational.Check" class="com.jetbrains.edu.learning.actions.CheckAction"/>
     <action id="Educational.Run"
@@ -153,9 +145,6 @@
     </action>
     <action id="Educational.SwitchTaskDescriptionPanel" class="com.jetbrains.edu.learning.actions.SwitchTaskPanelAction">
     </action>
-    <action id="Educational.UpdateCoursePreview"
-            class="com.jetbrains.edu.coursecreator.actions.CCUpdateCoursePreview"
-            internal="true"/>
 
     <!-- IMPORTANT: don't change the action id, it's used in monorepo-->
     <action id="Educational.BrowseCourses" class="com.jetbrains.edu.learning.newproject.BrowseCoursesAction"/>
@@ -188,9 +177,6 @@
     <action id="Educational.Educator.CheckAllTasks" class="com.jetbrains.edu.coursecreator.actions.checkAllTasks.CCCheckAllTasksAction"/>
 
     <action class="com.jetbrains.edu.coursecreator.actions.CCCreateCoursePreview" id="Educational.Educator.CreateCoursePreview"/>
-
-    <action id="Educational.Educator.RegenerateDuplicateIds"
-            class="com.jetbrains.edu.coursecreator.actions.marketplace.RegenerateDuplicateIds"/>
 
     <group id="Educational.Educator.CourseCreator.FrameworkLesson" popup="false"
            class="com.jetbrains.edu.coursecreator.actions.CCFrameworkLessonActionGroup">
@@ -320,7 +306,6 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <applicationService serviceImplementation="com.jetbrains.edu.learning.agreement.UserAgreementSettings"/>
     <applicationService serviceInterface="com.jetbrains.edu.learning.EduBrowser"
                         serviceImplementation="com.jetbrains.edu.learning.EduBrowser"
                         testServiceImplementation="com.jetbrains.edu.learning.MockEduBrowser"/>
@@ -358,7 +343,6 @@
     <!--END of Courseignore lang-->
 
     <postStartupActivity implementation="com.jetbrains.edu.learning.EduProjectActivity"/>
-    <postStartupActivity implementation="com.jetbrains.edu.learning.agreement.UserAgreementProjectActivity"/>
 
     <registryKey key="edu.task.description.update.delay"
                  description="The delay in ms before loading page by Task Description view. \nRequires project reopening"
@@ -414,7 +398,6 @@
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.editor.EduTaskFileNotificationProvider"/>
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.yaml.YamlConfigNotificationProvider"/>
     <editorNotificationProvider implementation="com.jetbrains.edu.coursecreator.framework.editor.SyncChangesEditorNotificationsProvider"/>
-    <editorNotificationProvider implementation="com.jetbrains.edu.learning.agreement.UserAgreementEditorNotificationsProvider"/>
 
     <!-- com.jetbrains.edu.learning.notification.EduNotificationManager.JETBRAINS_ACADEMY_GROUP_ID -->
     <notificationGroup id="JetBrains Academy" displayType="BALLOON"
@@ -511,9 +494,7 @@
     <optionsProvider instance="com.jetbrains.edu.learning.coursera.CourseraOptions"/>
     <checkListener implementation="com.jetbrains.edu.learning.statistics.PostFeedbackCheckListener"/>
     <checkListener implementation="com.jetbrains.edu.coursecreator.validation.ValidationCheckListener"/>
-    <coursesPlatformProviderFactory id="Marketplace" order="first"
-                                    implementation="com.jetbrains.edu.learning.marketplace.newProjectUI.MarketplacePlatformProviderFactory"/>
-    <coursesPlatformProviderFactory id="JetBrainsAcademy" order="after Marketplace"
+    <coursesPlatformProviderFactory id="JetBrainsAcademy" order="first"
                                     implementation="com.jetbrains.edu.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProviderFactory"/>
     <coursesPlatformProviderFactory id="Coursera" order="after JetBrainsAcademy"
                                     implementation="com.jetbrains.edu.learning.coursera.CourseraPlatformProviderFactory"/>
@@ -561,15 +542,9 @@
 
     <pathMacroProvider implementation="com.jetbrains.edu.learning.checker.TaskRunConfigurationPathMacroProvider"/>
 
-    <courseMetadataProcessor implementation="com.jetbrains.edu.learning.marketplace.lti.LtiCourseMetadataProcessor"/>
     <courseMetadataProcessor implementation="com.jetbrains.edu.learning.statistics.metadata.CoursePageExperimentMetadataProcessor"/>
     <courseMetadataProcessor implementation="com.jetbrains.edu.learning.statistics.metadata.EntryPointMetadataProcessor"/>
   </extensions>
 
   <xi:include href="/META-INF/Hyperskill.xml" xpointer="xpointer(/idea-plugin/*)"/>
-  <xi:include href="/META-INF/Marketplace.xml" xpointer="xpointer(/idea-plugin/*)"/>
-  <xi:include href="/META-INF/LTI.xml" xpointer="xpointer(/idea-plugin/*)"/>
-  <extensions defaultExtensionNs="Educational">
-    <optionsProvider instance="com.jetbrains.edu.learning.agreement.UserAgreementOptions"/>
-  </extensions>
 </idea-plugin>

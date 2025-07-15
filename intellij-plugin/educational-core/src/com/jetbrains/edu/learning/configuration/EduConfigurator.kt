@@ -21,7 +21,6 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getCodeTaskFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.marketplace.loadMarketplaceCourseStructure
 import com.jetbrains.edu.learning.newproject.EduProjectSettings
 import com.jetbrains.edu.learning.toCourseInfoHolder
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer.isLocalConfigFileName
@@ -202,7 +201,7 @@ interface EduConfigurator<Settings : EduProjectSettings> {
    * @throws CourseCantBeStartedException if impossible to start course
    */
   fun beforeCourseStarted(course: Course) {
-    course.loadMarketplaceCourseStructure()
+
   }
 
   /**

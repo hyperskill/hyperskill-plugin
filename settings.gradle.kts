@@ -97,16 +97,6 @@ fun configureSecretProperties() {
     "edu-format/resources/aes/aes.properties",
     "aesKey"
   )
-  secretProperties.extractAndStore(
-    "intellij-plugin/educational-core/resources/marketplace/marketplace-oauth.properties",
-    "eduHubClientId",
-    "eduHubClientSecret",
-    "marketplaceHubClientId"
-  )
-  secretProperties.extractAndStore(
-    "intellij-plugin/educational-core/resources/lti/lti-auth.properties",
-    "ltiServiceToken"
-  )
 }
 
 fun downloadHyperskillCss() {

@@ -9,7 +9,6 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.marketplace.MarketplaceSolutionLoader
 import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.submissions.SubmissionsManager
 import kotlinx.coroutines.CoroutineScope
@@ -54,7 +53,6 @@ class EduRemoteUidRetrieverService(private val project: Project, private val sco
 
       if (project.isOpen) {
         submissionsManager.prepareSubmissionsContentWhenLoggedIn {
-          MarketplaceSolutionLoader.getInstance(project).loadSolutionsInBackground()
           openLastSubmittedTaskIfNeeded()
         }
       }

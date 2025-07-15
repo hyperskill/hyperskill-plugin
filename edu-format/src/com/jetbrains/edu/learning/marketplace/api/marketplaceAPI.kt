@@ -2,16 +2,16 @@ package com.jetbrains.edu.learning.marketplace.api
 
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.jetbrains.edu.learning.authUtils.OAuthAccount
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMENT
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.MARKETPLACE
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.SOLUTION
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.STATES_ON_CLOSE
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.SUBMISSIONS
+import com.jetbrains.edu.learning.courseFormat.EduTestInfo
+import com.jetbrains.edu.learning.courseFormat.JSON_FORMAT_VERSION
 import com.jetbrains.edu.learning.submissions.SolutionFile
 import com.jetbrains.edu.learning.submissions.Submission
-import org.jetbrains.annotations.TestOnly
 
 const val ID = "id"
 const val NAME = "name"
@@ -37,27 +37,6 @@ private const val TOTAL = "total"
 private const val UPDATES = "updates"
 private const val VERSION = "version"
 private const val HAS_NEXT = "has_next"
-
-class MarketplaceAccount : OAuthAccount<JBAccountUserInfo> {
-  @TestOnly
-  constructor() : super()
-
-  constructor(jbAccountUserInfo: JBAccountUserInfo) : super(jbAccountUserInfo)
-
-  override val servicePrefix: String = MARKETPLACE
-
-  fun checkTheSameUserAndUpdate(currentJbaUser: JBAccountUserInfo): Boolean {
-    return if (userInfo.jbaLogin == currentJbaUser.jbaLogin) {
-      //update username and email in case changed on remote
-      userInfo.email = currentJbaUser.email
-      userInfo.name = currentJbaUser.name
-      true
-    }
-    else {
-      false
-    }
-  }
-}
 
 class QueryData(graphqlQuery: String) {
   @JsonProperty(QUERY)

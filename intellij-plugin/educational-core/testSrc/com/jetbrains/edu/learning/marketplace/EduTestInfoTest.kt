@@ -4,7 +4,6 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.courseFormat.CheckResultDiff
 import com.jetbrains.edu.learning.courseFormat.EduTestInfo
 import com.jetbrains.edu.learning.courseFormat.EduTestInfo.PresentableStatus.COMPLETED
-import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized

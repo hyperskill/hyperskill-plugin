@@ -1,7 +1,6 @@
 package com.jetbrains.edu.learning.marketplace.api
 
 import com.jetbrains.edu.learning.marketplace.SUBMISSIONS_SERVICE_HOST_PROPERTY
-import com.jetbrains.edu.learning.marketplace.changeHost.SubmissionsServiceChangeHost
 import com.jetbrains.edu.learning.marketplace.changeHost.SubmissionsServiceHost
 import com.jetbrains.edu.learning.services.action.ServiceChangeHostActionTest
 import org.jetbrains.annotations.NonNls

@@ -23,7 +23,6 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PlatformUtils
 import com.intellij.util.TimeoutUtil
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.learning.agreement.UserAgreementSettings
 import com.jetbrains.edu.learning.cipher.Cipher
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.COURSE_META_FILE
@@ -140,8 +139,6 @@ object EduUtilsKt {
   }
 
   fun Project.isEduProject(): Boolean {
-    if (!UserAgreementSettings.getInstance().isPluginAllowed)
-      return false
     return StudyTaskManager.getInstance(this).course != null || getCourseModeForNewlyCreatedProject(this) != null
   }
 

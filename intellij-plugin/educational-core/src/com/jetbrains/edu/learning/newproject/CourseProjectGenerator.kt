@@ -53,8 +53,6 @@ import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.createChildFil
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.unpackAdditionalFiles
 import com.jetbrains.edu.learning.featureManagement.EduFeatureManager
 import com.jetbrains.edu.learning.featureManagement.EduManagedFeature
-import com.jetbrains.edu.learning.marketplace.MARKETPLACE
-import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
@@ -300,9 +298,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
         CCUtils.initializeCCPlaceholders(holder)
       }
       GeneratorUtils.createCourse(holder, indicator)
-      if (course is EduCourse && course.isMarketplaceRemote && !course.isStudy) {
-        checkIfAvailableOnRemote(course)
-      }
       createAdditionalFiles(holder)
       EduCounterUsageCollector.eduProjectCreated(course)
     }
@@ -314,15 +309,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
     featureManager.updateManagerState(features)
     // Disabled features should not be persisted into the course-info.yaml file, the state is stored in the service
     course.disabledFeatures = emptyList()
-  }
-
-  private fun checkIfAvailableOnRemote(course: EduCourse) {
-    val remoteCourse = MarketplaceConnector.getInstance().searchCourse(course.id, course.isMarketplacePrivate)
-    if (remoteCourse == null) {
-      LOG.warn("Failed to get $MARKETPLACE course for imported from zip course with id: ${course.id}")
-      LOG.info("Converting course to local. Course id: ${course.id}")
-      course.convertToLocal()
-    }
   }
 
   private fun addAdditionalFile(eduFile: EduFile) {

@@ -10,14 +10,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.problems.WolfTheProblemSolver
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.getTaskFile
-import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
-import com.jetbrains.edu.learning.marketplace.markMarketplaceTheoryTaskAsCompleted
 import com.jetbrains.edu.learning.navigation.NavigationUtils.getPlaceholderOffsets
 import com.jetbrains.edu.learning.navigation.NavigationUtils.navigateToFirstAnswerPlaceholder
 import com.jetbrains.edu.learning.placeholder.PlaceholderHighlightingManager.showPlaceholders
@@ -71,13 +68,6 @@ class EduEditorFactoryListener : EditorFactoryListener {
     if (course.isStudy && task.postSubmissionOnOpen && task.status !== CheckStatus.Solved) {
       if (course is HyperskillCourse) {
         markHyperskillTheoryTaskAsCompleted(project, task)
-      }
-      else if (course is EduCourse && course.isMarketplaceRemote) {
-        MarketplaceConnector.getInstance().isLoggedInAsync().thenAcceptAsync { isLoggedIn ->
-          if (isLoggedIn) {
-            markMarketplaceTheoryTaskAsCompleted(project, task)
-          }
-        }
       }
       task.status = CheckStatus.Solved
       saveItem(task)

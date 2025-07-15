@@ -7,7 +7,6 @@ import com.jetbrains.edu.aiHints.core.context.authorSolutionContext
 import com.jetbrains.edu.learning.EduActionTestCase
 import com.jetbrains.edu.learning.actions.EduAIHintsUtils
 import com.jetbrains.edu.learning.actions.EduAIHintsUtils.GET_HINT_ACTION_ID
-import com.jetbrains.edu.learning.agreement.UserAgreementSettings
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile

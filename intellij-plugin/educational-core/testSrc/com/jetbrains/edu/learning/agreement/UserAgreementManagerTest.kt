@@ -3,7 +3,6 @@ package com.jetbrains.edu.learning.agreement
 import com.intellij.util.application
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.Ok
-import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmissionsConnector
 import com.jetbrains.edu.learning.marketplace.mockJBAccount
 import com.jetbrains.edu.learning.mockService
 import com.jetbrains.edu.learning.submissions.UserAgreementState

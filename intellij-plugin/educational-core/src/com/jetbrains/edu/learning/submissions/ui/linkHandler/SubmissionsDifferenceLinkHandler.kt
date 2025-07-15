@@ -15,10 +15,7 @@ import com.jetbrains.edu.learning.actions.ApplyCodeAction
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.ext.isTestFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.marketplace.actions.ReportCommunitySolutionAction
-import com.jetbrains.edu.learning.marketplace.isMarketplaceCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.submissions.*
 import com.jetbrains.edu.learning.submissions.ui.SubmissionsTab.Companion.SUBMISSION_PROTOCOL
 import com.jetbrains.edu.learning.submissions.ui.SubmissionsTab.Companion.textStyleHeader
@@ -88,10 +85,6 @@ class SubmissionsDifferenceLinkHandler(
     }
     val diffRequestChain = SimpleDiffRequestChain(requests)
     diffRequestChain.putUserData(ApplyCodeAction.VIRTUAL_FILE_PATH_LIST, submissionTaskFilePaths)
-    if (project.isMarketplaceCourse() && isCommunity) {
-      diffRequestChain.putCommunitySolution(task, submission)
-      EduCounterUsageCollector.communitySolutionDiffOpened()
-    }
     DiffManager.getInstance().showDiff(project, diffRequestChain, DiffDialogHints.FRAME)
   }
 
@@ -110,11 +103,6 @@ class SubmissionsDifferenceLinkHandler(
     }
 
     return SimpleDiffRequest(title, currentContent, submissionContent, EduCoreBundle.message("submissions.local"), title2)
-  }
-
-  private fun SimpleDiffRequestChain.putCommunitySolution(task: Task, submission: Submission) {
-    putUserData(ReportCommunitySolutionAction.TASK_ID_KEY, task.id)
-    putUserData(ReportCommunitySolutionAction.SUBMISSION_ID_KEY, submission.id)
   }
 
   companion object {

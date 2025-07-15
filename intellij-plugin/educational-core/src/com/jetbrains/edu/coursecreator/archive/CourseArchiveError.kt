@@ -2,13 +2,11 @@ package com.jetbrains.edu.coursecreator.archive
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts.NotificationContent
 import com.intellij.openapi.util.NlsContexts.NotificationTitle
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import com.jetbrains.edu.coursecreator.actions.marketplace.RegenerateDuplicateIds
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
@@ -88,13 +86,6 @@ data class DuplicateIdsError(val items: DuplicateIdMap) : CourseArchiveError {
 
       return EduCoreBundle.message("error.failed.to.create.course.archive.duplicate.ids.message", htmlItemList)
     }
-
-  override fun notification(project: Project, title: String): Notification {
-    @Suppress("DEPRECATION")
-    return super.notification(project, title)
-      .addAction(ActionManager.getInstance().getAction(RegenerateDuplicateIds.ACTION_ID))
-      .setListener(RemoteConfigNotificationListener(project))
-  }
 }
 
 data class BrokenRemoteYamlError(val item: StudyItem) : CourseArchiveError {

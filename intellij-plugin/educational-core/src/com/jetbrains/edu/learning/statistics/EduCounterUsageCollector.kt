@@ -11,7 +11,6 @@ import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.coursera.CourseraPlatformProvider
-import com.jetbrains.edu.learning.marketplace.newProjectUI.MarketplacePlatformProvider
 import com.jetbrains.edu.learning.newproject.ui.BrowseCoursesDialog
 import com.jetbrains.edu.learning.newproject.ui.CoursesPlatformProvider
 import com.jetbrains.edu.learning.newproject.ui.myCourses.MyCoursesProvider
@@ -99,7 +98,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
         return when (provider) {
           is HyperskillPlatformProvider -> JBA
           is CourseraPlatformProvider -> COURSERA
-          is MarketplacePlatformProvider -> MARKETPLACE
           is MyCoursesProvider -> MY_COURSES
           else -> UNKNOWN
         }

@@ -5,7 +5,6 @@ import com.jetbrains.edu.learning.MockResponseFactory
 import com.jetbrains.edu.learning.actions.CheckAction
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.marketplace.lti.LTIConnector
-import com.jetbrains.edu.learning.marketplace.lti.LTIOnlineService
 import com.jetbrains.edu.learning.marketplace.lti.LTISettingsDTO
 import com.jetbrains.edu.learning.marketplace.lti.LTISettingsManager
 import com.jetbrains.edu.learning.navigation.NavigationUtils

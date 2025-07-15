@@ -2,9 +2,7 @@ package com.jetbrains.edu.commandLine
 
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
 import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
 import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenProjectStageRequest
@@ -19,22 +17,6 @@ enum class CourseSource(val option: String, val description: String) {
     }
 
     override fun isCourseFromSource(course: Course): Boolean = false
-  },
-
-  MARKETPLACE("marketplace", "Marketplace course id") {
-    override suspend fun loadCourse(location: String): Result<Course, String> {
-      val courseId = location.toIntOrNull() ?: return Err("Marketplace course id should be an integer. Got `$location`")
-
-      val marketplaceConnector = MarketplaceConnector.getInstance()
-      val course = marketplaceConnector.searchCourse(courseId, searchPrivate = false) ?: marketplaceConnector.searchCourse(
-        courseId,
-        searchPrivate = true
-      )
-
-      return if (course != null) Ok(course) else Err("Failed to load Marketplace course `$location`")
-    }
-
-    override fun isCourseFromSource(course: Course): Boolean = course is EduCourse && course.isMarketplaceRemote
   },
 
   HYPERSKILL("hyperskill", "Hyperskill project id") {
