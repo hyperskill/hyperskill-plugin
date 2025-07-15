@@ -13,8 +13,8 @@ import com.jetbrains.edu.coursecreator.actions.CCCreateCourseArchiveAction
 import com.jetbrains.edu.coursecreator.actions.TextualContentsFromDisk
 import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreRules
 import com.jetbrains.edu.learning.EduNames
-import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
+import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.configuration.courseFileAttributes
 import com.jetbrains.edu.learning.configuration.excludeFromArchive
 import com.jetbrains.edu.learning.courseDir

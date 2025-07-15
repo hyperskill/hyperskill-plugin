@@ -5,7 +5,8 @@ import org.junit.Test
 class TaskDescriptionCssTest : TaskDescriptionTestBase() {
 
   @Test
-  fun `test remote style tag using swing`() = doHtmlTest("""
+  fun `test remote style tag using swing`() = doHtmlTest(
+    """
     Some <b>simple</b> text.
     
     <style>
@@ -45,5 +46,6 @@ class TaskDescriptionCssTest : TaskDescriptionTestBase() {
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 }

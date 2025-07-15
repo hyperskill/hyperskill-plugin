@@ -20,21 +20,25 @@ object EduFields {
   val COURSE_UPDATE_VERSION_FIELD = EventFields.Int(MARKETPLACE_COURSE_VERSION)
   val COURSE_MODE_FIELD = EventFields.Enum<CourseMode>(MODE)
 
-  val ITEM_TYPE_FIELD = EventFields.String(TYPE, listOf(
-    // course types
-    *PLATFORM_NAMES.toTypedArray(),
-    // section types
-    "section",
-    // lesson types
-    "framework", "lesson",
-    // task types
-    "edu", "ide", "choice", "code", "output", "theory"
-  ))
+  val ITEM_TYPE_FIELD = EventFields.String(
+    TYPE, listOf(
+      // course types
+      *PLATFORM_NAMES.toTypedArray(),
+      // section types
+      "section",
+      // lesson types
+      "framework", "lesson",
+      // task types
+      "edu", "ide", "choice", "code", "output", "theory"
+    )
+  )
 
-  val LANGUAGE_FIELD = EventFields.String(LANGUAGE, listOf(
-    "JAVA", "kotlin", "Python", "Scala",
-    "JavaScript", "Rust", "ObjectiveC", "go", "PHP"
-  ))
+  val LANGUAGE_FIELD = EventFields.String(
+    LANGUAGE, listOf(
+      "JAVA", "kotlin", "Python", "Scala",
+      "JavaScript", "Rust", "ObjectiveC", "go", "PHP"
+    )
+  )
 
   val PLATFORM_FIELD = EventFields.String(PLATFORM, PLATFORM_NAMES)
 }

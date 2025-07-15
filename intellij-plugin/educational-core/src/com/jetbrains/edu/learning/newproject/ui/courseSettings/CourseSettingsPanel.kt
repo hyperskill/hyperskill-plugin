@@ -139,7 +139,8 @@ class CourseSettingsPanel(
 
     if (settingsComponents.isNotEmpty()
         && course !is HyperskillCourseAdvertiser
-        && !CoursesStorage.getInstance().hasCourse(course)) {
+        && !CoursesStorage.getInstance().hasCourse(course)
+    ) {
       isVisible = true
       setSettingsComponents(settingsComponents)
     }

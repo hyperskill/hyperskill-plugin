@@ -296,7 +296,8 @@ open class HintInlineBanner(
   }
 
   private fun createInplaceCloseButton(listener: ActionListener): JComponent {
-    val button = object : InplaceButton(IdeBundle.message("editor.banner.close.tooltip"), IconButton(null, AllIcons.General.Close, null, null), listener) {
+    val button = object :
+      InplaceButton(IdeBundle.message("editor.banner.close.tooltip"), IconButton(null, AllIcons.General.Close, null, null), listener) {
       private val myTimer = Timer(300) { stopClickTimer() }
       private var myClick = false
 

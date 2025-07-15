@@ -22,7 +22,8 @@ class YamlErrorProcessingTest : YamlTestCase() {
 
   @Test
   fun `test empty field`() {
-    doTest("""
+    doTest(
+      """
             |title:
             |language: Russian
             |summary: |-
@@ -33,12 +34,14 @@ class YamlErrorProcessingTest : YamlTestCase() {
             |- the first lesson
             |- the second lesson
             |""".trimMargin(), YamlConfigSettings.COURSE_CONFIG,
-           "title is empty", MissingKotlinParameterException::class.java)
+      "title is empty", MissingKotlinParameterException::class.java
+    )
   }
 
   @Test
   fun `test invalid field value`() {
-    doTest("""
+    doTest(
+      """
             |title: Test course
             |language: wrong
             |summary: |-
@@ -49,13 +52,15 @@ class YamlErrorProcessingTest : YamlTestCase() {
             |- the first lesson
             |- the second lesson
             |""".trimMargin(), YamlConfigSettings.COURSE_CONFIG,
-           "Unknown language \"wrong\"", InvalidYamlFormatException::class.java)
+      "Unknown language \"wrong\"", InvalidYamlFormatException::class.java
+    )
   }
 
   @Test
   fun `test unexpected symbol`() {
     @Suppress("DEPRECATION")
-    doTest("""
+    doTest(
+      """
             |title: Test course
             |language: Russian
             |summary: |-
@@ -66,13 +71,15 @@ class YamlErrorProcessingTest : YamlTestCase() {
             |- the first lesson
             |- the second lesson
             |""".trimMargin(), YamlConfigSettings.COURSE_CONFIG,
-           "could not find expected ':' at line 7",
-           MarkedYAMLException::class.java)
+      "could not find expected ':' at line 7",
+      MarkedYAMLException::class.java
+    )
   }
 
   @Test
   fun `test parameter name without semicolon`() {
-    doTest("""
+    doTest(
+      """
             |title
             |language: Russian
             |summary: |-
@@ -82,12 +89,14 @@ class YamlErrorProcessingTest : YamlTestCase() {
             |content:
             |- the first lesson
             |""".trimMargin(), YamlConfigSettings.COURSE_CONFIG,
-           "Invalid config", MismatchedInputException::class.java)
+      "Invalid config", MismatchedInputException::class.java
+    )
   }
 
   @Test
   fun `test wrong type of placeholder offset`() {
-    doTest("""
+    doTest(
+      """
     |type: edu
     |files:
     |- name: Test.java
@@ -96,12 +105,14 @@ class YamlErrorProcessingTest : YamlTestCase() {
     |    length: 3
     |    placeholder_text: type here
     |""".trimMargin(), YamlConfigSettings.TASK_CONFIG,
-           "Invalid config", InvalidFormatException::class.java)
+      "Invalid config", InvalidFormatException::class.java
+    )
   }
 
   @Test
   fun `test unexpected item type`() {
-    doTest("""
+    doTest(
+      """
       |type: e
       |files:
       |- name: Test.java
@@ -113,19 +124,23 @@ class YamlErrorProcessingTest : YamlTestCase() {
       |- text: 2
       |  is_correct: false
       |""".trimMargin(), YamlConfigSettings.TASK_CONFIG,
-           "Unsupported task type \"e\"", InvalidYamlFormatException::class.java)
+      "Unsupported task type \"e\"", InvalidYamlFormatException::class.java
+    )
   }
 
   @Test
   fun `test task without type`() {
-    doTest("""
+    doTest(
+      """
     """.trimIndent(), YamlConfigSettings.TASK_CONFIG,
-           "Task type is not specified", InvalidYamlFormatException::class.java)
+      "Task type is not specified", InvalidYamlFormatException::class.java
+    )
   }
 
   @Test
   fun `test negative placeholder length`() {
-    doTest("""
+    doTest(
+      """
     |type: edu
     |files:
     |- name: Test.java
@@ -135,12 +150,14 @@ class YamlErrorProcessingTest : YamlTestCase() {
     |    length: -1
     |    placeholder_text: type here
     |""".trimMargin(), YamlConfigSettings.TASK_CONFIG,
-           "Answer placeholder with negative length is not allowed", InvalidYamlFormatException::class.java)
+      "Answer placeholder with negative length is not allowed", InvalidYamlFormatException::class.java
+    )
   }
 
   @Test
   fun `test negative placeholder offset`() {
-    doTest("""
+    doTest(
+      """
     |type: edu
     |files:
     |- name: Test.java
@@ -150,18 +167,21 @@ class YamlErrorProcessingTest : YamlTestCase() {
     |    length: 1
     |    placeholder_text: type here
     |""".trimMargin(), YamlConfigSettings.TASK_CONFIG,
-           "Answer placeholder with negative offset is not allowed", InvalidYamlFormatException::class.java)
+      "Answer placeholder with negative offset is not allowed", InvalidYamlFormatException::class.java
+    )
   }
 
   @Test
   fun `test task file without name`() {
-    doTest("""
+    doTest(
+      """
     |type: edu
     |files:
     |- name:
     |  visible: true
     |""".trimMargin(), YamlConfigSettings.TASK_CONFIG,
-           "File without a name is not allowed", InvalidYamlFormatException::class.java)
+      "File without a name is not allowed", InvalidYamlFormatException::class.java
+    )
   }
 
   @Test
@@ -173,7 +193,7 @@ class YamlErrorProcessingTest : YamlTestCase() {
     val secondLesson = "the second lesson"
 
     // check language is registered
-    assertNotNull(Language.getRegisteredLanguages().find {it.displayName == programmingLanguage})
+    assertNotNull(Language.getRegisteredLanguages().find { it.displayName == programmingLanguage })
 
     // check exception as there's no configurator for this language
     assertThrows(ValueInstantiationException::class.java) {
@@ -192,10 +212,12 @@ class YamlErrorProcessingTest : YamlTestCase() {
     }
   }
 
-  private fun <T : Exception> doTest(yamlContent: String,
-                                     configName: String,
-                                     expectedErrorMessage: String,
-                                     expectedExceptionClass: Class<T>) {
+  private fun <T : Exception> doTest(
+    yamlContent: String,
+    configName: String,
+    expectedErrorMessage: String,
+    expectedExceptionClass: Class<T>
+  ) {
     try {
       val configFile = createConfigFile(configName, yamlContent)
       deserializeItemProcessingErrors(configFile, project)

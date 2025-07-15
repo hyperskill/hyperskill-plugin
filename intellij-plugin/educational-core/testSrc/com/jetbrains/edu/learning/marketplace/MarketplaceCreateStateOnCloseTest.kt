@@ -48,7 +48,8 @@ class MarketplaceCreateStateOnCloseTest : EduTestCase() {
     val solutionText = objectMapper.writeValueAsString(solutionFiles).trimIndent()
     val stateOnClose = MarketplaceStateOnClosePost(eduTask.id, solutionText)
 
-    doTest(stateOnClose, """
+    doTest(
+      stateOnClose, """
       |task_id: 1
       |solution: "[{\"name\":\"src/Task.kt\",\"placeholders\":[{\"offset\":2,\"length\":16,\"\
   possible_answer\":\"\",\"placeholder_text\":\"placeholder text\"}],\"is_visible\"\
@@ -56,7 +57,8 @@ class MarketplaceCreateStateOnCloseTest : EduTestCase() {
   :null,\"is_visible\":false,\"text\":\"test file text\"}]"
       |format_version: $JSON_FORMAT_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   private fun deserializeStateOnClose() {

@@ -140,7 +140,7 @@ object KtFunctionDiffReducer : FunctionDiffReducer {
       // If a new call expression has been added - delete its value and lambda arguments
       is KtCallExpression -> {
         element.valueArgumentList?.let { removeElement(element, project) }
-        element.lambdaArguments.forEach {  lambda ->
+        element.lambdaArguments.forEach { lambda ->
           lambda.getLambdaExpression()?.bodyExpression?.let { removeElement(it, project) }
         }
       }
@@ -195,7 +195,7 @@ object KtFunctionDiffReducer : FunctionDiffReducer {
             project,
             first.getLambdaExpression()?.let {
               it.functionLiteral.node.findChildByType(KtTokens.ARROW)?.psi ?: it.leftCurlyBrace.psi
-                                             },
+            },
             needLineBreak = false
           )
         // Move on to compare the children of the dot qualified expression
@@ -211,6 +211,7 @@ object KtFunctionDiffReducer : FunctionDiffReducer {
         first is KtProperty && second is KtProperty ->
           swapSmallElements(first.typeReference, second.typeReference, project) ||
           swapSmallElements(first.initializer, second.initializer, project)
+
         else -> false
       }
     }

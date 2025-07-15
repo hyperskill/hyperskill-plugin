@@ -14,7 +14,7 @@ class CheckDetailsToolWindowFactory : ToolWindowFactory, DumbAware {
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     toolWindow.stripeTitle = EduCoreBundle.message("check.details.title")
     toolWindow.setToHideOnEmptyContent(true)
-    project.messageBus.connect().subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, object: FileEditorManagerListener {
+    project.messageBus.connect().subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, object : FileEditorManagerListener {
       override fun selectionChanged(event: FileEditorManagerEvent) {
         toolWindow.setAvailable(false, null)
       }

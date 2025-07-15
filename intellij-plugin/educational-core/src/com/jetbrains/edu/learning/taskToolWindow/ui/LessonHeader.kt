@@ -49,7 +49,8 @@ class LessonHeader : JPanel() {
     topPanelForProblems.removeAll()
     if (CCUtils.isCourseCreator(project) || course.getProjectLesson() == null) return
 
-    val linkText = if (course.isTaskInProject(task)) EduCoreBundle.message("hyperskill.back.to.learning") else EduCoreBundle.message("hyperskill.work.on.project")
+    val linkText =
+      if (course.isTaskInProject(task)) EduCoreBundle.message("hyperskill.back.to.learning") else EduCoreBundle.message("hyperskill.work.on.project")
     val action = if (course.isTaskInProject(task)) NavigateToUnsolvedTopic(project, course) else NavigateToProjectAction(project, course)
     val actionLink = AnActionLink(linkText, action).apply {
       font = JBFont.medium()

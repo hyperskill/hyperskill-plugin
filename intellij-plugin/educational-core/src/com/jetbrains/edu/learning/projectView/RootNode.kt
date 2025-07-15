@@ -18,19 +18,19 @@ class RootNode(project: Project, viewSettings: ViewSettings?) : ProjectViewProje
 
   override fun getChildren(): Collection<AbstractTreeNode<*>> {
     val course = StudyTaskManager.getInstance(myProject).course ?: return emptyList()
-      val nodes = ArrayList<AbstractTreeNode<*>>()
-      if (!isUnitTestMode) {
-        val psiDirectory = PsiManager.getInstance(myProject).findDirectory(myProject.courseDir)
+    val nodes = ArrayList<AbstractTreeNode<*>>()
+    if (!isUnitTestMode) {
+      val psiDirectory = PsiManager.getInstance(myProject).findDirectory(myProject.courseDir)
+      addCourseNode(course, nodes, psiDirectory)
+    }
+    else {
+      val topLevelContentRoots = ProjectViewDirectoryHelper.getInstance(myProject).topLevelRoots
+      for (root in topLevelContentRoots) {
+        val psiDirectory = PsiManager.getInstance(myProject).findDirectory(root)
         addCourseNode(course, nodes, psiDirectory)
       }
-      else {
-        val topLevelContentRoots = ProjectViewDirectoryHelper.getInstance(myProject).topLevelRoots
-        for (root in topLevelContentRoots) {
-          val psiDirectory = PsiManager.getInstance(myProject).findDirectory(root)
-          addCourseNode(course, nodes, psiDirectory)
-        }
-      }
-      return nodes
+    }
+    return nodes
   }
 
   private fun addCourseNode(course: Course, nodes: MutableList<AbstractTreeNode<*>>, psiDirectory: PsiDirectory?) {

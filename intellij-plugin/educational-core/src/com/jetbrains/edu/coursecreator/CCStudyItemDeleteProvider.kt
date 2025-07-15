@@ -48,19 +48,23 @@ class CCStudyItemDeleteProvider : DeleteProvider {
         val allTasks = studyItem.lessons.flatMapTo(HashSet(), Lesson::taskList)
         allTasks to allTasks.flatMapTo(HashSet(), Task::getDependentTasks) - allTasks
       }
+
       is Lesson -> {
         val allTasks = studyItem.taskList.toSet()
         allTasks to allTasks.flatMapTo(HashSet(), Task::getDependentTasks) - allTasks
       }
+
       is Task -> setOf(studyItem) to studyItem.getDependentTasks()
       else -> emptySet<Task>() to emptySet()
     }
 
     val title = IdeBundle.message("prompt.delete.elements", itemType)
-    val message = getDeleteItemsDialogMessage(dependentTasks,
-                                              IdeBundle.message("warning.delete.all.files.and.subdirectories", studyItem.name),
-                                              EduCoreBundle.message("course.creator.warning.removing.dependencies"),
-                                              "${EduCoreBundle.message("course.creator.warning.dependent.tasks")}:")
+    val message = getDeleteItemsDialogMessage(
+      dependentTasks,
+      IdeBundle.message("warning.delete.all.files.and.subdirectories", studyItem.name),
+      EduCoreBundle.message("course.creator.warning.removing.dependencies"),
+      "${EduCoreBundle.message("course.creator.warning.dependent.tasks")}:"
+    )
 
     val result = showOkCancelDialog(project, message, title, getOkButton(), getCancelButton(), getQuestionIcon())
     if (result != OK) return
@@ -105,9 +109,11 @@ class CCStudyItemDeleteProvider : DeleteProvider {
     }
   }
 
-  private fun removeDependentPlaceholders(project: Project,
-                                          dependentTasks: Set<Task>,
-                                          containingTasks: Set<Task>) {
+  private fun removeDependentPlaceholders(
+    project: Project,
+    dependentTasks: Set<Task>,
+    containingTasks: Set<Task>
+  ) {
     val course = StudyTaskManager.getInstance(project).course
     if (course != null) {
       for (task in dependentTasks) {

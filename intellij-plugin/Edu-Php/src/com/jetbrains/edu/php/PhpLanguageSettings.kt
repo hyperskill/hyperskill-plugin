@@ -90,7 +90,8 @@ class PhpLanguageSettings : LanguageSettings<PhpProjectSettings>() {
     disposable: CheckedDisposable,
     context: UserDataHolder?
   ): List<LabeledComponent<JComponent>> = listOf<LabeledComponent<JComponent>>(
-    LabeledComponent.create(composerPhpInterpretersCombo, EduCoreBundle.message("select.interpreter"), BorderLayout.WEST))
+    LabeledComponent.create(composerPhpInterpretersCombo, EduCoreBundle.message("select.interpreter"), BorderLayout.WEST)
+  )
 
 
   override fun validate(course: Course?, courseLocation: String?): SettingsValidationResult {

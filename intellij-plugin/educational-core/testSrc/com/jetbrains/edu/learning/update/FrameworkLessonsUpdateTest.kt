@@ -128,7 +128,10 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : UpdateTestBase<T>() {
 
     assertTaskFolder {
       file("Task.kt", "fun taskMod1() {}")
-      file("NonEdit.kt", "val p = 141") // the file became propagatable after the update, but the task is not modified, so we see the new text
+      file(
+        "NonEdit.kt",
+        "val p = 141"
+      ) // the file became propagatable after the update, but the task is not modified, so we see the new text
       file("Tests1.kt", "fun test1() {}")
     }
   }
@@ -167,7 +170,10 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : UpdateTestBase<T>() {
 
     assertTaskFolder {
       file("Task.kt", "/*comment*/fun task() {}")
-      file("NonEdit.kt", "val p = 141") // the file became propagatable after the update, but it was not modified, so we see its new contents
+      file(
+        "NonEdit.kt",
+        "val p = 141"
+      ) // the file became propagatable after the update, but it was not modified, so we see its new contents
       file("Tests1.kt", "fun test1() {}")
     }
   }
@@ -332,7 +338,7 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : UpdateTestBase<T>() {
 
   @Test
   fun `file is removed, but has changes on the 1st step`() {
-    with (localCourse) {
+    with(localCourse) {
       task1.addTaskFile(TaskFile("Task2.kt", "boo 1"))
       task2.addTaskFile(TaskFile("Task2.kt", "boo 2"))
       task3.addTaskFile(TaskFile("Task2.kt", "boo 3"))
@@ -383,7 +389,7 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : UpdateTestBase<T>() {
 
   @Test
   fun `file is removed but has changes on the 1rst and 3rd step`() {
-    with (localCourse) {
+    with(localCourse) {
       task1.addTaskFile(TaskFile("Task2.kt", "boo 1"))
       task2.addTaskFile(TaskFile("Task2.kt", "boo 2"))
       task3.addTaskFile(TaskFile("Task2.kt", "boo 3"))

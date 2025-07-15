@@ -11,7 +11,7 @@ class HyperskillNotLoggedInPanel : Wrapper() {
     "SelectCourse.Hyperskill.HyperskillNotLoggedInPanel.backgroundColor", 0xFFFFFF, 0x1E1F22
   )
 
-  private val oldUIBackgroundColor = JBColor(0xFFFFFF,0x313335)
+  private val oldUIBackgroundColor = JBColor(0xFFFFFF, 0x313335)
 
   init {
     val loginPanel = HyperskillTopLoginPanelWithBanner()
@@ -26,7 +26,7 @@ class HyperskillNotLoggedInPanel : Wrapper() {
       }
     }.apply {
       isOpaque = true
-      background =  if (ExperimentalUI.isNewUI()) backgroundColor else oldUIBackgroundColor
+      background = if (ExperimentalUI.isNewUI()) backgroundColor else oldUIBackgroundColor
     })
   }
 }

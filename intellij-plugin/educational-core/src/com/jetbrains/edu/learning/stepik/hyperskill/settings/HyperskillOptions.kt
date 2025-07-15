@@ -12,8 +12,10 @@ import com.jetbrains.edu.learning.stepik.hyperskill.profileUrl
 import javax.swing.JComponent
 
 class HyperskillOptions : OAuthLoginOptions<HyperskillAccount>() {
-  private var automaticUpdateCheckBox: JBCheckBox = JBCheckBox(EduCoreBundle.message("hyperskill.settings.auto.update"),
-                                                               HyperskillSettings.INSTANCE.updateAutomatically)
+  private var automaticUpdateCheckBox: JBCheckBox = JBCheckBox(
+    EduCoreBundle.message("hyperskill.settings.auto.update"),
+    HyperskillSettings.INSTANCE.updateAutomatically
+  )
 
   override val connector: EduOAuthCodeFlowConnector<HyperskillAccount, *>
     get() = HyperskillConnector.getInstance()

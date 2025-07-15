@@ -34,6 +34,7 @@ class JCefToolWindowLinkHandler(project: Project) : ToolWindowLinkHandler(projec
         val cleanedUrl = url.substringAfter(JCEF_URL_PREFIX)
         super.process(cleanedUrl, null)
       }
+
       url.startsWith(JCEF_URL_PREFIX) -> processExternalLink(url.replace(JBCEF_BROWSER, ""))
       else -> super.process(url, null)
     }

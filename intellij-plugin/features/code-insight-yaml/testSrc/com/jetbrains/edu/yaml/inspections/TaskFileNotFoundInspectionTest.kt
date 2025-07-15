@@ -20,7 +20,8 @@ class TaskFileNotFoundInspectionTest : YamlInspectionsTestBase(TaskFileNotFoundI
     val task = course.findTask("lesson1", "task1")
 
     val expectedTaskFiles = listOf("src/taskfile1.txt" to true)
-    doTest(task, "Create file", """
+    doTest(
+      task, "Create file", """
       |type: edu
       |files:
       |- name: <error descr="Cannot find `src/taskfile1.txt` file">src/taskfile1.txt<caret></error>
@@ -30,7 +31,8 @@ class TaskFileNotFoundInspectionTest : YamlInspectionsTestBase(TaskFileNotFoundI
       |files:
       |- name: src/taskfile1.txt
       |  visible: true
-    """.trimMargin("|"), expectedTaskFiles)
+    """.trimMargin("|"), expectedTaskFiles
+    )
   }
 
   @Test
@@ -85,16 +87,20 @@ class TaskFileNotFoundInspectionTest : YamlInspectionsTestBase(TaskFileNotFoundI
       |  visible: true
     """.trimMargin("|")
 
-    doTest(task, "Create file", text1, text2, listOf(
+    doTest(
+      task, "Create file", text1, text2, listOf(
         "src/existing_file_1.txt" to true,
         "src/existing_file_2.txt" to true
-    ))
-    doTest(task, "Create file", text2, text3, listOf(
-      "src/existing_file_1.txt" to true,
-      "src/non_existing_file_1.txt" to true,
-      "src/non_existing_file_2.txt" to true,
-      "src/existing_file_2.txt" to true
-    ))
+      )
+    )
+    doTest(
+      task, "Create file", text2, text3, listOf(
+        "src/existing_file_1.txt" to true,
+        "src/non_existing_file_1.txt" to true,
+        "src/non_existing_file_2.txt" to true,
+        "src/existing_file_2.txt" to true
+      )
+    )
   }
 
   @Test
@@ -108,7 +114,8 @@ class TaskFileNotFoundInspectionTest : YamlInspectionsTestBase(TaskFileNotFoundI
     val task = course.findTask("lesson1", "task1")
 
     val expectedTaskFiles = listOf("src/taskfile1.txt" to false)
-    doTest(task, "Create file", """
+    doTest(
+      task, "Create file", """
       |type: edu
       |files:
       |- name: <error descr="Cannot find `src/taskfile1.txt` file">src/taskfile1.txt<caret></error>
@@ -118,7 +125,8 @@ class TaskFileNotFoundInspectionTest : YamlInspectionsTestBase(TaskFileNotFoundI
       |files:
       |- name: src/taskfile1.txt
       |  visible: false
-    """.trimMargin("|"), expectedTaskFiles)
+    """.trimMargin("|"), expectedTaskFiles
+    )
   }
 
   @Test
@@ -134,7 +142,8 @@ class TaskFileNotFoundInspectionTest : YamlInspectionsTestBase(TaskFileNotFoundI
     val task = course.findTask("lesson1", "task1")
 
     val expectedTaskFiles = listOf("src/taskfile0.txt" to true, "src/taskfile1.txt" to true)
-    doTest(task, "Create file", """
+    doTest(
+      task, "Create file", """
       |type: edu
       |files:
       |- name: <error descr="Cannot find `src/taskfile0.txt` file">src/taskfile0.txt<caret></error>
@@ -148,7 +157,8 @@ class TaskFileNotFoundInspectionTest : YamlInspectionsTestBase(TaskFileNotFoundI
       |  visible: true
       |- name: src/taskfile1.txt
       |  visible: true
-    """.trimMargin("|"), expectedTaskFiles)
+    """.trimMargin("|"), expectedTaskFiles
+    )
   }
 
   @Test
@@ -161,12 +171,14 @@ class TaskFileNotFoundInspectionTest : YamlInspectionsTestBase(TaskFileNotFoundI
       }
     }
     val task = course.findTask("lesson1", "task1")
-    testQuickFixIsUnavailable(task, "Create file", """
+    testQuickFixIsUnavailable(
+      task, "Create file", """
       |type: edu
       |files:
       |- name: <error descr="File path `src\taskfile1.txt` is invalid">src\taskfile1.txt</error>
       |  visible: true
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -179,12 +191,14 @@ class TaskFileNotFoundInspectionTest : YamlInspectionsTestBase(TaskFileNotFoundI
       }
     }
     val task = course.findTask("lesson1", "task1")
-    testQuickFixIsUnavailable(task, "Create file", """
+    testQuickFixIsUnavailable(
+      task, "Create file", """
       |type: edu
       |files:
       |- name: <error descr="File path `src//taskfile1.txt` is invalid">src//taskfile1.txt</error>
       |  visible: true
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   private fun doTest(task: Task, quickFixName: String, before: String, after: String, expectedTaskFiles: List<Pair<String, Boolean>>) {

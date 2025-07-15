@@ -1,8 +1,8 @@
 package com.jetbrains.edu.coursecreator.framework
 
 import com.intellij.util.io.DataInputOutputUtil
-import com.jetbrains.edu.learning.framework.impl.FrameworkStorageBase
 import com.jetbrains.edu.learning.framework.impl.FLTaskState
+import com.jetbrains.edu.learning.framework.impl.FrameworkStorageBase
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException

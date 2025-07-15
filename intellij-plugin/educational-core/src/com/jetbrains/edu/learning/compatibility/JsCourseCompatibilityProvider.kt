@@ -15,7 +15,8 @@ class JsCourseCompatibilityProvider : CourseCompatibilityProvider {
         PluginInfos.JAVA_SCRIPT_DEBUGGER,
         PluginInfos.NODE_JS
       )
-    } else {
+    }
+    else {
       null
     }
   }

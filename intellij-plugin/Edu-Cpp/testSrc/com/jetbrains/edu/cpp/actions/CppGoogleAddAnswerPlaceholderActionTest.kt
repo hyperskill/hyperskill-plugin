@@ -9,8 +9,10 @@ class CppGoogleAddAnswerPlaceholderActionTest : CCAddAnswerPlaceholderActionTest
 
   @Test
   fun `test placeholder text`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, language = OCLanguage.getInstance(),
-                                 environment = "GoogleTest") {
+    val course = courseWithFiles(
+      courseMode = CourseMode.EDUCATOR, language = OCLanguage.getInstance(),
+      environment = "GoogleTest"
+    ) {
       lesson("lesson1") {
         eduTask("task1") {
           taskFile("Task.kt", DEFAULT_TASK_TEXT)

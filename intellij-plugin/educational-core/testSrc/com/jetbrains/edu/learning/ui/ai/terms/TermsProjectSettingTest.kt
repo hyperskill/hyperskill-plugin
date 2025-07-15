@@ -14,9 +14,11 @@ class TermsProjectSettingTest : EduSettingsServiceTestBase() {
 
   @Test
   fun `test empty storage serialization`() {
-    termsStorage.checkState("""
+    termsStorage.checkState(
+      """
       <TermsProjectState />
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 
   @Test
@@ -28,7 +30,8 @@ class TermsProjectSettingTest : EduSettingsServiceTestBase() {
         version = TermsVersion(1)
       )
       setTerms(termsProperties1)
-      checkState("""
+      checkState(
+        """
       <TermsProjectState>
         <currentTermsLanguage>en</currentTermsLanguage>
         <terms>
@@ -55,10 +58,12 @@ class TermsProjectSettingTest : EduSettingsServiceTestBase() {
           </map>
         </termsVersions>
       </TermsProjectState>
-      """.trimIndent())
+      """.trimIndent()
+      )
 
       cleanUpState()
-      checkState("""
+      checkState(
+        """
          <TermsProjectState />
       """.trimIndent()
       )
@@ -81,7 +86,8 @@ class TermsProjectSettingTest : EduSettingsServiceTestBase() {
         version = TermsVersion(2)
       )
       setTerms(termsProperties2)
-      checkState("""
+      checkState(
+        """
       <TermsProjectState>
         <currentTermsLanguage>ru</currentTermsLanguage>
         <terms>
@@ -123,10 +129,12 @@ class TermsProjectSettingTest : EduSettingsServiceTestBase() {
           </map>
         </termsVersions>
       </TermsProjectState>
-      """.trimIndent())
+      """.trimIndent()
+      )
 
       cleanUpState()
-      checkState("""
+      checkState(
+        """
          <TermsProjectState />
       """.trimIndent()
       )

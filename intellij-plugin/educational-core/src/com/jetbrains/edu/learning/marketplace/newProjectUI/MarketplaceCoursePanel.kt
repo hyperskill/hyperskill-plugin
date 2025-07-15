@@ -19,7 +19,7 @@ class MarketplaceCoursePanel(
   disposable: Disposable,
   private val downloadCourseContext: DownloadCourseContext = IDE_UI,
   private val openCourseParams: Map<String, String> = emptyMap()
-): CoursePanel(disposable, true) {
+) : CoursePanel(disposable, true) {
 
   init {
     courseDetailsPanel.border = JBUI.Borders.empty(10, HORIZONTAL_MARGIN, 0, 0)
@@ -44,7 +44,7 @@ class MarketplaceCoursePanel(
 
   override fun openCourseMetadata(): Map<String, String> = openCourseParams
 
-  private class LegalTermsPanel: NonOpaquePanel(), CourseSelectionListener {
+  private class LegalTermsPanel : NonOpaquePanel(), CourseSelectionListener {
 
     private val textPanel = GrayTextHtmlPanel("text")
 

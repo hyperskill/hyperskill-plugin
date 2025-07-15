@@ -16,13 +16,14 @@ abstract class TaskDescriptionLink<T, R : T?>(
    * Returns link part after schema prefix (i.e. after `://` substring).
    * Returning value is already [URL-decoded](https://en.wikipedia.org/wiki/Percent-encoding)
    */
-  protected val linkPath: String get() {
-    val path = link.substringAfter(URLUtil.SCHEME_SEPARATOR)
-    // If url path contains invalid symbols like ` ` from the URI point of view,
-    // you have to encode the path to make it work.
-    // So, the path should be decoded to support such cases.
-    return URLUtil.decode(path)
-  }
+  protected val linkPath: String
+    get() {
+      val path = link.substringAfter(URLUtil.SCHEME_SEPARATOR)
+      // If url path contains invalid symbols like ` ` from the URI point of view,
+      // you have to encode the path to make it work.
+      // So, the path should be decoded to support such cases.
+      return URLUtil.decode(path)
+    }
 
   /**
    * Provides an object which the link references to.

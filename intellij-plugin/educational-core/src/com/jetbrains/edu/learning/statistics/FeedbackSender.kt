@@ -18,12 +18,22 @@ import javax.swing.event.HyperlinkEvent
 fun showCCPostFeedbackNotification(course: Course, project: Project) {
   val language = course.languageId.lowercase().capitalize()
   val feedbackUrl = getFeedbackUrl(course.name, "Educator")
-  showPostFeedbackNotification(project, EduCoreBundle.message("check.correct.solution.title"), EduCoreBundle.message("feedback.template.creator", feedbackUrl, language), feedbackUrl)
+  showPostFeedbackNotification(
+    project,
+    EduCoreBundle.message("check.correct.solution.title"),
+    EduCoreBundle.message("feedback.template.creator", feedbackUrl, language),
+    feedbackUrl
+  )
 }
 
 fun showStudentPostFeedbackNotification(courseName: String, project: Project) {
   val feedbackUrl = getFeedbackUrl(courseName, "Learner")
-  showPostFeedbackNotification(project, EduCoreBundle.message("feedback.template.student.title"), EduCoreBundle.message("feedback.template.student", feedbackUrl), feedbackUrl)
+  showPostFeedbackNotification(
+    project,
+    EduCoreBundle.message("feedback.template.student.title"),
+    EduCoreBundle.message("feedback.template.student", feedbackUrl),
+    feedbackUrl
+  )
 }
 
 private fun getFeedbackUrl(courseName: String, courseMode: String): String {
@@ -62,11 +72,12 @@ private fun showFeedbackNotification(
     .notify(project)
 }
 
-fun isLeaveFeedbackPrompted() : Boolean = PropertiesComponent.getInstance().getBoolean(LEAVE_FEEDBACK_NOTIFICATION_SHOWN)
+fun isLeaveFeedbackPrompted(): Boolean = PropertiesComponent.getInstance().getBoolean(LEAVE_FEEDBACK_NOTIFICATION_SHOWN)
 
 private const val LEAVE_FEEDBACK_NOTIFICATION_SHOWN = "questionnaireAdvertisingNotification"
 
-private const val FEEDBACK_URL_TEMPLATE = "https://www.jetbrains.com/feedback/feedback.jsp?product=EduTools&ide=\$PRODUCT&course=\$COURSE&mode=\$MODE"
+private const val FEEDBACK_URL_TEMPLATE =
+  "https://www.jetbrains.com/feedback/feedback.jsp?product=EduTools&ide=\$PRODUCT&course=\$COURSE&mode=\$MODE"
 
 @Suppress("UnstableApiUsage")
 private val productMap = hashMapOf(

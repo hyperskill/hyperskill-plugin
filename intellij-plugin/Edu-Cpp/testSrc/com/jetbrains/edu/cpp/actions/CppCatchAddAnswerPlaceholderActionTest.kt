@@ -9,8 +9,10 @@ class CppCatchAddAnswerPlaceholderActionTest : CCAddAnswerPlaceholderActionTestB
 
   @Test
   fun `test placeholder text`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, language = OCLanguage.getInstance(),
-                                 environment = "Catch") {
+    val course = courseWithFiles(
+      courseMode = CourseMode.EDUCATOR, language = OCLanguage.getInstance(),
+      environment = "Catch"
+    ) {
       lesson("lesson1") {
         eduTask("task1") {
           taskFile("Task.kt", DEFAULT_TASK_TEXT)

@@ -38,7 +38,8 @@ internal fun createImportMarketplaceCourseAction(pluginScope: PluginScope): Acti
     identifier = "import-marketplace-course",
     requirements = setOf(FleetDataKeys.Window),
     triggers = setOf(EduTriggers.ImportMarketplace),
-    defaultPresentation = ActionPresentation("Import Marketplace Course"))
+    defaultPresentation = ActionPresentation("Import Marketplace Course")
+  )
 }
 
 private suspend fun createCourse(id: String?, window: WindowEntity, pluginScope: PluginScope) {

@@ -141,7 +141,7 @@ object EduUtilsKt {
 
   fun Project.isEduProject(): Boolean {
     if (!UserAgreementSettings.getInstance().isPluginAllowed)
-        return false
+      return false
     return StudyTaskManager.getInstance(this).course != null || getCourseModeForNewlyCreatedProject(this) != null
   }
 

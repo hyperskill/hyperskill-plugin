@@ -16,7 +16,12 @@ interface EduUiOnboardingStep {
 
   fun buildAnimation(data: EduUiOnboardingAnimationData, point: RelativePoint): EduUiOnboardingAnimation
 
-  fun createZhaba(project: Project, data: EduUiOnboardingAnimationData, point: RelativePoint, parentDisposable: Disposable): ZhabaComponent {
+  fun createZhaba(
+    project: Project,
+    data: EduUiOnboardingAnimationData,
+    point: RelativePoint,
+    parentDisposable: Disposable
+  ): ZhabaComponent {
     val zhabaComponent = ZhabaComponent(project)
     Disposer.register(parentDisposable, zhabaComponent)
     zhabaComponent.animation = buildAnimation(data, point)
@@ -24,7 +29,8 @@ interface EduUiOnboardingStep {
   }
 
   companion object {
-    val EP_NAME: ExtensionPointName<KeyedLazyInstanceEP<EduUiOnboardingStep>> = ExtensionPointName.Companion.create("com.intellij.ide.eduUiOnboarding.step")
+    val EP_NAME: ExtensionPointName<KeyedLazyInstanceEP<EduUiOnboardingStep>> =
+      ExtensionPointName.Companion.create("com.intellij.ide.eduUiOnboarding.step")
 
     fun getIfAvailable(stepId: String): EduUiOnboardingStep? {
       val step = EP_NAME.findFirstSafe { it.key == stepId }?.instance

@@ -98,7 +98,8 @@ class ReportCommunitySolutionAction : DumbAwareAction(), CustomComponentAction {
           val jComponent = e.component as JComponent
           if (!jComponent.visibleRect.isEmpty) {
             gotItTooltip.show(jComponent, GotItTooltip.BOTTOM_MIDDLE)
-          } else {
+          }
+          else {
             gotItTooltip.hidePopup()
           }
         }

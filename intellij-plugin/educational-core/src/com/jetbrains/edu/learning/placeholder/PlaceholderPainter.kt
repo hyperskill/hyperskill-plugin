@@ -101,6 +101,7 @@ object PlaceholderPainter {
       .filter { it.file == file }
       .map { it.editor }
   }
+
   private fun AnswerPlaceholder.getColor(): JBColor {
     return when (status) {
       CheckStatus.Solved -> {
@@ -108,11 +109,13 @@ object PlaceholderPainter {
         val colorDark = createColor("47CC5E", 82, JBColor.LIGHT_GRAY)
         JBColor(colorLight, colorDark)
       }
+
       CheckStatus.Failed -> {
         val colorLight = createColor("CC0000", 64, JBColor.GRAY)
         val colorDark = createColor("FF7373", 90, JBColor.GRAY)
         JBColor(colorLight, colorDark)
       }
+
       else -> getDefaultPlaceholderColor()
     }
   }

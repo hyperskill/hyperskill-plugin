@@ -20,9 +20,11 @@ open class EduBrowser : EduTestAware {
       link.startsWith(StepikNames.getStepikUrl()) -> {
         EduCounterUsageCollector.linkClicked(EduCounterUsageCollector.LinkType.STEPIK)
       }
+
       link.startsWith(HYPERSKILL_DEFAULT_URL) -> {
         EduCounterUsageCollector.linkClicked(EduCounterUsageCollector.LinkType.JBA)
       }
+
       else -> {
         EduCounterUsageCollector.linkClicked(EduCounterUsageCollector.LinkType.EXTERNAL)
       }

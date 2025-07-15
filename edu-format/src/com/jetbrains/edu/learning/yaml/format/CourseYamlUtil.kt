@@ -61,7 +61,7 @@ import java.util.*
 @Suppress("unused") // used for yaml serialization
 @JsonAppend(
   props = [
-    JsonAppend.Prop(YamlVersionWriter::class, name=YAML_VERSION)
+    JsonAppend.Prop(YamlVersionWriter::class, name = YAML_VERSION)
   ]
 )
 @JsonPropertyOrder(
@@ -84,8 +84,10 @@ import java.util.*
   // YAML_VERSION is appended to the end with the @JsonAppend annotation
 )
 @JsonDeserialize(builder = CourseBuilder::class)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY,
-  property = TYPE, defaultImpl = EduCourse::class, visible = true)
+@JsonTypeInfo(
+  use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY,
+  property = TYPE, defaultImpl = EduCourse::class, visible = true
+)
 @JsonSubTypes(
   JsonSubTypes.Type(EduCourse::class, name = "edu"),
   JsonSubTypes.Type(EduCourse::class, name = "marketplace")
@@ -270,7 +272,7 @@ open class CourseBuilder(
       disabledFeatures = yamlDisabledFeatures
 
       languageId = Language.findLanguageByName(displayProgrammingLanguageName)
-                      ?: formatError(message("yaml.editor.invalid.unsupported.language", displayProgrammingLanguageName))
+                   ?: formatError(message("yaml.editor.invalid.unsupported.language", displayProgrammingLanguageName))
       languageVersion = programmingLanguageVersion
 
       val newItems = content.mapIndexed { index, title ->
@@ -300,6 +302,7 @@ open class CourseBuilder(
           generatedEduId = yamlGeneratedEduId
         }
       }
+
       EDU_YAML_TYPE, null -> EduCourse()
       else -> formatError(unsupportedItemTypeMessage(courseType, EduFormatNames.COURSE))
     }

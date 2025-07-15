@@ -4,7 +4,8 @@ import com.intellij.util.application
 import com.jetbrains.edu.ai.error.AIServiceError
 import com.jetbrains.edu.ai.error.CommonAIServiceError
 import com.jetbrains.edu.ai.translation.TranslationError
-import com.jetbrains.edu.ai.translation.connector.TranslationConnectorTest.ResponseError.*
+import com.jetbrains.edu.ai.translation.connector.TranslationConnectorTest.ResponseError.ResponseCodeError
+import com.jetbrains.edu.ai.translation.connector.TranslationConnectorTest.ResponseError.ResponseException
 import com.jetbrains.edu.ai.translation.service.TranslationService
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.Err

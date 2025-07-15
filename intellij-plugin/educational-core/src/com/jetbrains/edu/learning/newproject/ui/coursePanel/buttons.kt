@@ -70,6 +70,7 @@ class OpenCourseButton(private val openCourseMetadata: () -> Map<String, String>
             }
           }
         }
+
         else -> {
           closeDialog()
           // if course is present both on stepik and marketplace we open marketplace-based one

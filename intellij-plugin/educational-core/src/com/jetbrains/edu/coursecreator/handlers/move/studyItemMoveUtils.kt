@@ -15,7 +15,8 @@ private var MOCK: MoveStudyItemUI? = null
 fun showMoveStudyItemDialog(project: Project, itemType: StudyItemType, thresholdName: String): Int? {
   val ui = if (isUnitTestMode) {
     MOCK ?: error("Mock UI should be set via `withMockMoveStudyItemUI`")
-  } else {
+  }
+  else {
     DialogMoveStudyItemUI()
   }
   return ui.showDialog(project, itemType, thresholdName)
@@ -26,7 +27,8 @@ fun withMockMoveStudyItemUI(mockUi: MoveStudyItemUI, action: () -> Unit) {
   try {
     MOCK = mockUi
     action()
-  } finally {
+  }
+  finally {
     MOCK = null
   }
 }

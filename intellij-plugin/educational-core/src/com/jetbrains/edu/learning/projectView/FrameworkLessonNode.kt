@@ -7,9 +7,9 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.navigation.NavigationUtils
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 
 class FrameworkLessonNode private constructor(
   project: Project,
@@ -23,8 +23,8 @@ class FrameworkLessonNode private constructor(
 
   override fun modifyChildNode(childNode: AbstractTreeNode<*>): AbstractTreeNode<*>? {
     val task = item.currentTask() ?: return null
-    return CourseViewUtils.modifyTaskChildNode(myProject, childNode, task, ::createChildFileNode) {
-      dir -> DirectoryNode(myProject, dir, settings, task)
+    return CourseViewUtils.modifyTaskChildNode(myProject, childNode, task, ::createChildFileNode) { dir ->
+      DirectoryNode(myProject, dir, settings, task)
     }
   }
 

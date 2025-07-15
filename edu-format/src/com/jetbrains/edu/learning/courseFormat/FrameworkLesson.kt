@@ -5,7 +5,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 class FrameworkLesson() : Lesson() {
 
-  constructor(lesson: Lesson): this() {
+  constructor(lesson: Lesson) : this() {
     id = lesson.id
     updateDate = lesson.updateDate
     name = lesson.name

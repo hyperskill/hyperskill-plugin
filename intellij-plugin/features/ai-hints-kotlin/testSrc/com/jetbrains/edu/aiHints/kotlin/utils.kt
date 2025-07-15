@@ -100,7 +100,8 @@ fun createKotlinCourse() = course(language = KotlinLanguage.INSTANCE) {
   lesson {
     eduTask {
       kotlinTaskFile("src/Main.kt", "fun foo(): Int = 5")
-      kotlinTaskFile("test/Tests.kt", """
+      kotlinTaskFile(
+        "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
           class Tests {
@@ -109,11 +110,13 @@ fun createKotlinCourse() = course(language = KotlinLanguage.INSTANCE) {
                   Assert.assertTrue("foo() should return 42", foo() == 42)
               }
           }
-        """)
+        """
+      )
     }
   }
   lesson {
-    eduTask(taskDescription = """
+    eduTask(
+      taskDescription = """
       It's time to write your first program in Kotlin!
       
       ### Task
@@ -144,7 +147,8 @@ fun createKotlinCourse() = course(language = KotlinLanguage.INSTANCE) {
       If for some reason the survey link is unclickable, you can copy the full link here:
       https://surveys.jetbrains.com/link
       </div>
-    """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD) {
+    """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD
+    ) {
       kotlinTaskFile(
         "src/main/kotlin/Main.kt", """
           fun main() {
@@ -169,7 +173,8 @@ fun createKotlinCourse() = course(language = KotlinLanguage.INSTANCE) {
       )
     }
     eduTask {
-      kotlinTaskFile("src/main/kotlin/Main.kt", """
+      kotlinTaskFile(
+        "src/main/kotlin/Main.kt", """
           package jetbrains.kotlin.course.first.date
 
           fun generateSecret() = "ABCD"
@@ -177,7 +182,8 @@ fun createKotlinCourse() = course(language = KotlinLanguage.INSTANCE) {
           fun main() {
               println("Hello!")
           }
-        """)
+        """
+      )
     }
   }
 }

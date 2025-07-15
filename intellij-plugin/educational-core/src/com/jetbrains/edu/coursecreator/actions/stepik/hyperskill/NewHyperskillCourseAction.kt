@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NonNls
 
 class NewHyperskillCourseAction : DumbAwareAction() {
 
- override fun actionPerformed(e: AnActionEvent) {
+  override fun actionPerformed(e: AnActionEvent) {
     CCSettings.getInstance().useHtmlAsDefaultTaskFormat = true
     CCNewCourseDialog(
       EduCoreBundle.message("action.Educational.Educator.NewHyperskillCourse.text"),

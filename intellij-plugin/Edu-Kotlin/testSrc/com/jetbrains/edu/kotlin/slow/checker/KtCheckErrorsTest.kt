@@ -25,7 +25,8 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
     lesson {
       eduTask("kotlinCompilationError") {
         kotlinTaskFile("src/Task.kt", "fun foo(): Int = aaa")
-        kotlinTaskFile("test/Tests.kt", """
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -35,18 +36,24 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertTrue("foo() should return 42", foo() == 42)
               }
           }
-        """)
+        """
+        )
       }
       eduTask("javaCompilationError") {
-        javaTaskFile("src/JavaClass.java", """
+        javaTaskFile(
+          "src/JavaClass.java", """
           public class JavaClass {
               public static final int i = aaa;
           }
-        """)
-        kotlinTaskFile("src/Task.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo() = JavaClass.i
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -56,12 +63,14 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertTrue("foo() should return 42", foo() == 42)
               }
           }
-        """)
+        """
+        )
       }
       // handle case when task module contains `(` or `)`
       eduTask("compilationError()") {
         kotlinTaskFile("src/Task.kt", "fun foo(): Int = aaa")
-        kotlinTaskFile("test/Tests.kt", """
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -71,13 +80,17 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertTrue("foo() should return 42", foo() == 42)
               }
           }
-        """)
+        """
+        )
       }
       eduTask("testFail") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo(): Int = 43
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -87,13 +100,17 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertTrue("foo() should return 42", foo() == 42)
               }
           }
-        """)
+        """
+        )
       }
       eduTask("comparisonTestFail") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo(): Int = 43
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -103,13 +120,17 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertEquals(42, foo())
               }
           }
-        """)
+        """
+        )
       }
       eduTask("comparisonTestWithMessageFail") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo(): Int = 43
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -119,13 +140,17 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertEquals("foo() should return 42", 42, foo())
               }
           }
-        """)
+        """
+        )
       }
       eduTask("comparisonMultilineTestFail") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo(): String = "Hello\nWorld!"
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -135,10 +160,12 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertEquals("Wrong Answer", "Hello,\nWorld!", foo())
               }
           }
-        """)
+        """
+        )
       }
       eduTask("objectComparisonTestFail") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           data class Foo(val x: Int, val y: Int) {
               override fun toString(): String = "(${'$'}x, ${'$'}y)"
           }
@@ -146,8 +173,10 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
           data class Bar(val x: Int, val y: Int) {
               override fun toString(): String = "(${'$'}x, ${'$'}y)"
           }
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -156,11 +185,13 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertEquals(Foo(0, 0), Bar(0, 0))
               }
           }
-        """)
+        """
+        )
       }
       eduTask("escapeMessageInFailedTest") {
         kotlinTaskFile("src/Task.kt")
-        kotlinTaskFile("test/Tests.kt", """
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -170,14 +201,18 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertTrue("<br>", false)
               }
           }
-        """)
+        """
+        )
       }
       eduTask("gradleCustomRunConfiguration") {
         @Suppress("RedundantNullableReturnType")
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo(): String? = System.getenv("EXAMPLE_ENV")
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
           
@@ -192,9 +227,11 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                   Assert.assertEquals("Hello", foo())
               }
           }
-        """)
+        """
+        )
         dir("runConfigurations") {
-          xmlTaskFile("CustomGradleCheck.run.xml", """
+          xmlTaskFile(
+            "CustomGradleCheck.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomGradleCheck" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -225,36 +262,43 @@ class KtCheckErrorsTest : JdkCheckerTestBase() {
                 <method v="2" />
               </configuration>
             </component>
-          """)
+          """
+          )
         }
       }
       outputTask("outputTaskFail") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun main() {
               println("OK")
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("OK!\n")
         }
       }
       outputTask("outputTaskWithNewLineFail") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun main() {
               print("Line")
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("Line\n")
         }
       }
       outputTask("multilineOutputTaskFail") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun main() {
               println("Hello")
               println("World")
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("Hello,\nWorld!\n")
         }

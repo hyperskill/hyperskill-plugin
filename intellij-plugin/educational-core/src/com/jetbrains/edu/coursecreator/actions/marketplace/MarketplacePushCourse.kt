@@ -56,7 +56,7 @@ class MarketplacePushCourse(
     }
   }
 
- override fun getActionUpdateThread() = ActionUpdateThread.BGT
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project

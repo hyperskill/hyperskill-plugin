@@ -132,10 +132,11 @@ class EduDocumentListener private constructor(
     }
   }
 
-  private val DocumentEvent.taskFile: TaskFile? get() {
-    val file = FileDocumentManager.getInstance().getFile(document) ?: return null
-    return file.getTaskFile(holder)
-  }
+  private val DocumentEvent.taskFile: TaskFile?
+    get() {
+      val file = FileDocumentManager.getInstance().getFile(document) ?: return null
+      return file.getTaskFile(holder)
+    }
 
   companion object {
     fun setGlobalListener(project: Project, disposable: Disposable) {
@@ -176,7 +177,8 @@ class EduDocumentListener private constructor(
       taskFile.isTrackChanges = false
       try {
         modification()
-      } finally {
+      }
+      finally {
         taskFile.isTrackChanges = isTrackChanges
       }
     }

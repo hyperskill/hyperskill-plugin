@@ -59,7 +59,11 @@ open class SubmissionsTab(project: Project) : TaskToolWindowCardTextTab(project,
   }
 
   @RequiresBackgroundThread
-  protected fun prepareSubmissionsContent(submissionsManager: SubmissionsManager, task: Task, isLoggedIn: Boolean): Pair<String, SwingToolWindowLinkHandler?> {
+  protected fun prepareSubmissionsContent(
+    submissionsManager: SubmissionsManager,
+    task: Task,
+    isLoggedIn: Boolean
+  ): Pair<String, SwingToolWindowLinkHandler?> {
     val submissionsList = submissionsManager.getSubmissionsFromMemory(setOf(task.id))
 
     if (!isLoggedIn) {
@@ -104,7 +108,8 @@ open class SubmissionsTab(project: Project) : TaskToolWindowCardTextTab(project,
     /**
      * Showing submissions ids is needed for `ApplyHyperskillSubmission` action testing
      */
-    private fun isToShowSubmissionsIds(task: Task) = task.course is HyperskillCourse && isFeatureEnabled(EduExperimentalFeatures.CC_HYPERSKILL)
+    private fun isToShowSubmissionsIds(task: Task) =
+      task.course is HyperskillCourse && isFeatureEnabled(EduExperimentalFeatures.CC_HYPERSKILL)
 
     private fun submissionLink(submission: Submission, isToShowSubmissionsIds: Boolean): String? {
       val time = submission.time ?: return null

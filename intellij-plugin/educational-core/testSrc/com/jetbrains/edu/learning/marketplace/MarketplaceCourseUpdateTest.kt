@@ -644,11 +644,21 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
   ): EduCourse {
     val course = course {
       frameworkLesson("lesson1") {
-        eduTask(firstTaskName, stepId = firstTaskId, taskDescription = oldTaskDescriptionText, taskDescriptionFormat = DescriptionFormat.HTML) {
+        eduTask(
+          firstTaskName,
+          stepId = firstTaskId,
+          taskDescription = oldTaskDescriptionText,
+          taskDescriptionFormat = DescriptionFormat.HTML
+        ) {
           taskFile(taskFileName, oldTaskFileText)
           taskFile(testFileName, oldTestFileText)
         }
-        eduTask(secondTaskName, stepId = secondTaskId, taskDescription = oldTaskDescriptionText, taskDescriptionFormat = DescriptionFormat.HTML) {
+        eduTask(
+          secondTaskName,
+          stepId = secondTaskId,
+          taskDescription = oldTaskDescriptionText,
+          taskDescriptionFormat = DescriptionFormat.HTML
+        ) {
           taskFile(taskFileName, oldTaskFileText)
           taskFile(testFileName, oldTestFileText)
         }
@@ -657,12 +667,14 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
     return course
   }
 
-  private fun checkTaskFiles(task: Task,
-                             expectedTaskFileText: String,
-                             expectedTestFileText: String,
-                             expectedTaskDescriptionText: String,
-                             taskFileName: String,
-                             testFileName: String) {
+  private fun checkTaskFiles(
+    task: Task,
+    expectedTaskFileText: String,
+    expectedTestFileText: String,
+    expectedTaskDescriptionText: String,
+    taskFileName: String,
+    testFileName: String
+  ) {
     assertEquals(expectedTaskFileText, task.getTaskFile(taskFileName)?.text)
     assertEquals(expectedTestFileText, task.getTaskFile(testFileName)?.text)
     assertEquals(expectedTaskDescriptionText, task.descriptionText)
@@ -719,17 +731,23 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
   }
 
   private fun checkCourseStructure(course: EduCourse, courseFromServer: EduCourse, expectedFileTree: FileTree) {
-    assertEquals("Lessons number mismatch. Expected: ${courseFromServer.lessons.size}. Actual: ${course.lessons.size}",
-      courseFromServer.lessons.size, course.lessons.size)
+    assertEquals(
+      "Lessons number mismatch. Expected: ${courseFromServer.lessons.size}. Actual: ${course.lessons.size}",
+      courseFromServer.lessons.size, course.lessons.size
+    )
 
-    assertEquals("Sections number mismatch. Expected: ${courseFromServer.sections.size}. Actual: ${course.sections.size}",
-      courseFromServer.sections.size, course.sections.size)
+    assertEquals(
+      "Sections number mismatch. Expected: ${courseFromServer.sections.size}. Actual: ${course.sections.size}",
+      courseFromServer.sections.size, course.sections.size
+    )
 
     for ((section, newSection) in course.sections.zip(courseFromServer.sections)) {
-      assertTrue("Lesson number mismatch.\n" +
-                 "Lesson \"${section.name}\". \n" +
-                 "Expected lesson number: ${newSection.lessons.size}. Actual: ${section.lessons.size}",
-        section.lessons.size == newSection.lessons.size)
+      assertTrue(
+        "Lesson number mismatch.\n" +
+        "Lesson \"${section.name}\". \n" +
+        "Expected lesson number: ${newSection.lessons.size}. Actual: ${section.lessons.size}",
+        section.lessons.size == newSection.lessons.size
+      )
 
       checkLessons(section.lessons, newSection.lessons)
     }
@@ -747,31 +765,41 @@ class MarketplaceCourseUpdateTest : CourseGenerationTestBase<EmptyProjectSetting
     }
   }
 
-  private fun checkLessons(lessons: List<Lesson>,
-                           lessonsFromServer: List<Lesson>) {
+  private fun checkLessons(
+    lessons: List<Lesson>,
+    lessonsFromServer: List<Lesson>
+  ) {
     for ((lesson, newLesson) in lessons.zip(lessonsFromServer)) {
-      assertTrue("Tasks number mismatch.\n" +
-                 "Lesson \"${lesson.name}\". \n" +
-                 "Expected task number: ${newLesson.taskList.size}. Actual: ${lesson.taskList.size}",
-        lesson.taskList.size == newLesson.taskList.size)
+      assertTrue(
+        "Tasks number mismatch.\n" +
+        "Lesson \"${lesson.name}\". \n" +
+        "Expected task number: ${newLesson.taskList.size}. Actual: ${lesson.taskList.size}",
+        lesson.taskList.size == newLesson.taskList.size
+      )
 
       assertTrue("Lesson name mismatch. Expected: ${newLesson.name}. Actual: ${lesson.name}", lesson.name == newLesson.name)
       for ((task, newTask) in lesson.taskList.zip(newLesson.taskList)) {
-        assertTrue("Task files number mismatch.\n" +
-                   "Lesson \"${lesson.name}\". \n" +
-                   "Task \"${task.name}\". \n" +
-                   "Expected task files number: ${newTask.taskFiles.size}. Actual: ${task.taskFiles.size}",
-          task.taskFiles.size == newTask.taskFiles.size)
+        assertTrue(
+          "Task files number mismatch.\n" +
+          "Lesson \"${lesson.name}\". \n" +
+          "Task \"${task.name}\". \n" +
+          "Expected task files number: ${newTask.taskFiles.size}. Actual: ${task.taskFiles.size}",
+          task.taskFiles.size == newTask.taskFiles.size
+        )
 
-        assertTrue("Task text mismatch.\n" +
-                   "Lesson \"${lesson.name}\". \n" +
-                   "Task \"${task.name}\". \n" +
-                   "Expected:\n \"${newTask.descriptionText}\"\n" +
-                   "Actual:\n \"${task.descriptionText}\"",
-          newTask.descriptionText == task.descriptionText)
+        assertTrue(
+          "Task text mismatch.\n" +
+          "Lesson \"${lesson.name}\". \n" +
+          "Task \"${task.name}\". \n" +
+          "Expected:\n \"${newTask.descriptionText}\"\n" +
+          "Actual:\n \"${task.descriptionText}\"",
+          newTask.descriptionText == task.descriptionText
+        )
 
-        assertTrue("Lesson index mismatch.\n Expected: Lesson \"${newLesson.name}\", index: ${newLesson.index}.\n" +
-                   " Actual: Lesson \"${lesson.name}\", index: ${lesson.index}", lesson.index == newLesson.index)
+        assertTrue(
+          "Lesson index mismatch.\n Expected: Lesson \"${newLesson.name}\", index: ${newLesson.index}.\n" +
+          " Actual: Lesson \"${lesson.name}\", index: ${lesson.index}", lesson.index == newLesson.index
+        )
 
       }
     }

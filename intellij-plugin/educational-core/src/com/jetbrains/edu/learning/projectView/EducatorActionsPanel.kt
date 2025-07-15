@@ -54,11 +54,13 @@ private class NewTaskToolbarAction : CCCreateTask(EducationalCoreIcons.CourseCre
         val itemDir = item.getDir(courseDir) ?: error("Cannot get get directory for $item")
         NewItemPlace(itemDir, item.taskList.size)
       }
+
       is Task -> {
         val parentLesson = item.parent
         val itemDir = parentLesson.getDir(courseDir) ?: error("Cannot get get directory for $parentLesson")
         NewItemPlace(itemDir, item.index)
       }
+
       else -> error("Unexpected userObject $selectedObject")
     }
   }
@@ -98,26 +100,31 @@ private class NewLessonToolbarAction : CCCreateLesson(EducationalCoreIcons.Cours
       null -> {
         NewItemPlace(courseDir, course.items.size)
       }
+
       is CCCourseNode -> {
         val lastIndex = course.items.lastOrNull()?.index ?: 0
         NewItemPlace(courseDir, lastIndex)
       }
+
       is CCSectionNode -> {
         val section = selectedObject.item
         val lastIndex = section.items.lastOrNull()?.index ?: 0
         val parentDir = section.getDir(courseDir) ?: error("Cannot get directory for $section")
         NewItemPlace(parentDir, lastIndex)
       }
+
       is CCLessonNode -> {
         val selectedLesson = selectedObject.item
         val itemDir = selectedLesson.getDir(courseDir) ?: error("Cannot get get directory for $selectedLesson")
         NewItemPlace(itemDir, selectedLesson.index)
       }
+
       is CCTaskNode -> {
         val parentLesson = selectedObject.item.parent
         val itemDir = parentLesson.getDir(courseDir) ?: error("Cannot get get directory for $parentLesson")
         NewItemPlace(itemDir, parentLesson.index)
       }
+
       else -> error("Unexpected userObject $selectedObject")
     }
   }

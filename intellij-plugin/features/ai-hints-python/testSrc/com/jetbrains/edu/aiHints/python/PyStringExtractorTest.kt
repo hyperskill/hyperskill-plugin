@@ -13,7 +13,8 @@ class PyStringExtractorTest : EduTestCase() {
       lesson(PY_LESSON) {
         eduTask(PY_TASK) {
           @Suppress("PyInterpreter")
-          pythonTaskFile(PY_TASK_FILE, text = """
+          pythonTaskFile(
+            PY_TASK_FILE, text = """
               a = "referenced"
               # noinspection PyUnresolvedReferences
               def foo():

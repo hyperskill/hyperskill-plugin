@@ -11,7 +11,7 @@ import org.intellij.lang.annotations.Language
 import org.junit.Test
 import java.util.*
 
-class HyperskillCheckTableTask: HyperskillCheckActionTestBase() {
+class HyperskillCheckTableTask : HyperskillCheckActionTestBase() {
   override fun createCourse() {
     courseWithFiles(courseProducer = ::HyperskillCourse) {
       section("Topics") {
@@ -68,6 +68,7 @@ class HyperskillCheckTableTask: HyperskillCheckActionTestBase() {
           else {
             submissionWithFailedStatus
           }
+
           else -> error("Wrong path: ${path}")
         },
         responseCode = HttpStatus.SC_OK

@@ -1,12 +1,12 @@
 package com.jetbrains.edu.coursecreator.actions.taskFile
 
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.learning.`in`
-import com.jetbrains.edu.learning.notIn
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.findTask
+import com.jetbrains.edu.learning.`in`
+import com.jetbrains.edu.learning.notIn
 import org.junit.Test
 
 class CCExcludeFromTaskTest : CCChangeFileOwnerTestBase(CCExcludeFromTask.ACTION_ID) {
@@ -142,6 +142,7 @@ class CCExcludeFromTaskTest : CCChangeFileOwnerTestBase(CCExcludeFromTask.ACTION
 
   @Test
   fun `test do not exclude file not from task`() = doUnavailableTest("lesson1/task1/excluded_file1.txt")
+
   @Test
   fun `test do not exclude file outside of task dir`() = doUnavailableTest("excluded_file2.txt")
 

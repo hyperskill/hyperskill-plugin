@@ -6,7 +6,6 @@ import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.scala.sbt.ScalaSbtConfigurator
 import org.junit.runners.Parameterized.Parameters
-import kotlin.collections.plus
 
 class ScalaSbtFileAttributesTest(
   filePath: String,

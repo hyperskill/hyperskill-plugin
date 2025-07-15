@@ -17,8 +17,10 @@ class KtLanguageSettings : JdkLanguageSettings() {
       val courseKotlinVersion = course.kotlinVersion
       val kotlinVersion = kotlinVersion()
       if (kotlinVersion < courseKotlinVersion) {
-        val validationMessage = ValidationMessage(EduKotlinBundle.message("update.kotlin.plugin", courseKotlinVersion.version),
-                                                  ENVIRONMENT_CONFIGURATION_LINK_KOTLIN)
+        val validationMessage = ValidationMessage(
+          EduKotlinBundle.message("update.kotlin.plugin", courseKotlinVersion.version),
+          ENVIRONMENT_CONFIGURATION_LINK_KOTLIN
+        )
         return SettingsValidationResult.Ready(validationMessage)
       }
     }

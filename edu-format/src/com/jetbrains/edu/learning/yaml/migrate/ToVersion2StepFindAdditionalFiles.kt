@@ -23,6 +23,7 @@ import com.jetbrains.edu.learning.yaml.getEduValue
  * The information about the YAML version of the course is then used to migrate all other study items.
  */
 typealias AdditionalFilesCollector = (courseType: String, environment: String, languageId: String) -> List<EduFile>
+
 val ADDITIONAL_FILES_COLLECTOR_MAPPER_KEY = InjectableValueKey<AdditionalFilesCollector>("additional_files_searcher")
 
 /**

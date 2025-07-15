@@ -9,10 +9,11 @@ class TheoryLookupSettingsTest : EduSettingsServiceTestBase() {
   fun `test serialization`() {
     val settings = TheoryLookupSettings.getInstance()
     settings.loadStateAndCheck(
-    """
+      """
       <State>
         <option name="enabled" value="false" />
       </State>
-    """)
+    """
+    )
   }
 }

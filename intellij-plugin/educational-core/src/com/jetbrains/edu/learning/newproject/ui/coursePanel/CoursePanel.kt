@@ -50,8 +50,10 @@ abstract class CoursePanel(parentDisposable: Disposable, isLocationFieldNeeded: 
     border = JBUI.Borders.empty(8, HORIZONTAL_MARGIN, 0, 0)
   }
   protected val authorsPanel = AuthorsPanel()
-  protected val errorComponent = ErrorComponent(ErrorStateHyperlinkListener(parentDisposable),
-                                                ERROR_PANEL_MARGIN) { doValidation() }.apply {
+  protected val errorComponent = ErrorComponent(
+    ErrorStateHyperlinkListener(parentDisposable),
+    ERROR_PANEL_MARGIN
+  ) { doValidation() }.apply {
     border = JBUI.Borders.empty(ERROR_TOP_GAP, HORIZONTAL_MARGIN, 0, ERROR_RIGHT_GAP)
   }
 
@@ -114,8 +116,10 @@ abstract class CoursePanel(parentDisposable: Disposable, isLocationFieldNeeded: 
 
     addComponents()
 
-    val scrollPane = JBScrollPane(content, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                  ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER).apply {
+    val scrollPane = JBScrollPane(
+      content, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+      ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+    ).apply {
       border = JBUI.Borders.empty()
     }
 
@@ -207,6 +211,7 @@ abstract class CoursePanel(parentDisposable: Disposable, isLocationFieldNeeded: 
         errorComponent.setErrorMessage(message)
         buttonsPanel.setButtonToolTip(EduCoreBundle.message("course.dialog.login.required"))
       }
+
       is ErrorState.LoginRequired -> {
         course?.let {
           if (CoursesStorage.getInstance().hasCourse(it)) {
@@ -215,6 +220,7 @@ abstract class CoursePanel(parentDisposable: Disposable, isLocationFieldNeeded: 
         }
         setError(message)
       }
+
       else -> {
         setError(message)
       }
@@ -272,7 +278,7 @@ abstract class CoursePanel(parentDisposable: Disposable, isLocationFieldNeeded: 
     @VisibleForTesting
     val buttons: List<CourseButtonBase> = listOf(
       StartCourseButton(joinCourse = { course, courseMode -> joinCourse(course, courseMode) }),
-      OpenCourseButton{ openCourseMetadata() }
+      OpenCourseButton { openCourseMetadata() }
     )
 
     init {

@@ -7,6 +7,7 @@ import kotlin.reflect.KProperty
 const val VERIFY_CLASSES_TASK_NAME = "verifyClasses"
 
 val Project.environmentName: String by Properties
+
 // BACKCOMPAT: 2025.1
 val Project.isAtLeast252: Boolean get() = environmentName.toInt() >= 252
 
@@ -24,26 +25,28 @@ val Project.isClionIDE: Boolean get() = baseIDE == "clion"
 val Project.isPycharmIDE: Boolean get() = baseIDE == "pycharm"
 val Project.isRiderIDE: Boolean get() = baseIDE == "rider"
 
-val Project.baseVersion: String get() = when {
-  isIdeaIDE -> ideaVersion
-  isClionIDE -> clionVersion
-  isPycharmIDE -> pycharmVersion
-  isRiderIDE -> riderVersion
-  else -> error("Unexpected IDE name = `$baseIDE`")
-}
+val Project.baseVersion: String
+  get() = when {
+    isIdeaIDE -> ideaVersion
+    isClionIDE -> clionVersion
+    isPycharmIDE -> pycharmVersion
+    isRiderIDE -> riderVersion
+    else -> error("Unexpected IDE name = `$baseIDE`")
+  }
 
 val Project.pythonProPlugin: String by Properties
 val Project.pythonCommunityPlugin: String by Properties
 
-val Project.pythonPlugin: String get() = when {
-  // Since 2024.2 Python Community plugin is available in paid products (like IU) together with Python Pro as its base dependency.
-  // But all necessary code that we need is inside Python Community plugin, so we need only it from compilation POV
-  isIdeaIDE -> pythonCommunityPlugin
-  isClionIDE -> "PythonCore"
-  isPycharmIDE -> "PythonCore"
-  isRiderIDE -> pythonCommunityPlugin
-  else -> error("Unexpected IDE name = `$baseIDE`")
-}
+val Project.pythonPlugin: String
+  get() = when {
+    // Since 2024.2 Python Community plugin is available in paid products (like IU) together with Python Pro as its base dependency.
+    // But all necessary code that we need is inside Python Community plugin, so we need only it from compilation POV
+    isIdeaIDE -> pythonCommunityPlugin
+    isClionIDE -> "PythonCore"
+    isPycharmIDE -> "PythonCore"
+    isRiderIDE -> pythonCommunityPlugin
+    else -> error("Unexpected IDE name = `$baseIDE`")
+  }
 val Project.javaPlugin: String get() = "com.intellij.java"
 val Project.kotlinPlugin: String get() = "org.jetbrains.kotlin"
 val Project.scalaPlugin: String by Properties
@@ -66,49 +69,56 @@ val Project.radlerPlugin: String get() = "org.jetbrains.plugins.clion.radler"
 val Project.imagesPlugin: String get() = "com.intellij.platform.images"
 
 
-val Project.jvmPlugins: List<String> get() = listOf(
-  javaPlugin,
-  "JUnit",
-  "org.jetbrains.plugins.gradle"
-)
+val Project.jvmPlugins: List<String>
+  get() = listOf(
+    javaPlugin,
+    "JUnit",
+    "org.jetbrains.plugins.gradle"
+  )
 
-val Project.javaScriptPlugins: List<String> get() = listOf(
-  javaScriptPlugin,
-  nodeJsPlugin
-)
+val Project.javaScriptPlugins: List<String>
+  get() = listOf(
+    javaScriptPlugin,
+    nodeJsPlugin
+  )
 
-val Project.rustPlugins: List<String> get() = listOf(
-  rustPlugin,
-  tomlPlugin
-)
+val Project.rustPlugins: List<String>
+  get() = listOf(
+    rustPlugin,
+    tomlPlugin
+  )
 
-val Project.cppPlugins: List<String> get() = listOfNotNull(
-  "com.intellij.cidr.lang",
-  "com.intellij.clion",
-  "com.intellij.clion.runFile".takeIf { !isAtLeast252 },
-  "com.intellij.nativeDebug",
-  "org.jetbrains.plugins.clion.test.google",
-  "org.jetbrains.plugins.clion.test.catch"
-)
+val Project.cppPlugins: List<String>
+  get() = listOfNotNull(
+    "com.intellij.cidr.lang",
+    "com.intellij.clion",
+    "com.intellij.clion.runFile".takeIf { !isAtLeast252 },
+    "com.intellij.nativeDebug",
+    "org.jetbrains.plugins.clion.test.google",
+    "org.jetbrains.plugins.clion.test.catch"
+  )
 
-val Project.sqlPlugins: List<String> get() = listOfNotNull(
-  sqlPlugin,
-  // https://github.com/JetBrains/intellij-platform-gradle-plugin/issues/1791
-  "intellij.charts".takeIf { !isAtLeast252 }, // BACKCOMPAT: 2025.1. Drop it.
-  "intellij.grid.plugin"
-)
+val Project.sqlPlugins: List<String>
+  get() = listOfNotNull(
+    sqlPlugin,
+    // https://github.com/JetBrains/intellij-platform-gradle-plugin/issues/1791
+    "intellij.charts".takeIf { !isAtLeast252 }, // BACKCOMPAT: 2025.1. Drop it.
+    "intellij.grid.plugin"
+  )
 
-val Project.csharpPlugins: List<String> get() = listOf(
-  "com.intellij.resharper.unity"
-)
+val Project.csharpPlugins: List<String>
+  get() = listOf(
+    "com.intellij.resharper.unity"
+  )
 
 // Plugins which we add to tests for all modules.
 // It's the most common plugins which affect the behavior of the plugin code
-val Project.commonTestPlugins: List<String> get() = listOf(
-  imagesPlugin, // adds `svg` file type and makes IDE consider .svg files as text ones
-  yamlPlugin,   // makes IDE consider .yaml files as text ones and affects formatting of yaml files
-  jsonPlugin,   // dependency of a lot of other bundled plugin
-)
+val Project.commonTestPlugins: List<String>
+  get() = listOf(
+    imagesPlugin, // adds `svg` file type and makes IDE consider .svg files as text ones
+    yamlPlugin,   // makes IDE consider .yaml files as text ones and affects formatting of yaml files
+    jsonPlugin,   // dependency of a lot of other bundled plugin
+  )
 
 
 data class TypeWithVersion(val type: IntelliJPlatformType, val version: String)

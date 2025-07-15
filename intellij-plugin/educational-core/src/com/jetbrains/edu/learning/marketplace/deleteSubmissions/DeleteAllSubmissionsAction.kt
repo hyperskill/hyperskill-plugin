@@ -74,12 +74,13 @@ class DeleteAllSubmissionsAction : DumbAwareAction() {
     }
   }
 
-  private fun doDeleteSubmissions(project: Project? = null, loginName: String?) = runInBackground(project, title = EduCoreBundle.message("marketplace.delete.submissions.background.title")) {
-    val deleteLocalSubmissions = MarketplaceSubmissionsConnector.getInstance().deleteAllSubmissions(project, loginName = loginName)
-    if (deleteLocalSubmissions && project != null) {
-      SubmissionsManager.getInstance(project).deleteCourseSubmissionsLocally()
+  private fun doDeleteSubmissions(project: Project? = null, loginName: String?) =
+    runInBackground(project, title = EduCoreBundle.message("marketplace.delete.submissions.background.title")) {
+      val deleteLocalSubmissions = MarketplaceSubmissionsConnector.getInstance().deleteAllSubmissions(project, loginName = loginName)
+      if (deleteLocalSubmissions && project != null) {
+        SubmissionsManager.getInstance(project).deleteCourseSubmissionsLocally()
+      }
     }
-  }
 
   private fun askActionConfirmation(loginName: String?): Boolean {
     val dialogText = if (loginName != null) {

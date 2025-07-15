@@ -22,18 +22,22 @@ class NoTaskProjectNameInspectionTest : EduTestCase() {
     ) {
       lesson("lesson") {
         eduTask("task") {
-          taskFile(CMakeListsFileType.FILE_NAME, """
+          taskFile(
+            CMakeListsFileType.FILE_NAME, """
           |<warning descr="${EduCppBundle.message("project.name.not.set.warning")}">cmake_minimum_required(VERSION 3.15)
           |# some text<caret></warning>
-        """.trimMargin())
+        """.trimMargin()
+          )
         }
       }
     }
-    doTest("lesson/task", """
+    doTest(
+      "lesson/task", """
       |cmake_minimum_required(VERSION 3.15)
       |project(global-lesson-task)
       |# some text
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -45,15 +49,19 @@ class NoTaskProjectNameInspectionTest : EduTestCase() {
     ) {
       lesson("lesson") {
         eduTask("task") {
-          taskFile(CMakeListsFileType.FILE_NAME,
-                   """<warning descr="${EduCppBundle.message("project.name.not.set.warning")}"># some text<caret></warning>""")
+          taskFile(
+            CMakeListsFileType.FILE_NAME,
+            """<warning descr="${EduCppBundle.message("project.name.not.set.warning")}"># some text<caret></warning>"""
+          )
         }
       }
     }
-    doTest("lesson/task", """
+    doTest(
+      "lesson/task", """
       |project(global-lesson-task)
       |# some text
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -65,18 +73,22 @@ class NoTaskProjectNameInspectionTest : EduTestCase() {
     ) {
       lesson("lesson") {
         eduTask("custom task name") {
-          taskFile(CMakeListsFileType.FILE_NAME, """
+          taskFile(
+            CMakeListsFileType.FILE_NAME, """
           |<warning descr="${EduCppBundle.message("project.name.not.set.warning")}">cmake_minimum_required(VERSION 3.15)
           |# some text<caret></warning>
-        """.trimMargin())
+        """.trimMargin()
+          )
         }
       }
     }
-    doTest("lesson/custom task name", """
+    doTest(
+      "lesson/custom task name", """
       |cmake_minimum_required(VERSION 3.15)
       |project(global-lesson-custom_task_name)
       |# some text
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   override fun setUp() {

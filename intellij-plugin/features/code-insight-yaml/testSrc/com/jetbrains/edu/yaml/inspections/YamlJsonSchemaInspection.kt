@@ -15,7 +15,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       lesson {}
     }
 
-    testHighlighting(getCourse(), """
+    testHighlighting(
+      getCourse(), """
       |title: Test Course
       |type: coursera
       |language: Russian
@@ -28,7 +29,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       |- lesson1
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -37,7 +39,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       lesson {}
     }
 
-    testHighlighting(getCourse(), """
+    testHighlighting(
+      getCourse(), """
       |title: Test Course
       |type: marketplace
       |language: Russian
@@ -50,7 +53,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       |- lesson1
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -59,7 +63,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       lesson {}
     }
 
-    testHighlighting(getCourse(), """
+    testHighlighting(
+      getCourse(), """
       |<warning descr="Schema validation: Missing required property 'yaml_version'">title: Test Course</warning>
       |type: coursera
       |language: Russian
@@ -70,7 +75,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       |content:
       |- lesson1
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -81,11 +87,13 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       }
     }
 
-    testHighlighting(getCourse().items[0], """
+    testHighlighting(
+      getCourse().items[0], """
       |<warning descr="Schema validation: Property 'wrong_property' is not allowed">wrong_property</warning>: prop
       |content:
       |- lesson1
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -96,12 +104,14 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       }
     }
 
-    testHighlighting(getCourse().items[0], """
+    testHighlighting(
+      getCourse().items[0], """
       |type: framework
       |<warning descr="Schema validation: Property 'wrong_property' is not allowed">wrong_property</warning>: prop
       |content:
       |- task1
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -123,7 +133,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       }
     }
 
-    testHighlighting(findTask(1, 0), """
+    testHighlighting(
+      findTask(1, 0), """
     |type: edu
     |<warning descr="Schema validation: Property 'wrong_property' is not allowed">wrong_property</warning>: prop
     |files:
@@ -141,7 +152,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
     |      <warning descr="Schema validation: Property 'wrong_property' is not allowed">wrong_property</warning>: prop
     |      placeholder: 1
     |      is_visible: true
-    |""".trimMargin("|"))
+    |""".trimMargin("|")
+    )
   }
 
   @Test
@@ -154,7 +166,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       }
     }
 
-    testHighlighting(findTask(0, 0), """
+    testHighlighting(
+      findTask(0, 0), """
       |type: choice
       |<warning descr="Schema validation: Property 'wrong_property' is not allowed">wrong_property</warning>: prop
       |is_multiple_choice: false
@@ -168,7 +181,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       |- name: Test.java
       |  <warning descr="Schema validation: Property 'wrong_property' is not allowed">wrong_property</warning>: prop
       |  visible: true
-      |""".trimMargin("|"))
+      |""".trimMargin("|")
+    )
   }
 
   @Test
@@ -177,7 +191,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       additionalFile("a.png", BinaryContents.EMPTY)
     }
 
-    testHighlighting(course,
+    testHighlighting(
+      course,
       """
       |title: Test Course
       |type: marketplace
@@ -205,7 +220,8 @@ class YamlJsonSchemaInspection : YamlInspectionsTestBase(YamlJsonSchemaHighlight
       }
     }
 
-    testHighlighting(findTask(0, 0),
+    testHighlighting(
+      findTask(0, 0),
       """
       |type: edu
       |files:

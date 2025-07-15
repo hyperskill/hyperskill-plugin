@@ -12,7 +12,8 @@ class TranslationProjectSettingsTest : EduSettingsServiceTestBase() {
   @Test
   fun `test serialization`() {
     val settings = TranslationProjectSettings()
-    settings.loadStateAndCheck("""
+    settings.loadStateAndCheck(
+      """
       <TranslationProjectState>
         <option name="currentTranslationLanguage" value="Russian" />
         <option name="structureTranslation">
@@ -44,15 +45,18 @@ class TranslationProjectSettingsTest : EduSettingsServiceTestBase() {
           </map>
         </option>
       </TranslationProjectState>
-    """)
+    """
+    )
   }
 
   @Test
   fun `test no settings serialization`() {
     val settings = TranslationProjectSettings()
-    settings.checkState("""
+    settings.checkState(
+      """
       <TranslationProjectState />
-    """)
+    """
+    )
   }
 
   @Test
@@ -64,7 +68,8 @@ class TranslationProjectSettingsTest : EduSettingsServiceTestBase() {
     )
     val settings = TranslationProjectSettings()
     settings.setTranslation(translationProperties)
-    settings.checkState("""
+    settings.checkState(
+      """
       <TranslationProjectState>
         <option name="currentTranslationLanguage" value="French" />
         <option name="structureTranslation">
@@ -86,13 +91,15 @@ class TranslationProjectSettingsTest : EduSettingsServiceTestBase() {
           </map>
         </option>
       </TranslationProjectState>
-    """)
+    """
+    )
   }
 
   @Test(expected = ComparisonFailure::class)
   fun `test settings serialization when null language being set`() {
     val settings = TranslationProjectSettings()
-    settings.loadStateAndCheck("""
+    settings.loadStateAndCheck(
+      """
       <TranslationProjectState>
         <option name="currentTranslationLanguage" />
         <option name="structureTranslation">
@@ -114,6 +121,7 @@ class TranslationProjectSettingsTest : EduSettingsServiceTestBase() {
           </map>
         </option>
       </TranslationProjectState>
-    """)
+    """
+    )
   }
 }

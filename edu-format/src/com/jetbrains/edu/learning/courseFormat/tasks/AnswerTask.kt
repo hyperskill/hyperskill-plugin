@@ -9,11 +9,12 @@ sealed class AnswerTask : Task {
 
   constructor(name: String) : super(name)
 
-  constructor(name: String,
-              id: Int,
-              position: Int,
-              updateDate: Date,
-              status: CheckStatus = CheckStatus.Unchecked
+  constructor(
+    name: String,
+    id: Int,
+    position: Int,
+    updateDate: Date,
+    status: CheckStatus = CheckStatus.Unchecked
   ) : super(name, id, position, updateDate, status)
 
   companion object {

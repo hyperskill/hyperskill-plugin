@@ -5,7 +5,7 @@ import com.intellij.internal.statistic.eventLog.events.*
 import java.util.*
 
 @Suppress("UnstableApiUsage")
-inline fun <reified T : Enum<*>> enumField(name: String = "value") : EventField<T> {
+inline fun <reified T : Enum<*>> enumField(name: String = "value"): EventField<T> {
   return EventFields.Enum(name) { it.toString().lowercase(Locale.ENGLISH) }
 }
 

@@ -71,7 +71,8 @@ abstract class NotificationsTestBase : EduTestCase() {
     try {
       runWriteAction { FileTypeManager.getInstance().associateExtension(PlainTextFileType.INSTANCE, "yaml") }
       action()
-    } finally {
+    }
+    finally {
       runWriteAction { FileTypeManager.getInstance().removeAssociatedExtension(PlainTextFileType.INSTANCE, "yaml") }
     }
   }

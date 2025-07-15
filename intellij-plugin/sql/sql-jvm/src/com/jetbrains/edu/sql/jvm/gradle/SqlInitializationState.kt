@@ -44,6 +44,7 @@ class SqlInitializationState(private val project: Project) : SimplePersistentSta
 
   class State : BaseState() {
     var dataSourceInitialized: Boolean by property(false)
+
     @get:XCollection(style = XCollection.Style.v2)
     val taskDatabasesInitialized: MutableSet<String> by stringSet()
 

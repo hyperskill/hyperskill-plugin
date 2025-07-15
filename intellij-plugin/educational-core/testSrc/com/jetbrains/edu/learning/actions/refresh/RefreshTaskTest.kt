@@ -83,22 +83,30 @@ class RefreshTaskTest : EduTestCase() {
     StudyTaskManager.getInstance(myFixture.project).course = courseWithFiles(createYamlConfigs = true) {
       lesson {
         eduTask {
-          taskFile("taskFile1.txt", """
+          taskFile(
+            "taskFile1.txt", """
             Look! There <p>is</p> placeholder.
-          """)
+          """
+          )
         }
         eduTask {
-          taskFile("taskFile2.txt", """
+          taskFile(
+            "taskFile2.txt", """
             Look! There <p>is</p> placeholder.
-          """)
+          """
+          )
         }
         eduTask {
-          taskFile("taskFile1.txt", """
+          taskFile(
+            "taskFile1.txt", """
             Look! There <p>is</p> my placeholder.
-          """)
-          taskFile("taskFile2.txt", """
+          """
+          )
+          taskFile(
+            "taskFile2.txt", """
             Look! There <p>is</p> placeholder.
-          """)
+          """
+          )
         }
         eduTask {
           taskFile("taskFile1.txt", "TaskFile1")

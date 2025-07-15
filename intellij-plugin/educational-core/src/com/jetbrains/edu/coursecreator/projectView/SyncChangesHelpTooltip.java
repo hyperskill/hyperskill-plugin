@@ -74,104 +74,24 @@ public class SyncChangesHelpTooltip {
   private static final String TOOLTIP_DISABLED_PROPERTY = "JComponent.helpTooltipDisabled";
 
   private static final int LINKS_GAP = JBUI.scale(10);
-
+  private final ArrayList<ActionLink> links = new ArrayList<>();
+  private final ArrayList<@Nullable JBFontScaler> linkOriginalFontScalers = new ArrayList<>();
+  private final Alarm popupAlarm = new Alarm();
+  protected MouseAdapter myMouseListener;
   private @Nullable Supplier<@NotNull @TooltipTitle String> title;
   private @NlsSafe String shortcut;
   private @Tooltip String description;
-  private final ArrayList<ActionLink> links = new ArrayList<>();
-  private final ArrayList<@Nullable JBFontScaler> linkOriginalFontScalers = new ArrayList<>();
   private NonOpaquePanel linksPanel;
   private boolean neverHide;
   private @NotNull Alignment alignment = Alignment.CURSOR;
-
   private BooleanSupplier masterPopupOpenCondition;
-
   private JBPopup myPopup;
-  private final Alarm popupAlarm = new Alarm();
   private boolean isOverPopup;
   private boolean isMultiline;
   private int myInitialDelay = -1;
   private int myHideDelay = -1;
   private String myToolTipText;
   private boolean initialShowScheduled;
-
-  protected MouseAdapter myMouseListener;
-
-  /**
-   * Location of the HelpTooltip relatively to the owner component.
-   */
-  public enum Alignment {
-    RIGHT {
-      @Override public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
-        Dimension size = owner.getSize();
-        return new Point(size.width + JBUIScale.scale(5) - X_OFFSET.get(), JBUIScale.scale(1) + Y_OFFSET.get());
-      }
-    },
-
-    LEFT {
-      @Override public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
-        return new Point(- popupSize.width - JBUIScale.scale(5) + X_OFFSET.get(), JBUIScale.scale(1) + Y_OFFSET.get());
-      }
-    },
-
-    BOTTOM {
-      @Override public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
-        Dimension size = owner.getSize();
-        return new Point(JBUIScale.scale(1) + X_OFFSET.get(), JBUIScale.scale(5) + size.height - Y_OFFSET.get());
-      }
-    },
-
-    HELP_BUTTON {
-      @Override public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
-        Insets i  = ((JComponent)owner).getInsets();
-        return new Point(X_OFFSET.get() - JBUIScale.scale(40), i.top + Y_OFFSET.get() - JBUIScale.scale(6) - popupSize.height);
-      }
-    },
-
-    CURSOR {
-      @Override public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
-        Point location = mouseLocation.getLocation();
-        location.y += CURSOR_OFFSET.get();
-
-        SwingUtilities.convertPointToScreen(location, owner);
-        Rectangle r = new Rectangle(location, popupSize);
-        ScreenUtil.fitToScreen(r);
-        location = r.getLocation();
-        SwingUtilities.convertPointFromScreen(location, owner);
-        r.setLocation(location);
-
-        if (r.contains(mouseLocation)) {
-          location.y = mouseLocation.y - r.height - JBUI.scale(5);
-        }
-
-        return location;
-      }
-    },
-
-    /**
-     * The position of the tooltip at which the tooltip is shown directly on the cursor
-     * The common problem with {@link Alignment#CURSOR} is following:
-     * MouseListener leaves the current node and enters the neighboring node, which creates difficulties.
-     * Therefore, the following hack was used:
-     * Slightly change the position of the tooltip display so that the tooltip is displayed at the exact cursor position
-     */
-    EXACT_CURSOR {
-      @Override public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
-        Point location = mouseLocation.getLocation();
-
-        SwingUtilities.convertPointToScreen(location, owner);
-        Rectangle r = new Rectangle(location, popupSize);
-        ScreenUtil.fitToScreen(r);
-        location = r.getLocation();
-        SwingUtilities.convertPointFromScreen(location, owner);
-        r.setLocation(location);
-
-        return location;
-      }
-    };
-
-    public abstract Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation);
-  }
 
   /**
    * Sets tooltip title.
@@ -209,6 +129,7 @@ public class SyncChangesHelpTooltip {
 
   /**
    * Set HelpTooltip initial delay. Tooltip is show after component's mouse enter plus initial delay.
+   *
    * @param delay - non negative value for initial delay
    * @return {@code this}
    * @throws IllegalArgumentException if delay is less than zero
@@ -224,6 +145,7 @@ public class SyncChangesHelpTooltip {
 
   /**
    * Set HelpTooltip hide delay. Tooltip is hidden after component's mouse exit plus hide delay.
+   *
    * @param delay - non negative value for hide delay
    * @return {@code this}
    * @throws IllegalArgumentException if delay is less than zero
@@ -251,7 +173,7 @@ public class SyncChangesHelpTooltip {
   /**
    * Enables link in the tooltip below description and sets action for it.
    *
-   * @param linkText text to show in the link.
+   * @param linkText   text to show in the link.
    * @param linkAction action to execute when link is clicked.
    * @return {@code this}
    */
@@ -262,9 +184,9 @@ public class SyncChangesHelpTooltip {
   /**
    * Enables link in the tooltip below description and sets action for it.
    *
-   * @param linkText text to show in the link.
+   * @param linkText   text to show in the link.
    * @param linkAction action to execute when link is clicked.
-   * @param external whether the link is "external" or not
+   * @param external   whether the link is "external" or not
    * @return {@code this}
    */
   public SyncChangesHelpTooltip addLink(@NlsContexts.LinkLabel String linkText, Runnable linkAction, boolean external) {
@@ -285,7 +207,7 @@ public class SyncChangesHelpTooltip {
    * It's then painted with a small arrow button.
    *
    * @param linkLabel text to show in the link.
-   * @param url URL to browse.
+   * @param url       URL to browse.
    * @return {@code this}
    */
   public SyncChangesHelpTooltip setBrowserLink(@NlsContexts.LinkLabel String linkLabel, URL url) {
@@ -346,7 +268,9 @@ public class SyncChangesHelpTooltip {
   public void installOn(@NotNull JComponent component) {
     SyncChangesHelpTooltip installed = (SyncChangesHelpTooltip)component.getClientProperty(TOOLTIP_PROPERTY);
 
-    if (installed == null) installImpl(component);
+    if (installed == null) {
+      installImpl(component);
+    }
     else if (!equals(installed)) {
       installed.hideAndDispose(component);
       installImpl(component);
@@ -364,8 +288,9 @@ public class SyncChangesHelpTooltip {
 
   protected final void createMouseListeners() {
     myMouseListener = new MouseAdapter() {
-      @Override public void mouseEntered(MouseEvent e) {
-        if (myPopup != null && !myPopup.isDisposed()){
+      @Override
+      public void mouseEntered(MouseEvent e) {
+        if (myPopup != null && !myPopup.isDisposed()) {
           myPopup.cancel();
         }
         initialShowScheduled = true;
@@ -376,7 +301,8 @@ public class SyncChangesHelpTooltip {
         scheduleShow(e, delay);
       }
 
-      @Override public void mouseExited(MouseEvent e) {
+      @Override
+      public void mouseExited(MouseEvent e) {
         int delay = myHideDelay;
         if (delay == -1) {
           delay = Registry.intValue("ide.tooltip.initialDelay.highlighter", 150);
@@ -384,21 +310,13 @@ public class SyncChangesHelpTooltip {
         scheduleHide(links.isEmpty(), delay);
       }
 
-      @Override public void mouseMoved(MouseEvent e) {
+      @Override
+      public void mouseMoved(MouseEvent e) {
         if (!initialShowScheduled) {
           scheduleShow(e, Registry.intValue("ide.tooltip.reshowDelay"));
         }
       }
     };
-  }
-
-  @ApiStatus.Internal
-  public static ComponentPopupBuilder initPopupBuilder(@NotNull JComponent tipPanel) {
-    return JBPopupFactory.getInstance().
-      createComponentPopupBuilder(tipPanel, null).
-      setShowBorder(UIManager.getBoolean("ToolTip.paintBorder")).
-      setBorderColor(JBUI.CurrentTheme.Tooltip.borderColor()).setShowShadow(true).
-      addUserData(PopupCornerType.RoundedTooltip);
   }
 
   private @NotNull MouseListener createIsOverTipMouseListener() {
@@ -478,26 +396,6 @@ public class SyncChangesHelpTooltip {
     owner.removeMouseMotionListener(myMouseListener);
   }
 
-  public static @Nullable SyncChangesHelpTooltip getTooltipFor(@NotNull JComponent owner) {
-    return (SyncChangesHelpTooltip)owner.getClientProperty(TOOLTIP_PROPERTY);
-  }
-
-  /**
-   * Hides and disposes the tooltip possibly installed on the mentioned component. Disposing means
-   * unregistering all {@code HelpTooltip} specific listeners installed on the component.
-   * If there is no tooltip installed on the component nothing happens.
-   *
-   * @param owner a possible {@code HelpTooltip} owner.
-   */
-  public static void dispose(@NotNull Component owner) {
-    if (owner instanceof JComponent component) {
-      SyncChangesHelpTooltip instance = (SyncChangesHelpTooltip)component.getClientProperty(TOOLTIP_PROPERTY);
-      if (instance != null) {
-        instance.hideAndDispose(component);
-      }
-    }
-  }
-
   private void hideAndDispose(@NotNull JComponent owner) {
     hidePopup(true);
     uninstallMouseListeners(owner);
@@ -505,86 +403,12 @@ public class SyncChangesHelpTooltip {
     owner.putClientProperty(TOOLTIP_PROPERTY, null);
   }
 
-  /**
-   * Hides the tooltip possibly installed on the mentioned component without disposing.
-   * Listeners are not removed.
-   * If there is no tooltip installed on the component nothing happens.
-   *
-   * @param owner a possible {@code HelpTooltip} owner.
-   */
-  public static void hide(@NotNull Component owner) {
-    if (owner instanceof JComponent) {
-      SyncChangesHelpTooltip instance = (SyncChangesHelpTooltip)((JComponent)owner).getClientProperty(TOOLTIP_PROPERTY);
-      if (instance != null) {
-        instance.hidePopup(true);
-      }
-    }
-  }
-
-  /**
-   * Sets master popup for the current {@code HelpTooltip}. Master popup takes over the help tooltip,
-   * so when the master popup is about to be shown, help tooltip hides.
-   *
-   * @param owner possible owner
-   * @param master master popup
-   */
-  public static void setMasterPopup(@NotNull Component owner, @Nullable JBPopup master) {
-    if (owner instanceof JComponent) {
-      SyncChangesHelpTooltip tooltip = (SyncChangesHelpTooltip)((JComponent)owner).getClientProperty(TOOLTIP_PROPERTY);
-      if (tooltip != null && tooltip.myPopup != master) {
-        WeakReference<JBPopup> popupRef = new WeakReference<>(master);
-        tooltip.masterPopupOpenCondition = () -> {
-          JBPopup popup = SoftReference.dereference(popupRef);
-          return popup == null || !popup.isVisible();
-        };
-      }
-    }
-  }
-
-  /**
-   * Sets master popup open condition supplier for the current {@code HelpTooltip}.
-   * This method is more general than {@link com.intellij.ide.HelpTooltip#setMasterPopup(Component, JBPopup)} so that
-   * it's possible to create master popup condition for any types of popups such as {@code JPopupMenu}
-   *
-   * @param owner possible owner
-   * @param condition a {@code BooleanSupplier} for open condition
-   */
-  public static void setMasterPopupOpenCondition(@NotNull Component owner, @Nullable BooleanSupplier condition) {
-    if (owner instanceof JComponent) {
-      SyncChangesHelpTooltip instance = (SyncChangesHelpTooltip)((JComponent)owner).getClientProperty(TOOLTIP_PROPERTY);
-      if (instance != null) {
-        instance.masterPopupOpenCondition = condition;
-      }
-    }
-  }
-
-  public static void disableTooltip(Component source) {
-    if (source instanceof JComponent component) {
-      component.putClientProperty(TOOLTIP_DISABLED_PROPERTY, Boolean.TRUE);
-    }
-  }
-
-  public static void enableTooltip(Component source) {
-    if (source instanceof JComponent component) {
-      component.putClientProperty(TOOLTIP_DISABLED_PROPERTY, null);
-    }
-  }
-
-  private static boolean isTooltipDisabled(Component component) {
-    if (component instanceof JComponent jComponent) {
-      Boolean disabled = (Boolean)jComponent.getClientProperty(TOOLTIP_DISABLED_PROPERTY);
-      return disabled == Boolean.TRUE;
-    } else {
-      return false;
-    }
-  }
-
   private void scheduleShow(MouseEvent e, int delay) {
     popupAlarm.cancelAllRequests();
     if (isTooltipDisabled(e.getComponent())) return;
     if (ScreenReader.isActive()) return; // Disable HelpTooltip in screen reader mode.
 
-    popupAlarm.addRequest((ContextAwareRunnable) () -> {
+    popupAlarm.addRequest((ContextAwareRunnable)() -> {
       initialShowScheduled = false;
       if (masterPopupOpenCondition != null && !masterPopupOpenCondition.getAsBoolean()) {
         return;
@@ -631,6 +455,118 @@ public class SyncChangesHelpTooltip {
     }
   }
 
+  boolean fromSameWindowAs(@NotNull Component component) {
+    if (myPopup != null && !myPopup.isDisposed()) {
+      Window popupWindow = SwingUtilities.getWindowAncestor(myPopup.getContent());
+      return component == popupWindow || SwingUtilities.getWindowAncestor(component) == popupWindow;
+    }
+    return false;
+  }
+
+  @ApiStatus.Internal
+  public static ComponentPopupBuilder initPopupBuilder(@NotNull JComponent tipPanel) {
+    return JBPopupFactory.getInstance().
+      createComponentPopupBuilder(tipPanel, null).
+      setShowBorder(UIManager.getBoolean("ToolTip.paintBorder")).
+      setBorderColor(JBUI.CurrentTheme.Tooltip.borderColor()).setShowShadow(true).
+      addUserData(PopupCornerType.RoundedTooltip);
+  }
+
+  public static @Nullable SyncChangesHelpTooltip getTooltipFor(@NotNull JComponent owner) {
+    return (SyncChangesHelpTooltip)owner.getClientProperty(TOOLTIP_PROPERTY);
+  }
+
+  /**
+   * Hides and disposes the tooltip possibly installed on the mentioned component. Disposing means
+   * unregistering all {@code HelpTooltip} specific listeners installed on the component.
+   * If there is no tooltip installed on the component nothing happens.
+   *
+   * @param owner a possible {@code HelpTooltip} owner.
+   */
+  public static void dispose(@NotNull Component owner) {
+    if (owner instanceof JComponent component) {
+      SyncChangesHelpTooltip instance = (SyncChangesHelpTooltip)component.getClientProperty(TOOLTIP_PROPERTY);
+      if (instance != null) {
+        instance.hideAndDispose(component);
+      }
+    }
+  }
+
+  /**
+   * Hides the tooltip possibly installed on the mentioned component without disposing.
+   * Listeners are not removed.
+   * If there is no tooltip installed on the component nothing happens.
+   *
+   * @param owner a possible {@code HelpTooltip} owner.
+   */
+  public static void hide(@NotNull Component owner) {
+    if (owner instanceof JComponent) {
+      SyncChangesHelpTooltip instance = (SyncChangesHelpTooltip)((JComponent)owner).getClientProperty(TOOLTIP_PROPERTY);
+      if (instance != null) {
+        instance.hidePopup(true);
+      }
+    }
+  }
+
+  /**
+   * Sets master popup for the current {@code HelpTooltip}. Master popup takes over the help tooltip,
+   * so when the master popup is about to be shown, help tooltip hides.
+   *
+   * @param owner  possible owner
+   * @param master master popup
+   */
+  public static void setMasterPopup(@NotNull Component owner, @Nullable JBPopup master) {
+    if (owner instanceof JComponent) {
+      SyncChangesHelpTooltip tooltip = (SyncChangesHelpTooltip)((JComponent)owner).getClientProperty(TOOLTIP_PROPERTY);
+      if (tooltip != null && tooltip.myPopup != master) {
+        WeakReference<JBPopup> popupRef = new WeakReference<>(master);
+        tooltip.masterPopupOpenCondition = () -> {
+          JBPopup popup = SoftReference.dereference(popupRef);
+          return popup == null || !popup.isVisible();
+        };
+      }
+    }
+  }
+
+  /**
+   * Sets master popup open condition supplier for the current {@code HelpTooltip}.
+   * This method is more general than {@link com.intellij.ide.HelpTooltip#setMasterPopup(Component, JBPopup)} so that
+   * it's possible to create master popup condition for any types of popups such as {@code JPopupMenu}
+   *
+   * @param owner     possible owner
+   * @param condition a {@code BooleanSupplier} for open condition
+   */
+  public static void setMasterPopupOpenCondition(@NotNull Component owner, @Nullable BooleanSupplier condition) {
+    if (owner instanceof JComponent) {
+      SyncChangesHelpTooltip instance = (SyncChangesHelpTooltip)((JComponent)owner).getClientProperty(TOOLTIP_PROPERTY);
+      if (instance != null) {
+        instance.masterPopupOpenCondition = condition;
+      }
+    }
+  }
+
+  public static void disableTooltip(Component source) {
+    if (source instanceof JComponent component) {
+      component.putClientProperty(TOOLTIP_DISABLED_PROPERTY, Boolean.TRUE);
+    }
+  }
+
+  public static void enableTooltip(Component source) {
+    if (source instanceof JComponent component) {
+      component.putClientProperty(TOOLTIP_DISABLED_PROPERTY, null);
+    }
+  }
+
+  private static boolean isTooltipDisabled(Component component) {
+    if (component instanceof JComponent jComponent) {
+      Boolean disabled = (Boolean)jComponent.getClientProperty(TOOLTIP_DISABLED_PROPERTY);
+      return disabled == Boolean.TRUE;
+    }
+    else {
+      return false;
+    }
+  }
+
   private static Border textBorder(boolean multiline) {
     Insets i = multiline ? JBUI.CurrentTheme.HelpTooltip.defaultTextBorderInsets() : JBUI.CurrentTheme.HelpTooltip.smallTextBorderInsets();
     return new JBEmptyBorder(i);
@@ -650,11 +586,111 @@ public class SyncChangesHelpTooltip {
   public static @NotNull String getShortcutAsHtml(@Nullable String shortcut) {
     return Strings.isEmpty(shortcut)
            ? ""
-           : String.format("&nbsp;&nbsp;<font color=\"%s\">%s</font>", ColorUtil.toHtmlColor(JBUI.CurrentTheme.Tooltip.shortcutForeground()),
+           : String.format("&nbsp;&nbsp;<font color=\"%s\">%s</font>",
+                           ColorUtil.toHtmlColor(JBUI.CurrentTheme.Tooltip.shortcutForeground()),
                            shortcut);
   }
 
+  /**
+   * Location of the HelpTooltip relatively to the owner component.
+   */
+  public enum Alignment {
+    RIGHT {
+      @Override
+      public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
+        Dimension size = owner.getSize();
+        return new Point(size.width + JBUIScale.scale(5) - X_OFFSET.get(), JBUIScale.scale(1) + Y_OFFSET.get());
+      }
+    },
+
+    LEFT {
+      @Override
+      public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
+        return new Point(-popupSize.width - JBUIScale.scale(5) + X_OFFSET.get(), JBUIScale.scale(1) + Y_OFFSET.get());
+      }
+    },
+
+    BOTTOM {
+      @Override
+      public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
+        Dimension size = owner.getSize();
+        return new Point(JBUIScale.scale(1) + X_OFFSET.get(), JBUIScale.scale(5) + size.height - Y_OFFSET.get());
+      }
+    },
+
+    HELP_BUTTON {
+      @Override
+      public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
+        Insets i = ((JComponent)owner).getInsets();
+        return new Point(X_OFFSET.get() - JBUIScale.scale(40), i.top + Y_OFFSET.get() - JBUIScale.scale(6) - popupSize.height);
+      }
+    },
+
+    CURSOR {
+      @Override
+      public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
+        Point location = mouseLocation.getLocation();
+        location.y += CURSOR_OFFSET.get();
+
+        SwingUtilities.convertPointToScreen(location, owner);
+        Rectangle r = new Rectangle(location, popupSize);
+        ScreenUtil.fitToScreen(r);
+        location = r.getLocation();
+        SwingUtilities.convertPointFromScreen(location, owner);
+        r.setLocation(location);
+
+        if (r.contains(mouseLocation)) {
+          location.y = mouseLocation.y - r.height - JBUI.scale(5);
+        }
+
+        return location;
+      }
+    },
+
+    /**
+     * The position of the tooltip at which the tooltip is shown directly on the cursor
+     * The common problem with {@link Alignment#CURSOR} is following:
+     * MouseListener leaves the current node and enters the neighboring node, which creates difficulties.
+     * Therefore, the following hack was used:
+     * Slightly change the position of the tooltip display so that the tooltip is displayed at the exact cursor position
+     */
+    EXACT_CURSOR {
+      @Override
+      public Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation) {
+        Point location = mouseLocation.getLocation();
+
+        SwingUtilities.convertPointToScreen(location, owner);
+        Rectangle r = new Rectangle(location, popupSize);
+        ScreenUtil.fitToScreen(r);
+        location = r.getLocation();
+        SwingUtilities.convertPointFromScreen(location, owner);
+        r.setLocation(location);
+
+        return location;
+      }
+    };
+
+    public abstract Point getPointFor(Component owner, Dimension popupSize, Point mouseLocation);
+  }
+
   private static class BoundWidthLabel extends JLabel {
+    void setSizeForWidth(float width) {
+      if (width > MAX_WIDTH.get()) {
+        View v = (View)getClientProperty(BasicHTML.propertyKey);
+        if (v != null) {
+          width = 0.0f;
+          for (View row : getRows(v)) {
+            float rWidth = row.getPreferredSpan(View.X_AXIS);
+            if (width < rWidth) {
+              width = rWidth;
+            }
+          }
+
+          v.setSize(width, v.getPreferredSpan(View.Y_AXIS));
+        }
+      }
+    }
+
     private static Collection<View> getRows(@NotNull View root) {
       Collection<View> rows = new ArrayList<>();
       visit(root, rows);
@@ -667,35 +703,10 @@ public class SyncChangesHelpTooltip {
         result.add(v);
       }
 
-      for(int i = 0; i < v.getViewCount(); i++) {
+      for (int i = 0; i < v.getViewCount(); i++) {
         visit(v.getView(i), result);
       }
     }
-
-    void setSizeForWidth(float width) {
-      if (width > MAX_WIDTH.get()) {
-        View v = (View)getClientProperty(BasicHTML.propertyKey);
-        if (v != null) {
-          width = 0.0f;
-          for(View row : getRows(v)) {
-            float rWidth = row.getPreferredSpan(View.X_AXIS);
-            if (width < rWidth) {
-              width = rWidth;
-            }
-          }
-
-          v.setSize(width, v.getPreferredSpan(View.Y_AXIS));
-        }
-      }
-    }
-  }
-
-  boolean fromSameWindowAs(@NotNull Component component) {
-    if (myPopup != null && !myPopup.isDisposed()) {
-      Window popupWindow = SwingUtilities.getWindowAncestor(myPopup.getContent());
-      return component == popupWindow || SwingUtilities.getWindowAncestor(component) == popupWindow;
-    }
-    return false;
   }
 
   private final class Header extends BoundWidthLabel {

@@ -22,20 +22,28 @@ class LocalSourceMigrationTest : BasePlatformTestCase() {
 
   @Test
   fun `test kotlin sixth version`() = doTest(7)
+
   @Test
   fun `test python sixth version`() = doTest(7)
+
   @Test
   fun `test remote sixth version`() = doTest(7)
+
   @Test
   fun `test to 8 version`() = doTest(8)
+
   @Test
   fun `test to 9 version`() = doTest(9)
+
   @Test
   fun `test to 10 version`() = doTest(10)
+
   @Test
   fun `test to 11 version`() = doTest(11)
+
   @Test
   fun `test to 12 version`() = doTest(12)
+
   @Test
   fun `test to 12 version with custom feedback link`() = doTest(12)
 

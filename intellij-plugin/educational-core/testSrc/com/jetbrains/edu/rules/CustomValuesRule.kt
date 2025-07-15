@@ -24,7 +24,7 @@ class CustomValuesRule : TestRule {
         val annotationDescriptors = (
           description.collectAnnotations(WithRegistryValue::key) +
           description.collectAnnotations(WithExperimentalFeature::id)
-        ).map { ValueDescriptor.from(it) }
+                                    ).map { ValueDescriptor.from(it) }
 
         try {
           for (descriptor in annotationDescriptors) {

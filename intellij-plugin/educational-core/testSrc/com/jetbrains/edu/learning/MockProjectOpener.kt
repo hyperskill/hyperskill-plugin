@@ -5,7 +5,7 @@ import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseGeneration.ProjectOpener
 
-class MockProjectOpener: ProjectOpener() {
+class MockProjectOpener : ProjectOpener() {
   var project: Project? = null
 
   override fun newProject(course: Course): Boolean {

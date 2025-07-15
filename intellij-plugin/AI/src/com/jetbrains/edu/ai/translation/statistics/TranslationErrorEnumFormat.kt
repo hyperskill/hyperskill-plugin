@@ -16,10 +16,12 @@ enum class TranslationErrorEnumFormat {
         CommonAIServiceError.CONNECTION_ERROR -> CONNECTION_ERROR
         CommonAIServiceError.SERVICE_UNAVAILABLE -> SERVICE_UNAVAILABLE
       }
+
       is TranslationError -> when (error) {
         TranslationError.NO_TRANSLATION -> NO_TRANSLATION
         TranslationError.TRANSLATION_UNAVAILABLE_FOR_LEGAL_REASONS -> TRANSLATION_UNAVAILABLE_FOR_LEGAL_REASONS
       }
+
       else -> error("Unexpected error type for translation: $error")
     }
   }

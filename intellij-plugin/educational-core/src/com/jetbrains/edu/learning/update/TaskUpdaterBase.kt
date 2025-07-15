@@ -39,15 +39,19 @@ abstract class TaskUpdaterBase<T : Lesson>(project: Project, protected val lesso
       this is ChoiceTask && remoteTask is ChoiceTask -> {
         choiceOptions != remoteTask.choiceOptions
       }
+
       this is SortingTask && remoteTask is SortingTask -> {
         options != remoteTask.options
       }
+
       this is MatchingTask && remoteTask is MatchingTask -> {
         options != remoteTask.options || captions != remoteTask.captions
       }
+
       this is RemoteEduTask && remoteTask is RemoteEduTask -> {
         checkProfile != remoteTask.checkProfile
       }
+
       else -> {
         newTaskFiles.any { (newFileName, newTaskFile) ->
           isTaskFileChanged(taskFiles[newFileName] ?: return@any true, newTaskFile)

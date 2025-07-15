@@ -23,7 +23,8 @@ class TextHintInlineBanner(
       val dialog = TextHintFeedbackDialog(project, course, task, studentSolution, textHint, likeness)
       if (dialog.showAndGet()) {
         dialog.getLikenessAnswer() ?: likeness
-      } else {
+      }
+      else {
         LikeBlock.FeedbackLikenessAnswer.NO_ANSWER
       }
     }

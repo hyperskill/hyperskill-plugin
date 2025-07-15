@@ -12,7 +12,11 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import java.lang.reflect.Type
 
 class HintsConverterFactory(private val objectMapper: ObjectMapper = jacksonObjectMapper()) : Converter.Factory() {
-  override fun responseBodyConverter(type: Type, annotations: Array<out Annotation>, retrofit: Retrofit): Converter<ResponseBody, List<Hint>> {
+  override fun responseBodyConverter(
+    type: Type,
+    annotations: Array<out Annotation>,
+    retrofit: Retrofit
+  ): Converter<ResponseBody, List<Hint>> {
     return Converter<ResponseBody, List<Hint>> { body ->
       val responseList = mutableListOf<Hint?>()
       body.byteStream().use { resource ->
@@ -20,7 +24,8 @@ class HintsConverterFactory(private val objectMapper: ObjectMapper = jacksonObje
           for (line in lines) {
             val value = try {
               objectMapper.readValue<Hint>(line)
-            } catch (_: Throwable) {
+            }
+            catch (_: Throwable) {
               null
             }
             responseList.add(value)

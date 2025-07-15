@@ -1,6 +1,7 @@
 package com.jetbrains.edu.learning.taskToolWindow.ui
 
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.util.io.getHostName
 import com.intellij.util.io.isLocalHost
 import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.StyleResourcesManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.StyleResourcesManager.getResource
@@ -16,7 +17,6 @@ import org.jetbrains.io.addCommonHeaders
 import org.jetbrains.io.addKeepAliveIfNeeded
 import java.io.ByteArrayInputStream
 import java.util.*
-import com.intellij.util.io.getHostName
 
 /**
  * Used for resolving local resources as remote ones in JCEF

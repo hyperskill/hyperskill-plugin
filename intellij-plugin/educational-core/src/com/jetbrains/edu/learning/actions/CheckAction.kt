@@ -124,8 +124,8 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-  private inner class StudyCheckTask(project: Project, private val task: Task)
-    : com.intellij.openapi.progress.Task.Backgroundable(project, message("progress.title.checking.solution"), true) {
+  private inner class StudyCheckTask(project: Project, private val task: Task) :
+    com.intellij.openapi.progress.Task.Backgroundable(project, message("progress.title.checking.solution"), true) {
     private var result: CheckResult? = null
     private val checker: TaskChecker<*>?
 
@@ -270,7 +270,8 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
     override fun onThrowable(error: Throwable) {
       super.onThrowable(error)
       if (error.message == message("error.failed.to.refresh.tokens")) {
-        TaskToolWindowView.getInstance(project).checkFinished(task, failedToSubmit(project, task, message("error.failed.to.refresh.tokens")))
+        TaskToolWindowView.getInstance(project)
+          .checkFinished(task, failedToSubmit(project, task, message("error.failed.to.refresh.tokens")))
       }
       else {
         TaskToolWindowView.getInstance(project).checkFinished(task, failedToCheck)

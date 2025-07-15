@@ -89,6 +89,7 @@ object EduFormatNames {
   const val JAVASCRIPT = "JavaScript"
   const val RUST = "Rust"
   const val SHELL = "Shell Script"
+
   // Single `ObjectiveC` id is used both for `ObjectiveC` and `C/C++`
   const val CPP = "ObjectiveC"
   const val GO = "go"

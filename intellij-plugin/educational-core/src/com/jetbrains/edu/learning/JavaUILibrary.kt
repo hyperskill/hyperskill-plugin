@@ -4,6 +4,7 @@ enum class JavaUILibrary {
   SWING {
     override fun toString() = "Swing"
   },
+
   @Deprecated("JavaFX is no longer supported")
   JAVAFX {
     override fun toString() = "JavaFX"

@@ -5,11 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.intellij.openapi.diagnostic.logger
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.ItemContainer
-import com.jetbrains.edu.learning.courseFormat.Lesson
-import com.jetbrains.edu.learning.courseFormat.StudyItem
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.yaml.InjectableValueKey
@@ -173,6 +169,7 @@ class YamlMigrationTest : EduTestCase() {
         return config
       }
     }
+
     val dontCallMe = object : YamlMigrationStep {
       override fun migrateCourse(mapper: ObjectMapper, config: ObjectNode): ObjectNode {
         error("This migration step should not be called")

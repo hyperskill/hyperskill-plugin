@@ -10,7 +10,10 @@ import com.jetbrains.edu.python.learning.PyConfigurator.Companion.MAIN_PY
 import com.jetbrains.edu.python.learning.PyConfigurator.Companion.TASK_PY
 import com.jetbrains.edu.python.learning.PyNewConfigurator.Companion.TEST_FILE_NAME
 import com.jetbrains.edu.python.learning.PyNewConfigurator.Companion.TEST_FOLDER
-import com.jetbrains.edu.python.learning.newproject.*
+import com.jetbrains.edu.python.learning.newproject.PyCourseProjectGenerator
+import com.jetbrains.edu.python.learning.newproject.PyLanguageSettings
+import com.jetbrains.edu.python.learning.newproject.PyProjectSettings
+import com.jetbrains.edu.python.learning.newproject.PySdkToCreateVirtualEnv
 import com.jetbrains.python.PyNames
 import com.jetbrains.python.sdk.flavors.PythonSdkFlavor
 

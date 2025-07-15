@@ -55,28 +55,34 @@ class XAuthorizationWorkflowTest : EduTestCase() {
           if (params["code"] != CODE_VALUE) return@addResponseHandler MockResponseFactory.badRequest()
 
           //language=json
-          MockResponseFactory.fromString("""{
+          MockResponseFactory.fromString(
+            """{
             "token_type" : "bearer",
             "expires_in" : 7200,
             "access_token" : "$ACCESS_TOKEN",
             "refresh_token" : "$REFRESH_TOKEN",
             "scope" : "offline.access tweet.write media.write users.read tweet.read"
-          }""".trimIndent())
+          }""".trimIndent()
+          )
         }
+
         "/2/users/me" -> {
           // Verify that we pass the proper access token here
           if (request.getHeader("Authorization") != "Bearer $ACCESS_TOKEN") {
             return@addResponseHandler MockResponseFactory.badRequest()
           }
           //language=json
-          MockResponseFactory.fromString("""{
+          MockResponseFactory.fromString(
+            """{
             "data": {
               "id": "2244994945",
               "name": "X Dev",
               "username": "TwitterDev"
             }
-          }""".trimIndent())
+          }""".trimIndent()
+          )
         }
+
         else -> MockResponseFactory.notFound()
       }
     }

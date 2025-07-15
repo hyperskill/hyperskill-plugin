@@ -149,8 +149,9 @@ class CourseFormatTest : EduTestCase() {
 
   @Test
   fun testCourseWithAuthors() {
-    assertEquals(listOf("EduTools Dev", "EduTools QA", "EduTools"),
-                 courseFromJson.authors.map { info -> info.getFullName() })
+    assertEquals(
+      listOf("EduTools Dev", "EduTools QA", "EduTools"),
+      courseFromJson.authors.map { info -> info.getFullName() })
   }
 
   @Test

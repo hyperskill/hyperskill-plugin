@@ -155,13 +155,17 @@ class HyperskillCourseUpdateCheckerTest : CourseUpdateCheckerTestBase() {
     return course
   }
 
-  override fun checkNotification(notificationListener: NotificationListener,
-                                 isCourseUpToDate: Boolean,
-                                 notificationText: String) {
+  override fun checkNotification(
+    notificationListener: NotificationListener,
+    isCourseUpToDate: Boolean,
+    notificationText: String
+  ) {
     if (isCourseUpToDate) {
       if (notificationListener.notificationShown) {
-        assertEquals(EduCoreBundle.message("update.notification.text", EduNames.JBA, EduNames.PROJECT),
-                     notificationListener.notificationText)
+        assertEquals(
+          EduCoreBundle.message("update.notification.text", EduNames.JBA, EduNames.PROJECT),
+          notificationListener.notificationText
+        )
       }
     }
     else {

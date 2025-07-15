@@ -43,7 +43,8 @@ class PhpCourseBuilderTest : CourseGenerationTestBase<PhpProjectSettings>() {
       file(ComposerUtils.CONFIG_DEFAULT_FILENAME)
     }.assertEquals(rootDir)
 
-    assertListOfAdditionalFiles(newCourse,
+    assertListOfAdditionalFiles(
+      newCourse,
       ComposerUtils.CONFIG_DEFAULT_FILENAME to getInternalTemplateText(ComposerUtils.CONFIG_DEFAULT_FILENAME)
     )
   }
@@ -86,7 +87,8 @@ class PhpCourseBuilderTest : CourseGenerationTestBase<PhpProjectSettings>() {
     }.assertEquals(rootDir)
 
     // student gets config changed by a teacher
-    assertListOfAdditionalFiles(course,
+    assertListOfAdditionalFiles(
+      course,
       ComposerUtils.CONFIG_DEFAULT_FILENAME to changedConfig
     )
   }
@@ -97,7 +99,8 @@ class PhpCourseBuilderTest : CourseGenerationTestBase<PhpProjectSettings>() {
     createCourseStructure(course)
 
     // student gets a recreated composer.json if it was not in additional files
-    assertListOfAdditionalFiles(course,
+    assertListOfAdditionalFiles(
+      course,
       ComposerUtils.CONFIG_DEFAULT_FILENAME to getInternalTemplateText(ComposerUtils.CONFIG_DEFAULT_FILENAME)
     )
   }

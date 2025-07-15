@@ -151,8 +151,9 @@ abstract class CoursesPanel(
     text.text = EduCoreBundle.message("course.dialog.no.courses", ApplicationNamesInfo.getInstance().fullProductName)
     text.appendSecondaryText(EduCoreBundle.message("help.use.guide1") + " ", SimpleTextAttributes.GRAYED_ATTRIBUTES, null)
     @Suppress("DialogTitleCapitalization") // it's ok to start from lowercase as it's the second part of a sentence
-    text.appendSecondaryText(EduCoreBundle.message("help.use.guide2"),
-                             SimpleTextAttributes.LINK_ATTRIBUTES
+    text.appendSecondaryText(
+      EduCoreBundle.message("help.use.guide2"),
+      SimpleTextAttributes.LINK_ATTRIBUTES
     ) { EduBrowser.getInstance().browse(EduNames.NO_COURSES_URL) }
   }
 

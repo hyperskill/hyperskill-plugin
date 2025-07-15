@@ -48,7 +48,8 @@ interface StepikBasedConnector {
   fun <T> withTokenRefreshIfFailed(call: () -> Result<T, String>): Result<T, String> {
     val result = call()
     if (!isUnitTestMode && !ApplicationManager.getApplication().isInternal
-        && result is Err && result.error == EduFormatBundle.message("error.access.denied")) {
+        && result is Err && result.error == EduFormatBundle.message("error.access.denied")
+    ) {
       doRefreshTokens()
       return call()
     }

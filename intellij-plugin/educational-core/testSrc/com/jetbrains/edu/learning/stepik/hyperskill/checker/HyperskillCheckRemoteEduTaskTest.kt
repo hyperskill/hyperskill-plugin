@@ -2,12 +2,12 @@ package com.jetbrains.edu.learning.stepik.hyperskill.checker
 
 import com.jetbrains.edu.learning.MockResponseFactory
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.pathWithoutPrams
 import com.jetbrains.edu.learning.stepik.StepikTestUtils.format
 import com.jetbrains.edu.learning.stepik.hyperskill.MockWebSocketState
 import com.jetbrains.edu.learning.stepik.hyperskill.confirmConnection
 import com.jetbrains.edu.learning.stepik.hyperskill.confirmSubscription
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.stepik.hyperskill.webSocketConfiguration
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener

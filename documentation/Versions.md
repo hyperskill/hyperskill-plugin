@@ -2,97 +2,97 @@
 
 ### XML format version
 
-9.  Drop `AnswerPlaceholderSubtaskInfo` and move all info into `AnswerPlaceholder` object
+9. Drop `AnswerPlaceholderSubtaskInfo` and move all info into `AnswerPlaceholder` object
 
-	Previous format of `AnswerPlaceholder`:
-	```xml
-	<AnswerPlaceholder>
-	  <option name="index" value="0" />
-	  <option name="initialState">
-	    <MyInitialState>
-	      <option name="length" value="6" />
-	      <option name="offset" value="22" />
-	    </MyInitialState>
-	  </option>
-	  <option name="length" value="6" />
-	  <option name="offset" value="22" />
-	  <option name="selected" value="false" />
-	  <option name="subtaskInfos">
-	    <map>
-	      <entry key="0">
-	        <value>
-	          <AnswerPlaceholderSubtaskInfo>
-	            <option name="answer" value="" />
-	            <option name="hasFrame" value="true" />
-	            <option name="hints">
-	              <list>
-	                <option value="" />
-	              </list>
-	            </option>
-	            <option name="needInsertText" value="false" />
-	            <option name="placeholderText" value="TODO()" />
-	            <option name="possibleAnswer" value="&quot;OK&quot;" />
-	            <option name="selected" value="false" />
-	            <option name="status" value="Unchecked" />
-	          </AnswerPlaceholderSubtaskInfo>
-	        </value>
-	      </entry>
-	    </map>
-	  </option>
-	  <option name="useLength" value="true" />
-	</AnswerPlaceholder>
-	```
+   Previous format of `AnswerPlaceholder`:
+   ```xml
+   <AnswerPlaceholder>
+     <option name="index" value="0" />
+     <option name="initialState">
+       <MyInitialState>
+         <option name="length" value="6" />
+         <option name="offset" value="22" />
+       </MyInitialState>
+     </option>
+     <option name="length" value="6" />
+     <option name="offset" value="22" />
+     <option name="selected" value="false" />
+     <option name="subtaskInfos">
+       <map>
+         <entry key="0">
+           <value>
+             <AnswerPlaceholderSubtaskInfo>
+               <option name="answer" value="" />
+               <option name="hasFrame" value="true" />
+               <option name="hints">
+                 <list>
+                   <option value="" />
+                 </list>
+               </option>
+               <option name="needInsertText" value="false" />
+               <option name="placeholderText" value="TODO()" />
+               <option name="possibleAnswer" value="&quot;OK&quot;" />
+               <option name="selected" value="false" />
+               <option name="status" value="Unchecked" />
+             </AnswerPlaceholderSubtaskInfo>
+           </value>
+         </entry>
+       </map>
+     </option>
+     <option name="useLength" value="true" />
+   </AnswerPlaceholder>
+   ```
 
-	Current format of `AnswerPlaceholder`:
-	```xml
-	<AnswerPlaceholder>
-	  <option name="index" value="0" />
-	  <option name="initialState">
-	    <MyInitialState>
-	      <option name="length" value="6" />
-	      <option name="offset" value="22" />
-	    </MyInitialState>
-	  </option>
-	  <option name="length" value="6" />
-	  <option name="offset" value="22" />
-	  <option name="selected" value="false" />
-	  <option name="useLength" value="true" />
-	  <option name="placeholderText" value="TODO()" />
-	  <option name="possibleAnswer" value="&quot;OK&quot;" />
-	  <option name="status" value="TODO()" />
-	  <option name="hints">
-	    <list>
-	      <option value="" />
-	    </list>
-	  </option>
-	</AnswerPlaceholder>
-	```
-	
-	Replace `taskTexts` map by `descriptionText` field because without subtasks
-	`taskTexts` map always contains only one entry.
-	Add `descriptionFormat` field which describes description text format. Can be `HTML` and `MD` for html and markdown syntax accordingly.
-	
-	Before:
-	```xml
-    <EduTask>
-      <!-- other fields -->
-      <option name="taskTexts">
-        <map>
-          <entry key="task" value="&lt;html&gt;&#10;Write your task text here.&#10;&lt;br&gt;&#10;&lt;/html&gt;"/>
-        </map>
-      </option>
-    </EduTask>
-    ```
-    
-    After:
-    ```xml
-    <EduTask>
-      <!-- other fields -->
-      <option name="descriptionText" value="&lt;html&gt;&#10;Write your task text here.&#10;&lt;br&gt;&#10;&lt;/html&gt;"/>
-      <option name="descriptionFormat" value="HTML" />
-    </EduTask>
-    ```
-    
+   Current format of `AnswerPlaceholder`:
+   ```xml
+   <AnswerPlaceholder>
+     <option name="index" value="0" />
+     <option name="initialState">
+       <MyInitialState>
+         <option name="length" value="6" />
+         <option name="offset" value="22" />
+       </MyInitialState>
+     </option>
+     <option name="length" value="6" />
+     <option name="offset" value="22" />
+     <option name="selected" value="false" />
+     <option name="useLength" value="true" />
+     <option name="placeholderText" value="TODO()" />
+     <option name="possibleAnswer" value="&quot;OK&quot;" />
+     <option name="status" value="TODO()" />
+     <option name="hints">
+       <list>
+         <option value="" />
+       </list>
+     </option>
+   </AnswerPlaceholder>
+   ```
+
+   Replace `taskTexts` map by `descriptionText` field because without subtasks
+   `taskTexts` map always contains only one entry.
+   Add `descriptionFormat` field which describes description text format. Can be `HTML` and `MD` for html and markdown syntax accordingly.
+
+   Before:
+   ```xml
+   <EduTask>
+     <!-- other fields -->
+     <option name="taskTexts">
+       <map>
+         <entry key="task" value="&lt;html&gt;&#10;Write your task text here.&#10;&lt;br&gt;&#10;&lt;/html&gt;"/>
+       </map>
+     </option>
+   </EduTask>
+   ```
+
+   After:
+   ```xml
+   <EduTask>
+     <!-- other fields -->
+     <option name="descriptionText" value="&lt;html&gt;&#10;Write your task text here.&#10;&lt;br&gt;&#10;&lt;/html&gt;"/>
+     <option name="descriptionFormat" value="HTML" />
+   </EduTask>
+   ```
+
 10. Convert additional files map to have `visible` property for each additional file
     Before:
     ```xml
@@ -105,7 +105,7 @@
       </option>
     </EduTask>
     ```
-    
+
     After:
     ```xml
     <EduTask>
@@ -291,7 +291,7 @@
       </option>
     </EduTask>
     ```
-    
+
     After:
     ```xml
     <EduTask>
@@ -348,66 +348,67 @@
       <option name="id" value="662903" />
     </EduTask>
     ```
-15. - Renamed choiceVariants to choiceOptions to match Stepik naming and added status (Correct/Incorrect/Unknown) to format
+15.
+    - Renamed choiceVariants to choiceOptions to match Stepik naming and added status (Correct/Incorrect/Unknown) to format
 
-     Before:
-      ```xml
-      <ChoiceTask>
-        <option name="choiceVariants">
-          <list>
-            <option value="1995"/>
-            <option value="2004"/>
-            <option value="1987"/>
-          </list>
-        </option>
-      </ChoiceTask>
-      ```
-    
-     After:
-     ```xml
-     <ChoiceTask>
-       <option name="choiceOptions">
-         <list>
-           <ChoiceOption>
-             <option name="text" value="1995" />
-             <option name="status" value="INCORRECT" />
-           </ChoiceOption>
-           <ChoiceOption>
-             <option name="text" value="2004" />
-             <option name="status" value="CORRECT" />
-           </ChoiceOption>
-           <ChoiceOption>
-             <option name="text" value="1987" />
-             <option name="status" value="UNKNOWN" />
-           </ChoiceOption>
-         </list>
-       </option>
-     </ChoiceTask>
-     ```
+Before:
+  ```xml
+  <ChoiceTask>
+    <option name="choiceVariants">
+      <list>
+        <option value="1995"/>
+        <option value="2004"/>
+        <option value="1987"/>
+      </list>
+    </option>
+  </ChoiceTask>
+  ```
 
-  - Scala now has 2 environments: sbt and Gradle. Empty environment now named Gradle
+After:
+ ```xml
+ <ChoiceTask>
+   <option name="choiceOptions">
+     <list>
+       <ChoiceOption>
+         <option name="text" value="1995" />
+         <option name="status" value="INCORRECT" />
+       </ChoiceOption>
+       <ChoiceOption>
+         <option name="text" value="2004" />
+         <option name="status" value="CORRECT" />
+       </ChoiceOption>
+       <ChoiceOption>
+         <option name="text" value="1987" />
+         <option name="status" value="UNKNOWN" />
+       </ChoiceOption>
+     </list>
+   </option>
+ </ChoiceTask>
+ ```
 
-    Before:
-    ```xml
-    <EduCourse>
-      <!-- other fields -->
-      <option name="environment" value="" />
-      <option name="language" value="Scala" />
-    </EduCourse>
-    ```
+- Scala now has 2 environments: sbt and Gradle. Empty environment now named Gradle
 
-    After:
-    ```xml
-    <EduCourse>
-      <!-- other fields -->
-      <option name="environment" value="Gradle" />
-      <option name="language" value="Scala" />
-    </EduCourse>
-    ```
+  Before:
+  ```xml
+  <EduCourse>
+    <!-- other fields -->
+    <option name="environment" value="" />
+    <option name="language" value="Scala" />
+  </EduCourse>
+  ```
+
+  After:
+  ```xml
+  <EduCourse>
+    <!-- other fields -->
+    <option name="environment" value="Gradle" />
+    <option name="language" value="Scala" />
+  </EduCourse>
+  ```
 
 16. AnswerPlaceholder.length contains visible length. In course creator xml it now contains possibleAnswer.length
 
-     Before:
+    Before:
       ```xml
       <AnswerPlaceholder>
         <!-- other fields -->
@@ -418,7 +419,7 @@
       </AnswerPlaceholder>
       ```
 
-     After:
+    After:
      ```xml
      <AnswerPlaceholder>
        <!-- other fields -->
@@ -431,15 +432,16 @@
 
 ### JSON format version
 
-4. Skipped. 
+4. Skipped.
 
-    Name of additional materials was changed from `PyCharm additional materials` to `Edu additional materials`.
-    We created the corresponding migration but only for local json representation (for Stepik we convert it into `PyCharm additional materials` again).
-    So version wasn't really changed. Skip it to keep migration code in consistency.
-    
+   Name of additional materials was changed from `PyCharm additional materials` to `Edu additional materials`.
+   We created the corresponding migration but only for local json representation (for Stepik we convert it into
+   `PyCharm additional materials` again).
+   So version wasn't really changed. Skip it to keep migration code in consistency.
+
 5. Drop `AnswerPlaceholderSubtaskInfo` and move all info into `AnswerPlaceholder` object.
 
-    Previous format of `AnswerPlaceholder` in task object:
+   Previous format of `AnswerPlaceholder` in task object:
     ```json
     {
       "offset": 1,
@@ -459,7 +461,7 @@
       ]
     }
     ```
-    or in submission reply object:
+   or in submission reply object:
     ```json
     {
       "offset": 1,
@@ -481,7 +483,7 @@
     }
     ```
 
-    Current format of `AnswerPlaceholder`:
+   Current format of `AnswerPlaceholder`:
     ```json
     {
       "offset": 1,
@@ -496,12 +498,12 @@
       "status": "Solved"
     }
     ```
-    
-    Replace `text` (`task_texts` for local courses) map in `option` (`task` for local courses) object by `description_text` field 
-    because without subtasks `text` map always contains only one entry.
-    Add `description_format` field which describes description text format. Can be `html` and `md` for html and markdown syntax accordingly.
 
-    Before:
+   Replace `text` (`task_texts` for local courses) map in `option` (`task` for local courses) object by `description_text` field
+   because without subtasks `text` map always contains only one entry.
+   Add `description_format` field which describes description text format. Can be `html` and `md` for html and markdown syntax accordingly.
+
+   Before:
     ```json
     {
       ...
@@ -513,8 +515,8 @@
       ]
     }
     ```
-    
-    After:
+
+   After:
     ```json
     {
       ...
@@ -525,7 +527,7 @@
 
 6. Convert `additional_files` list to map and add `is_visible` property to each element
 
-    Before:
+   Before:
     ```json
     {
       // other properties
@@ -537,8 +539,8 @@
       ]
     }
     ```
-    
-    After:
+
+   After:
     ```json
     {
       // other properties
@@ -550,10 +552,10 @@
        }
     }
     ```
- 
+
 7. Make all paths relative to task folder
-    
-    Before:
+
+   Before:
     ```json
     {
       // other properties
@@ -580,8 +582,8 @@
       ]
     }
     ```
-    
-    After:
+
+   After:
     ```json
     {
       // other properties
@@ -611,14 +613,14 @@
 
 8. Added course type.
 
-    Before:
+   Before:
     ```json
     {
       // other properties
     }
     ```
 
-    After:
+   After:
     ```json
     {
       "course_type" : "pycharm"
@@ -628,9 +630,9 @@
 
 9. Merge task, test and additional files into one map.
 
-    Local course format:
-    
-    Before:
+   Local course format:
+
+   Before:
     ```json
     {
       "name": "task1",
@@ -663,8 +665,8 @@
       // other properties
     }    
     ```
-    
-    After:
+
+   After:
     ```json
     {
       "name": "task1",
@@ -698,10 +700,10 @@
       }
     }    
     ```
-    
-    Stepik step option format:
-    
-    Before:
+
+   Stepik step option format:
+
+   Before:
     ```json
     {
       "title": "task1",
@@ -733,8 +735,8 @@
       // other properties
     }
     ```
-    
-    After:
+
+   After:
     ```json
     {
       "title": "task1",
@@ -787,8 +789,8 @@
 11. For Android courses replaced `Android` course type with `Pycharm` course type + `Android` environment
 
 12. a) Unified Marketplace and Edu archives now all generated course archives are encrypted.
-    Before: 
-    Only archives with "course_type" : "Marketplace" were encrypted and needed EncryptionModule to be added to the ObjectMapper for 
+    Before:
+    Only archives with "course_type" : "Marketplace" were encrypted and needed EncryptionModule to be added to the ObjectMapper for
     proper deserialization.
     After:
     All generated archives, regardless course type, are encrypted and needed EncryptionModule to be added to the ObjectMapper for
@@ -842,7 +844,7 @@
       }
     }
     ```
-    
+
 14. Output Tasks reworked, now input.txt file is being created at Output Task creation
     Before:
     ```json
@@ -889,10 +891,10 @@
             }
     }
     ```
-    
+
 15. Courses now may have an `environment_settings` field with a value of type `Map<String, String>`.
-  Map keys may be arbitrary and are created and interpreted by a configurator.
-  If the map is empty, it is not written to JSON.
+    Map keys may be arbitrary and are created and interpreted by a configurator.
+    If the map is empty, it is not written to JSON.
     ```json
     {
       // other properties
@@ -903,7 +905,7 @@
       "edu_plugin_version" : "2023.1-2022.3-SNAPSHOT"
     }
     ```
-    
+
 16. a) Task files may now have a `highlight_level` field with two possible values: `ALL_PROBLEMS` and `NONE`.
     `ALL_PROBLEMS` means that all inspections are run in this file and all issues are highlighted.
     `NONE` means that no analysis is run in this file, and no problems are highlighted.
@@ -925,7 +927,8 @@
           },
        ```
 
-    b) Courses now have two separate fields `programming_language_id` and `programming_language_version` instead of single `programming_language`. So before
+    b) Courses now have two separate fields `programming_language_id` and `programming_language_version` instead of single
+    `programming_language`. So before
     ```json
     {
       // other properties
@@ -933,7 +936,7 @@
       "programming_language" : "JAVA 11"
     }
     ```
-    
+
     After
     ```json
     {
@@ -947,10 +950,10 @@
 17. Task files now specify if their contents are binary or not. The field `is_binary` is introduced, and
     it can be either `true`, `false`. `true` means that the contents are binary, so the `text` field is encoded in Base64.
     `false` means that the contents are textual, in this case the `text` field is not encoded.
-    
+
     The `is_binary` field is mandatory starting from version 17. But the first implementations will
     gracefully handle the situation when this field is absent and determine the file binarity by the
-    same means that were used in previous format versions. 
+    same means that were used in previous format versions.
     The reason is that we expect bugs that sometimes prevent writing this field.
 
 18. Placeholders got the `is_visible` property.
@@ -961,7 +964,7 @@
     We are now deprecating the `is_invisible` property for dependencies, indicating that the same information is stored for the placeholder.
 
     If both the dependency and the placeholder have the `is_visible` property set, visibility is
-    calculated as follows: `placeholder is visible = placeholder.is_visible && placeholder.dependency.is_visible`. 
+    calculated as follows: `placeholder is visible = placeholder.is_visible && placeholder.dependency.is_visible`.
     In other words, for a placeholder to be **invisible**, either it or its dependency must have `"is_visible": false`.
 
     **Example:**
@@ -1036,7 +1039,7 @@
              }
        }
      ```
-    
+
     After:
      ```json
        "files" : {
@@ -1050,14 +1053,16 @@
     And the file should be located in the archive, in the `[task folder]/src/Main.kt`.
 
 
-20. The "custom_content_path" field was introduced allowing specifying the path to the sections/lessons. Thus, sections or lessons don't have to be direct
-    children of the course directory anymore but can rather be placed in any of its subdirectories. Is only needed for Unity support, can be omitted.
+20. The "custom_content_path" field was introduced allowing specifying the path to the sections/lessons. Thus, sections or lessons don't
+    have to be direct
+    children of the course directory anymore but can rather be placed in any of its subdirectories. Is only needed for Unity support, can be
+    omitted.
     Does not affect the way items are stored in the archive, has an effect only when we unpack the archive to open the course.
     ```json
        "custom_content_path": "some/path/to"
      ```
-21. Introduced "disabled_features" field, represented by a list of strings. This field should allow course authors to control which IDE 
-    features should be available to students. 
+21. Introduced "disabled_features" field, represented by a list of strings. This field should allow course authors to control which IDE
+    features should be available to students.
     ```json
     "disabled_features": ["ai-hints", "theory-lookup"]
      ```
@@ -1065,6 +1070,7 @@
 ### Yaml format version
 
 The YAML version is written in the `course-info.yaml` in the `yaml_version` field. For example:
+
 ```
 yaml_version: 2
 ```
@@ -1079,7 +1085,7 @@ To pass some data to migrator, unavailable in the `edu-format` module, use
 `com.jetbrains.edu.learning.yaml.EduInjectableValuesKt#setEduValue` inside the method
 `com.jetbrains.edu.learning.yaml.YamlDeepLoader#setupForMigration`.
 
-0. In the old versions of the plugin there was no `yaml_version` field. Such YAMLs are considered to have version 0. 
+0. In the old versions of the plugin there was no `yaml_version` field. Such YAMLs are considered to have version 0.
 1. The `yaml_version` field MUST be present:
    ```yaml
    yaml_version: 1
@@ -1096,20 +1102,20 @@ To pass some data to migrator, unavailable in the `edu-format` module, use
        is_binary: true
    yaml_version: 2
    ``` 
-3. The "custom_content_path" field was introduced allowing specifying the path to the sections/lessons. Thus, sections or lessons don't have to be direct
+3. The "custom_content_path" field was introduced allowing specifying the path to the sections/lessons. Thus, sections or lessons don't have
+   to be direct
    children of the course directory anymore but can rather be placed in any of its subdirectories. Is only needed for Unity support.
     ```yaml
     "custom_content_path": "some/path/to"
     "yaml_version": 3
      ```
 4. Introduced "disabled_features" field, represented by a list of strings. This field should allow course authors to control which IDE
-    features should be available to students.
+   features should be available to students.
     ```yaml
     "disabled_features": 
       - ai-hints
       - theory-lookup
      ```  
-
 
 ### Courseignore format version
 
@@ -1128,13 +1134,13 @@ The ignored files are described with the .gitignore glob syntax.
 |---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | all configurators                     | `.*` all names starting with the dot<br/>`!/.idea` but not the idea folder<br/>`.idea/*` exclude all .idea subfolders, except...<br/>`!.idea/inspectionProfiles` .idea inspections settings<br/>`!.idea/scopes` and .idea scopes settings<br/>`*.iml`<br/>Task description files matching the regexp: `task.(md\|html)`<br/>Config files matching the regexp: `(task\|lesson\|section\|course)-(remote-)?info.yaml`<br/>`.coursecreator`<br/>`hints`<br/>`stepik_ids.json`<br/>`.courseignore` |
 | `CppConfigurator`                     | `/cmake-build-*`<br/>`/test-framework*`                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `GradleConfiguratorBase`              | `settings.gradle` excluded only if it is not Hyperskill and if it is the same as default<br/>`out/`<br/>`build/`<br/>`gradle/`<br/>`EduTestRunner.java`<br/>`gradlew`<br/>`gradlew.bat`<br/>`local.properties`<br/>`gradle-wrapper.jar`<br/>`gradle-wrapper.properties`                                                                                                                                                                                                  |
+| `GradleConfiguratorBase`              | `settings.gradle` excluded only if it is not Hyperskill and if it is the same as default<br/>`out/`<br/>`build/`<br/>`gradle/`<br/>`EduTestRunner.java`<br/>`gradlew`<br/>`gradlew.bat`<br/>`local.properties`<br/>`gradle-wrapper.jar`<br/>`gradle-wrapper.properties`                                                                                                                                                                                                                        |
 | `SqlGradleConfigurator`               | excludes the same as GradleConfiguratorBase and:<br/>`*.db`                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `JsConfigurator`                      | `package-lock.json`<br/>`**node_modules**`                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `PhpConfigurator`                     | `**vendor**`<br/>`**composer.phar**`                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `PyConfigurator`, `PyNewConfigurator` | `*.pyc`<br/>`__pycache__`<br/>`venv`                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `RsConfigurator`                      | `Cargo.lock`<br/>`target/`<br/>`!/.cargo` do not exclude certain files inside the .cargo folder:<br/>`/.cargo/*`<br/>`!/.cargo/config.toml`<br/>`!/.cargo/config`                                                                                                                                                                                                                                                                                                                              |
-| `ScalaSbtConfigurator`                 | `target/`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `ScalaSbtConfigurator`                | `target/`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 Example:
 
@@ -1144,10 +1150,12 @@ dir/file2.png
 ```
 
 Will exclude:
+
 * the file `file1.txt` in the course root directory;
 * the file `file2.png` in the `dir` subdirectory of the root directory.
 
 #### Version 2
+
 The [gitignore syntax](https://git-scm.com/docs/gitignore) is supported.
 This is a breaking change because the meaning of lines has changed.
 For example, the line `a.txt` in version 1 means only a file
@@ -1165,9 +1173,11 @@ dir2/
 ```
 
 excludes
+
 * any file or directory with the name `file1.txt`;
 * the file `dir/file2.png` relative to the course root directory (because it contains `/` inside the glob pattern);
 * Any *directory* with the name `dir2`.
 
 #### Version 3
+
 Now, all configurators also exclude the `courseIcon.svg` file.

@@ -299,16 +299,20 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
     val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, description = "my summary") {
       frameworkLesson {
         eduTask {
-          taskFile("fizz.kt", """
+          taskFile(
+            "fizz.kt", """
           fn fizzz() = <p>TODO()</p>
           fn buzz() = <p>TODO()</p>
-        """)
+        """
+          )
         }
         eduTask {
-          taskFile("fizz.kt", """
+          taskFile(
+            "fizz.kt", """
           fn fizzz() = <p>TODO()</p>
           fn buzz() = <p>TODO()</p>
-        """) {
+        """
+          ) {
             placeholder(0, dependency = "lesson1#task1#fizz.kt#1")
             placeholder(1, dependency = "lesson1#task1#fizz.kt#2")
           }
@@ -346,10 +350,12 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
     val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, description = "my summary") {
       lesson {
         eduTask {
-          taskFile("fizz.kt", """
+          taskFile(
+            "fizz.kt", """
           fn fizzz() = <p>TODO()</p>
           fn buzz() = <p>TODO()</p>
-        """)
+        """
+          )
         }
       }
       additionalFiles {
@@ -394,10 +400,12 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
     val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
       lesson {
         eduTask {
-          taskFile("fizz.kt", """
+          taskFile(
+            "fizz.kt", """
           fn fizzz() = <p>TODO()</p>
           fn buzz() = <p>TODO()</p>
-        """)
+        """
+          )
         }
       }
     }
@@ -592,7 +600,8 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
       }
     }
     ExternalDependenciesManager.getInstance(project).allDependencies = mutableListOf<ProjectExternalDependency>(
-      DependencyOnPlugin("testPluginId", "1.0", null))
+      DependencyOnPlugin("testPluginId", "1.0", null)
+    )
 
     try {
       doTest(course)
@@ -636,14 +645,17 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
     val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, description = "my summary") {
       lesson("lesson1") {
         theoryTask("TheoryWithCustomRunConfiguration") {
-          taskFile("main.py", """
+          taskFile(
+            "main.py", """
             import os
 
             if __name__ == "__main__":
                 print(os.getenv("EXAMPLE_ENV"))
-          """)
+          """
+          )
           // Need to verify that the plugin doesn't touch non-related run configuration files
-          xmlTaskFile("CustomRun.run.xml", """
+          xmlTaskFile(
+            "CustomRun.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration default="false" name="CustomCustomRun" type="PythonConfigurationType" factoryName="Python">
                   <module name="Python Course7" />
@@ -669,9 +681,11 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
                   <method v="2" />
                 </configuration>
               </component>
-            """)
+            """
+          )
           dir("runConfigurations") {
-            xmlTaskFile("CustomRun.run.xml", """
+            xmlTaskFile(
+              "CustomRun.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration default="false" name="CustomRun" type="PythonConfigurationType" factoryName="Python">
                   <module name="Python Course7" />
@@ -697,7 +711,8 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
                   <method v="2" />
                 </configuration>
               </component>
-            """)
+            """
+            )
           }
         }
       }
@@ -715,35 +730,50 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
       }
     }
 
-    createUserFile(".idea/important_settings.xml", """
+    createUserFile(
+      ".idea/important_settings.xml", """
       some additional file that should not go into archive
-    """.trimIndent())
-    createUserFile(".idea/subfolder/important_settings_in_subfolder.xml", """
+    """.trimIndent()
+    )
+    createUserFile(
+      ".idea/subfolder/important_settings_in_subfolder.xml", """
       some additional file that should not go into archive
-    """.trimIndent())
-    createUserFile(".idea/subfolder/.excluded_as_all_other_files_from_idea.xml", """
+    """.trimIndent()
+    )
+    createUserFile(
+      ".idea/subfolder/.excluded_as_all_other_files_from_idea.xml", """
       some additional file that should not go into archive
-    """.trimIndent())
-    createUserFile(".idea/scopes/.include me.xml", """
+    """.trimIndent()
+    )
+    createUserFile(
+      ".idea/scopes/.include me.xml", """
       some hidden additional file that should go into archive
-    """.trimIndent())
-    createUserFile(".idea/scopes/.include folder/x.xml", """
+    """.trimIndent()
+    )
+    createUserFile(
+      ".idea/scopes/.include folder/x.xml", """
       some additional file inside a hidden folder that should go into archive
-    """.trimIndent())
-    createUserFile(".idea/scopes/level_up.xml", """
+    """.trimIndent()
+    )
+    createUserFile(
+      ".idea/scopes/level_up.xml", """
       <component name="DependencyValidationManager">
         <scope name="level_up" pattern="file:lesson1/task3/*" />
       </component>
-    """.trimIndent())
-    createUserFile(".idea/inspectionProfiles/profiles_settings.xml", """
+    """.trimIndent()
+    )
+    createUserFile(
+      ".idea/inspectionProfiles/profiles_settings.xml", """
       <component name="InspectionProjectProfileManager">
         <settings>
           <option name="PROJECT_PROFILE" value="One more inspection profile" />
           <version value="1.0" />
         </settings>
       </component>
-    """.trimIndent())
-    createUserFile(".idea/inspectionProfiles/Project_Default.xml", """
+    """.trimIndent()
+    )
+    createUserFile(
+      ".idea/inspectionProfiles/Project_Default.xml", """
       <component name="InspectionProjectProfileManager">
         <profile version="1.0">
           <option name="myName" value="Project Default" />
@@ -781,8 +811,10 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
           </inspection_tool>
         </profile>
       </component>
-    """.trimIndent())
-    createUserFile(".idea/inspectionProfiles/One_more_inspections_profile.xml", """
+    """.trimIndent()
+    )
+    createUserFile(
+      ".idea/inspectionProfiles/One_more_inspections_profile.xml", """
       <component name="InspectionProjectProfileManager">
         <profile version="1.0">
           <option name="myName" value="One more inspection profile" />
@@ -822,7 +854,8 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
           </inspection_tool>
         </profile>
       </component>
-    """.trimIndent())
+    """.trimIndent()
+    )
     doTest(course)
   }
 
@@ -963,8 +996,8 @@ class CCCreateCourseArchiveTest : CourseArchiveTestBase() {
   @Test
   fun `test files starting with dot are added to the archive and iml files are excluded`() {
     val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-     additionalFile(".hidden_file") // such files could go to the archive, if they are listed as additional
-     additionalFile("must_not_be_included.iml") // must not go to the archive even if the file is listed in a list of additional files
+      additionalFile(".hidden_file") // such files could go to the archive, if they are listed as additional
+      additionalFile("must_not_be_included.iml") // must not go to the archive even if the file is listed in a list of additional files
     }
     doTest(course = course)
   }

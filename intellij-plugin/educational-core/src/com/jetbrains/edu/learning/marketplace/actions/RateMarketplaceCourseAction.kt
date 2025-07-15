@@ -15,8 +15,7 @@ import org.jetbrains.annotations.NonNls
 @Suppress("DialogTitleCapitalization")
 class RateMarketplaceCourseAction :
   DumbAwareAction(EduCoreBundle.lazyMessage("marketplace.action.rate.course"), EduCoreBundle.lazyMessage("marketplace.action.rate.course")),
-  RightAlignedToolbarAction
-{
+  RightAlignedToolbarAction {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return

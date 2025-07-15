@@ -21,7 +21,8 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
           file("Lesson1.Task1.csproj")
           file("task.md")
           dir("src") {
-            file("Task.cs", """
+            file(
+              "Task.cs", """
               // ReSharper disable all CheckNamespace
               
               class Task
@@ -32,10 +33,12 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
                       Console.WriteLine("Hello world");
                   }
               }
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Test.cs", """
+            file(
+              "Test.cs", """
               // ReSharper disable all CheckNamespace
               // Please ensure all the tests are contained within the same namespace
               
@@ -48,7 +51,8 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
                       Assert.Fail("Tests are not implemented");
                   }
               }
-              """)
+              """
+            )
           }
         }
       }
@@ -88,7 +92,8 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
           file("Lesson1.Task1.csproj")
           file("task.md")
           dir("src") {
-            file("Task.cs", """
+            file(
+              "Task.cs", """
               // ReSharper disable all CheckNamespace
               
               class Task
@@ -99,10 +104,12 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
                       Console.WriteLine("Hello world");
                   }
               }
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Test.cs", """
+            file(
+              "Test.cs", """
               // ReSharper disable all CheckNamespace
               // Please ensure all the tests are contained within the same namespace
               
@@ -115,14 +122,16 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
                       Assert.Fail("Tests are not implemented");
                   }
               }
-              """)
+              """
+            )
           }
         }
         dir("Task 2") {
           file("Lesson1.Task2.csproj")
           file("task.md")
           dir("src") {
-            file("Task.cs", """
+            file(
+              "Task.cs", """
               // ReSharper disable all CheckNamespace
               
               class Task
@@ -133,10 +142,12 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
                       Console.WriteLine("Hello world");
                   }
               }
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Test.cs", """
+            file(
+              "Test.cs", """
               // ReSharper disable all CheckNamespace
               // Please ensure all the tests are contained within the same namespace
               
@@ -149,14 +160,16 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
                       Assert.Fail("Tests are not implemented");
                   }
               }
-              """)
+              """
+            )
           }
         }
         dir("Task 3") {
           file("Lesson1.Task3.csproj")
           file("task.md")
           dir("src") {
-            file("Task.cs", """
+            file(
+              "Task.cs", """
               // ReSharper disable all CheckNamespace
               
               class Task
@@ -167,7 +180,8 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
                       Console.WriteLine("Hello world");
                   }
               }
-            """)
+            """
+            )
           }
         }
       }
@@ -176,7 +190,8 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
           file("AnotherLesson.FirstTask.csproj")
           file("task.md")
           dir("src") {
-            file("Task.cs", """
+            file(
+              "Task.cs", """
               // ReSharper disable all CheckNamespace
               
               class Task
@@ -187,10 +202,12 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
                       Console.WriteLine("Hello world");
                   }
               }
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Test.cs", """
+            file(
+              "Test.cs", """
               // ReSharper disable all CheckNamespace
               // Please ensure all the tests are contained within the same namespace
               
@@ -203,7 +220,8 @@ class CSharpCourseBuilderTest : CSharpTestBase() {
                       Assert.Fail("Tests are not implemented");
                   }
               }
-              """)
+              """
+            )
           }
         }
       }

@@ -4,8 +4,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.StatusBarWidget
 import com.jetbrains.edu.learning.LoginWidgetFactory
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
+import com.jetbrains.edu.learning.messages.EduCoreBundle
 
 class HyperskillWidgetFactory : LoginWidgetFactory() {
   override val widgetId: String = "widget.hyperskill"

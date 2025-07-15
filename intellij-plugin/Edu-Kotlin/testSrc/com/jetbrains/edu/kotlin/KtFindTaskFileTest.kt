@@ -9,7 +9,8 @@ class KtFindTaskFileTest : JvmFindTaskFileTestBase() {
   fun `test get task dir`() = doTestGetTaskDir(
     pathToCourseJson = "testData/newCourse/kotlin_course.json",
     filePath = "./Introduction/Hello, world/src/Task.kt",
-    taskDirPath = "./Introduction/Hello, world")
+    taskDirPath = "./Introduction/Hello, world"
+  )
 
   @Test
   fun `test get task for file`() = doTestGetTaskForFile(

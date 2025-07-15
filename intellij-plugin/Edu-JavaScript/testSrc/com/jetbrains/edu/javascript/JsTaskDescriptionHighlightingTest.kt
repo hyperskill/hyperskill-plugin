@@ -10,7 +10,8 @@ class JsTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
   override val language: Language = JavascriptLanguage
 
   @Test
-  fun `test markdown description highlighting`() = doMarkdownTest("""
+  fun `test markdown description highlighting`() = doMarkdownTest(
+    """
     Code block with default language:
     ```
       function sum(a, b) {
@@ -47,10 +48,12 @@ class JsTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 
   @Test
-  fun `test html description highlighting`() = doHtmlTest("""
+  fun `test html description highlighting`() = doHtmlTest(
+    """
     <html>
     <p>Code block with default language:</p>
     <pre><code>
@@ -87,5 +90,6 @@ class JsTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 }

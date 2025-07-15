@@ -56,7 +56,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // but we don't want to lose them after applying submission into a task
     val externalPropagatableFiles = externalState.split(task).first.toMutableMap()
     propagatableFiles.forEach { (path, text) ->
-        externalPropagatableFiles.putIfAbsent(path, text)
+      externalPropagatableFiles.putIfAbsent(path, text)
     }
     val changes = calculateChanges(propagatableFiles, externalPropagatableFiles)
     val currentRecord = task.record
@@ -126,7 +126,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val changes = if (lesson.currentTaskIndex + 1 == task.index) {
       val taskDir = task.getDir(project.courseDir) ?: return emptyMap()
       getUserChangesFromFiles(initialFiles, taskDir)
-    } else {
+    }
+    else {
       getUserChangesFromStorage(task)
     }
     return HashMap(initialFiles).apply { changes.apply(this) }
@@ -294,14 +295,18 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val keepConflictingChanges = if (showDialogIfConflict) {
       val currentTaskName = "${currentTask.getUIName()} ${currentTask.index}"
       val targetTaskName = "${targetTask.getUIName()} ${targetTask.index}"
-      val message = EduCoreBundle.message("framework.lesson.changes.conflict.message", currentTaskName, targetTaskName, targetTaskName,
-        currentTaskName)
-      Messages.showYesNoDialog(project,
+      val message = EduCoreBundle.message(
+        "framework.lesson.changes.conflict.message", currentTaskName, targetTaskName, targetTaskName,
+        currentTaskName
+      )
+      Messages.showYesNoDialog(
+        project,
         message,
         EduCoreBundle.message("framework.lesson.changes.conflicting.changes.title"),
         EduCoreBundle.message("framework.lesson.changes.conflicting.changes.keep"),
         EduCoreBundle.message("framework.lesson.changes.conflicting.changes.replace"),
-        null)
+        null
+      )
     }
     else {
       Messages.YES

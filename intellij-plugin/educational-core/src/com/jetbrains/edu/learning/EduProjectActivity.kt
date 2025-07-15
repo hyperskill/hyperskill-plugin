@@ -220,6 +220,7 @@ class EduProjectActivity : ProjectActivity {
     private val LOG: Logger = logger<EduProjectActivity>()
 
     private const val YAML_MIGRATED = "Edu.Yaml.Migrate"
+
     @VisibleForTesting
     const val YAML_MIGRATED_PROPAGATABLE = "Edu.Yaml.Migrate.Propagatable"
   }

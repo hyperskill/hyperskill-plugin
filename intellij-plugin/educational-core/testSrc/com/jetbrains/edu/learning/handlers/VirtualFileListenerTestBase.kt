@@ -37,7 +37,7 @@ abstract class VirtualFileListenerTestBase : EduTestCase() {
       .connect(testRootDisposable)
       .subscribe(VirtualFileManager.VFS_CHANGES, createListener(project))
   }
-  
+
   protected fun doAddFileTest(filePathInTask: String, text: String = "", checksProducer: (Task) -> List<FileCheck>) {
     val course = courseWithFiles(
       courseMode = courseMode,
@@ -137,7 +137,12 @@ abstract class VirtualFileListenerTestBase : EduTestCase() {
     }
   }
 
-  protected fun doCopyFileTest(filePathInCourse: String, newParentPath: String, copyName: String? = null, checksProducer: (Course) -> List<FileCheck>) {
+  protected fun doCopyFileTest(
+    filePathInCourse: String,
+    newParentPath: String,
+    copyName: String? = null,
+    checksProducer: (Course) -> List<FileCheck>
+  ) {
     val course = createCourseForCopyTests()
 
     val requestor = VirtualFileListenerTestBase::class.java
@@ -188,7 +193,8 @@ abstract class VirtualFileListenerTestBase : EduTestCase() {
       for (child in file.children) {
         copy(requestor, child, copiedDirectory, child.name)
       }
-    } else
+    }
+    else
       file.copy(requestor, newParent, newName)
   }
 
@@ -254,7 +260,8 @@ abstract class VirtualFileListenerTestBase : EduTestCase() {
     val file = findFile(filePathInCourse)
     val psiFileSystemItem = if (file.isDirectory) {
       PsiManager.getInstance(project).findDirectory(file) ?: error("Can't find psi directory for $file")
-    } else {
+    }
+    else {
       PsiManager.getInstance(project).findFile(file) ?: error("Can't find psi file for $file")
     }
     myFixture.renameElement(psiFileSystemItem, newName)
@@ -317,7 +324,7 @@ abstract class VirtualFileListenerTestBase : EduTestCase() {
     }
 
     val file = findFile(filePath)
-    val newParent  = findFile(newParentPath)
+    val newParent = findFile(newParentPath)
     runWriteAction { file.move(requestor, newParent) }
 
     checksProducer(course).forEach(FileCheck::check)
@@ -358,7 +365,11 @@ abstract class VirtualFileListenerTestBase : EduTestCase() {
 
     actions()
 
-    assertEquals("Unexpected list of additional files after fs actions", additionalFilesAfter.toSet(), course.additionalFiles.map { it.name }.toSet())
+    assertEquals(
+      "Unexpected list of additional files after fs actions",
+      additionalFilesAfter.toSet(),
+      course.additionalFiles.map { it.name }.toSet()
+    )
   }
 
   protected fun createFile(path: String) = createTextChildFile(project, project.courseDir, path, "")

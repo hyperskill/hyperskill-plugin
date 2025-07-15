@@ -50,7 +50,8 @@
       "is_binary" : false
     }
   ],
-  "version" : <last version>,
+  "version" : <last
+  version>,
   "environment_settings" : {
     "jvm_language_level" : "JDK_17"
   },

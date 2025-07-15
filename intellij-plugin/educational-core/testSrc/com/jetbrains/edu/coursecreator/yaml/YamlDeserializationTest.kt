@@ -465,8 +465,10 @@ class YamlDeserializationTest : YamlTestCase() {
     val task = basicMapper().deserializeTask(yamlContent)
     assertTrue(task is ChoiceTask)
     assertEquals(listOf("Test.java"), task.taskFiles.map { it.key })
-    assertEquals(mapOf("1" to ChoiceOptionStatus.CORRECT, "2" to ChoiceOptionStatus.INCORRECT),
-                 (task as ChoiceTask).choiceOptions.associateBy({ it.text }, { it.status }))
+    assertEquals(
+      mapOf("1" to ChoiceOptionStatus.CORRECT, "2" to ChoiceOptionStatus.INCORRECT),
+      (task as ChoiceTask).choiceOptions.associateBy({ it.text }, { it.status })
+    )
     assertEquals(correct, task.messageCorrect)
     assertEquals(incorrect, task.messageIncorrect)
   }
@@ -486,8 +488,10 @@ class YamlDeserializationTest : YamlTestCase() {
     val task = basicMapper().deserializeTask(yamlContent)
     assertTrue(task is ChoiceTask)
     assertEquals(listOf("Test.java"), task.taskFiles.map { it.key })
-    assertEquals(mapOf("1" to ChoiceOptionStatus.UNKNOWN, "2" to ChoiceOptionStatus.UNKNOWN),
-                 (task as ChoiceTask).choiceOptions.associateBy({ it.text }, { it.status }))
+    assertEquals(
+      mapOf("1" to ChoiceOptionStatus.UNKNOWN, "2" to ChoiceOptionStatus.UNKNOWN),
+      (task as ChoiceTask).choiceOptions.associateBy({ it.text }, { it.status })
+    )
   }
 
   @Test
@@ -641,7 +645,8 @@ class YamlDeserializationTest : YamlTestCase() {
 
   @Test
   fun `test placeholder with invisible dependency`() = doTestPlaceholderAndDependencyVisibility(
-    basicMapper().deserializeTask("""
+    basicMapper().deserializeTask(
+      """
         |type: edu
         |files:
         |- name: Test.java
@@ -656,11 +661,13 @@ class YamlDeserializationTest : YamlTestCase() {
         |      placeholder: 1
         |      is_visible: false
     """.trimMargin()
-    ), expectedPlaceholderVisibility = false)
+    ), expectedPlaceholderVisibility = false
+  )
 
   @Test
   fun `test invisible placeholder`() = doTestPlaceholderAndDependencyVisibility(
-    basicMapper().deserializeTask("""
+    basicMapper().deserializeTask(
+      """
         |type: edu
         |files:
         |- name: Test.java
@@ -670,11 +677,13 @@ class YamlDeserializationTest : YamlTestCase() {
         |    placeholder_text: 'type here   '
         |    is_visible: false
     """.trimMargin()
-    ), expectedPlaceholderVisibility = false)
+    ), expectedPlaceholderVisibility = false
+  )
 
   @Test
   fun `test visible placeholder and invisible dependency`() = doTestPlaceholderAndDependencyVisibility(
-    basicMapper().deserializeTask("""
+    basicMapper().deserializeTask(
+      """
         |type: edu
         |files:
         |- name: Test.java
@@ -690,11 +699,13 @@ class YamlDeserializationTest : YamlTestCase() {
         |      is_visible: false
         |    is_visible: true
     """.trimMargin()
-    ), expectedPlaceholderVisibility = false)
+    ), expectedPlaceholderVisibility = false
+  )
 
   @Test
   fun `test placeholder without visibility field in CC mode`() = doTestPlaceholderAndDependencyVisibility(
-    basicMapper().deserializeTask("""
+    basicMapper().deserializeTask(
+      """
         |type: edu
         |files:
         |- name: Test.java
@@ -703,7 +714,8 @@ class YamlDeserializationTest : YamlTestCase() {
         |    length: 3
         |    placeholder_text: 'type here   '
     """.trimMargin()
-    ), expectedPlaceholderVisibility = true)
+    ), expectedPlaceholderVisibility = true
+  )
 
   @Test
   fun `test edu task without dependency`() {

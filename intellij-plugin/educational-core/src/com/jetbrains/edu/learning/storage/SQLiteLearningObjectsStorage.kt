@@ -38,12 +38,14 @@ class SQLiteLearningObjectsStorage(val db: Path) : LearningObjectsStorage, Dispo
     statement.executeUpdate()
   }
 
-  private fun createDB() = connection.execute("""
+  private fun createDB() = connection.execute(
+    """
     CREATE TABLE IF NOT EXISTS `$AUTHOR_CONTENTS_TABLE` (
       `key` TEXT PRIMARY KEY,
       `value` BLOB
     )
-  """)
+  """
+  )
 
   override fun dispose() = connection.interruptAndClose()
 
@@ -58,7 +60,7 @@ class SQLiteLearningObjectsStorage(val db: Path) : LearningObjectsStorage, Dispo
 
     fun openOrCreateDB(project: Project): LearningObjectsStorage {
       val ideaPath = project.stateStore.directoryStorePath
-      val sqlFilePath =  ideaPath?.resolve(COURSE_AUTHOR_CONTENTS_FILE)
+      val sqlFilePath = ideaPath?.resolve(COURSE_AUTHOR_CONTENTS_FILE)
       if (sqlFilePath == null) {
         logger<LearningObjectsStorageManager>().error("Failed to get path for a SQLite file for the learning objects storage. The created storage is not persistent")
         return InMemoryLearningObjectsStorage()

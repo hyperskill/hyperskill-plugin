@@ -91,8 +91,10 @@ open class TaskChangeApplier(val project: Project) : StudyItemChangeApplier<Task
     taskFiles = orderedTaskFiles
   }
 
-  protected open fun applyTaskFileChanges(existingTaskFile: TaskFile,
-                                          deserializedTaskFile: TaskFile) {
+  protected open fun applyTaskFileChanges(
+    existingTaskFile: TaskFile,
+    deserializedTaskFile: TaskFile
+  ) {
     existingTaskFile.applyPlaceholderChanges(deserializedTaskFile)
     existingTaskFile.isVisible = deserializedTaskFile.isVisible
     existingTaskFile.isEditable = deserializedTaskFile.isEditable

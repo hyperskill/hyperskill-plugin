@@ -14,8 +14,10 @@ class CheckMessagePanelTest {
 
   @Test
   fun `test message wrapped with html tag`() {
-    val input = """<html>Passed. Congratulations! It is your first Kotlin program that really works. In future topics, you will learn more about this code.</html>"""
-    val expected = """<html>Passed. Congratulations! It is your first Kotlin program that really works. In future topics, you will learn more about this code.</html>"""
+    val input =
+      """<html>Passed. Congratulations! It is your first Kotlin program that really works. In future topics, you will learn more about this code.</html>"""
+    val expected =
+      """<html>Passed. Congratulations! It is your first Kotlin program that really works. In future topics, you will learn more about this code.</html>"""
     doTest(input, expected)
   }
 

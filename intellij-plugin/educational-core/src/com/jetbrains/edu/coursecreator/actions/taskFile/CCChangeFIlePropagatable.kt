@@ -9,7 +9,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsActions
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.coursecreator.framework.SyncChangesStateManager
-import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.Lesson
@@ -17,11 +16,14 @@ import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.ext.isFrameworkTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.getTaskFile
 import com.jetbrains.edu.learning.messages.EduCoreBundle
+import com.jetbrains.edu.learning.pathRelativeToTask
 import org.jetbrains.annotations.NonNls
 import java.util.function.Supplier
 
-class CCAllowFileSyncChanges : CCChangeFilePropagationFlag(EduCoreBundle.lazyMessage("action.Educational.Educator.AllowFileToSyncChanges.text"), true) {
+class CCAllowFileSyncChanges :
+  CCChangeFilePropagationFlag(EduCoreBundle.lazyMessage("action.Educational.Educator.AllowFileToSyncChanges.text"), true) {
   override fun getActionUpdateThread(): ActionUpdateThread {
     return ActionUpdateThread.BGT
   }
@@ -34,7 +36,8 @@ class CCAllowFileSyncChanges : CCChangeFilePropagationFlag(EduCoreBundle.lazyMes
   }
 }
 
-class CCIgnoreFileInSyncChanges : CCChangeFilePropagationFlag(EduCoreBundle.lazyMessage("action.Educational.Educator.IgnoreFilePropagation.text"), false) {
+class CCIgnoreFileInSyncChanges :
+  CCChangeFilePropagationFlag(EduCoreBundle.lazyMessage("action.Educational.Educator.IgnoreFilePropagation.text"), false) {
   override fun update(e: AnActionEvent) {
     super.update(e)
 

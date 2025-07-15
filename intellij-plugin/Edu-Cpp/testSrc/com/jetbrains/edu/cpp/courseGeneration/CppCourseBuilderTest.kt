@@ -31,8 +31,10 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
           file("test.cpp")
         }
         file("task.md")
-        file("CMakeLists.txt",
-             getExpectedTaskCMakeText(course, defaultSettings, "global-lesson1-task1"))
+        file(
+          "CMakeLists.txt",
+          getExpectedTaskCMakeText(course, defaultSettings, "global-lesson1-task1")
+        )
       }
       dir("cmake") {
         file("utils.cmake")
@@ -42,7 +44,8 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
       file("CMakeLists.txt")
     }.assertEquals(rootDir)
 
-    assertListOfAdditionalFiles(course,
+    assertListOfAdditionalFiles(
+      course,
       "CMakeLists.txt" to null,
       "cmake/utils.cmake" to null,
       "cmake/googletest.cmake" to null,
@@ -68,8 +71,10 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
           file("test.cpp")
         }
         file("task.md")
-        file("CMakeLists.txt",
-             getExpectedTaskCMakeText(course, defaultSettings, "global-lesson1-task1"))
+        file(
+          "CMakeLists.txt",
+          getExpectedTaskCMakeText(course, defaultSettings, "global-lesson1-task1")
+        )
       }
       dir("cmake") {
         file("utils.cmake")
@@ -78,7 +83,8 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
       file("CMakeLists.txt")
     }.assertEquals(rootDir)
 
-    assertListOfAdditionalFiles(course,
+    assertListOfAdditionalFiles(
+      course,
       "CMakeLists.txt" to null,
       "cmake/utils.cmake" to null,
       "cmake/catch.cmake" to null
@@ -278,7 +284,8 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
       }
     }
     createCourseStructure(course)
-    assertListOfAdditionalFiles(course,
+    assertListOfAdditionalFiles(
+      course,
       "CMakeLists.txt" to "file 1",
       "cmake/utils.cmake" to "file 2"
     )

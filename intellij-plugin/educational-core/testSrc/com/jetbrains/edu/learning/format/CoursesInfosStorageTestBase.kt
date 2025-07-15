@@ -30,8 +30,10 @@ open class CoursesInfosStorageTestBase : EduTestCase() {
     val hyperskillCourse = hyperskillCourse(language = PlainTextLanguage.INSTANCE) {}
     val eduCourse = course {}
 
-    for ((course, configuratorClass) in listOf(hyperskillCourse to PlainTextHyperskillConfigurator::class.java,
-                                               eduCourse to PlainTextConfigurator::class.java)) {
+    for ((course, configuratorClass) in listOf(
+      hyperskillCourse to PlainTextHyperskillConfigurator::class.java,
+      eduCourse to PlainTextConfigurator::class.java
+    )) {
       coursesStorage.addCourse(course, "location", 0, 0)
       assertInstanceOf(coursesStorage.getCourseMetaInfo(course)!!.toCourse().configurator, configuratorClass)
     }
@@ -209,7 +211,7 @@ open class CoursesInfosStorageTestBase : EduTestCase() {
     val educatorCourse = course(name = "CC course", courseMode = CourseMode.EDUCATOR) {}
     coursesStorage.addCourse(educatorCourse, "/CC course", 0, 0)
 
-    val inProgressCourse = course(name="In Progress") {}
+    val inProgressCourse = course(name = "In Progress") {}
     coursesStorage.addCourse(inProgressCourse, "/in_progress", 1, 10)
 
     val completedCourse = course(name = "Completed") {}

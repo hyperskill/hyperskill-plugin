@@ -18,21 +18,29 @@ class CCChangeFileVisibilityTest : EduActionTestCase() {
 
   @Test
   fun `test single task file`() = doAvailableTest(false, "TaskFile1.kt", pathPrefix = "lesson1/task1")
+
   @Test
   fun `test single additional file`() = doAvailableTest(false, "TaskFile3.kt", pathPrefix = "lesson1/task1")
+
   @Test
   fun `test multiple files with same visibility`() = doAvailableTest(false, "TaskFile1.kt", "TaskFile3.kt", pathPrefix = "lesson1/task1")
+
   @Test
   fun `test directory 1`() = doAvailableTest(true, "lesson1/task1/folder1")
+
   @Test
   fun `test directory 2`() = doAvailableTest(true, "lesson1/task1/folder2")
+
   @Test
   fun `test save stepik change status after undo`() =
     doAvailableTest(false, "TaskFile1.kt", pathPrefix = "lesson1/task1")
+
   @Test
   fun `test in student mode`() = doUnavailableTest("TaskFile1.kt", pathPrefix = "lesson1/task1", courseMode = CourseMode.STUDENT)
+
   @Test
   fun `test multiple files with different visibility`() = doUnavailableTest("TaskFile1.kt", "TaskFile2.kt", pathPrefix = "lesson1/task1")
+
   @Test
   fun `test file outside of task`() = doUnavailableTest("lesson1")
 
@@ -40,9 +48,11 @@ class CCChangeFileVisibilityTest : EduActionTestCase() {
     shouldOppositeActionBeEnabled: Boolean,
     vararg paths: String,
     pathPrefix: String = ""
-  ) = doTest(true, shouldOppositeActionBeEnabled, *paths,
-             courseMode = CourseMode.EDUCATOR,
-             pathPrefix = pathPrefix)
+  ) = doTest(
+    true, shouldOppositeActionBeEnabled, *paths,
+    courseMode = CourseMode.EDUCATOR,
+    pathPrefix = pathPrefix
+  )
 
   private fun doUnavailableTest(
     vararg paths: String,
@@ -77,7 +87,8 @@ class CCChangeFileVisibilityTest : EduActionTestCase() {
             val pathInTask = FileUtil.getRelativePath(taskDir.path, it.path, VfsUtilCore.VFS_SEPARATOR_CHAR)!!
             task.getTaskFile(pathInTask)
           }
-        } else {
+        }
+        else {
           val visibleFile = task.getTaskFile(path) ?: error("Can't find `$fullPath` in course")
           affectedCourseFiles += visibleFile
         }
@@ -87,14 +98,15 @@ class CCChangeFileVisibilityTest : EduActionTestCase() {
 
     val dataContext = if (selectedFiles.size == 1) {
       dataContext(selectedFiles.single())
-    } else {
+    }
+    else {
       dataContext(selectedFiles.toTypedArray())
     }
 
     val hide = getActionById<CCChangeFileVisibility>(CCHideFromLearner.ACTION_ID)
     val show = getActionById<CCChangeFileVisibility>(CCMakeVisibleToLearner.ACTION_ID)
     checkAction(hide, show, dataContext, affectedCourseFiles, shouldActionBeEnabled, shouldOppositeActionBeEnabled)
-    affectedCourseFiles.forEach { it.isVisible = !it.isVisible}
+    affectedCourseFiles.forEach { it.isVisible = !it.isVisible }
     checkAction(show, hide, dataContext, affectedCourseFiles, shouldActionBeEnabled, shouldOppositeActionBeEnabled)
   }
 

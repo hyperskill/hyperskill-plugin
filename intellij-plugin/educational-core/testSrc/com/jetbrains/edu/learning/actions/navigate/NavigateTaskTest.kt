@@ -67,7 +67,8 @@ class NavigateTaskTest : EduTestCase() {
   @Test
   fun `test open the first task file`() = doNextTest(
     initialTaskFile = TaskFileInfo(2, 3, "taskFile4.txt"),
-    expectedTaskFile = TaskFileInfo(2, 4, "taskFile5.txt"))
+    expectedTaskFile = TaskFileInfo(2, 4, "taskFile5.txt")
+  )
 
   private fun doNextTest(initialTaskFile: TaskFileInfo, expectedTaskFile: TaskFileInfo) =
     doTest(NextTaskAction.ACTION_ID, initialTaskFile, expectedTaskFile)

@@ -1,4 +1,4 @@
-<idea-plugin package="com.jetbrains.edu.cpp" xmlns:xi="http://www.w3.org/2001/XInclude">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.cpp">
   <!-- BACKCOMPAT: 2025.1. Inline it. -->
   <xi:include href="/Edu-Cpp-platform.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <!--suppress PluginXmlValidity -->

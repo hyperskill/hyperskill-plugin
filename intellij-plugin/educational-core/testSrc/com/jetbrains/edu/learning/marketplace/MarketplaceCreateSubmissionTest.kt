@@ -35,10 +35,13 @@ class MarketplaceCreateSubmissionTest : EduTestCase() {
 
   @Test
   fun `test creating submission for solved edu task`() = createSubmission(CORRECT, CheckStatus.Solved)
+
   @Test
   fun `test creating submission for failed edu task`() = createSubmission(WRONG, CheckStatus.Failed)
+
   @Test
   fun `test correct submission deserialization`() = deserializeSubmission(CORRECT, CheckStatus.Solved)
+
   @Test
   fun `test wrong submission deserialization`() = deserializeSubmission(WRONG, CheckStatus.Failed)
 
@@ -54,7 +57,8 @@ class MarketplaceCreateSubmissionTest : EduTestCase() {
     val solutionText = objectMapper.writeValueAsString(solutionFiles).trimIndent()
     val submission = MarketplaceSubmission(eduTask.id, eduTask.status, solutionText, solutionFiles, course.marketplaceCourseVersion)
 
-    doTest(submission, """
+    doTest(
+      submission, """
       |status: $submissionStatus
       |update_version: 3
       |task_id: 1
@@ -64,7 +68,8 @@ class MarketplaceCreateSubmissionTest : EduTestCase() {
   :true,\"text\":\"solution file text\"},{\"name\":\"src/Test.kt\",\"placeholders\"\
   :null,\"is_visible\":false,\"text\":\"test file text\"}]"
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   private fun deserializeSubmission(submissionStatus: String, checkStatus: CheckStatus) {

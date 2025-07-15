@@ -37,6 +37,7 @@ class GoConfigurator : EduConfigurator<GoProjectSettings> {
         get() = GoCodeExecutor()
       override val envChecker: EnvironmentChecker
         get() = GoEnvironmentChecker()
+
       override fun getEduTaskChecker(task: EduTask, project: Project): TaskChecker<EduTask> = GoEduTaskChecker(project, envChecker, task)
     }
 

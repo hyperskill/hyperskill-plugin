@@ -28,7 +28,7 @@ fun createRenameDialog(
   return renameFactory.createRenameDialog(project, element, nameSuggestionContext, editor)
 }
 
-private var MOCK: MockRenameDialogFactory ? = null
+private var MOCK: MockRenameDialogFactory? = null
 
 @TestOnly
 fun withMockRenameDialogFactory(mock: MockRenameDialogFactory, action: () -> Unit) {

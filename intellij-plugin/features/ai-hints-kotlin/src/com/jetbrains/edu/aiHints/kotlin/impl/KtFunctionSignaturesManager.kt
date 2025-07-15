@@ -25,6 +25,7 @@ object KtFunctionSignaturesManager : FunctionSignaturesManager {
               function = element
             }
           }
+
           else -> {
             super.visitElement(element)
           }
@@ -44,6 +45,7 @@ object KtFunctionSignaturesManager : FunctionSignaturesManager {
               functionSignatures.addIfNotNull(element.generateSignature(signatureSource))
             }
           }
+
           else -> {
             super.visitElement(element)
           }

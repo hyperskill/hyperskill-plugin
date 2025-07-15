@@ -3,7 +3,9 @@
 /* see @com.jetbrains.edu.learning.ui.taskToolWindow.styleManagers.StyleResourcesManager */
 
 @media print {
-    div.print-content article.node .node-blog .clearfix div.item-body p a { display: none; }
+    div.print-content article.node .node-blog .clearfix div.item-body p a {
+        display: none;
+    }
 
     .compact-problemset div.ttypography {
         margin: 0 !important;
@@ -13,6 +15,7 @@
         margin-bottom: 0.75em !important;
         page-break-inside: avoid;
     }
+
     .compact-problemset .problem-frames {
         column-count: 2;
     }
@@ -216,7 +219,9 @@
     padding: 0 1em;
 }
 
-.problem-statement div.title { display: none;}
+.problem-statement div.title {
+    display: none;
+}
 
 .problemindexholder {
     position: relative;
@@ -269,7 +274,7 @@ div .problem-statement-overlay {
     /*font-family: times new roman,sans-serif;*/
     vertical-align: middle;
     margin: 0;
-    border:medium none;
+    border: medium none;
     position: relative;
     bottom: 2px;
 }

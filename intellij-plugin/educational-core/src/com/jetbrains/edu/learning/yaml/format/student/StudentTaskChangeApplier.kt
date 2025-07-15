@@ -29,14 +29,17 @@ class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
         existingItem.record = deserializedItem.record
         existingItem.selectedVariants = (deserializedItem as ChoiceTask).selectedVariants
       }
+
       is SortingBasedTask -> {
         existingItem.record = deserializedItem.record
         existingItem.ordering = (deserializedItem as SortingBasedTask).ordering
       }
+
       is TableTask -> {
         existingItem.record = deserializedItem.record
         existingItem.selected = (deserializedItem as TableTask).selected
       }
+
       is EduTask -> {
         if (existingItem is RemoteEduTask) {
           existingItem.checkProfile = (deserializedItem as RemoteEduTask).checkProfile

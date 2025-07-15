@@ -23,9 +23,11 @@ class SolutionHiddenTest : EduTestCase() {
   fun `test show solution when it's visible for task`() =
     doTestSolutionHidden(solutionsHiddenInCourse = true, solutionHiddenInTask = false, expectedSolutionHiddenInTask = false)
 
-  private fun doTestSolutionHidden(solutionsHiddenInCourse: Boolean,
-                                   solutionHiddenInTask: Boolean?,
-                                   expectedSolutionHiddenInTask: Boolean) {
+  private fun doTestSolutionHidden(
+    solutionsHiddenInCourse: Boolean,
+    solutionHiddenInTask: Boolean?,
+    expectedSolutionHiddenInTask: Boolean
+  ) {
     val course = getCurrentCourse()
     course.solutionsHidden = solutionsHiddenInCourse
     val task = findTask(0, 0)

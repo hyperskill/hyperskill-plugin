@@ -19,14 +19,16 @@ class LinkedInSettingsTest : EduSettingsServiceTestBase() {
     val settings = LinkedInSettings()
 
     val currentTime = currentTimeMillis() + 12345
-    settings.loadStateAndCheck("""
+    settings.loadStateAndCheck(
+      """
       <LinkedSate>
         <option name="askToPost" value="true" />
         <option name="expiresIn" value="$currentTime" />
         <option name="userId" value="userId" />
         <option name="userName" value="userName" />
       </LinkedSate>
-    """)
+    """
+    )
 
     assertTrue(settings.askToPost)
     val account = kotlin.test.assertNotNull(settings.account)
@@ -43,14 +45,16 @@ class LinkedInSettingsTest : EduSettingsServiceTestBase() {
   fun `test serialization with too old token expiration time`() {
     val settings = LinkedInSettings()
 
-    settings.loadStateAndCheck("""
+    settings.loadStateAndCheck(
+      """
       <LinkedSate>
         <option name="askToPost" value="true" />
         <option name="expiresIn" value="12345" />
         <option name="userId" value="userId" />
         <option name="userName" value="userName" />
       </LinkedSate>
-    """)
+    """
+    )
 
     assertTrue(settings.askToPost)
     assertNull(settings.account)

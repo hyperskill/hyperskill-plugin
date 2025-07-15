@@ -36,7 +36,8 @@ class YamlRenameTest : YamlCodeInsightTest() {
     val dir = lesson.getDir(project.courseDir)!!
     val psiDir = PsiManager.getInstance(project).findDirectory(dir)!!
 
-    doTest(psiDir, "lesson2", lesson.parent, """
+    doTest(
+      psiDir, "lesson2", lesson.parent, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -45,7 +46,8 @@ class YamlRenameTest : YamlCodeInsightTest() {
       |- lesson2
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -54,11 +56,13 @@ class YamlRenameTest : YamlCodeInsightTest() {
     val dir = task.getDir(project.courseDir)!!
     val psiDir = PsiManager.getInstance(project).findDirectory(dir)!!
 
-    doTest(psiDir, "task2", task.parent, """
+    doTest(
+      psiDir, "task2", task.parent, """
       |content:
       |- task2
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -68,13 +72,15 @@ class YamlRenameTest : YamlCodeInsightTest() {
     val file = taskFile.getVirtualFile(project)!!
     val psiFile = PsiManager.getInstance(project).findFile(file)!!
 
-    doTest(psiFile, "taskfile2.txt", task, """
+    doTest(
+      psiFile, "taskfile2.txt", task, """
       |type: edu
       |files:
       |- name: src/taskfile2.txt
       |  visible: true
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   private fun doTest(element: PsiElement, newName: String, parentItem: StudyItem, expectedText: String) {

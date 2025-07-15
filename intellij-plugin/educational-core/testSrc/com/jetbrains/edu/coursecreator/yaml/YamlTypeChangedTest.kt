@@ -92,7 +92,8 @@ class YamlTypeChangedTest : YamlTestCase() {
 
   private fun <T : Course> testCourseTypeChanged(courseType: String, expectedCourse: Class<T>) {
     val course = getCourse()
-    loadItemFromConfig(course, """
+    loadItemFromConfig(
+      course, """
       |type: $courseType
       |title: Kotlin Course41
       |language: English
@@ -100,7 +101,8 @@ class YamlTypeChangedTest : YamlTestCase() {
       |programming_language: Plain text
       |content:
       |- lesson1
-      |""".trimMargin())
+      |""".trimMargin()
+    )
 
     val loadedCourse = getCourse()
     assertInstanceOf(loadedCourse, expectedCourse)
@@ -109,12 +111,14 @@ class YamlTypeChangedTest : YamlTestCase() {
 
   private fun <T : Task> testTaskTypeChanged(type: String, expectedClass: Class<T>) {
     val task = findTask(0, 0)
-    loadItemFromConfig(task, """
+    loadItemFromConfig(
+      task, """
       |type: $type
       |feedback_link: http://example.com
       |files:
       |- name: test1.txt
-      |""".trimMargin())
+      |""".trimMargin()
+    )
 
     val loadedTask = findTask(0, 0)
     assertInstanceOf(loadedTask, expectedClass)
@@ -124,12 +128,14 @@ class YamlTypeChangedTest : YamlTestCase() {
 
   private fun <T : Lesson> testLessonTypeChanged(type: String, expectedClass: Class<T>) {
     val lesson = findLesson(0)
-    loadItemFromConfig(lesson, """
+    loadItemFromConfig(
+      lesson, """
       |type: $type
       |content:
       | - task1
       | - choice
-      |""".trimMargin())
+      |""".trimMargin()
+    )
 
     val loadedLesson = findLesson(0)
     assertInstanceOf(loadedLesson, expectedClass)

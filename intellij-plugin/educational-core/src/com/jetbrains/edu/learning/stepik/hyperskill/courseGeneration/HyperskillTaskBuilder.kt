@@ -53,6 +53,7 @@ class HyperskillTaskBuilder(
         is CodeTask, is DataTask, is ChoiceTask, is StringTask, is NumberTask, is SortingTask, is MatchingTask, is TableTask -> {
           name = stepSource.title
         }
+
         is EduTask -> {
           if (task is RemoteEduTask) {
             task.checkProfile = stepSource.checkProfile
@@ -60,6 +61,7 @@ class HyperskillTaskBuilder(
           name = stepSource.title
           customPresentableName = null
         }
+
         is UnsupportedTask -> {
           descriptionText = getUnsupportedTaskDescriptionText(name, stepSource.id)
           name = stepSource.title

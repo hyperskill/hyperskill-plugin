@@ -40,8 +40,6 @@ import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 import com.jetbrains.edu.learning.yaml.errorHandling.loadingError
 import com.jetbrains.educational.core.format.enum.TranslationLanguage
 import java.io.IOException
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 val Task.project: Project? get() = course.project
 
@@ -148,7 +146,11 @@ fun Task.addDefaultTaskDescription() {
 }
 
 @RequiresReadLock
-fun Task.getDescriptionFile(project: Project, translationLanguage: TranslationLanguage? = null, guessFormat: Boolean = false): VirtualFile? {
+fun Task.getDescriptionFile(
+  project: Project,
+  translationLanguage: TranslationLanguage? = null,
+  guessFormat: Boolean = false
+): VirtualFile? {
   val taskDirectory = getTaskDirectory(project) ?: return null
 
   if (translationLanguage != null) {
@@ -244,12 +246,15 @@ fun Task.revertTaskParameters() {
     is ChoiceTask -> {
       clearSelectedVariants()
     }
+
     is DataTask -> {
       attempt = null
     }
+
     is SortingBasedTask -> {
       restoreInitialOrdering()
     }
+
     is TableTask -> {
       clearSelectedVariants()
     }
@@ -329,9 +334,9 @@ fun Task.getTaskText(project: Project, translationLanguage: TranslationLanguage?
   val taskDescription = taskTextFile.getTextFromTaskTextFile() ?: return descriptionText
 
   if (taskTextFile.extension == DescriptionFormat.MD.extension) {
-  	return convertToHtml(taskDescription)
+    return convertToHtml(taskDescription)
   }
-  
+
   return taskDescription
 }
 

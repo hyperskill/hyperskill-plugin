@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NonNls
 import java.io.IOException
 import javax.swing.Icon
 
-open class CCCreateTask(icon : Icon = Task) : CCCreateStudyItemActionBase<Task>(TASK_TYPE, icon) {
+open class CCCreateTask(icon: Icon = Task) : CCCreateStudyItemActionBase<Task>(TASK_TYPE, icon) {
 
   override fun addItem(course: Course, item: Task) {
     item.lesson.addTask(item)
@@ -125,7 +125,8 @@ open class CCCreateTask(icon : Icon = Task) : CCCreateStudyItemActionBase<Task>(
           }
         }
       item.init(parentItem, false)
-    } else {
+    }
+    else {
       initTask(course, item, info)
     }
   }
@@ -201,7 +202,8 @@ open class CCCreateTask(icon : Icon = Task) : CCCreateStudyItemActionBase<Task>(
     val task = taskFile.task
     val lesson = task.lesson
     val sectionName = (lesson.container as? Section)?.name
-    newPlaceholder.placeholderDependency = AnswerPlaceholderDependency(newPlaceholder, sectionName, lesson.name, task.name, taskFile.name, index, false)
+    newPlaceholder.placeholderDependency =
+      AnswerPlaceholderDependency(newPlaceholder, sectionName, lesson.name, task.name, taskFile.name, index, false)
     return newPlaceholder
   }
 

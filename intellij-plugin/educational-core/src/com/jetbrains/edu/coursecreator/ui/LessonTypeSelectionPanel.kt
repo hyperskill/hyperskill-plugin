@@ -72,7 +72,7 @@ class LessonChoicePanel : Wrapper(), Disposable {
    * true -> Guided Project card selected
    */
   val isGuidedProjectCardSelected: Boolean
-    get() = when(selectedCard) {
+    get() = when (selectedCard) {
       is SimpleLessonCard -> false
       is GuidedProjectCard -> true
     }
@@ -179,8 +179,9 @@ private sealed class LessonCard : Wrapper() {
       titleComponent.font = selectedTitleFont
       background = EduColors.lessonCardSelectedBackground
       iconComponent.icon = selectedIcon
-      addBorder(if(isFocused) focusedBorder else selectedBorder)
-    } else {
+      addBorder(if (isFocused) focusedBorder else selectedBorder)
+    }
+    else {
       titleComponent.font = defaultTitleFont
       background = EduColors.lessonCardBackground
       iconComponent.icon = icon

@@ -32,9 +32,9 @@ class CCSolveAllTasksBeforeAction : DumbAwareAction() {
                                          Registry.`is`(REGISTRY_KEY, false)
   }
 
- override fun getActionUpdateThread() = ActionUpdateThread.BGT
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
- override fun actionPerformed(e: AnActionEvent) {
+  override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val course = StudyTaskManager.getInstance(project).course as? EduCourse ?: return
 

@@ -16,7 +16,8 @@ import org.rust.lang.RsLanguage
 class RsCreateLessonTest : RsActionTestBase() {
 
   @Test
-  fun `test add lesson item no trailing comma`() = addLastLesson("""
+  fun `test add lesson item no trailing comma`() = addLastLesson(
+    """
     [workspace]
 
     members = [
@@ -37,10 +38,12 @@ class RsCreateLessonTest : RsActionTestBase() {
     exclude = [
         "**/*.yaml"
     ]    
-  """)
+  """
+  )
 
   @Test
-  fun `test add lesson item trailing comma`() = addLastLesson("""
+  fun `test add lesson item trailing comma`() = addLastLesson(
+    """
     [workspace]
 
     members = [
@@ -61,10 +64,12 @@ class RsCreateLessonTest : RsActionTestBase() {
     exclude = [
         "**/*.yaml"
     ]
-  """)
+  """
+  )
 
   @Test
-  fun `test add lesson comments`() = addLastLesson("""
+  fun `test add lesson comments`() = addLastLesson(
+    """
     [workspace]
 
     members = [
@@ -85,10 +90,12 @@ class RsCreateLessonTest : RsActionTestBase() {
     exclude = [
         "**/*.yaml"
     ]
-  """)
+  """
+  )
 
   @Test
-  fun `test add lesson extra spaces`() = addLastLesson("""
+  fun `test add lesson extra spaces`() = addLastLesson(
+    """
     [workspace]
 
     members = [
@@ -109,7 +116,8 @@ class RsCreateLessonTest : RsActionTestBase() {
     exclude = [
         "**/*.yaml"
     ]
-  """)
+  """
+  )
 
   @Test
   fun `test add lesson item with section`() {
@@ -122,7 +130,8 @@ class RsCreateLessonTest : RsActionTestBase() {
           eduTask("task1")
         }
       }
-      additionalFile(CargoConstants.MANIFEST_FILE, """
+      additionalFile(
+        CargoConstants.MANIFEST_FILE, """
         [workspace]
 
         members = [
@@ -132,12 +141,14 @@ class RsCreateLessonTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     addNewLessonWithTask("lesson2", "task1", findFile("section1"))
 
-    checkCargoToml("""
+    checkCargoToml(
+      """
       [workspace]
       
       members = [
@@ -148,7 +159,8 @@ class RsCreateLessonTest : RsActionTestBase() {
       exclude = [
           "**/*.yaml"
       ]
-    """)
+    """
+    )
   }
 
   @Test
@@ -158,7 +170,8 @@ class RsCreateLessonTest : RsActionTestBase() {
       language = RsLanguage
     ) {
       section("section1")
-      additionalFile("Cargo.toml", """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
 
         members = [
@@ -167,12 +180,14 @@ class RsCreateLessonTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     addNewLessonWithTask("lesson1", "task1", findFile("section1"))
 
-    checkCargoToml("""
+    checkCargoToml(
+      """
       [workspace]
       
       members = [
@@ -182,7 +197,8 @@ class RsCreateLessonTest : RsActionTestBase() {
       exclude = [
           "**/*.yaml"
       ]
-    """)
+    """
+    )
   }
 
   @Test
@@ -197,7 +213,8 @@ class RsCreateLessonTest : RsActionTestBase() {
       lesson("lesson3") {
         eduTask("task3")
       }
-      additionalFile("Cargo.toml", """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
 
         members = [
@@ -208,12 +225,14 @@ class RsCreateLessonTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     addNewLessonWithTask("lesson2", "task2", findFile("lesson1"))
 
-    checkCargoToml("""
+    checkCargoToml(
+      """
       [workspace]
 
       members = [
@@ -225,7 +244,8 @@ class RsCreateLessonTest : RsActionTestBase() {
       exclude = [
           "**/*.yaml"
       ]
-    """)
+    """
+    )
   }
 
   @Test
@@ -237,7 +257,8 @@ class RsCreateLessonTest : RsActionTestBase() {
       lesson("lesson1") {
         eduTask("task1")
       }
-      additionalFile("Cargo.toml", """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
 
         members = [
@@ -247,14 +268,16 @@ class RsCreateLessonTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     withMockCreateStudyItemUi(MockNewStudyItemUi("lesson2")) {
       testAction(CCCreateLesson.ACTION_ID, dataContext(LightPlatformTestCase.getSourceRoot()))
     }
 
-    checkCargoToml("""
+    checkCargoToml(
+      """
         [workspace]
 
         members = [
@@ -264,7 +287,8 @@ class RsCreateLessonTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """)
+      """
+    )
   }
 
   @Test
@@ -276,7 +300,8 @@ class RsCreateLessonTest : RsActionTestBase() {
       lesson("lesson1") {
         eduTask("task1")
       }
-      additionalFile("Cargo.toml", """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
 
         members = [
@@ -286,14 +311,16 @@ class RsCreateLessonTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
     withMockCreateStudyItemUi(MockNewStudyItemUi("task2")) {
       testAction(CCCreateTask.ACTION_ID, dataContext(findFile("lesson1")))
     }
 
-    checkCargoToml("""
+    checkCargoToml(
+      """
         [workspace]
 
         members = [
@@ -303,7 +330,8 @@ class RsCreateLessonTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """)
+      """
+    )
   }
 
 

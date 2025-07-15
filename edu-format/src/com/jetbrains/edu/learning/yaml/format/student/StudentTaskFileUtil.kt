@@ -4,13 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
-import com.jetbrains.edu.learning.courseFormat.BinaryContents
-import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
-import com.jetbrains.edu.learning.courseFormat.InMemoryTextualContents
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.TextualContents
-import com.jetbrains.edu.learning.courseFormat.logger
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.yaml.format.TaskFileBuilder
 import com.jetbrains.edu.learning.yaml.format.TaskFileYamlMixin

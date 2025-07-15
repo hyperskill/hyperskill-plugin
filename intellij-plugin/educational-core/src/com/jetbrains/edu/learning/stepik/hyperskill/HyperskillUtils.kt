@@ -14,15 +14,11 @@ import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.configuration.EduConfiguratorManager
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMENT
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
-import com.jetbrains.edu.learning.courseFormat.Lesson
-import com.jetbrains.edu.learning.courseFormat.Section
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillTopic
@@ -238,16 +234,21 @@ private fun openStep(project: Project, task: Task?, nextActivityInfo: NextActivi
       val nextTask = task?.lesson?.let { NavigationUtils.nextLesson(it)?.taskList?.firstOrNull() }
       if (nextTask != null) {
         NavigationUtils.navigateToTask(project, nextTask)
-      }  else {
+      }
+      else {
         EduBrowser.getInstance().browse(topicCompletedLink(nextActivityInfo.topicId))
       }
     }
+
     NextActivityInfo.NoTopic, NextActivityInfo.NoActivity -> showNoNextActivityNotification(task, project)
     is NextActivityInfo.NotCalculated -> {
       showNoNextActivityNotification(task, project)
-      LOG.warn("Next step for taskId=${task?.id}, topicId=${nextActivityInfo.topicId} isn't calculated yet: current step with not " +
-               "completed state is returned")
+      LOG.warn(
+        "Next step for taskId=${task?.id}, topicId=${nextActivityInfo.topicId} isn't calculated yet: current step with not " +
+        "completed state is returned"
+      )
     }
+
     is NextActivityInfo.Next -> {
       val nextStep = nextActivityInfo.stepSource
       val topicId = nextActivityInfo.topicId

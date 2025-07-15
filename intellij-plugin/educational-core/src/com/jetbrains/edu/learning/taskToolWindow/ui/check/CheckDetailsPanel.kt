@@ -83,14 +83,18 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
 
     if (course is HyperskillCourse) {
       if (course.isTaskInProject(task) && checkResult.status == CheckStatus.Failed) {
-        val showMoreInfo = LightColoredActionLink(EduCoreBundle.message("hyperskill.review.topics.action.link"),
-                                                  SwitchTaskTabAction(project, 1))
+        val showMoreInfo = LightColoredActionLink(
+          EduCoreBundle.message("hyperskill.review.topics.action.link"),
+          SwitchTaskTabAction(project, 1)
+        )
         linksPanel.add(showMoreInfo)
       }
 
       if (PostHyperskillProjectToGithub.isAvailable(task)) {
-        val postToGithubLink = LightColoredActionLink(EduCoreBundle.message("hyperskill.action.post.to.github"),
-                                                      PostHyperskillProjectToGithub())
+        val postToGithubLink = LightColoredActionLink(
+          EduCoreBundle.message("hyperskill.action.post.to.github"),
+          PostHyperskillProjectToGithub()
+        )
         linksPanel.add(postToGithubLink)
       }
     }
@@ -129,6 +133,7 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
         val text = EduCoreBundle.message("label.peek.solution") + if (isExternal) "" else "..."
         LightColoredActionLink(text, ActionManager.getInstance().getAction(CompareWithAnswerAction.ACTION_ID), isExternal = isExternal)
       }
+
       else -> null
     }
     peekSolution?.let { answerHintsPanel.value.add(it) }
@@ -146,6 +151,7 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
 
   private class ShowFullOutputAction(private val project: Project, private val text: String) : DumbAwareAction(null as String?) {
     private var outputShown = false
+
     //suppressing capitalization because LightColoredActionLink's base class requires Sentence capitalization for the parameter
     @Suppress("DialogTitleCapitalization")
     val actionLink: AnActionLink = LightColoredActionLink(EduCoreBundle.message("label.full.output.show"), this)
@@ -187,8 +193,10 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
     override fun actionPerformed(e: AnActionEvent) {
       val expected = DiffContentFactory.getInstance().create(diff.expected)
       val actual = DiffContentFactory.getInstance().create(diff.actual)
-      val request = SimpleDiffRequest(diff.title, expected, actual, EduCoreBundle.message("compare.outputs.expected"),
-                                      EduCoreBundle.message("compare.outputs.actual"))
+      val request = SimpleDiffRequest(
+        diff.title, expected, actual, EduCoreBundle.message("compare.outputs.expected"),
+        EduCoreBundle.message("compare.outputs.actual")
+      )
       DiffManager.getInstance().showDiff(project, request, DiffDialogHints.FRAME)
     }
   }

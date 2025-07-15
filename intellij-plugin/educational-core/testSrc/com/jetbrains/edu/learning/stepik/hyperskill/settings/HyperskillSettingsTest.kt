@@ -8,7 +8,8 @@ class HyperskillSettingsTest : EduSettingsServiceTestBase() {
   @Test
   fun `test serialization`() {
     val settings = HyperskillSettings()
-    settings.loadStateAndCheck("""
+    settings.loadStateAndCheck(
+      """
       <HyperskillSettings>
         <option name="updateAutomatically" value="false" />
         <HyperskillAccount>
@@ -20,6 +21,7 @@ class HyperskillSettingsTest : EduSettingsServiceTestBase() {
           <option name="id" value="12345678" />
         </HyperskillAccount>
       </HyperskillSettings>
-    """)
+    """
+    )
   }
 }

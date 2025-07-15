@@ -26,16 +26,20 @@ class JHyperskillCodeTaskNameTest : EduTestCase() {
     ) {
       frameworkLesson("lesson1") {
         eduTask("task1", stepId = 1) {
-          taskFile("src/Task.java", """
+          taskFile(
+            "src/Task.java", """
             public class Task {
             }
-          """.trimIndent())
-          taskFile("src/CoolTaskName.java", """
+          """.trimIndent()
+          )
+          taskFile(
+            "src/CoolTaskName.java", """
             public class CoolTaskName {
               public static void main(String[] args) {
               }
             }
-          """.trimIndent())
+          """.trimIndent()
+          )
           taskFile("test/Tests1.java")
         }
       }
@@ -59,12 +63,14 @@ class JHyperskillCodeTaskNameTest : EduTestCase() {
     course.hyperskillProject = HyperskillProject()
     course.stages = listOf(HyperskillStage(1, "", 1))
 
-    val fileName = course.configurator?.getMockFileName(course, """
+    val fileName = course.configurator?.getMockFileName(
+      course, """
       public class CoolTaskName {
         public static void main(String[] args) {
         }
       }
-      """.trimIndent())
+      """.trimIndent()
+    )
 
     assertEquals("CoolTaskName.java", fileName)
   }

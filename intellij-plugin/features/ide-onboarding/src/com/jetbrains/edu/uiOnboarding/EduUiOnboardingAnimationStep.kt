@@ -13,8 +13,9 @@ data class EduUiOnboardingAnimationStep(
   val transitionType: TransitionType = TransitionType.LINEAR
 ) {
 
-  val notMoving: Boolean get() =
-    fromPoint.component == toPoint.component && fromPoint.point.distanceSq(toPoint.point) < 4
+  val notMoving: Boolean
+    get() =
+      fromPoint.component == toPoint.component && fromPoint.point.distanceSq(toPoint.point) < 4
 }
 
 interface EduUiOnboardingAnimation {
@@ -24,5 +25,5 @@ interface EduUiOnboardingAnimation {
 
 enum class TransitionType(val f: (Double) -> Double) {
   LINEAR({ t -> t }),
-  EASE_OUT({ t -> 1 - (1 - t)*(1 - t) })
+  EASE_OUT({ t -> 1 - (1 - t) * (1 - t) })
 }

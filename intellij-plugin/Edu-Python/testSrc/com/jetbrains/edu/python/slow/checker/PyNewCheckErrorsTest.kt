@@ -33,30 +33,36 @@ class PyNewCheckErrorsTest : PyCheckersTestBase() {
     return course(language = PythonLanguage.INSTANCE, environment = "unittest") {
       lesson {
         eduTask("EduTestsFailed") {
-          pythonTaskFile("task.py", """
+          pythonTaskFile(
+            "task.py", """
             def sum(a, b):
                 return a + b + 1
-            """)
+            """
+          )
           dir("tests") {
             taskFile("__init__.py")
             taskFile("tests.py", test)
           }
         }
         eduTask("EduNoTestsRun") {
-          pythonTaskFile("task.py", """
+          pythonTaskFile(
+            "task.py", """
             def sum(a, b):
                 return a + b
-            """)
+            """
+          )
           dir("tests") {
             taskFile("__init__.py")
             taskFile("tests.py")
           }
         }
         eduTask("SyntaxError") {
-          pythonTaskFile("task.py", """
+          pythonTaskFile(
+            "task.py", """
             def sum(a, b):
                 return a + b hello goodbye
-            """)
+            """
+          )
           dir("tests") {
             taskFile("__init__.py")
             taskFile("tests.py", test)
@@ -66,37 +72,44 @@ class PyNewCheckErrorsTest : PyCheckersTestBase() {
           pythonTaskFile("task.py")
           dir("tests") {
             taskFile("__init__.py")
-            taskFile("tests.py", """
+            taskFile(
+              "tests.py", """
               |import unittest
               |class TestCase(unittest.TestCase):
               |    def test_add(self):
               |        self.assertTrue(False, "My own message")
-              |""".trimMargin())
+              |""".trimMargin()
+            )
           }
         }
         eduTask("DoNotEscapeMessageInFailedTest") {
           pythonTaskFile("task.py")
           dir("tests") {
             taskFile("__init__.py")
-            taskFile("tests.py", """
+            taskFile(
+              "tests.py", """
               |import unittest
               |class TestCase(unittest.TestCase):
               |    def test_add(self):
               |        self.assertTrue(False, "<br>")
-              |""".trimMargin())
+              |""".trimMargin()
+            )
           }
         }
         eduTask("CustomRunConfiguration") {
-          pythonTaskFile("task.py", """
+          pythonTaskFile(
+            "task.py", """
             import os
 
 
             def hello():
                 return os.getenv("EXAMPLE_ENV")
-            """)
+            """
+          )
           dir("tests") {
             taskFile("__init__.py")
-            taskFile("tests.py", """
+            taskFile(
+              "tests.py", """
               import unittest
 
               from task import hello
@@ -105,10 +118,12 @@ class PyNewCheckErrorsTest : PyCheckersTestBase() {
               class TestCase(unittest.TestCase):
                   def test_hello(self):
                       self.assertEqual(hello(), "Hello", msg="Error message")
-              """)
+              """
+            )
           }
           dir("runConfigurations") {
-            xmlTaskFile("CustomCheck.run.xml", """
+            xmlTaskFile(
+              "CustomCheck.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration name="CustomCheck" type="tests" factoryName="Unittests">
                   <module name="Python Course14" />
@@ -130,7 +145,8 @@ class PyNewCheckErrorsTest : PyCheckersTestBase() {
                   <method v="2" />
                 </configuration>
               </component>
-            """)
+            """
+            )
           }
         }
 
@@ -149,21 +165,41 @@ class PyNewCheckErrorsTest : PyCheckersTestBase() {
     CheckActionListener.setCheckResultVerifier { task, checkResult ->
       val matcher = when (task.name) {
         "EduTestsFailed" ->
-          Result(CheckStatus.Failed, equalTo("4 != 3 : error"),
-                 diff(CheckResultDiff(expected = "4", actual = "3", title = "Comparison Failure (test_add)")), nullValue())
-        "EduNoTestsRun" -> Result(CheckStatus.Unchecked, containsString(EduFormatBundle.message("check.no.tests")), nullValue(), nullValue())
-        "SyntaxError" -> Result(CheckStatus.Failed, containsString("Syntax Error"), nullValue(),
-                                containsString("SyntaxError: invalid syntax"))
+          Result(
+            CheckStatus.Failed, equalTo("4 != 3 : error"),
+            diff(CheckResultDiff(expected = "4", actual = "3", title = "Comparison Failure (test_add)")), nullValue()
+          )
+
+        "EduNoTestsRun" -> Result(
+          CheckStatus.Unchecked,
+          containsString(EduFormatBundle.message("check.no.tests")),
+          nullValue(),
+          nullValue()
+        )
+
+        "SyntaxError" -> Result(
+          CheckStatus.Failed, containsString("Syntax Error"), nullValue(),
+          containsString("SyntaxError: invalid syntax")
+        )
+
         "AssertionError" -> Result(CheckStatus.Failed, equalTo("False is not true : My own message"), nullValue(), nullValue())
-        "DoNotEscapeMessageInFailedTest" -> Result(CheckStatus.Failed, equalTo("False is not true : <br>"),
-                                                   nullValue(), nullValue())
+        "DoNotEscapeMessageInFailedTest" -> Result(
+          CheckStatus.Failed, equalTo("False is not true : <br>"),
+          nullValue(), nullValue()
+        )
+
         "CustomRunConfiguration" ->
-          Result(CheckStatus.Failed, equalTo("'Hello!' != 'Hello'"),
-                 diff(CheckResultDiff(expected = "Hello!", actual = "Hello", title = "Comparison Failure (test_hello)")), nullValue())
+          Result(
+            CheckStatus.Failed, equalTo("'Hello!' != 'Hello'"),
+            diff(CheckResultDiff(expected = "Hello!", actual = "Hello", title = "Comparison Failure (test_hello)")), nullValue()
+          )
 
         "OutputTestsFailed" ->
-          Result(CheckStatus.Failed, equalTo(EduCoreBundle.message("check.incorrect")),
-                 diff(CheckResultDiff(expected = "Hello, World!\n", actual = "Hello, World\n")), nullValue())
+          Result(
+            CheckStatus.Failed, equalTo(EduCoreBundle.message("check.incorrect")),
+            diff(CheckResultDiff(expected = "Hello, World!\n", actual = "Hello, World\n")), nullValue()
+          )
+
         else -> error("Unexpected task name: ${task.name}")
       }
 
@@ -181,8 +217,10 @@ class PyNewCheckErrorsTest : PyCheckersTestBase() {
 
     CheckActionListener.setCheckResultVerifier { task, checkResult ->
       assertEquals("Status for ${task.name} doesn't match", CheckStatus.Unchecked, checkResult.status)
-      assertThat("Checker output for ${task.name} doesn't match", checkResult.message,
-                 containsString(EduCoreBundle.message("error.no.interpreter", PYTHON)))
+      assertThat(
+        "Checker output for ${task.name} doesn't match", checkResult.message,
+        containsString(EduCoreBundle.message("error.no.interpreter", PYTHON))
+      )
     }
     doTest()
   }

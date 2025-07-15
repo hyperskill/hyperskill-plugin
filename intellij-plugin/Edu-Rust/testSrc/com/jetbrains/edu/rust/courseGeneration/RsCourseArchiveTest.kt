@@ -15,28 +15,36 @@ class RsCourseArchiveTest : CourseArchiveTestBase() {
     ) {
       lesson {
         eduTask {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "task1"
             version = "0.1.0"
             edition = "2018"            
-          """)
-          taskFile("src/lib.rs", """
+          """
+          )
+          taskFile(
+            "src/lib.rs", """
             // TODO: replace this with an actual task
             pub fn sum(a: i32, b: i32) -> i32 {
                 a + b
             }
-          """)
+          """
+          )
         }
       }
-      additionalFile("Cargo.toml", """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
         members = ["lesson1/*/"]
-      """)
-      additionalFile(".cargo/config.toml", """
+      """
+      )
+      additionalFile(
+        ".cargo/config.toml", """
         [build]
         rustflags = ["-Adead_code", "-Aunused_variables"]
-      """)
+      """
+      )
     }
     doTest(course)
   }
@@ -49,28 +57,36 @@ class RsCourseArchiveTest : CourseArchiveTestBase() {
     ) {
       lesson {
         eduTask {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "task1"
             version = "0.1.0"
             edition = "2018"            
-          """)
-          taskFile("src/lib.rs", """
+          """
+          )
+          taskFile(
+            "src/lib.rs", """
             // TODO: replace this with an actual task
             pub fn sum(a: i32, b: i32) -> i32 {
                 a + b
             }
-          """)
+          """
+          )
         }
       }
-      additionalFile("Cargo.toml", """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
         members = ["lesson1/*/"]
-      """)
-      additionalFile(".cargo/config", """
+      """
+      )
+      additionalFile(
+        ".cargo/config", """
         [build]
         rustflags = ["-Adead_code", "-Aunused_variables"]
-      """)
+      """
+      )
     }
     doTest(course)
   }

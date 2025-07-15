@@ -15,7 +15,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
       file("task.md")
       file("go.mod")
       dir("main") {
-        file("main.go", """
+        file(
+          "main.go", """
             package main
             
             import (
@@ -27,7 +28,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
             	fmt.Println(task.Sum(2, 3))
             }
           
-        """)
+        """
+        )
       }
       file("task.go")
       dir("test") {
@@ -47,7 +49,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
     fullTaskStructure = {
       file("task.md")
       file("go.mod")
-      file("main.go", """
+      file(
+        "main.go", """
         package main
 
         import (
@@ -59,7 +62,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
         	fmt.Println()
         }
         
-      """)
+      """
+      )
       dir("test") {
         file("output.txt")
         file("input.txt")
@@ -79,7 +83,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
     fullTaskStructure = {
       file("task.md")
       file("go.mod")
-      file("main.go", """
+      file(
+        "main.go", """
         package main
 
         import (
@@ -91,7 +96,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
         	fmt.Println()
         }
         
-      """)
+      """
+      )
     },
     taskStructureWithoutSources = {
       file("task.md")
@@ -103,7 +109,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
     fullTaskStructure = {
       file("task.md")
       file("go.mod")
-      file("main.go", """
+      file(
+        "main.go", """
         package main
 
         import (
@@ -115,7 +122,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
         	fmt.Println()
         }
         
-      """)
+      """
+      )
     },
     taskStructureWithoutSources = {
       file("task.md")
@@ -127,7 +135,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
     fullTaskStructure = {
       file("task.md")
       file("go.mod")
-      file("main.go", """
+      file(
+        "main.go", """
         package main
 
         import (
@@ -139,7 +148,8 @@ class GoNewTaskStructureTest : CCNewTaskStructureTestBase() {
         	fmt.Println()
         }
         
-      """)
+      """
+      )
     },
     taskStructureWithoutSources = {
       file("task.md")

@@ -26,8 +26,10 @@ enum class CourseSource(val option: String, val description: String) {
       val courseId = location.toIntOrNull() ?: return Err("Marketplace course id should be an integer. Got `$location`")
 
       val marketplaceConnector = MarketplaceConnector.getInstance()
-      val course = marketplaceConnector.searchCourse(courseId, searchPrivate = false) ?:
-        marketplaceConnector.searchCourse(courseId, searchPrivate = true)
+      val course = marketplaceConnector.searchCourse(courseId, searchPrivate = false) ?: marketplaceConnector.searchCourse(
+        courseId,
+        searchPrivate = true
+      )
 
       return if (course != null) Ok(course) else Err("Failed to load Marketplace course `$location`")
     }

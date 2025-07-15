@@ -13,13 +13,16 @@ class PyPackagesInstallationTest : PyCheckersTestBase() {
     return course(language = PythonLanguage.INSTANCE, environment = "unittest") {
       lesson {
         eduTask("Edu") {
-          pythonTaskFile("task.py", """
+          pythonTaskFile(
+            "task.py", """
             def sum(a, b):
                 return a + b
-            """)
+            """
+          )
           dir("tests") {
             taskFile("__init__.py")
-            taskFile("tests.py", """
+            taskFile(
+              "tests.py", """
               import unittest
               import requests
               import hstest
@@ -27,7 +30,8 @@ class PyPackagesInstallationTest : PyCheckersTestBase() {
               class TestCase(unittest.TestCase):
                   def test_add(self):
                       self.assertEqual(sum(1, 2), 3, msg="error")
-              """)
+              """
+            )
           }
         }
       }

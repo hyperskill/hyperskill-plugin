@@ -54,7 +54,7 @@ fun getTaskStateFromFiles(initialFiles: Set<String>, taskDir: VirtualFile): FLTa
   return currentState
 }
 
-fun LessonContainer.visitFrameworkLessons(visit : (FrameworkLesson) -> Unit) {
+fun LessonContainer.visitFrameworkLessons(visit: (FrameworkLesson) -> Unit) {
   visitLessons {
     if (it is FrameworkLesson) {
       visit(it)

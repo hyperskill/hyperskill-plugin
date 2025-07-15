@@ -1,9 +1,9 @@
 package com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.steps
 
+import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
 import com.jetbrains.edu.learning.taskToolWindow.*
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformer
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformerContext
-import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
 import com.jetbrains.edu.learning.taskToolWindow.ui.canShowTerms
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -24,7 +24,7 @@ object TermsHighlighter : HtmlTransformer {
 
   private fun Element.isNotInsideCodeBlock(): Boolean {
     if (classNames().contains(CODE_BLOCK_CLASS) || classNames().contains(CODE_CLASS)) return false
-    return parents().map { it.classNames() }.all { !it.contains(CODE_BLOCK_CLASS) && !it.contains(CODE_CLASS)}
+    return parents().map { it.classNames() }.all { !it.contains(CODE_BLOCK_CLASS) && !it.contains(CODE_CLASS) }
   }
 
   override fun transform(html: Document, context: HtmlTransformerContext): Document {

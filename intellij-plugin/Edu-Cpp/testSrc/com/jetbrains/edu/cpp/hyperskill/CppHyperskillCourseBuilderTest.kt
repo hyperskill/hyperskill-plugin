@@ -9,7 +9,7 @@ import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
 import com.jetbrains.edu.learning.fileTree
 import org.junit.Test
 
-class CppHyperskillCourseBuilderTest  : CourseGenerationTestBase<CppProjectSettings>() {
+class CppHyperskillCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
   override val defaultSettings = CppProjectSettings()
 
   @Test

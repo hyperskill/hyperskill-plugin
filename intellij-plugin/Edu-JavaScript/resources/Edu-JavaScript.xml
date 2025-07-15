@@ -1,4 +1,4 @@
-<idea-plugin package="com.jetbrains.edu.javascript" xmlns:xi="http://www.w3.org/2001/XInclude">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.javascript">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="JavaScript"/>

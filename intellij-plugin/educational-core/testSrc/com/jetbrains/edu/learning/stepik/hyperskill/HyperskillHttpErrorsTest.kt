@@ -15,10 +15,13 @@ class HyperskillHttpErrorsTest : EduTestCase() {
 
   @Test
   fun `test service is under maintenance`() = doTest(HTTP_BAD_GATEWAY, EduFormatBundle.message("error.service.maintenance"))
+
   @Test
   fun `test service is down`() = doTest(HTTP_GATEWAY_TIMEOUT, EduFormatBundle.message("error.service.down"))
+
   @Test
   fun `test unexpected error occurred`() = doTest(HTTP_BAD_REQUEST, EduFormatBundle.message("error.unexpected.error", ""))
+
   @Test
   fun `test forbidden`() = doTest(HTTP_FORBIDDEN, EduFormatBundle.message("error.access.denied"))
 

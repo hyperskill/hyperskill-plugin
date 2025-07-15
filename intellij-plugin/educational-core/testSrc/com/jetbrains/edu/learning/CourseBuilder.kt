@@ -329,9 +329,9 @@ class LessonBuilder<T : Lesson>(val course: Course, section: Section?, val lesso
     choiceTask.isMultipleChoice = isMultipleChoice
     choiceTask.selectedVariants = selectedVariants
     choiceTask.status = status
-    quizHeader?.also {choiceTask.quizHeader = it }
-    messageCorrect?.also {choiceTask.messageCorrect = it }
-    messageIncorrect?.also {choiceTask.messageIncorrect = it }
+    quizHeader?.also { choiceTask.quizHeader = it }
+    messageCorrect?.also { choiceTask.messageCorrect = it }
+    messageIncorrect?.also { choiceTask.messageIncorrect = it }
   }
 
   fun stringTask(
@@ -443,7 +443,8 @@ class LessonBuilder<T : Lesson>(val course: Course, section: Section?, val lesso
     task.columns = columns
     if (selected.size != task.rows.size || selected.firstOrNull()?.size != columns.size) {
       task.createTable(rows, columns)
-    } else {
+    }
+    else {
       task.selected = selected
     }
     task.status = status
@@ -747,8 +748,10 @@ class TaskFileBuilder(val task: Task? = null) {
     taskFile.errorHighlightLevel = highlightLevel
   }
 
-  fun placeholder(index: Int, possibleAnswer: String? = null, placeholderText: String? = null,
-                  dependency: String = "", isVisible: Boolean = true) {
+  fun placeholder(
+    index: Int, possibleAnswer: String? = null, placeholderText: String? = null,
+    dependency: String = "", isVisible: Boolean = true
+  ) {
     val answerPlaceholder = taskFile.answerPlaceholders[index]
     if (possibleAnswer != null) {
       answerPlaceholder.possibleAnswer = possibleAnswer

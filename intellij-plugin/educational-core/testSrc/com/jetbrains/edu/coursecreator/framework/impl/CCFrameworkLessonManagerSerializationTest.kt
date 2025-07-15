@@ -11,9 +11,11 @@ import org.junit.Test
 class CCFrameworkLessonManagerSerializationTest : EduSettingsServiceTestBase() {
   @Test
   fun `test empty storage serialization`() {
-    CCFrameworkLessonManager.getInstance(project).loadStateAndCheck("""
+    CCFrameworkLessonManager.getInstance(project).loadStateAndCheck(
+      """
       <RecordState />
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 
   @Test
@@ -23,7 +25,8 @@ class CCFrameworkLessonManagerSerializationTest : EduSettingsServiceTestBase() {
 
     with(CCFrameworkLessonManager.getInstance(project)) {
       updateRecord(task1, 5)
-      loadStateAndCheck("""
+      loadStateAndCheck(
+        """
         <RecordState>
           <taskRecords>
             <map>
@@ -31,10 +34,12 @@ class CCFrameworkLessonManagerSerializationTest : EduSettingsServiceTestBase() {
             </map>
           </taskRecords>
         </RecordState>
-      """.trimIndent())
+      """.trimIndent()
+      )
 
       updateRecord(task1, 6)
-      loadStateAndCheck("""
+      loadStateAndCheck(
+        """
         <RecordState>
           <taskRecords>
             <map>
@@ -42,10 +47,12 @@ class CCFrameworkLessonManagerSerializationTest : EduSettingsServiceTestBase() {
             </map>
           </taskRecords>
         </RecordState>
-      """.trimIndent())
+      """.trimIndent()
+      )
 
       removeRecord(task1)
-      loadStateAndCheck("""
+      loadStateAndCheck(
+        """
          <RecordState />
       """.trimIndent()
       )

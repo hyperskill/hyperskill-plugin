@@ -22,7 +22,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -31,7 +32,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -45,7 +47,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: Test.txt
@@ -64,7 +67,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -84,7 +88,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -104,7 +109,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -118,7 +124,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     }.findTask("lesson1", "task1")
     task.taskFiles.values.first().isLearnerCreated = true
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -127,7 +134,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |  learner_created: true
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -140,7 +148,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -149,7 +158,8 @@ class StudentEncryptYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   private fun doTest(task: Task, expected: String) {

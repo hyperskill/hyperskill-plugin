@@ -6,8 +6,8 @@ import com.intellij.util.xmlb.annotations.Attribute
 import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.XCollection
 import com.jetbrains.edu.learning.EduTestAware
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings.TermsProjectState
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.educational.terms.format.Term
 import com.jetbrains.educational.terms.format.domain.TermsVersion
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.jetbrains.annotations.TestOnly
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.iterator
-import kotlin.collections.set
 
 @Service(Service.Level.PROJECT)
 @State(name = "TermsProjectSettings", reloadable = true, storages = [Storage("edu_terms.xml")])
@@ -86,7 +84,7 @@ class TermsProjectSettings : PersistentStateComponent<TermsProjectState>, EduTes
     fun asTerm(): Term = Term(value, definition)
 
     @Suppress("unused") // used for serialization
-    constructor(): this("", "")
+    constructor() : this("", "")
   }
 
   private fun Term.asStoredTerm(): StoredTerm = StoredTerm(value, definition)

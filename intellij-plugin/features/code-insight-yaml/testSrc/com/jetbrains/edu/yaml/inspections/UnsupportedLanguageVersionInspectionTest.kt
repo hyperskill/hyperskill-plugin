@@ -25,6 +25,7 @@ class UnsupportedLanguageVersionInspectionTest : YamlInspectionsTestBase(Unsuppo
     """.trimMargin("|")
     )
   }
+
   @Test
   fun `test supported version`() {
     val version = "1.42"

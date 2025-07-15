@@ -8,10 +8,10 @@ import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.actions.PreviousTaskAction
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
 import com.jetbrains.edu.learning.courseFormat.TaskFile
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillSolutionLoader
 import com.jetbrains.edu.learning.stepik.hyperskill.api.MockHyperskillConnector
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import org.junit.Test
 
@@ -297,19 +297,27 @@ class HyperskillLoadingTest : SolutionLoadingTestBase() {
     }
     val task1 = course.findTask("lesson1", "task1")
     // Additional visible file "src/additional1.txt" is added, but not visible file "src/additional2.txt" should not
-    checkVisibility(task1.name, task1.taskFiles,
-                    mapOf("src/Task.kt" to true,
-                          "src/Baz.kt" to true,
-                          "test/Tests1.kt" to false,
-                          "src/additional1.txt" to true))
+    checkVisibility(
+      task1.name, task1.taskFiles,
+      mapOf(
+        "src/Task.kt" to true,
+        "src/Baz.kt" to true,
+        "test/Tests1.kt" to false,
+        "src/additional1.txt" to true
+      )
+    )
 
     val task2 = course.findTask("lesson1", "task2")
     // Additional visible file "src/additional3.txt" is added, previous visible file "test/Tests2.kt" is still there
-    checkVisibility(task2.name, task2.taskFiles,
-                    mapOf("src/Task.kt" to true,
-                          "src/Baz.kt" to true,
-                          "test/Tests2.kt" to false,
-                          "src/additional3.txt" to true))
+    checkVisibility(
+      task2.name, task2.taskFiles,
+      mapOf(
+        "src/Task.kt" to true,
+        "src/Baz.kt" to true,
+        "test/Tests2.kt" to false,
+        "src/additional3.txt" to true
+      )
+    )
   }
 
   @Test

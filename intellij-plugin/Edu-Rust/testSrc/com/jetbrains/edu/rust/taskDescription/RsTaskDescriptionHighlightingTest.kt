@@ -9,7 +9,8 @@ class RsTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
   override val language: Language = RsLanguage
 
   @Test
-  fun `test markdown description highlighting`() = doMarkdownTest("""
+  fun `test markdown description highlighting`() = doMarkdownTest(
+    """
     Code block with default language:
     ```
       pub struct Foo<'a> {
@@ -46,10 +47,12 @@ class RsTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 
   @Test
-  fun `test html description highlighting`() = doHtmlTest("""
+  fun `test html description highlighting`() = doHtmlTest(
+    """
     <html>
     <p>Code block with default language:</p>
     <pre><code>
@@ -86,5 +89,6 @@ class RsTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 }

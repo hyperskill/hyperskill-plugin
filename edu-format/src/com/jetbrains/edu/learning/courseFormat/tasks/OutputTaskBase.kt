@@ -3,7 +3,7 @@ package com.jetbrains.edu.learning.courseFormat.tasks
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import java.util.*
 
-abstract class OutputTaskBase: Task {
+abstract class OutputTaskBase : Task {
   open val inputFileName: String = INPUT_PATTERN_NAME
   open val outputFileName: String = OUTPUT_PATTERN_NAME
   val latestOutputFileName: String = LATEST_OUTPUT_PATTERN_NAME

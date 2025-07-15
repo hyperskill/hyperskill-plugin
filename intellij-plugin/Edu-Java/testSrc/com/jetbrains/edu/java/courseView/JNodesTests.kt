@@ -34,7 +34,8 @@ class JNodesTests : CourseViewTestBase() {
       }
     }
 
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CourseNode Test Course  0/2
       |  -LessonNode lesson1
@@ -48,6 +49,7 @@ class JNodesTests : CourseViewTestBase() {
       |    -DirectoryNode src
       |     Task1.java
       |    Task2.java
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 }

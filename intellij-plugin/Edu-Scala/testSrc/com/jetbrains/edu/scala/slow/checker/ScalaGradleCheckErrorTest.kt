@@ -21,12 +21,15 @@ class ScalaGradleCheckErrorTest : JdkCheckerTestBase() {
     return course(language = ScalaLanguage.INSTANCE, environment = "Gradle") {
       lesson {
         eduTask("compilationError") {
-          scalaTaskFile("src/Task.scala", """
+          scalaTaskFile(
+            "src/Task.scala", """
             class Task {
               def foo(): Int
             }
-          """)
-          scalaTaskFile("test/TestSpec.scala", """
+          """
+          )
+          scalaTaskFile(
+            "test/TestSpec.scala", """
             import org.junit.runner.RunWith
             import org.scalatest.junit.JUnitRunner
             import org.scalatest.FunSuite
@@ -37,16 +40,20 @@ class ScalaGradleCheckErrorTest : JdkCheckerTestBase() {
                 assertResult(42) { new Task().foo() }
               }
             }
-          """)
+          """
+          )
         }
 
         eduTask("testFail") {
-          scalaTaskFile("src/Task.scala", """
+          scalaTaskFile(
+            "src/Task.scala", """
             class Task {
               def foo(): Int = 42
             }
-          """)
-          scalaTaskFile("test/TestSpec.scala", """
+          """
+          )
+          scalaTaskFile(
+            "test/TestSpec.scala", """
             import org.junit.runner.RunWith
             import org.scalatest.junit.JUnitRunner
             import org.scalatest.FunSuite
@@ -57,16 +64,20 @@ class ScalaGradleCheckErrorTest : JdkCheckerTestBase() {
                 fail("Message")
               }
             }
-          """)
+          """
+          )
         }
 
         eduTask("comparisonTestFail") {
-          scalaTaskFile("src/Task.scala", """
+          scalaTaskFile(
+            "src/Task.scala", """
             class Task {
               def foo(): Int = 43
             }
-          """)
-          scalaTaskFile("test/TestSpec.scala", """
+          """
+          )
+          scalaTaskFile(
+            "test/TestSpec.scala", """
             import org.junit.runner.RunWith
             import org.scalatest.junit.JUnitRunner
             import org.scalatest.FunSuite
@@ -77,17 +88,21 @@ class ScalaGradleCheckErrorTest : JdkCheckerTestBase() {
                 assertResult(42) { new Task().foo() }
               }
             }
-          """)
+          """
+          )
         }
         eduTask("gradleCustomRunConfiguration") {
-          scalaTaskFile("src/Task.scala", """
+          scalaTaskFile(
+            "src/Task.scala", """
             class Task {
               def foo(): String = {
                 System.getenv("EXAMPLE_ENV")
               }
             }
-          """)
-          scalaTaskFile("test/Test.scala", """
+          """
+          )
+          scalaTaskFile(
+            "test/Test.scala", """
             import org.junit.runner.RunWith
             import org.scalatest.junit.JUnitRunner
             import org.scalatest.FunSuite
@@ -98,9 +113,11 @@ class ScalaGradleCheckErrorTest : JdkCheckerTestBase() {
                 assertResult("Hello") { new Task().foo() }
               }
             }
-        """)
+        """
+          )
           dir("runConfigurations") {
-            xmlTaskFile("CustomGradleCheck.run.xml", """
+            xmlTaskFile(
+              "CustomGradleCheck.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration name="CustomGradleCheck" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
                   <ExternalSystemSettings>
@@ -131,19 +148,22 @@ class ScalaGradleCheckErrorTest : JdkCheckerTestBase() {
                   <method v="2" />
                 </configuration>
               </component>              
-            """)
+            """
+            )
           }
         }
 
 
         outputTask("outputTaskFail") {
-          scalaTaskFile("src/Main.scala", """
+          scalaTaskFile(
+            "src/Main.scala", """
             object Main {
               def main(args: Array[String]): Unit = {
                 println("OK")
               }
             }
-          """)
+          """
+          )
           taskFile("test/output.txt") {
             withText("OK!\n")
           }
@@ -161,11 +181,14 @@ class ScalaGradleCheckErrorTest : JdkCheckerTestBase() {
         "testFail" -> equalTo("Message") to nullValue()
         "comparisonTestFail" ->
           equalTo("Expected 42, but got 43") to nullValue()
+
         "gradleCustomRunConfiguration" ->
           equalTo("Expected \"Hello[]\", but got \"Hello[!]\"".xmlEscaped) to nullValue()
+
         "outputTaskFail" ->
           equalTo(EduCoreBundle.message("check.incorrect")) to
             diff(CheckResultDiff(expected = "OK!\n", actual = "OK\n"))
+
         else -> error("Unexpected task `${task.name}`")
       }
       assertThat("Checker message for ${task.name} doesn't match", checkResult.message, messageMatcher)

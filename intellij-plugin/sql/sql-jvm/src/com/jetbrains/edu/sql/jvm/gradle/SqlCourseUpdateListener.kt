@@ -23,7 +23,7 @@ class SqlCourseUpdateListener : CourseUpdateListener {
     val dataSourceUrls = dataSourceManager.dataSources.mapNotNullTo(HashSet()) { it.url }
 
     val tasksWithoutDataSource = course.allTasks.filter {
-        it.databaseUrl(project) !in dataSourceUrls
+      it.databaseUrl(project) !in dataSourceUrls
     }
 
     createDataSources(project, tasksWithoutDataSource)

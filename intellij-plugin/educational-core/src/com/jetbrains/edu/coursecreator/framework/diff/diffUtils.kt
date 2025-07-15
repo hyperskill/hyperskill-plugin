@@ -55,7 +55,8 @@ fun applyChangesWithMergeDialog(
     // set file name with a full file path
     FLLightVirtualFile(path, fileType, fileContent)
   }
-  val isOk = showMultipleFileMergeDialog(project, conflictLightVirtualFiles, mergeProvider, mergeDialogCustomizer, currentTask.name, targetTask.name)
+  val isOk =
+    showMultipleFileMergeDialog(project, conflictLightVirtualFiles, mergeProvider, mergeDialogCustomizer, currentTask.name, targetTask.name)
 
   // merge dialog was canceled
   if (!isOk) {
@@ -118,7 +119,8 @@ fun resolveConflicts(
   return with(DiffConflictResolveStrategy(project)) {
     try {
       resolveConflicts(currentState, baseState, targetState)
-    } finally {
+    }
+    finally {
       Disposer.dispose(this)
     }
   }

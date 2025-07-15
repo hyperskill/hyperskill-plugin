@@ -116,7 +116,8 @@ fun testAction(
   if (presentation.isEnabled != shouldBeEnabled) {
     val message = if (shouldBeEnabled) {
       "`${action.javaClass.name}` action is not enabled as expected"
-    } else {
+    }
+    else {
       "`${action.javaClass.name}` action is not disabled as expected"
     }
     error(message)
@@ -125,7 +126,8 @@ fun testAction(
   if (presentation.isVisible != shouldBeVisible) {
     val message = if (shouldBeVisible) {
       "`${action.javaClass.name}` action is not visible as expected"
-    } else {
+    }
+    else {
       "`${action.javaClass.name}` action is not invisible as expected"
     }
     error(message)
@@ -179,10 +181,12 @@ fun assertContentsEqual(path: String, expectedContents: FileContents, actualCont
       assertIs<BinaryContents>(actualContents, "Contents of $path must be binary")
       assertArrayEquals("Unexpected contents of $path", expectedContents.bytes, actualContents.bytes)
     }
+
     is TextualContents -> {
       assertIs<TextualContents>(actualContents, "Contents of $path must be textual")
       assertEquals("Unexpected contents of $path", expectedContents.text, actualContents.text)
     }
+
     is UndeterminedContents -> {
       assertIs<UndeterminedContents>(actualContents, "Contents of $path must be undetermined")
       assertEquals(

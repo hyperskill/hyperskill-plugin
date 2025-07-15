@@ -55,6 +55,7 @@ class CheckFeedbackPanel(task: Task, checkResult: CheckResult, alarm: Alarm) : J
           is IdeTask, is TheoryTask -> EduCoreBundle.message("check.done")
           else -> EduCoreBundle.message("check.correct")
         }
+
         else -> ""
       }
       border = JBUI.Borders.empty(16, FOCUS_BORDER_WIDTH, 0, 16 - FOCUS_BORDER_WIDTH)

@@ -13,32 +13,40 @@ class PlaceholderHighlightingPassTest : EduTestCase() {
   override val useDocumentListener: Boolean = false
 
   @Test
-  fun `test unchecked placeholder highlighting`() = doTest("""
+  fun `test unchecked placeholder highlighting`() = doTest(
+    """
     <p>oneline placeholder 1</p> some text
     <p>oneline placeholder 2</p> some text
-  """, status = CheckStatus.Unchecked)
+  """, status = CheckStatus.Unchecked
+  )
 
   @Test
-  fun `test failed placeholder highlighting`() = doTest("""
+  fun `test failed placeholder highlighting`() = doTest(
+    """
     <p>multiline
        placeholder 1</p>
     <p>multi
        line
        placeholder 2</p>       
-  """, status = CheckStatus.Failed)
+  """, status = CheckStatus.Failed
+  )
 
   @Test
-  fun `test solved placeholder highlighting`() = doTest("""
+  fun `test solved placeholder highlighting`() = doTest(
+    """
     empty <p></p> placeholders <p></p>
-  """, status = CheckStatus.Solved)
+  """, status = CheckStatus.Solved
+  )
 
   @Test
-  fun `test placeholder highlighting in educator mode`() = doTest("""
+  fun `test placeholder highlighting in educator mode`() = doTest(
+    """
     <p>oneline placeholder</p> some text  
     <p>multiline
        placeholder</p>
     empty <p></p> placeholder 
-  """, courseMode = CourseMode.EDUCATOR)
+  """, courseMode = CourseMode.EDUCATOR
+  )
 
   private fun doTest(
     text: String,
@@ -75,8 +83,14 @@ class PlaceholderHighlightingPassTest : EduTestCase() {
 
     val highlightingData = ExpectedHighlightingData(myFixture.editor.document)
     for (info in PlaceholderHighlightingInfo.values()) {
-      highlightingData.registerHighlightingType(info.severity.name, ExpectedHighlightingData.ExpectedHighlightingSet(info.severity, false, true))
-      highlightingData.registerHighlightingType("eol_" + info.severity.name, ExpectedHighlightingData.ExpectedHighlightingSet(info.severity, true, true))
+      highlightingData.registerHighlightingType(
+        info.severity.name,
+        ExpectedHighlightingData.ExpectedHighlightingSet(info.severity, false, true)
+      )
+      highlightingData.registerHighlightingType(
+        "eol_" + info.severity.name,
+        ExpectedHighlightingData.ExpectedHighlightingSet(info.severity, true, true)
+      )
     }
     highlightingData.init()
     (myFixture as CodeInsightTestFixtureImpl).collectAndCheckHighlighting(highlightingData)

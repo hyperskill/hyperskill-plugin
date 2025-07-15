@@ -7,24 +7,24 @@
           "id" : "102996",
           "pluginId" : "1",
           "version" : "3",
-          "compatibility": {
-            "gte": 13
+          "compatibility" : {
+            "gte" : 13
           }
         },
         {
           "id" : "102996",
           "pluginId" : "2",
           "version" : "3",
-          "compatibility": {
-            "gte": 14
+          "compatibility" : {
+            "gte" : 14
           }
         },
         {
           "id" : "102996",
           "pluginId" : "3",
           "version" : "3",
-          "compatibility": {
-            "gte": 13
+          "compatibility" : {
+            "gte" : 13
           }
         }
       ]

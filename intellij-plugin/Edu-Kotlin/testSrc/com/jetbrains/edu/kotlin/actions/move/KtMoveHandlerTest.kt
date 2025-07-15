@@ -12,9 +12,11 @@ class KtMoveHandlerTest : MoveHandlerTestBase(KotlinLanguage.INSTANCE) {
   fun `test do not forbid move refactoring for functions`() {
     val findTarget: (Course) -> PsiElement = { findPsiFile("lesson1/task1/Bar.kt") }
     doTest(findTarget) {
-      kotlinTaskFile("Foo.kt", """
+      kotlinTaskFile(
+        "Foo.kt", """
         fun foo<caret>() {}
-      """)
+      """
+      )
       kotlinTaskFile("Bar.kt")
     }
   }
@@ -23,9 +25,11 @@ class KtMoveHandlerTest : MoveHandlerTestBase(KotlinLanguage.INSTANCE) {
   fun `test do not forbid move refactoring for classes`() {
     val findTarget: (Course) -> PsiElement = { findPsiFile("lesson1/task1/Bar.kt") }
     doTest(findTarget) {
-      kotlinTaskFile("Foo.kt", """
+      kotlinTaskFile(
+        "Foo.kt", """
         class Foo<caret>
-      """)
+      """
+      )
       kotlinTaskFile("Bar.kt")
     }
   }

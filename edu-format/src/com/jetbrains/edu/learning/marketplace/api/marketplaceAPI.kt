@@ -1,10 +1,6 @@
 package com.jetbrains.edu.learning.marketplace.api
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jetbrains.edu.learning.authUtils.OAuthAccount
 import com.jetbrains.edu.learning.courseFormat.*
@@ -188,19 +184,19 @@ sealed class UploadResponse
 data class SuccessCourseUploadResponse(
   val warnings: List<String>,
   val plugin: CourseBean
-): UploadResponse()
+) : UploadResponse()
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SuccessCourseUpdateUploadResponse(
   val warnings: List<String>,
   val update: UpdateInfo
-): UploadResponse()
+) : UploadResponse()
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class FailedCourseUploadResponse(
   val warnings: List<String>,
   val errors: List<String>
-): UploadResponse() {
+) : UploadResponse() {
   companion object {
     @JvmStatic
     fun parse(objectMapper: ObjectMapper, content: String): FailedCourseUploadResponse {

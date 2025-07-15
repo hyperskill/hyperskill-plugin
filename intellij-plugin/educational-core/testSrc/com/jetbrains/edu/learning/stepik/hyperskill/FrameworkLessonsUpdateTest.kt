@@ -140,10 +140,12 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """.trimIndent())
+            """.trimIndent()
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {

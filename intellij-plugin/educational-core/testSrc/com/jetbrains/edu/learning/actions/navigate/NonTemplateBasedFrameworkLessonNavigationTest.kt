@@ -35,16 +35,20 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -82,15 +86,19 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests1.kt", """
+            file(
+              "Tests1.kt", """
               fun tests1() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -136,16 +144,20 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -191,16 +203,20 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -246,16 +262,20 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun baz() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -294,18 +314,24 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
-            """)
-            file("Bar.kt", """
+            """
+            )
+            file(
+              "Bar.kt", """
               fun bar() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -347,17 +373,23 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
-            """)
-            file("Baz.kt", """
+            """
+            )
+            file(
+              "Baz.kt", """
               fun baz() {}
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -397,14 +429,18 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -526,20 +562,28 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
-            """)
-            file("secret.kt", """
+            """
+            )
+            file(
+              "secret.kt", """
               fun f() = 42
-            """)
-            file("invisible2.kt", """
+            """
+            )
+            file(
+              "invisible2.kt", """
               World!
-            """)
+            """
+            )
           }
           dir("test") {
-            file("tests.kt", """
+            file(
+              "tests.kt", """
               fun tests1() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -600,35 +644,49 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               2
               1
               0
               fun foo() {}
-            """)
-            file("invisible3.kt", """
+            """
+            )
+            file(
+              "invisible3.kt", """
               fun f() = 17
-            """)
-            file("tmp0.kt", """
+            """
+            )
+            file(
+              "tmp0.kt", """
               fun f0() = 0
-            """)
-            file("tmp1.kt", """
+            """
+            )
+            file(
+              "tmp1.kt", """
               fun f1() = 1
-            """)
-            file("tmp2.kt", """
+            """
+            )
+            file(
+              "tmp2.kt", """
               fun f2() = 2
-            """)
+            """
+            )
           }
           dir("test") {
-            file("tests.kt", """
+            file(
+              "tests.kt", """
               22
               11
               00
               fun tests() {}
-            """)
-            file("tests3.kt", """
+            """
+            )
+            file(
+              "tests3.kt", """
               fun tests3() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -660,12 +718,16 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson") {
         dir("task") {
           dir("src") {
-            file("A.kt", """
+            file(
+              "A.kt", """
               fun foo1() {}
-            """)
-            file("B.kt", """
+            """
+            )
+            file(
+              "B.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -706,12 +768,16 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson") {
         dir("task") {
           dir("src") {
-            file("A.kt", """
+            file(
+              "A.kt", """
               3fun foo1() {}
-            """)
-            file("B.kt", """
+            """
+            )
+            file(
+              "B.kt", """
               2fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -753,12 +819,16 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson") {
         dir("task") {
           dir("src") {
-            file("A.kt", """
+            file(
+              "A.kt", """
               fun foo1() {}
-            """)
-            file("B.kt", """
+            """
+            )
+            file(
+              "B.kt", """
               2fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -814,12 +884,16 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
             file("b.kt", createRunConfigurationTemplate("task3", "Task2"))
           }
           dir("src") {
-            file("Task1.kt", """
+            file(
+              "Task1.kt", """
               fun main() {}
-            """)
-            file("Task2.kt", """
+            """
+            )
+            file(
+              "Task2.kt", """
               fun main() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -868,15 +942,21 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task1.kt", """
+            file(
+              "Task1.kt", """
               fun main2() {}
-            """)
-            file("Task3.kt", """
+            """
+            )
+            file(
+              "Task3.kt", """
               fun main1() {}
-            """)
-            file("Task4.kt", """
+            """
+            )
+            file(
+              "Task4.kt", """
               fun main2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {

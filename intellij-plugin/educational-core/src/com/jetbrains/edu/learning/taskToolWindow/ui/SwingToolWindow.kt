@@ -91,7 +91,8 @@ class SwingToolWindow(project: Project) : TaskToolWindow(project) {
         val className = parent.parentElement.attributes.getAttribute(HTML.Attribute.CLASS) as String
         if ("hint" != className) {
           LOG.warn(
-            String.format("Div element with hint class not found. Course: %s", StudyTaskManager.getInstance(project).course))
+            String.format("Div element with hint class not found. Course: %s", StudyTaskManager.getInstance(project).course)
+          )
           return
         }
         val hintTextElement = getHintTextElement(parent)

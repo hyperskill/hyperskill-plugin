@@ -53,15 +53,19 @@ open class GradleEnvironmentChecker : EnvironmentChecker() {
       get() = CheckResult(CheckStatus.Unchecked, EduCoreBundle.message("error.no.sdk.gradle", ENVIRONMENT_CONFIGURATION_LINK_GRADLE))
 
     fun getFailedToLaunchCheckingResult(project: Project): CheckResult {
-      return CheckResult(CheckStatus.Unchecked,
-                         EduCoreBundle.message("error.failed.to.launch.checking.with.reload.gradle.message", RELOAD_GRADLE_LINK,
-                                               EduFormatNames.NO_TESTS_URL), hyperlinkAction = { reloadGradle(project) })
+      return CheckResult(
+        CheckStatus.Unchecked,
+        EduCoreBundle.message(
+          "error.failed.to.launch.checking.with.reload.gradle.message", RELOAD_GRADLE_LINK,
+          EduFormatNames.NO_TESTS_URL
+        ), hyperlinkAction = { reloadGradle(project) })
     }
 
     private fun getGradleNotImportedResult(project: Project): CheckResult {
-      return CheckResult(CheckStatus.Unchecked,
-                         EduJVMBundle.message("error.gradle.not.imported", RELOAD_GRADLE_LINK, EduFormatNames.NO_TESTS_URL),
-                         hyperlinkAction = { reloadGradle(project) })
+      return CheckResult(
+        CheckStatus.Unchecked,
+        EduJVMBundle.message("error.gradle.not.imported", RELOAD_GRADLE_LINK, EduFormatNames.NO_TESTS_URL),
+        hyperlinkAction = { reloadGradle(project) })
     }
 
     private const val OPEN_MODULE_SETTINGS = "open_module_settings"

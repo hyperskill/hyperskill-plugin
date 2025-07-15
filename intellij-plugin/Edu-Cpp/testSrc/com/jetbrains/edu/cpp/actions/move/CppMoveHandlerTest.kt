@@ -12,9 +12,11 @@ class CppMoveHandlerTest : MoveHandlerTestBase(OCLanguage.getInstance(), environ
   fun `test do not forbid move refactoring for functions`() {
     val findTarget: (Course) -> PsiElement = { findPsiFile("lesson1/task1/bar.cpp") }
     doTest(findTarget) {
-      cppTaskFile("foo.cpp", """
+      cppTaskFile(
+        "foo.cpp", """
         void foo<caret>() {}
-      """)
+      """
+      )
       cppTaskFile("bar.cpp")
     }
   }
@@ -23,9 +25,11 @@ class CppMoveHandlerTest : MoveHandlerTestBase(OCLanguage.getInstance(), environ
   fun `test do not forbid move refactoring for classes`() {
     val findTarget: (Course) -> PsiElement = { findPsiFile("lesson1/task1/bar.cpp") }
     doTest(findTarget) {
-      cppTaskFile("foo.cpp", """
+      cppTaskFile(
+        "foo.cpp", """
         class Foo<caret> {};
-      """)
+      """
+      )
       cppTaskFile("bar.cpp")
     }
   }

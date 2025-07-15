@@ -2,11 +2,11 @@ package com.jetbrains.edu.learning.stepik.hyperskill.checker
 
 import com.jetbrains.edu.learning.MockResponseFactory
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.pathWithoutPrams
 import com.jetbrains.edu.learning.stepik.hyperskill.MockWebSocketState
 import com.jetbrains.edu.learning.stepik.hyperskill.confirmConnection
 import com.jetbrains.edu.learning.stepik.hyperskill.confirmSubscription
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.stepik.hyperskill.webSocketConfiguration
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -38,6 +38,7 @@ class HyperskillCheckCodeTaskTest : HyperskillCheckActionTestBase() {
             webSocket.confirmConnection()
             state = MockWebSocketState.CONNECTION_CONFIRMED
           }
+
           MockWebSocketState.CONNECTION_CONFIRMED -> {
             webSocket.confirmSubscription()
             webSocket.send(submissionResult)
@@ -63,6 +64,7 @@ class HyperskillCheckCodeTaskTest : HyperskillCheckActionTestBase() {
             webSocket.confirmConnection()
             state = MockWebSocketState.CONNECTION_CONFIRMED
           }
+
           MockWebSocketState.CONNECTION_CONFIRMED -> {
             webSocket.confirmSubscription()
             Thread.sleep(500)

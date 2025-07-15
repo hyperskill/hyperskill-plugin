@@ -13,7 +13,8 @@ class TaskDescriptionMarkdownTest : EduTestCase() {
   fun `test plain text`() = doTest("solve task", "<body><p>solve task</p></body>")
 
   @Test
-  fun `test template text`() = doTest("""
+  fun `test template text`() = doTest(
+    """
     This is the markdown document.
 
     Write your task text here
@@ -26,10 +27,12 @@ class TaskDescriptionMarkdownTest : EduTestCase() {
       You can add hints anywhere in task text. Copy all hint div block and change its content.
     </div>
     </body>
-  """)
+  """
+  )
 
   @Test
-  fun `test text with header`() = doTest("""
+  fun `test text with header`() = doTest(
+    """
     # This is the markdown document.
 
     Write your task text here
@@ -42,16 +45,19 @@ class TaskDescriptionMarkdownTest : EduTestCase() {
       You can add hints anywhere in task text. Copy all hint div block and change its content.
     </div>
     </body>
-  """)
+  """
+  )
 
   @Test
-  fun `test text with links`() = doTest("""
+  fun `test text with links`() = doTest(
+    """
     [file_link](file://lesson1/task1/Task.txt)
     [course_file_link](course://lesson1/task1/Task.txt)
   """, """
     <body><p><a href="file://lesson1/task1/Task.txt">file_link</a>
     <a href="course://lesson1/task1/Task.txt">course_file_link</a></p></body>
-  """)
+  """
+  )
 
   private fun doTest(@Language("Markdown") descriptionText: String, @Language("HTML") expectedText: String) {
     val first = taskWithFile(descriptionText.trimIndent())

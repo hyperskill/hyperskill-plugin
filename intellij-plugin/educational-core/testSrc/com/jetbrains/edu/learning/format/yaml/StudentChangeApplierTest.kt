@@ -57,8 +57,10 @@ class StudentChangeApplierTest : YamlTestCase() {
     }.lessons.first().taskList.first()
     val deserializedItem = ChoiceTask()
     deserializedItem.name = "task1"
-    deserializedItem.choiceOptions = listOf(ChoiceOption("right", ChoiceOptionStatus.CORRECT),
-                                            ChoiceOption("second", ChoiceOptionStatus.INCORRECT))
+    deserializedItem.choiceOptions = listOf(
+      ChoiceOption("right", ChoiceOptionStatus.CORRECT),
+      ChoiceOption("second", ChoiceOptionStatus.INCORRECT)
+    )
     deserializedItem.record = 1
 
     getChangeApplierForItem(project, existingItem).applyChanges(existingItem, deserializedItem)

@@ -15,39 +15,50 @@ class RsCheckersTest : RsCheckersTestBase() {
     return course(language = RsLanguage) {
       lesson {
         eduTask("Edu") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "task"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/lib.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/lib.rs", """
               pub fn foo() -> String {
                   String::from("foo")
               }
-          """)
-          rustTaskFile("tests/tests.rs", """
+          """
+          )
+          rustTaskFile(
+            "tests/tests.rs", """
               use task::foo;
 
               #[test]
               fn test() {
                   assert_eq!(String::from("foo"), foo());
               }
-          """)
+          """
+          )
         }
         eduTask("EduWithIgnoredTest") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "task"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/lib.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/lib.rs", """
               pub fn foo() -> String {
                   String::from("foo")
               }
-          """)
-          rustTaskFile("tests/tests.rs", """
+          """
+          )
+          rustTaskFile(
+            "tests/tests.rs", """
               use task::foo;
 
               #[test]
@@ -60,64 +71,80 @@ class RsCheckersTest : RsCheckersTestBase() {
               fn ignored_test() {
                   assert_eq!(1, 2);
               }
-          """)
+          """
+          )
         }
         outputTask("Output") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "task"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/main.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/main.rs", """
               fn main() {
                   println!("Hello, World!");
               }
-          """)
+          """
+          )
           taskFile("tests/output.txt") {
             withText("Hello, World!\n")
           }
         }
         outputTask("OutputIgnoreWarnings") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "task"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/main.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/main.rs", """
               fn main() {
                   println!("Hello, World!");
               }
               fn foo() {}
-          """)
+          """
+          )
           taskFile("tests/output.txt") {
             withText("Hello, World!\n")
           }
         }
         outputTask("OutputWithSeveralBinaryTargets") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "task"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/main.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/main.rs", """
               fn main() {
                   println!("Hello, World!");
               }
-          """)
-          rustTaskFile("src/bin/foo.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/bin/foo.rs", """
               fn main() {
                   println!("Hello fom foo.rs!");
               }
-          """)
+          """
+          )
           taskFile("tests/output.txt") {
             withText("Hello, World!\n")
           }
         }
         outputTask("OutputWithDependencies") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "task"
             version = "0.1.0"
@@ -125,29 +152,36 @@ class RsCheckersTest : RsCheckersTestBase() {
 
             [dependencies]
             rand = "0.6.1"
-          """)
-          rustTaskFile("src/main.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/main.rs", """
               fn main() {
                   println!("Hello, World!");
               }
-          """)
+          """
+          )
           taskFile("tests/output.txt") {
             withText("Hello, World!\n")
           }
         }
         outputTask("OutputWithInput") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "task"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/main.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/main.rs", """
               fn main() {
                   let text = std::io::stdin().lines().next().unwrap();
                   println!("{}", text.unwrap() + ", World!");
               }
-          """)
+          """
+          )
           taskFile("tests/output.txt") {
             withText("Hello, World!\n")
           }

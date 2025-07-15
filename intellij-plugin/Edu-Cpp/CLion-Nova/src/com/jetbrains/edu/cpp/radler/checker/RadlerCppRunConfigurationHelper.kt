@@ -5,5 +5,6 @@ import com.jetbrains.cidr.radler.symbols.RadMainPsiElement
 import com.jetbrains.edu.cpp.checker.CppRunConfigurationHelper
 
 class RadlerCppRunConfigurationHelper : CppRunConfigurationHelper {
-  override fun prepareEntryPointForRunConfiguration(entryPoint: PsiElement): PsiElement = RadMainPsiElement(entryPoint.containingFile, entryPoint.textRange)
+  override fun prepareEntryPointForRunConfiguration(entryPoint: PsiElement): PsiElement =
+    RadMainPsiElement(entryPoint.containingFile, entryPoint.textRange)
 }

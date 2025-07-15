@@ -45,12 +45,15 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
       is ContentsFromLearningObjectsStorage -> {
         return
       }
+
       TakeFromStorageBinaryContents -> {
         contents = BinaryContentsFromLearningObjectsStorage(storage, pathInStorage)
       }
+
       TakeFromStorageTextualContents -> {
         contents = TextualContentsFromLearningObjectsStorage(storage, pathInStorage)
       }
+
       else -> {
         val initialContents = contents
         val contentsWithDiagnostics = wrapWithDiagnostics(initialContents, pathInStorage)
@@ -61,7 +64,7 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
           val persistedContents = try {
             initialContents.persist(storage, pathInStorage)
           }
-          catch(e: Exception) {
+          catch (e: Exception) {
             logger<LearningObjectsStorageManager>().error("Exception during persisting contents for EduFile $pathInStorage", e)
             initialContents
           }
@@ -69,7 +72,8 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
           // if persisting took long, contents could have been already changed
           if (!setContentsIfEquals(contentsWithDiagnostics, persistedContents)) {
             val currentContents = contents
-            val logMessage = "Contents of a file changed while the file was being persisted: $pathInStorage from ${initialContents.debugString()} to ${currentContents.debugString()}"
+            val logMessage =
+              "Contents of a file changed while the file was being persisted: $pathInStorage from ${initialContents.debugString()} to ${currentContents.debugString()}"
 
             // The level is ERROR if the contents are different, otherwise it is a WARNING,
             // because the same contents do not lead to unexpected behavior
@@ -211,7 +215,7 @@ val EduFile.pathInStorage: String
   get() = if (this is TaskFile) {
     task.pathInCourse + "/"
   }
-  else {
+          else {
     ""
   } + name
 

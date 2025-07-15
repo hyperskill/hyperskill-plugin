@@ -63,7 +63,7 @@ object ProgressUtil {
       .count()
   }
 
-  fun createProgressBar() : JProgressBar {
+  fun createProgressBar(): JProgressBar {
     val progressBar = JProgressBar()
 
     progressBar.setUI(object : DarculaProgressBarUI() {

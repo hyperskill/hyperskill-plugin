@@ -35,11 +35,13 @@ import javax.swing.JComponent
 abstract class TaskToolWindow(protected val project: Project) : Disposable {
   //default value of merging time span is 300 milliseconds, can be set in educational-core.xml
   @Suppress("LeakingThis")
-  private val updateQueue = MergingUpdateQueue(TASK_DESCRIPTION_UPDATE,
-                                               Registry.intValue(TASK_DESCRIPTION_UPDATE_DELAY_REGISTRY_KEY),
-                                               true,
-                                               null,
-                                               this)
+  private val updateQueue = MergingUpdateQueue(
+    TASK_DESCRIPTION_UPDATE,
+    Registry.intValue(TASK_DESCRIPTION_UPDATE_DELAY_REGISTRY_KEY),
+    true,
+    null,
+    this
+  )
 
   abstract val taskInfoPanel: JComponent
 

@@ -9,16 +9,18 @@ import com.jetbrains.edu.learning.newproject.ui.BrowseCoursesDialog
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import org.jetbrains.annotations.NonNls
 
-class BrowseCoursesAction : DumbAwareAction(EduCoreBundle.message("browse.courses"),
-                                            EduCoreBundle.message("browse.courses.description"),
-                                            null) {
+class BrowseCoursesAction : DumbAwareAction(
+  EduCoreBundle.message("browse.courses"),
+  EduCoreBundle.message("browse.courses.description"),
+  null
+) {
 
   override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabledAndVisible = !RemoteEnvHelper.isRemoteDevServer()
   }
-  
+
   override fun actionPerformed(e: AnActionEvent) {
     EduCounterUsageCollector.courseSelectionViewOpened(e.place)
     BrowseCoursesDialog().show()

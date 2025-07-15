@@ -8,8 +8,10 @@ import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 
-class HintTemplateContextType : TemplateContextType("EDU_TASK_DESCRIPTION_HINT",
-                                                    EduCoreBundle.message("course.creator.hint.template.context")) {
+class HintTemplateContextType : TemplateContextType(
+  "EDU_TASK_DESCRIPTION_HINT",
+  EduCoreBundle.message("course.creator.hint.template.context")
+) {
 
   override fun isInContext(context: TemplateActionContext): Boolean {
     val project = ReadAction.compute<Project, RuntimeException> { context.file.project }

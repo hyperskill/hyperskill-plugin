@@ -74,7 +74,8 @@ interface UndeterminedContents : FileContents {
   val bytes: ByteArray
     get() = try {
       Base64.getDecoder().decode(textualRepresentation)
-    } catch (e: IllegalArgumentException) {
+    }
+    catch (e: IllegalArgumentException) {
       EMPTY_BYTE_ARRAY
     }
 
@@ -91,7 +92,7 @@ interface UndeterminedContents : FileContents {
  * Represents a binary FileContents stored in memory.
  * These contents are not persistent.
  */
-class InMemoryBinaryContents(override val bytes: ByteArray): BinaryContents {
+class InMemoryBinaryContents(override val bytes: ByteArray) : BinaryContents {
   companion object {
     fun parseBase64Encoding(base64: String): InMemoryBinaryContents = InMemoryBinaryContents(
       Base64.getDecoder().decode(base64)

@@ -19,24 +19,29 @@ class ScalaGradleTheoryTaskCheckerTest : JdkCheckerTestBase() {
   override fun createCourse(): Course = course(language = ScalaLanguage.INSTANCE, environment = "Gradle") {
     lesson {
       theoryTask("TheoryTask") {
-        scalaTaskFile("src/Main.scala", """
+        scalaTaskFile(
+          "src/Main.scala", """
           object Main {
              def main(args: Array[String]): Unit = {
                 println("Hello!")
              }
           }
-        """)
+        """
+        )
       }
       theoryTask("TheoryWithGradleCustomRunConfiguration") {
-        scalaTaskFile("src/Main.scala", """
+        scalaTaskFile(
+          "src/Main.scala", """
           object Main {
              def main(args: Array[String]): Unit = {
                 println(System.getenv("EXAMPLE_ENV"))
              }
           }
-        """)
+        """
+        )
         dir("runConfigurations") {
-          taskFile("CustomGradleRun.run.xml", """
+          taskFile(
+            "CustomGradleRun.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomGradleRun" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -65,21 +70,25 @@ class ScalaGradleTheoryTaskCheckerTest : JdkCheckerTestBase() {
                 <method v="2" />
               </configuration>
             </component>
-          """)
+          """
+          )
         }
       }
     }
     frameworkLesson {
       theoryTask("FrameworkTheoryWithCustomRunConfiguration1") {
-        scalaTaskFile("src/Main.scala", """
+        scalaTaskFile(
+          "src/Main.scala", """
           object Main {
              def main(args: Array[String]): Unit = {
                 println(System.getenv("EXAMPLE_ENV"))
              }
           }
-        """)
+        """
+        )
         dir("runConfigurations") {
-          xmlTaskFile("CustomGradleRun.run.xml", """
+          xmlTaskFile(
+            "CustomGradleRun.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomGradleRun1" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -108,19 +117,23 @@ class ScalaGradleTheoryTaskCheckerTest : JdkCheckerTestBase() {
                 <method v="2" />
               </configuration>
             </component>            
-          """)
+          """
+          )
         }
       }
       theoryTask("FrameworkTheoryWithCustomRunConfiguration2") {
-        scalaTaskFile("src/Main.scala", """
+        scalaTaskFile(
+          "src/Main.scala", """
           object Main {
              def main(args: Array[String]): Unit = {
                 println(System.getenv("EXAMPLE_ENV"))
              }
           }
-        """)
+        """
+        )
         dir("runConfigurations") {
-          xmlTaskFile("CustomGradleRun.run.xml", """
+          xmlTaskFile(
+            "CustomGradleRun.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomGradleRun2" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -149,12 +162,12 @@ class ScalaGradleTheoryTaskCheckerTest : JdkCheckerTestBase() {
                 <method v="2" />
               </configuration>
             </component>            
-          """)
+          """
+          )
         }
       }
     }
   }
-
 
 
   @Test
@@ -165,21 +178,25 @@ class ScalaGradleTheoryTaskCheckerTest : JdkCheckerTestBase() {
           val message = (CheckDetailsView.getInstance(project) as MockCheckDetailsView).getMessage()
           Triple(message, equalTo(CheckStatus.Solved), containsString("Hello!"))
         }
+
         "TheoryWithGradleCustomRunConfiguration" -> Triple(
           checkResult.message,
           equalTo(CheckStatus.Solved),
           allOf(containsString("Hello!"), not(containsString("#educational_plugin")))
         )
+
         "FrameworkTheoryWithCustomRunConfiguration1" -> Triple(
           checkResult.message,
           equalTo(CheckStatus.Solved),
           allOf(containsString("Hello from FrameworkTheory1!"), not(containsString("#educational_plugin")))
         )
+
         "FrameworkTheoryWithCustomRunConfiguration2" -> Triple(
           checkResult.message,
           equalTo(CheckStatus.Solved),
           allOf(containsString("Hello from FrameworkTheory2!"), not(containsString("#educational_plugin")))
         )
+
         else -> error("Unexpected task name: ${task.name}")
       }
       assertThat(checkResult.status, statusMatcher)

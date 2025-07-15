@@ -20,11 +20,13 @@ class TestsOutputParser {
     val processor: (TestMessage) -> Unit = { message ->
       when (message) {
         is TestMessage.Congrats -> {
-            congratulations = message.congratulations
+          congratulations = message.congratulations
         }
+
         is TestMessage.Failed -> {
           lastFailedMessage = message
         }
+
         else -> Unit
       }
     }
@@ -52,7 +54,8 @@ class TestsOutputParser {
       // If line doesn't started with STUDY_PREFIX then previous failed message is fully read
       // and can be processed
       processPendingFailedMessage(processor)
-    } else {
+    }
+    else {
       when {
         TEST_OK in message -> {
           // Process failed message accumulated in `pendingFailedTestMessage` buffer
@@ -61,18 +64,21 @@ class TestsOutputParser {
           val name = message.substringAfter("$STUDY_PREFIX ").substringBefore(" $TEST_OK")
           processor(TestMessage.Ok(name))
         }
+
         CONGRATS_MESSAGE in message -> {
           // Process failed message accumulated in `pendingFailedTestMessage` buffer
           // since `message` is a new congrats message
           processPendingFailedMessage(processor)
           processor(TestMessage.Congrats(message.substringAfter(CONGRATS_MESSAGE)))
         }
+
         TEST_FAILED in message -> {
           // Process failed message accumulated in `pendingFailedTestMessage` buffer
           // since `message` is the first line of new failed message
           processPendingFailedMessage(processor)
           pendingFailedTestMessage.append(message.substringAfter("$STUDY_PREFIX ").removeSuffix("\n"))
         }
+
         else -> {
           // Append secondary lines of multiline failed message
           pendingFailedTestMessage.append("\n")
@@ -103,14 +109,17 @@ class TestsOutputParser {
     processor(testMessage)
   }
 
-  private val TestMessage.Failed.diff: CheckResultDiff? get() =
-    if (expected != null && actual != null) CheckResultDiff(expected, actual, message) else null
+  private val TestMessage.Failed.diff: CheckResultDiff?
+    get() =
+      if (expected != null && actual != null) CheckResultDiff(expected, actual, message) else null
 
   companion object {
     const val STUDY_PREFIX = "#educational_plugin"
 
-    private val TEST_FAILED_PATTERN: Pattern = Pattern.compile("((.+) )?expected: ?(.*) but was: ?(.*)",
-                                                               Pattern.MULTILINE or Pattern.DOTALL)
+    private val TEST_FAILED_PATTERN: Pattern = Pattern.compile(
+      "((.+) )?expected: ?(.*) but was: ?(.*)",
+      Pattern.MULTILINE or Pattern.DOTALL
+    )
 
     @VisibleForTesting
     const val TEST_OK = "test OK"
@@ -123,9 +132,9 @@ class TestsOutputParser {
   }
 
   sealed class TestMessage {
-    class TextLine(val text: @Nls String): TestMessage()
-    class Ok(val testName: String): TestMessage()
-    class Failed(val testName: String, val message: @Nls String, val expected: String? = null, val actual: String? = null): TestMessage()
-    class Congrats(val congratulations: @Nls String): TestMessage()
+    class TextLine(val text: @Nls String) : TestMessage()
+    class Ok(val testName: String) : TestMessage()
+    class Failed(val testName: String, val message: @Nls String, val expected: String? = null, val actual: String? = null) : TestMessage()
+    class Congrats(val congratulations: @Nls String) : TestMessage()
   }
 }

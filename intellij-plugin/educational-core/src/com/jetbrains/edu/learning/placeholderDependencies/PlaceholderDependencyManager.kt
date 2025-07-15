@@ -73,7 +73,8 @@ object PlaceholderDependencyManager {
     val dependencyLesson = dependencyTask.lesson
     return if (dependencyLesson is FrameworkLesson && dependencyLesson.currentTaskIndex != dependencyTask.index - 1) {
       dependencyPlaceholder.studentAnswer ?: error("Student answer should be not null here")
-    } else {
+    }
+    else {
       val document = dependencyPlaceholder.taskFile.getDocument(project)!!
       val startOffset = dependencyPlaceholder.offset
       val endOffset = dependencyPlaceholder.endOffset

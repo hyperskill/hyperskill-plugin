@@ -28,6 +28,7 @@ class ShellConfigurator : EduConfigurator<EmptyProjectSettings> {
   companion object {
     @NonNls
     const val TASK_SH = "task.sh"
+
     @NonNls
     const val TEST_SH = "test.sh"
   }

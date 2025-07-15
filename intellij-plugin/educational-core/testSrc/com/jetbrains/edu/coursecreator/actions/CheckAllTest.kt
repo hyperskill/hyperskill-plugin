@@ -7,12 +7,15 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.util.messages.MessageBusConnection
 import com.jetbrains.edu.coursecreator.actions.checkAllTasks.CCCheckAllTasksAction
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.EduActionTestCase
+import com.jetbrains.edu.learning.LessonBuilder
+import com.jetbrains.edu.learning.SectionBuilder
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.messages.EduCoreBundle
+import com.jetbrains.edu.learning.testAction
 import org.junit.Test
 
 class CheckAllTest : EduActionTestCase() {
@@ -120,7 +123,7 @@ class CheckAllTest : EduActionTestCase() {
         "<a href=\"7\">section3/lesson1/task2</a>",
         "<a href=\"8\">section3/lesson2/task1</a>",
         "<a href=\"9\">section3/lesson2/task2</a>",
-        ).joinToString("<br>")
+      ).joinToString("<br>")
       assertEquals(expectedStr, it.content)
     }
   }
@@ -143,13 +146,15 @@ class CheckAllTest : EduActionTestCase() {
     val skippedLesson = courseDir.findChild("section3")?.findChild("lesson1") ?: courseCreationError()
     val skippedTask = courseDir.findChild("section2")?.findChild("lesson2")?.findChild("task1") ?: courseCreationError()
 
-    val dataContext = dataContext(arrayOf(
-      task,
-      lesson,
-      section,
-      skippedLesson,
-      skippedTask,
-    ))
+    val dataContext = dataContext(
+      arrayOf(
+        task,
+        lesson,
+        section,
+        skippedLesson,
+        skippedTask,
+      )
+    )
 
     doTestWithNotification(dataContext) {
       assertEquals("7 of 7 tasks failed", it.subtitle)
@@ -260,7 +265,7 @@ class CheckAllTest : EduActionTestCase() {
 
   private fun doTestWithNotification(dataContext: DataContext = dataContext(emptyArray()), checkNotification: (Notification) -> Unit) {
     var notificationShown = false
-    connection.subscribe(Notifications.TOPIC, object: Notifications {
+    connection.subscribe(Notifications.TOPIC, object : Notifications {
       override fun notify(notification: Notification) {
         notificationShown = true
         checkNotification(notification)

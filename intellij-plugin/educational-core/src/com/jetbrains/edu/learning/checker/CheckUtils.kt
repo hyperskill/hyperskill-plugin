@@ -83,9 +83,13 @@ object CheckUtils {
     }
   }
 
-  private fun getCustomRunConfiguration(project: Project, task: Task, fileNamePredicate: (String) -> Boolean): RunnerAndConfigurationSettings? {
+  private fun getCustomRunConfiguration(
+    project: Project,
+    task: Task,
+    fileNamePredicate: (String) -> Boolean
+  ): RunnerAndConfigurationSettings? {
     val taskDir = task.getDir(project.courseDir) ?: error("Failed to find directory of `${task.name}` task")
-    val runConfigurationDir = taskDir.findChild(EduNames.RUN_CONFIGURATION_DIR)?: return null
+    val runConfigurationDir = taskDir.findChild(EduNames.RUN_CONFIGURATION_DIR) ?: return null
     val pathPrefix = "${runConfigurationDir.path}/"
 
     return RunManager.getInstance(project).allSettings.find {

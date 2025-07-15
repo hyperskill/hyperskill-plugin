@@ -1,10 +1,12 @@
 package com.jetbrains.edu.learning.actions.navigate
 
 import com.intellij.openapi.fileTypes.PlainTextLanguage
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.EduTestCase
+import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.actions.NextPlaceholderAction
 import com.jetbrains.edu.learning.actions.PrevPlaceholderAction
 import com.jetbrains.edu.learning.courseFormat.EduCourse
+import com.jetbrains.edu.learning.testAction
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import java.io.IOException

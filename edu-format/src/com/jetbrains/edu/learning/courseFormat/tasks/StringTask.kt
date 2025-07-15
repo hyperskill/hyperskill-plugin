@@ -12,11 +12,12 @@ class StringTask : AnswerTask {
 
   constructor(name: String) : super(name)
 
-  constructor(name: String,
-              id: Int,
-              position: Int,
-              updateDate: Date,
-              status: CheckStatus = CheckStatus.Unchecked
+  constructor(
+    name: String,
+    id: Int,
+    position: Int,
+    updateDate: Date,
+    status: CheckStatus = CheckStatus.Unchecked
   ) : super(name, id, position, updateDate, status)
 
   override val itemType: String = STRING_TASK_TYPE

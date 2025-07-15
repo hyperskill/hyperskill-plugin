@@ -62,7 +62,8 @@ class HyperskillCoursesPanel(
     fun createCoursesPanel() = super.createContentPanel()
 
     val connection = ApplicationManager.getApplication().messageBus.connect()
-    connection.subscribe(HyperskillSettings.LOGGED_IN_TO_HYPERSKILL,
+    connection.subscribe(
+      HyperskillSettings.LOGGED_IN_TO_HYPERSKILL,
       object : EduLogInListener {
         override fun userLoggedIn() {
           runInEdt(modalityState = ModalityState.stateForComponent(this@HyperskillCoursesPanel)) {

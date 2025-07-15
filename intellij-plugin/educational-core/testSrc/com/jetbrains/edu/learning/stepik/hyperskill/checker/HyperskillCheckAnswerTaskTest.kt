@@ -27,6 +27,7 @@ abstract class HyperskillCheckAnswerTaskTest : HyperskillCheckActionTestBase() {
           else {
             submissionWithFailedStatus
           }
+
           else -> error("Wrong path: ${path}")
         },
         responseCode = HttpStatus.SC_OK
@@ -36,8 +37,8 @@ abstract class HyperskillCheckAnswerTaskTest : HyperskillCheckActionTestBase() {
 
   protected fun getSavedTextInFile(task: Task, fileName: String, savedText: String, project: Project): String {
     val taskFile = task.getTaskFile(fileName) ?: error("Task file with name: $fileName is absent")
-    val document = taskFile.getDocument(project) ?:
-      error("Document from task file is null. File name is $fileName, task file is ${task.name}")
+    val document =
+      taskFile.getDocument(project) ?: error("Document from task file is null. File name is $fileName, task file is ${task.name}")
     runWriteAction {
       document.setText(savedText)
       FileDocumentManager.getInstance().saveDocument(document)
@@ -144,6 +145,7 @@ abstract class HyperskillCheckAnswerTaskTest : HyperskillCheckActionTestBase() {
   companion object {
     @JvmStatic
     protected val SECTION: String = "Section"
+
     @JvmStatic
     protected val LESSON: String = "Lesson"
   }

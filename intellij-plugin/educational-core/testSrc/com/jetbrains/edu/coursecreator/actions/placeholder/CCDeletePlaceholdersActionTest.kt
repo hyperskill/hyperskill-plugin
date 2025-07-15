@@ -10,10 +10,14 @@ import org.junit.Test
 class CCDeletePlaceholdersActionTest : CCAnswerPlaceholderTestBase() {
 
   @Test
-  fun `test not available in student mode`() = doTestDeleteAll("Foo.kt", false, CCDeleteAllAnswerPlaceholdersAction.ACTION_ID,
-                                                               CourseMode.STUDENT)
+  fun `test not available in student mode`() = doTestDeleteAll(
+    "Foo.kt", false, CCDeleteAllAnswerPlaceholdersAction.ACTION_ID,
+    CourseMode.STUDENT
+  )
+
   @Test
   fun `test not available without placeholders`() = doTestDeleteAll("Bar.kt", false, CCDeleteAllAnswerPlaceholdersAction.ACTION_ID)
+
   @Test
   fun `test delete all placeholders`() = doTestDeleteAll("Foo.kt", true, CCDeleteAllAnswerPlaceholdersAction.ACTION_ID)
 
@@ -56,8 +60,10 @@ class CCDeletePlaceholdersActionTest : CCAnswerPlaceholderTestBase() {
 
     testAction(actionId, shouldBeEnabled = shouldBeAvailable)
     if (shouldBeAvailable) {
-      assertTrue("${CCDeleteAllAnswerPlaceholdersAction::class.java.simpleName} should delete all placeholdes",
-                 taskFile.answerPlaceholders.isEmpty())
+      assertTrue(
+        "${CCDeleteAllAnswerPlaceholdersAction::class.java.simpleName} should delete all placeholdes",
+        taskFile.answerPlaceholders.isEmpty()
+      )
     }
   }
 }

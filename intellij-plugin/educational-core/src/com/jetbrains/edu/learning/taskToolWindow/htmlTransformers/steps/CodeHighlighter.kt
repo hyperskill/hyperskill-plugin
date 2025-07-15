@@ -3,9 +3,9 @@ package com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.steps
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.jetbrains.edu.learning.courseFormat.ext.languageById
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.taskToolWindow.ui.EduCodeHighlighter.Companion.highlightCodeFragments
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformer
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformerContext
+import com.jetbrains.edu.learning.taskToolWindow.ui.EduCodeHighlighter.Companion.highlightCodeFragments
 import org.jsoup.nodes.Document
 
 object CodeHighlighter : HtmlTransformer {

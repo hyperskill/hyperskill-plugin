@@ -1,1 +1,11 @@
-{"additional_files":[{"name":"build.gradle","placeholders":[],"is_visible":true,"text":"additional file text"}],"solutions_hidden":false}
+{
+  "additional_files" : [
+    {
+      "name" : "build.gradle",
+      "placeholders" : [ ],
+      "is_visible" : true,
+      "text" : "additional file text"
+    }
+  ],
+  "solutions_hidden" : false
+}

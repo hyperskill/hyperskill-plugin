@@ -64,11 +64,13 @@ private class WaitingForSubscriptionState(project: Project, task: CodeTask) : We
   }
 }
 
-private class ReceivingSubmissionsState(project: Project, task: CodeTask, val submission: StepikBasedSubmission) : WebSocketConnectionState(project,
-                                                                                                                                            task) {
+private class ReceivingSubmissionsState(project: Project, task: CodeTask, val submission: StepikBasedSubmission) : WebSocketConnectionState(
+  project,
+  task
+) {
   override fun handleEvent(webSocket: WebSocket, message: String): WebSocketConnectionState {
     val objectMapper = HyperskillConnector.getInstance().objectMapper
-    val data = objectMapper.readTree(message).get("push").get("pub").get("data")?: return this
+    val data = objectMapper.readTree(message).get("push").get("pub").get("data") ?: return this
     for (receivedSubmission in objectMapper.treeToValue(data, SubmissionsList::class.java).submissions) {
       if (receivedSubmission.status == EVALUATION_STATUS) continue
       if (submission.id == receivedSubmission.id) {
@@ -84,8 +86,10 @@ private class ReceivingSubmissionsState(project: Project, task: CodeTask, val su
   }
 }
 
-private class SubmissionReceivedState(project: Project, task: CodeTask, private val submission: StepikBasedSubmission) : WebSocketConnectionState(
-  project, task, true) {
+private class SubmissionReceivedState(project: Project, task: CodeTask, private val submission: StepikBasedSubmission) :
+  WebSocketConnectionState(
+    project, task, true
+  ) {
   override fun handleEvent(webSocket: WebSocket, message: String): WebSocketConnectionState {
     return this
   }

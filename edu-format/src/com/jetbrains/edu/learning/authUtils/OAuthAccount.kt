@@ -55,8 +55,10 @@ abstract class OAuthAccount<UInfo : UserInfo> : Account<UInfo> {
 class TokenInfo {
   @JsonProperty("access_token")
   var accessToken: String = ""
+
   @JsonProperty("refresh_token")
   var refreshToken: String = ""
+
   @JsonProperty("expires_in")
   @JsonDeserialize(using = ExpiresDeserializer::class)
   var expiresIn: Long = -1

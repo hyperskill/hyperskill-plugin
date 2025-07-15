@@ -11,14 +11,17 @@ class EduTypedHandlerTest : EduTestCase() {
     configureByTaskFile(1, 1, "Task.kt")
     myFixture.editor.caretModel.caretsAndSelections = listOf(
       CaretState(
-      LogicalPosition(1, 1),
-      LogicalPosition(1, 1),
-      LogicalPosition(1, 10)
-    ))
+        LogicalPosition(1, 1),
+        LogicalPosition(1, 1),
+        LogicalPosition(1, 10)
+      )
+    )
     myFixture.performEditorAction("EditorDelete")
     myFixture.editor.selectionModel.removeSelection()
-    assertEquals("def f():\n" +
-                                   "  print(1)", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print(1)", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -26,14 +29,17 @@ class EduTypedHandlerTest : EduTestCase() {
     configureByTaskFile(1, 1, "Task.kt")
     myFixture.editor.caretModel.caretsAndSelections = listOf(
       CaretState(
-      LogicalPosition(1, 1),
-      LogicalPosition(1, 1),
-      LogicalPosition(1, 10)
-    ))
+        LogicalPosition(1, 1),
+        LogicalPosition(1, 1),
+        LogicalPosition(1, 10)
+      )
+    )
     myFixture.performEditorAction("EditorBackSpace")
     myFixture.editor.selectionModel.removeSelection()
-    assertEquals("def f():\n" +
-                                   "  print(1)", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print(1)", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -41,14 +47,17 @@ class EduTypedHandlerTest : EduTestCase() {
     configureByTaskFile(1, 1, "Task.kt")
     myFixture.editor.caretModel.caretsAndSelections = listOf(
       CaretState(
-      LogicalPosition(1, 1),
-      LogicalPosition(1, 1),
-      LogicalPosition(1, 10)
-    ))
+        LogicalPosition(1, 1),
+        LogicalPosition(1, 1),
+        LogicalPosition(1, 10)
+      )
+    )
     myFixture.performEditorAction("EditorCut")
     myFixture.editor.selectionModel.removeSelection()
-    assertEquals("def f():\n" +
-                                   "  print(1)", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print(1)", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -56,14 +65,17 @@ class EduTypedHandlerTest : EduTestCase() {
     configureByTaskFile(1, 1, "Task.kt")
     myFixture.editor.caretModel.caretsAndSelections = listOf(
       CaretState(
-      LogicalPosition(1, 4),
-      LogicalPosition(1, 4),
-      LogicalPosition(1, 6)
-    ))
+        LogicalPosition(1, 4),
+        LogicalPosition(1, 4),
+        LogicalPosition(1, 6)
+      )
+    )
     myFixture.performEditorAction("EditorCut")
     myFixture.editor.selectionModel.removeSelection()
-    assertEquals("def f():\n" +
-                                   "  prt(1)", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  prt(1)", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -72,8 +84,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(11)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorDelete")
-    assertEquals("def f():\n" +
-                                   "  rint()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  rint()", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -82,8 +96,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(11)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorDelete")
-    assertEquals("def f():\n" +
-                          "  print()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print()", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -92,8 +108,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(12)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorBackSpace")
-    assertEquals("def f():\n" +
-                                   "  rint()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  rint()", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -102,8 +120,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(11)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorBackSpace")
-    assertEquals("def f():\n" +
-                                   "  print()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print()", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -112,8 +132,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(12)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorCut")
-    assertEquals("def f():\n" +
-                                   "  print()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print()", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -122,8 +144,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(12)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorCut")
-    assertEquals("def f():\n" +
-                                   "  print()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print()", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -132,8 +156,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(10)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorCutLineEnd")
-    assertEquals("def f():\n" +
-                                   "  print()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print()", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -142,8 +168,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(15)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorCutLineBackward")
-    assertEquals("def f():\n" +
-                          "  print()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print()", myFixture.editor.document.text
+    )
   }
 
 
@@ -153,8 +181,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(10)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorDeleteToLineEnd")
-    assertEquals("def f():\n" +
-                          "  print()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print()", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -163,8 +193,10 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(15)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorDeleteToLineStart")
-    assertEquals("def f():\n" +
-                          "  print()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print()", myFixture.editor.document.text
+    )
   }
 
   @Test
@@ -173,37 +205,47 @@ class EduTypedHandlerTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(15)
     myFixture.editor.selectionModel.removeSelection()
     myFixture.performEditorAction("EditorDeleteLine")
-    assertEquals("def f():\n" +
-                          "  print()", myFixture.editor.document.text)
+    assertEquals(
+      "def f():\n" +
+      "  print()", myFixture.editor.document.text
+    )
   }
 
   override fun createCourse() {
     courseWithFiles {
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p>print(1)</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p>p</p>rint()
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p></p>print()
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p>print()
           |  print()</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
       }
     }

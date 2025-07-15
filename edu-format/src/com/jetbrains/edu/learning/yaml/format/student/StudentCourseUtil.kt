@@ -8,10 +8,10 @@ import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.yaml.format.CourseYamlMixin
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ADDITIONAL_FILES
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CONTENT
+import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ENVIRONMENT
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.LANGUAGE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.MODE
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.PROGRAMMING_LANGUAGE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.PROGRAMMING_LANGUAGE_VERSION
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.SUMMARY

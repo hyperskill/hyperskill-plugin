@@ -8,10 +8,11 @@ import com.intellij.util.ui.JBUI
 import javax.swing.Icon
 import javax.swing.SwingConstants
 
-class LightColoredActionLink(@LinkLabel text: String,
-                             action: AnAction,
-                             actionIcon: Icon? = null,
-                             isExternal: Boolean = false
+class LightColoredActionLink(
+  @LinkLabel text: String,
+  action: AnAction,
+  actionIcon: Icon? = null,
+  isExternal: Boolean = false
 ) : AnActionLink(text, action) {
 
   init {

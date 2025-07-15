@@ -56,7 +56,11 @@ class HintsLoader(private val project: Project, private val scope: CoroutineScop
     scope.launch(Dispatchers.Default) {
       if (!mutex.tryLock()) {
         withContext(Dispatchers.EDT) {
-          ErrorHintInlineBanner(project, task, EduAIHintsCoreBundle.message("action.Educational.Hints.GetHint.already.in.progress")).display()
+          ErrorHintInlineBanner(
+            project,
+            task,
+            EduAIHintsCoreBundle.message("action.Educational.Hints.GetHint.already.in.progress")
+          ).display()
         }
         return@launch
       }
@@ -68,7 +72,11 @@ class HintsLoader(private val project: Project, private val scope: CoroutineScop
         val taskFileText = taskVirtualFile.getTextFromTaskTextFile() ?: error("TaskFile text for ${taskFile.name} not found")
 
         val hintsAssistant = AiHintsAssistant.getAssistant(taskProcessor, AiCodeHintGenerator(taskProcessor), AiTextHintGenerator())
-        val hint = withBackgroundProgress(project, EduAIHintsCoreBundle.message("action.Educational.Hints.GetHint.progress.text"), cancellable = true) {
+        val hint = withBackgroundProgress(
+          project,
+          EduAIHintsCoreBundle.message("action.Educational.Hints.GetHint.progress.text"),
+          cancellable = true
+        ) {
           withContext(Dispatchers.IO) {
             hintsAssistant.getHint(taskProcessor.getFullTaskFileText())
           }

@@ -160,7 +160,8 @@ class CourseViewTest : CourseViewTestBase() {
       withEduTestDialog(EduTestDialog(Messages.OK)) {
         testAction(RevertTaskAction.ACTION_ID, dataContext(taskFile))
       }
-    } finally {
+    }
+    finally {
       PropertiesComponent.getInstance().setValue(CourseViewPane.HIDE_SOLVED_LESSONS, false)
     }
   }

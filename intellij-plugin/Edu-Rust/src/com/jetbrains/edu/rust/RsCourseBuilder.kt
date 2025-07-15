@@ -184,6 +184,7 @@ class RsCourseBuilder : EduCourseBuilder<RsProjectSettings> {
           membersArray.removeLessonMembers(project, listOf(lesson))
         }
       }
+
       is Lesson -> membersArray.removeLessonMembers(project, listOf(item))
       is Section -> {
         membersArray.removeLessonMembers(project, item.lessons)
@@ -312,7 +313,8 @@ class RsCourseBuilder : EduCourseBuilder<RsProjectSettings> {
     PsiParserFacade.getInstance(project).createWhiteSpaceFromText("\n")
 
   private fun PsiElement.saveDocument() {
-    val document = PsiDocumentManager.getInstance(project).getDocument(containingFile) ?: error("Failed to find document for $containingFile")
+    val document =
+      PsiDocumentManager.getInstance(project).getDocument(containingFile) ?: error("Failed to find document for $containingFile")
     FileDocumentManager.getInstance().saveDocument(document)
   }
 

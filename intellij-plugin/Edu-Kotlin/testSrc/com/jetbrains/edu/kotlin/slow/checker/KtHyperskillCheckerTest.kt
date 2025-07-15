@@ -12,14 +12,17 @@ import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.junit.Test
 
 class KtHyperskillCheckerTest : JdkCheckerTestBase() {
-  override fun createCourse(): Course  {
+  override fun createCourse(): Course {
     val course = course(courseProducer = ::HyperskillCourse, language = KotlinLanguage.INSTANCE) {
       frameworkLesson {
         eduTask("EduTask") {
-          kotlinTaskFile("src/Task.kt", """
+          kotlinTaskFile(
+            "src/Task.kt", """
           fun foo() = 42
-        """)
-          kotlinTaskFile("test/Tests.kt", """
+        """
+          )
+          kotlinTaskFile(
+            "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -29,7 +32,8 @@ class KtHyperskillCheckerTest : JdkCheckerTestBase() {
                   Assert.assertTrue("foo() should return 42", foo() == 42)
               }
           }
-        """)
+        """
+          )
         }
       }
     } as HyperskillCourse

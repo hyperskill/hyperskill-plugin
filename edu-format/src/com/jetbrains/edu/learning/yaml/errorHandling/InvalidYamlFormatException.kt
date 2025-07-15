@@ -9,7 +9,8 @@ class InvalidYamlFormatException(override val message: String) : IllegalStateExc
 fun formatError(message: String): Nothing = throw InvalidYamlFormatException(message)
 
 fun unsupportedItemTypeMessage(itemType: String, itemName: String = EduFormatNames.ITEM) = message(
-  "yaml.editor.invalid.format.unsupported.type", itemName, itemType)
+  "yaml.editor.invalid.format.unsupported.type", itemName, itemType
+)
 
 fun unnamedItemAtMessage(position: Int): String = message("yaml.editor.invalid.format.unnamed.item", position)
 

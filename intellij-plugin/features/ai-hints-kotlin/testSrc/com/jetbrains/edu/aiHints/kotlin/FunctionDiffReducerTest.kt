@@ -620,7 +620,12 @@ class FunctionDiffReducerTest : EduTestCase() {
     reduceChangesInCodeHint(codeStr, codeHint, expectedFunction, "loadContributorsConcurrent")
   }
 
-  private fun reduceChangesInCodeHint(codeStr: String, codeHint: String, updatedCodeHint: String, functionName: String = MAIN_FUNCTION_NAME) {
+  private fun reduceChangesInCodeHint(
+    codeStr: String,
+    codeHint: String,
+    updatedCodeHint: String,
+    functionName: String = MAIN_FUNCTION_NAME
+  ) {
     val course = project.course ?: error("Course was not found")
     val task = course.findTask("lesson1", "task1")
     val taskProcessor = TaskProcessor(task)

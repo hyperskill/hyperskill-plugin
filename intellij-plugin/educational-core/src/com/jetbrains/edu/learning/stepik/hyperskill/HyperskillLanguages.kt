@@ -24,6 +24,7 @@ enum class HyperskillLanguages(private val id: String, private val languageName:
 
   // last three needed for tests
   PLAINTEXT("TEXT", "TEXT"),
+
   @Suppress("unused")
   FAKE_GRADLE_BASE("FakeGradleBasedLanguage", "FakeGradleBasedLanguage"),
   UNSUPPORTED("Unsupported", "Unsupported");

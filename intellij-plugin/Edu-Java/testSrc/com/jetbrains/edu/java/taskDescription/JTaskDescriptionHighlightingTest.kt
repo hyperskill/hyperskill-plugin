@@ -10,7 +10,8 @@ class JTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() {
   override val language: Language = JavaLanguage.INSTANCE
 
   @Test
-  fun `test markdown description highlighting`() = doMarkdownTest("""
+  fun `test markdown description highlighting`() = doMarkdownTest(
+    """
     Code block with default language:
     ```
       class Main {
@@ -55,10 +56,12 @@ class JTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() {
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 
   @Test
-  fun `test html description highlighting`() = doHtmlTest("""
+  fun `test html description highlighting`() = doHtmlTest(
+    """
     <html>
     <p>Code block with default language:</p>
     <pre><code>
@@ -103,10 +106,12 @@ class JTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() {
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 
   @Test
-  fun `test html description no highlighting class`() = doHtmlTest("""
+  fun `test html description no highlighting class`() = doHtmlTest(
+    """
     <html>
     <pre><code class="no-highlight">
       class Main {
@@ -133,5 +138,6 @@ class JTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() {
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 }

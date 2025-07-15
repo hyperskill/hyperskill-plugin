@@ -27,7 +27,7 @@ class CCCreateTaskTest : EduActionTestCase() {
 
   @Test
   fun `test create task in lesson`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, createYamlConfigs=true) {
+    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, createYamlConfigs = true) {
       lesson {
         eduTask {
           taskFile("taskFile1.txt")

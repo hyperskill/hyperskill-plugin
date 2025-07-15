@@ -31,8 +31,10 @@ class HyperskillTaskCheckerProvider(private val baseProvider: TaskCheckerProvide
             val projectLesson = course.getProjectLesson() ?: error("Unable to get project lesson")
             val otherUnsolvedTasks = projectLesson.taskList.filter { it != task && it.status != CheckStatus.Solved }
             if (otherUnsolvedTasks.isEmpty()) {
-              return CheckResult(resultingStatus,
-                                 EduCoreBundle.message("hyperskill.next.project", HYPERSKILL_PROJECTS_URL))
+              return CheckResult(
+                resultingStatus,
+                EduCoreBundle.message("hyperskill.next.project", HYPERSKILL_PROJECTS_URL)
+              )
             }
           }
 

@@ -15,7 +15,8 @@ object TaskToolWindowBundle : EduPropertiesBundle(BUNDLE_NAME) {
   }
 
   fun getFloatParameter(@PropertyKey(resourceBundle = BUNDLE_NAME) key: String) = value(
-    if (SystemInfo.isMac) "mac.$key" else key).toFloat()
+    if (SystemInfo.isMac) "mac.$key" else key
+  ).toFloat()
 
   fun getOsDependentParameter(key: String) = value(parameterNameWithOSPrefix(key))
 

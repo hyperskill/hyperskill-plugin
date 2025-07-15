@@ -18,7 +18,7 @@ import io.mockk.spyk
 val UsefulTestCase.testPluginDescriptor: IdeaPluginDescriptor
   get() = PluginManager.getPlugins().first { it.pluginId.idString.startsWith("com.jetbrains.edu") }
 
-inline fun <reified T: EduConfigurator<*>> UsefulTestCase.registerConfigurator(
+inline fun <reified T : EduConfigurator<*>> UsefulTestCase.registerConfigurator(
   language: Language,
   courseType: String = EduFormatNames.PYCHARM,
   environment: String = DEFAULT_ENVIRONMENT

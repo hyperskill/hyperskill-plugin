@@ -17,7 +17,7 @@ import com.jetbrains.rdserver.core.protocolModel
 import kotlinx.coroutines.*
 
 @Suppress("UnstableApiUsage")
-class EduRemoteService(private val session: ClientProjectSession, private val scope: CoroutineScope): LifetimedService() {
+class EduRemoteService(private val session: ClientProjectSession, private val scope: CoroutineScope) : LifetimedService() {
   init {
     init()
   }

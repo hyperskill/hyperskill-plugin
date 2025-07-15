@@ -62,7 +62,7 @@ abstract class MarketplaceConnector : MarketplaceAuthConnector(), CourseConnecto
    * that need to be retrieved from this property. Also, this property is used for retrieving Hub token.
    */
   override var account: MarketplaceAccount?
-    get () = MarketplaceSettings.INSTANCE.getMarketplaceAccount()
+    get() = MarketplaceSettings.INSTANCE.getMarketplaceAccount()
     set(value) {
       MarketplaceSettings.INSTANCE.setAccount(value)
     }
@@ -175,7 +175,7 @@ abstract class MarketplaceConnector : MarketplaceAuthConnector(), CourseConnecto
     DownloadUtil.downloadAtomically(null, link, tempFile)
 
     return EduUtilsKt.getLocalCourse(tempFile.path) as? EduCourse
-                         ?: error(message("dialog.title.failed.to.unpack.course"))
+           ?: error(message("dialog.title.failed.to.unpack.course"))
   }
 
   private fun uploadUnderProgress(message: String, uploadAction: () -> Unit) =
@@ -185,7 +185,8 @@ abstract class MarketplaceConnector : MarketplaceAuthConnector(), CourseConnecto
         EduUtilsKt.execCancelable {
           uploadAction()
         }
-      }, message, true, null)
+      }, message, true, null
+    )
 
   fun uploadNewCourseUnderProgress(project: Project, course: EduCourse, file: File, hubToken: String) {
     uploadUnderProgress(message("action.push.course")) {
@@ -255,23 +256,28 @@ abstract class MarketplaceConnector : MarketplaceAuthConnector(), CourseConnecto
         }
         Err(errorMessage) // 400
       }
+
       HttpURLConnection.HTTP_FORBIDDEN -> {
         showErrorNotification(project, failedActionTitle, extractedErrorMessage ?: errorMessage)
         onAuthFailedActions(project, failedActionTitle)
         Err(errorMessage) // 403
       }
+
       HttpURLConnection.HTTP_NOT_FOUND -> {
-          showOnNotFoundCodeNotification()
-          Err(errorMessage) //404
-        }
+        showOnNotFoundCodeNotification()
+        Err(errorMessage) //404
+      }
+
       HttpURLConnection.HTTP_UNAVAILABLE, HttpURLConnection.HTTP_BAD_GATEWAY -> {
         showErrorNotification(project, failedActionTitle, action = onErrorAction)
         Err("${EduFormatBundle.message("error.service.maintenance")}\n\n$errorMessage") // 502, 503
       }
+
       in HttpURLConnection.HTTP_INTERNAL_ERROR..HttpURLConnection.HTTP_VERSION -> {
         showErrorNotification(project, failedActionTitle, action = onErrorAction)
         Err("${EduFormatBundle.message("error.service.down")}\n\n$errorMessage") // 500x
       }
+
       else -> {
         LOG.warn("Code $responseCode is not handled")
         showErrorNotification(project, failedActionTitle, action = onErrorAction)
@@ -312,25 +318,27 @@ abstract class MarketplaceConnector : MarketplaceAuthConnector(), CourseConnecto
   private fun uploadCourseUpdate(project: Project, course: EduCourse, file: File, hubToken: String): Boolean {
     LOG.info("Uploading course update from ${file.absolutePath}")
     val uploadAsNewCourseAction: AnAction = NotificationAction.createSimpleExpiring(
-      message("notification.course.creator.access.denied.action")) {
+      message("notification.course.creator.access.denied.action")
+    ) {
       course.convertToLocal()
       uploadNewCourseUnderProgress(project, course, file, hubToken)
     }
 
-    getRepositoryEndpoints(hubToken).uploadCourseUpdate(file.toMultipartBody(), course.id).executeUploadParsingErrors(project,
-        message("notification.course.creator.failed.to.update.course.title"),
-        uploadAsNewCourseAction,
-        showOnNotFoundCodeNotification = {
-          showFailedToFindMarketplaceCourseOnRemoteNotification(project, uploadAsNewCourseAction)
-        }).onError {
-        val message = "Failed to upload course update for course ${course.id}: $it"
-        if (it.contains(PLUGIN_CONTAINS_VERSION_ERROR_TEXT)) {
-          LOG.info(message)
-          return true
-        }
-        LOG.error(message)
-        return false
+    getRepositoryEndpoints(hubToken).uploadCourseUpdate(file.toMultipartBody(), course.id).executeUploadParsingErrors(
+      project,
+      message("notification.course.creator.failed.to.update.course.title"),
+      uploadAsNewCourseAction,
+      showOnNotFoundCodeNotification = {
+        showFailedToFindMarketplaceCourseOnRemoteNotification(project, uploadAsNewCourseAction)
+      }).onError {
+      val message = "Failed to upload course update for course ${course.id}: $it"
+      if (it.contains(PLUGIN_CONTAINS_VERSION_ERROR_TEXT)) {
+        LOG.info(message)
+        return true
       }
+      LOG.error(message)
+      return false
+    }
 
     showInfoNotification(
       project,
@@ -401,13 +409,17 @@ abstract class MarketplaceConnector : MarketplaceAuthConnector(), CourseConnecto
     val suggestedCourseVersion = currentCourseVersion + 1
 
     return invokeAndWaitIfNeeded {
-      Messages.showInputDialog(project,
-                               message("marketplace.insert.course.version.dialog", currentCourseVersion, course.name, failedActionTitle),
-                               message("marketplace.insert.course.version.dialog.title"),
-                               null,
-                               suggestedCourseVersion.toString(),
-                               NumericInputValidator(message("marketplace.insert.course.version.validation.empty"),
-                                                     message("marketplace.insert.course.version.validation.not.numeric")))?.toIntOrNull()
+      Messages.showInputDialog(
+        project,
+        message("marketplace.insert.course.version.dialog", currentCourseVersion, course.name, failedActionTitle),
+        message("marketplace.insert.course.version.dialog.title"),
+        null,
+        suggestedCourseVersion.toString(),
+        NumericInputValidator(
+          message("marketplace.insert.course.version.validation.empty"),
+          message("marketplace.insert.course.version.validation.not.numeric")
+        )
+      )?.toIntOrNull()
     }
   }
 

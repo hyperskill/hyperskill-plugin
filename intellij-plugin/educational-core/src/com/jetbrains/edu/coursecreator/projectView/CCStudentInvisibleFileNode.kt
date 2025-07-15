@@ -54,7 +54,8 @@ class CCStudentInvisibleFileNode(
     data.addText(presentableName, SimpleTextAttributes.GRAY_ATTRIBUTES)
   }
 
-  @Deprecated("Deprecated in Java",
+  @Deprecated(
+    "Deprecated in Java",
     ReplaceWith("testPresentation(this)", "com.jetbrains.edu.learning.projectView.CourseViewUtils.testPresentation")
   )
   @TestOnly
@@ -72,7 +73,7 @@ class CCStudentInvisibleFileNode(
   }
 
   private fun generatedPersonallyForStudent(file: VirtualFile): Boolean =
-    // TODO should be delegated to [configurator] after EDU-7821 is implemented
+  // TODO should be delegated to [configurator] after EDU-7821 is implemented
     // task.md and task.html are also generated personally for a student, but this method is called only for files outside tasks
     isConfigFile(file)
     || file.name == LOCAL_PROPERTIES // for android configurator

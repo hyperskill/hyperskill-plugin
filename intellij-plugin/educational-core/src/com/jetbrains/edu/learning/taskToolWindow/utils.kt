@@ -129,7 +129,8 @@ private fun getClickableImageElement(src: String, taskId: Int): Element? {
     LOG.warn("Incorrect youtube video link $src for task $taskId")
     return null
   }
-  val textToReplace = "<a href=http://www.youtube.com/watch?v=${youtubeVideoId}><img src=http://img.youtube.com/vi/${youtubeVideoId}/0.jpg></a>"
+  val textToReplace =
+    "<a href=http://www.youtube.com/watch?v=${youtubeVideoId}><img src=http://img.youtube.com/vi/${youtubeVideoId}/0.jpg></a>"
   val documentToReplace = Jsoup.parse(textToReplace)
   val elements = documentToReplace.getElementsByTag("a")
   return if (elements.isNotEmpty()) {

@@ -10,7 +10,7 @@ import com.jetbrains.edu.learning.xmlEscaped
  * Provides access to LTI settings.
  */
 @Service(Service.Level.PROJECT)
-@State(name="LTISettings", reloadable = true, storages = [Storage("lti.xml")])
+@State(name = "LTISettings", reloadable = true, storages = [Storage("lti.xml")])
 class LTISettingsManager(private val project: Project) : SimplePersistentStateComponent<LTISettings>(LTISettings()) {
 
   var settings: LTISettingsDTO?

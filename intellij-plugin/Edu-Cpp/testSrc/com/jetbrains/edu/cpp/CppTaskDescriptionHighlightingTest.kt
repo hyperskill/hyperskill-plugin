@@ -10,7 +10,8 @@ class CppTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase()
   override val environment = "GoogleTest"
 
   @Test
-  fun `test markdown description highlighting`() = doMarkdownTest("""
+  fun `test markdown description highlighting`() = doMarkdownTest(
+    """
     Code block with default language:
     ```
       int main(void) {
@@ -55,10 +56,12 @@ class CppTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase()
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 
   @Test
-  fun `test html description highlighting`() = doHtmlTest("""
+  fun `test html description highlighting`() = doHtmlTest(
+    """
     <html>
     <p>Code block with default language:</p>
     <pre><code>
@@ -103,5 +106,6 @@ class CppTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase()
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 }

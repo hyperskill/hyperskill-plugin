@@ -30,8 +30,8 @@ value class FunctionsToStrings(val value: Map<FunctionSignature, List<String>>) 
         .flatMap { file ->
           val psiFileSolution = PsiFileFactory.getInstance(project).createFileFromText("psiFile", language, file.getSolution())
           val functionsToStringsMap = EduAIHintsProcessor.forCourse(course)
-            ?.getStringsExtractor()
-            ?.getFunctionsToStringsMap(psiFileSolution) ?: return@flatMap emptySequence()
+                                        ?.getStringsExtractor()
+                                        ?.getFunctionsToStringsMap(psiFileSolution) ?: return@flatMap emptySequence()
           functionsToStringsMap.value.entries.asSequence()
         }
         .associate { it.toPair() }

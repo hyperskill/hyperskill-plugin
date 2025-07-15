@@ -6,7 +6,6 @@ import com.intellij.ide.util.treeView.AlphaComparator
 import com.intellij.ide.util.treeView.NodeDescriptor
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.getTaskFile
-import java.util.*
 
 object EduNodeComparator : Comparator<NodeDescriptor<*>> {
   override fun compare(o1: NodeDescriptor<*>?, o2: NodeDescriptor<*>?): Int {

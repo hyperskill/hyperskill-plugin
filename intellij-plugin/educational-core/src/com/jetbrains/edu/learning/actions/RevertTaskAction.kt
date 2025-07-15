@@ -31,8 +31,10 @@ class RevertTaskAction : DumbAwareAction(), RightAlignedToolbarAction {
     if (task.isChangedOnFailed) {
       return
     }
-    val result = MessageDialogBuilder.yesNo(EduCoreBundle.message("action.Educational.RefreshTask.text"),
-                                            EduCoreBundle.message("action.Educational.RefreshTask.progress.dropped")).ask(project)
+    val result = MessageDialogBuilder.yesNo(
+      EduCoreBundle.message("action.Educational.RefreshTask.text"),
+      EduCoreBundle.message("action.Educational.RefreshTask.progress.dropped")
+    ).ask(project)
     if (!result) return
     revert(project, task)
     revertTask()

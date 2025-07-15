@@ -42,7 +42,8 @@ interface CourseArchiveError {
    * Action which is supposed to be performed without additional user actions
    */
   @RequiresEdt
-  fun immediateAction(project: Project) {}
+  fun immediateAction(project: Project) {
+  }
 }
 
 /**
@@ -64,6 +65,7 @@ class BrokenPlaceholderError(e: BrokenPlaceholderException) : ExceptionCourseArc
     FileEditorManager.getInstance(project).openFile(yamlFile, true)
   }
 }
+
 // TODO: use more specific exception for error related to additional files.
 //  `FileNotFoundException` is not related to additional files
 //  and in theory may occur in other cases as well

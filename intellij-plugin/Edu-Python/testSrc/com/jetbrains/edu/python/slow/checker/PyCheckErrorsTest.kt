@@ -39,15 +39,18 @@ class PyCheckErrorsTest : PyCheckersTestBase() {
            * */
           @Suppress("PyStatementEffect")
           pythonTaskFile("hello_world.py", """This is not Python code""")
-          pythonTaskFile("tests.py", """
+          pythonTaskFile(
+            "tests.py", """
             from test_helper import run_common_tests, failed, passed, get_answer_placeholders
             run_common_tests()
-            """)
+            """
+          )
         }
         eduTask("SyntaxErrorFromUnittest") {
           @Suppress("PyStatementEffect")
           pythonTaskFile("hello_world.py", """This is not Python code""")
-          pythonTaskFile("my_unit_tests.py", """
+          pythonTaskFile(
+            "my_unit_tests.py", """
             import unittest
             from hello_world import sum_of_two_digits
 
@@ -57,8 +60,10 @@ class PyCheckErrorsTest : PyCheckersTestBase() {
 
             if __name__ == '__main__':
                 unittest.main()
-            """)
-          pythonTaskFile("tests.py", """
+            """
+          )
+          pythonTaskFile(
+            "tests.py", """
             from test_helper import run_common_tests, failed, passed, import_file
             from unittest import defaultTestLoader, TestResult
             
@@ -71,7 +76,8 @@ class PyCheckErrorsTest : PyCheckersTestBase() {
                 passed()
             else:
                 failed("Some unit tests failed")
-            """)
+            """
+          )
         }
         eduTask("DoNotEscapeMessageInFailedTest") {
           pythonTaskFile("tests.py", """print("#educational_plugin test_type_used FAILED + <br>")""")
@@ -93,14 +99,23 @@ class PyCheckErrorsTest : PyCheckersTestBase() {
       val matcher: Triple<Matcher<String>, Matcher<CheckResultDiff?>, Matcher<String?>> = when (task.name) {
         "EduTestsFailed" -> Triple(equalTo("error happened"), nullValue(), nullValue())
         "EduNoTestsRun" -> Triple(containsString(EduFormatBundle.message("check.no.tests")), nullValue(), nullValue())
-        "SyntaxError" -> Triple(containsString("Syntax Error"), nullValue(),
-                                containsString("SyntaxError: invalid syntax"))
-        "SyntaxErrorFromUnittest" -> Triple(containsString("Syntax Error"), nullValue(),
-                                            containsString("SyntaxError: invalid syntax"))
+        "SyntaxError" -> Triple(
+          containsString("Syntax Error"), nullValue(),
+          containsString("SyntaxError: invalid syntax")
+        )
+
+        "SyntaxErrorFromUnittest" -> Triple(
+          containsString("Syntax Error"), nullValue(),
+          containsString("SyntaxError: invalid syntax")
+        )
+
         "DoNotEscapeMessageInFailedTest" -> Triple(equalTo("<br>"), nullValue(), nullValue())
         "OutputTestsFailed" ->
-          Triple(equalTo(EduCoreBundle.message("check.incorrect")),
-                 CheckResultDiffMatcher.diff(CheckResultDiff(expected = "Hello, World!\n", actual = "Hello, World\n")), nullValue())
+          Triple(
+            equalTo(EduCoreBundle.message("check.incorrect")),
+            CheckResultDiffMatcher.diff(CheckResultDiff(expected = "Hello, World!\n", actual = "Hello, World\n")), nullValue()
+          )
+
         else -> error("Unexpected task name: ${task.name}")
       }
       assertThat("Checker output for ${task.name} doesn't match", checkResult.message, matcher.first)
@@ -116,8 +131,10 @@ class PyCheckErrorsTest : PyCheckersTestBase() {
 
     CheckActionListener.setCheckResultVerifier { task, checkResult ->
       assertEquals("Status for ${task.name} doesn't match", CheckStatus.Unchecked, checkResult.status)
-      assertThat("Checker output for ${task.name} doesn't match", checkResult.message,
-                 containsString(EduCoreBundle.message("error.no.interpreter", EduFormatNames.PYTHON)))
+      assertThat(
+        "Checker output for ${task.name} doesn't match", checkResult.message,
+        containsString(EduCoreBundle.message("error.no.interpreter", EduFormatNames.PYTHON))
+      )
     }
     doTest()
   }

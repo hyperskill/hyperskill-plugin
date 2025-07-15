@@ -80,7 +80,8 @@ class EduYamlTaskFilePathReferenceProvider : EduPsiReferenceProvider() {
       return if (candidate is PsiDirectory) {
         LookupElementBuilder.createWithSmartPointer("${candidate.name}/", candidate)
           .withIcon(candidate.getIcon(0))
-      } else null
+      }
+      else null
     }
   }
 
@@ -135,7 +136,8 @@ class ItemContainerContentReferenceProvider : EduPsiReferenceProvider() {
       .withParent(
         psiElement<YAMLSequenceItem>().inside(keyValueWithName(CONTENT))
       )
-  }}
+  }
+}
 
 private fun excludeFromArchive(project: Project, virtualFile: VirtualFile): Boolean {
   val course = StudyTaskManager.getInstance(project).course ?: return true

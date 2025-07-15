@@ -21,10 +21,12 @@ private fun isRefactoringForbidden(project: Project?, element: PsiElement?): Boo
       val taskFile = element.originalFile.virtualFile.getTaskFile(project)
       taskFile == null
     }
+
     is PsiDirectory -> {
       val dir = element.virtualFile
       dir.getStudyItem(project) != null
     }
+
     else -> false
   }
 }
@@ -41,7 +43,8 @@ fun isMoveForbidden(project: Project?, element: PsiElement?, target: PsiElement?
     val targetDir = (target as? PsiDirectory)?.virtualFile ?: return false
     val targetTaskDir = if (targetDir.isTaskDirectory(project)) {
       targetDir
-    } else {
+    }
+    else {
       targetDir.getTaskDir(project)
     }
 

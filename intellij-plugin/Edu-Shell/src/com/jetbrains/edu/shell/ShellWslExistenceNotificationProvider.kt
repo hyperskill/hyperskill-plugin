@@ -39,6 +39,7 @@ class ShellWslExistenceNotificationProvider : EditorNotificationProvider, DumbAw
           retrieverService.retrieve()
         }
       }
+
       cachedDistributions.isEmpty() -> {
         // It means we have already made check, but there is no WSL installed
         return Function {

@@ -25,7 +25,8 @@ import com.jetbrains.edu.learning.statistics.DownloadCourseContext.UPDATE
 import com.jetbrains.edu.learning.update.UpdateUtils
 import kotlinx.coroutines.runBlocking
 
-class MarketplaceCourseUpdater(project: Project, course: EduCourse, private val remoteCourseVersion: Int) : EduCourseUpdater(project, course) {
+class MarketplaceCourseUpdater(project: Project, course: EduCourse, private val remoteCourseVersion: Int) :
+  EduCourseUpdater(project, course) {
   private val tasksStatuses = mutableMapOf<Int, CheckStatus>()
 
   override fun doUpdate(courseFromServer: EduCourse) {

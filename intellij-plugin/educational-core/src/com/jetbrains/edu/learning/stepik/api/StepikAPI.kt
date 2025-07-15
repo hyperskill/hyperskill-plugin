@@ -137,7 +137,7 @@ class ProgressesList {
   lateinit var progresses: List<Progress>
 }
 
-class AttemptsList: WithPaginationMetaData() {
+class AttemptsList : WithPaginationMetaData() {
   @JsonProperty(ATTEMPTS)
   lateinit var attempts: List<Attempt>
 }
@@ -295,7 +295,7 @@ open class Reply {
   var version = JSON_FORMAT_VERSION
 }
 
-class CodeTaskReply: Reply() {
+class CodeTaskReply : Reply() {
   @JsonProperty(LANGUAGE)
   var language: String? = null
 
@@ -303,7 +303,7 @@ class CodeTaskReply: Reply() {
   var code: String? = null
 }
 
-class EduTaskReply: Reply() {
+class EduTaskReply : Reply() {
   @JsonProperty(FEEDBACK)
   var feedback: Feedback? = null
 
@@ -318,32 +318,32 @@ class EduTaskReply: Reply() {
   var checkProfile: String? = null
 }
 
-class ChoiceTaskReply: Reply() {
+class ChoiceTaskReply : Reply() {
   @JsonProperty(CHOICES)
   var choices: BooleanArray? = null
 }
 
-class SortingBasedTaskReply: Reply() {
+class SortingBasedTaskReply : Reply() {
   @JsonProperty(ORDERING)
   var ordering: IntArray? = null
 }
 
-class DataTaskReply: Reply() {
+class DataTaskReply : Reply() {
   @JsonProperty(FILE)
   var file: String? = null
 }
 
-class NumberTaskReply: Reply() {
+class NumberTaskReply : Reply() {
   @JsonProperty(NUMBER)
   var number: String? = null
 }
 
-class TextTaskReply: Reply() {
+class TextTaskReply : Reply() {
   @JsonProperty(TEXT)
   var text: String? = null
 }
 
-class TableTaskReply: Reply() {
+class TableTaskReply : Reply() {
   @JsonProperty(CHOICES)
   var choices: Array<Row>? = null
 }

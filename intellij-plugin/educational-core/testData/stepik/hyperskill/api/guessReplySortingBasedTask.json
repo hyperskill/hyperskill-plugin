@@ -1,4 +1,8 @@
 {
-  "ordering" : [ 1, 2, 3 ],
+  "ordering" : [
+    1,
+    2,
+    3
+  ],
   "version" : 10
 }

@@ -17,12 +17,13 @@ class SqlGradleConfigurator : GradleConfiguratorBase(), SqlConfiguratorBase<JdkP
   override val courseBuilder: GradleCourseBuilderBase
     get() = SqlGradleCourseBuilder()
 
-  override val courseFileAttributesEvaluator: AttributesEvaluator = AttributesEvaluator(super<GradleConfiguratorBase>.courseFileAttributesEvaluator) {
-    extension(DB_EXTENSION) {
-      excludeFromArchive()
-      archiveInclusionPolicy(ArchiveInclusionPolicy.MUST_EXCLUDE)
+  override val courseFileAttributesEvaluator: AttributesEvaluator =
+    AttributesEvaluator(super<GradleConfiguratorBase>.courseFileAttributesEvaluator) {
+      extension(DB_EXTENSION) {
+        excludeFromArchive()
+        archiveInclusionPolicy(ArchiveInclusionPolicy.MUST_EXCLUDE)
+      }
     }
-  }
 
   override val taskCheckerProvider: TaskCheckerProvider
     get() = GradleTaskCheckerProvider()

@@ -1,4 +1,4 @@
-<idea-plugin package="com.jetbrains.edu.python" xmlns:xi="http://www.w3.org/2001/XInclude">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.python">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.intellij.modules.python"/>
@@ -25,8 +25,8 @@
   </extensions>
 
   <actions resource-bundle="messages.EduPythonBundle">
-      <action
-          id="Educational.Python.InstallDependenciesWorkaround"
-          class="com.jetbrains.edu.python.learning.InstallDependenciesWorkaroundAction"/>
+    <action
+        id="Educational.Python.InstallDependenciesWorkaround"
+        class="com.jetbrains.edu.python.learning.InstallDependenciesWorkaroundAction"/>
   </actions>
 </idea-plugin>

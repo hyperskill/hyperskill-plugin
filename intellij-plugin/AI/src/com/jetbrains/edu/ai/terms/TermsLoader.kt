@@ -13,7 +13,6 @@ import com.jetbrains.edu.ai.error.CommonAIServiceError
 import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.ai.terms.connector.TermsServiceConnector
 import com.jetbrains.edu.ai.translation.statistics.EduAIFeaturesCounterUsageCollector
-import com.jetbrains.edu.learning.taskToolWindow.ui.notification.TaskToolWindowNotification.ActionLabel
 import com.jetbrains.edu.learning.Err
 import com.jetbrains.edu.learning.Result
 import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
@@ -22,6 +21,7 @@ import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.onError
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import com.jetbrains.edu.learning.taskToolWindow.ui.notification.TaskToolWindowNotification.ActionLabel
 import com.jetbrains.educational.core.format.enum.TranslationLanguage
 import com.jetbrains.educational.terms.format.CourseTermsResponse
 import kotlinx.coroutines.CoroutineScope

@@ -32,24 +32,31 @@ class JCheckErrorsTest : JdkCheckerTestBase() {
   override fun createCourse(): Course = course(language = JavaLanguage.INSTANCE) {
     lesson {
       eduTask("javaCompilationError") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
             public static final String STRING;
           }
-        """)
-        javaTaskFile("test/Test.java", """
+        """
+        )
+        javaTaskFile(
+          "test/Test.java", """
             class Test {}
-        """)
+        """
+        )
       }
       eduTask("testFail") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
             public static int foo() {
               return 0;
             }
           }
-        """)
-        javaTaskFile("test/Test.java", """
+        """
+        )
+        javaTaskFile(
+          "test/Test.java", """
           import org.junit.Assert;
 
           public class Test {
@@ -58,17 +65,21 @@ class JCheckErrorsTest : JdkCheckerTestBase() {
               Assert.assertTrue("Task.foo() should return 42", Task.foo() == 42);
             }
           }
-        """)
+        """
+        )
       }
       eduTask("comparisonTestFail") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
             public static int foo() {
               return 0;
             }
           }
-        """)
-        javaTaskFile("test/Test.java", """
+        """
+        )
+        javaTaskFile(
+          "test/Test.java", """
           import org.junit.Assert;
 
           public class Test {
@@ -77,11 +88,13 @@ class JCheckErrorsTest : JdkCheckerTestBase() {
               Assert.assertEquals(42, Task.foo());
             }
           }
-        """)
+        """
+        )
       }
       eduTask("escapeMessageInFailedTest") {
         javaTaskFile("src/Task.java")
-        javaTaskFile("test/Test.java", """
+        javaTaskFile(
+          "test/Test.java", """
           import org.junit.Assert;
 
           public class Test {
@@ -90,17 +103,21 @@ class JCheckErrorsTest : JdkCheckerTestBase() {
               Assert.assertTrue("<br>", false);
             }
           }
-        """)
+        """
+        )
       }
       eduTask("gradleCustomRunConfiguration") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
               public static String foo() {
                   return System.getenv("EXAMPLE_ENV");
               }
           }
-        """)
-        javaTaskFile("test/Tests.java", """
+        """
+        )
+        javaTaskFile(
+          "test/Tests.java", """
           import org.junit.Assert;
           import org.junit.Test;
 
@@ -116,9 +133,11 @@ class JCheckErrorsTest : JdkCheckerTestBase() {
               Assert.assertEquals("Hello", Task.foo());
             }
           }
-        """)
+        """
+        )
         dir("runConfigurations") {
-          xmlTaskFile("CustomGradleCheck.run.xml", """
+          xmlTaskFile(
+            "CustomGradleCheck.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomGradleCheck" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -149,7 +168,8 @@ class JCheckErrorsTest : JdkCheckerTestBase() {
                 <method v="2" />
               </configuration>
             </component>
-          """)
+          """
+          )
         }
       }
     }

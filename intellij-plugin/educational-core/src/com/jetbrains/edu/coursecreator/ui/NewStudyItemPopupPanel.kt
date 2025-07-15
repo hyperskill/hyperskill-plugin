@@ -49,7 +49,7 @@ class NewStudyItemPopupPanel(
     override fun isIconBeforeText(): Boolean = true
   }
 
-  private class HintExtension(text: String, font: Font): ExtendableTextComponent.Extension {
+  private class HintExtension(text: String, font: Font) : ExtendableTextComponent.Extension {
     // Inspired by Search Everywhere dialog
     private val textIcon = TextIcon(text, JBUI.CurrentTheme.BigPopup.searchFieldGrayForeground(), null, 0)
 

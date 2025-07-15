@@ -1,4 +1,5 @@
 @file:JvmName("TaskUtils")
+
 package com.jetbrains.edu.learning.taskToolWindow.ui
 
 import com.intellij.ide.BrowserUtil

@@ -24,8 +24,11 @@ import java.util.*
 fun createCourseFromJson(pathToJson: String, courseMode: CourseMode, isEncrypted: Boolean = false): EduCourse {
   val courseJson = File(pathToJson).readText()
   val courseMapper = getCourseMapper(object : FileContentsFactory {
-    override fun createBinaryContents(file: EduFile) = throw IllegalStateException("description of edu file ${file.pathInCourse} must contain the 'text' field")
-    override fun createTextualContents(file: EduFile) = throw IllegalStateException("description of edu file ${file.pathInCourse} must contain the 'text' field")
+    override fun createBinaryContents(file: EduFile) =
+      throw IllegalStateException("description of edu file ${file.pathInCourse} must contain the 'text' field")
+
+    override fun createTextualContents(file: EduFile) =
+      throw IllegalStateException("description of edu file ${file.pathInCourse} must contain the 'text' field")
   })
   configureCourseMapper(courseMapper, isEncrypted)
   var objectNode = courseMapper.readTree(courseJson) as ObjectNode
@@ -42,15 +45,16 @@ private fun configureCourseMapper(courseMapper: ObjectMapper, isEncrypted: Boole
   courseMapper.addMixIn(Task::class.java, TestRemoteTaskMixin::class.java)
 }
 
-fun newCourse(courseLanguage: Language, courseMode: CourseMode = CourseMode.EDUCATOR, environment: String = ""): Course = EduCourse().apply {
-  name = "Test Course"
-  description = "Test Description"
-  this.courseMode = courseMode
-  this.environment = environment
-  languageId = courseLanguage.id
-}
+fun newCourse(courseLanguage: Language, courseMode: CourseMode = CourseMode.EDUCATOR, environment: String = ""): Course =
+  EduCourse().apply {
+    name = "Test Course"
+    description = "Test Description"
+    this.courseMode = courseMode
+    this.environment = environment
+    languageId = courseLanguage.id
+  }
 
-@Suppress( "unused") // used for correct updateDate deserialization from json test data
+@Suppress("unused") // used for correct updateDate deserialization from json test data
 abstract class TestRemoteLessonMixin : RemoteLessonMixin() {
   @JsonProperty(UPDATE_DATE)
   private lateinit var updateDate: Date
@@ -66,7 +70,7 @@ abstract class TestRemoteTaskMixin : LocalTaskMixin() {
   private lateinit var updateDate: Date
 }
 
-@Suppress( "unused") // used for correct updateDate deserialization from json test data
+@Suppress("unused") // used for correct updateDate deserialization from json test data
 abstract class TestRemoteSectionMixin : RemoteSectionMixin() {
   @JsonProperty(UPDATE_DATE)
   private lateinit var updateDate: Date

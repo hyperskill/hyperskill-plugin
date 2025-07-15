@@ -193,7 +193,7 @@ class TaskToolWindowStateTest : EduTestCase() {
   }
 
   private fun getTaskToolWindow(): ToolWindow = ToolWindowManager.getInstance(project).getToolWindow(STUDY_TOOL_WINDOW)
-    ?: error("Failed to find a tool window with $STUDY_TOOL_WINDOW id")
+                                                ?: error("Failed to find a tool window with $STUDY_TOOL_WINDOW id")
 
   private fun openFileInEditor(file: VirtualFile) {
     myFixture.openFileInEditor(file)

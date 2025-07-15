@@ -55,13 +55,19 @@ open class CompareWithAnswerAction : DumbAwareAction() {
       val solution = it.getSolution()
       val solutionFileContent = DiffContentFactory.getInstance().create(solution, virtualFile.fileType)
       solutionFilePaths.add(virtualFile.path)
-      SimpleDiffRequest(EduCoreBundle.message("action.Educational.CompareWithAnswer.description"), studentFileContent, solutionFileContent,
-                        virtualFile.name,
-                        EduCoreBundle.message("action.compare.answer", virtualFile.name))
+      SimpleDiffRequest(
+        EduCoreBundle.message("action.Educational.CompareWithAnswer.description"), studentFileContent, solutionFileContent,
+        virtualFile.name,
+        EduCoreBundle.message("action.compare.answer", virtualFile.name)
+      )
     }
     if (requests.isEmpty()) {
       val message = JBPopupFactory.getInstance()
-        .createHtmlTextBalloonBuilder(EduCoreBundle.message("action.Educational.CompareWithAnswer.popup.content.no.solution.provided"), MessageType.INFO, null)
+        .createHtmlTextBalloonBuilder(
+          EduCoreBundle.message("action.Educational.CompareWithAnswer.popup.content.no.solution.provided"),
+          MessageType.INFO,
+          null
+        )
       message.createBalloon().show(JBPopupFactory.getInstance().guessBestPopupLocation(e.dataContext), Balloon.Position.above)
       return
     }

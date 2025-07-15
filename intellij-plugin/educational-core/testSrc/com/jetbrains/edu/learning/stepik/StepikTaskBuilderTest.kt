@@ -34,8 +34,10 @@ class StepikTaskBuilderTest : EduTestCase() {
 
   @Test
   fun `test theory task`() = doTest<TheoryTask>(FakeGradleBasedLanguage)
+
   @Test
   fun `test unsupported task`() = doTestIsInstance<UnsupportedTask>(FakeGradleBasedLanguage)
+
   @Test
   fun `test choice task`() {
     mockConnector.withResponseHandler(testRootDisposable) { _, path ->
@@ -51,21 +53,28 @@ class StepikTaskBuilderTest : EduTestCase() {
 
   @Test
   fun `test code task`() = doTest<CodeTask>(FakeGradleBasedLanguage)
+
   @Test
   fun `test edu task`() = doTest<EduTask>(FakeGradleBasedLanguage)
+
   @Test
   fun `test edu theory task`() = doTest<TheoryTask>(FakeGradleBasedLanguage)
+
   @Test
   fun `test output task`() = doTest<OutputTask>(FakeGradleBasedLanguage)
+
   @Test
   fun `test ide task`() = doTest<IdeTask>(FakeGradleBasedLanguage)
 
   @Test
   fun `test edu task python`() = doTest<EduTask>(PlainTextLanguage.INSTANCE)
+
   @Test
   fun `test edu theory task python`() = doTest<TheoryTask>(PlainTextLanguage.INSTANCE)
+
   @Test
   fun `test output task python`() = doTest<OutputTask>(PlainTextLanguage.INSTANCE)
+
   @Test
   fun `test ide task python`() = doTest<IdeTask>(PlainTextLanguage.INSTANCE)
 

@@ -78,9 +78,11 @@ class CCAddAnswerPlaceholderActionTest : CCAddAnswerPlaceholderActionTestBase() 
     val placeholderExpected = taskFileExpected.createExpectedPlaceholder(0, DEFAULT_PLACEHOLDER_TEXT, DEFAULT_PLACEHOLDER_TEXT)
     val placeholderDependency = AnswerPlaceholderDependency(placeholderExpected, null, "lesson1", "task1", "Task.kt", 1, true)
     placeholderExpected.placeholderDependency = placeholderDependency
-    doTest("lesson1/task2/Task.kt",
-           CCTestAddAnswerPlaceholder(CCCreateAnswerPlaceholderDialog.DependencyInfo("lesson1#task1#Task.kt#1")), taskFile,
-           taskFileExpected)
+    doTest(
+      "lesson1/task2/Task.kt",
+      CCTestAddAnswerPlaceholder(CCCreateAnswerPlaceholderDialog.DependencyInfo("lesson1#task1#Task.kt#1")), taskFile,
+      taskFileExpected
+    )
   }
 
   @Test
@@ -96,9 +98,9 @@ class CCAddAnswerPlaceholderActionTest : CCAddAnswerPlaceholderActionTestBase() 
     val taskFile = course.lessons[0].taskList[0].taskFiles["Task.kt"]!!
     val taskFileExpected = copy(taskFile)
     val selection = Selection(10, 19)
-    taskFileExpected.createExpectedPlaceholder(10, DEFAULT_PLACEHOLDER_TEXT, DEFAULT_TASK_TEXT.substring(10, 19), visible=false)
+    taskFileExpected.createExpectedPlaceholder(10, DEFAULT_PLACEHOLDER_TEXT, DEFAULT_TASK_TEXT.substring(10, 19), visible = false)
 
-    doTest("lesson1/task1/Task.kt", CCTestAddAnswerPlaceholder(visible=false), taskFile, taskFileExpected, selection)
+    doTest("lesson1/task1/Task.kt", CCTestAddAnswerPlaceholder(visible = false), taskFile, taskFileExpected, selection)
   }
 
   @Test
@@ -120,7 +122,8 @@ class CCAddAnswerPlaceholderActionTest : CCAddAnswerPlaceholderActionTestBase() 
     testAction(CCTestAddAnswerPlaceholder())
 
     val actual = course.mapper().writeValueAsString(taskFile)
-    assertEquals("""
+    assertEquals(
+      """
       |name: Task.kt
       |visible: true
       |placeholders:
@@ -130,7 +133,8 @@ class CCAddAnswerPlaceholderActionTest : CCAddAnswerPlaceholderActionTestBase() 
       |- offset: 10
       |  length: 2
       |  placeholder_text: type here
-      |""".trimMargin(), actual)
+      |""".trimMargin(), actual
+    )
   }
 
   @Test

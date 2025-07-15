@@ -16,12 +16,11 @@ import com.jetbrains.edu.learning.stepik.StepikNames.PYCHARM_PREFIX
 import com.jetbrains.edu.learning.stepik.api.*
 import com.jetbrains.edu.learning.stepik.api.JacksonStepOptionsDeserializer.Companion.migrate
 import com.jetbrains.edu.learning.stepik.api.JacksonSubmissionDeserializer.Companion.migrate
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector.Companion.getInstance
 import com.jetbrains.edu.learning.stepik.api.StepikReplyDeserializer.Companion.migrate
+import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector.Companion.getInstance
 import org.junit.Test
 import java.io.File
 import java.io.IOException
-import java.util.*
 import java.util.function.Function
 
 class StepikFormatTest : EduTestCase() {

@@ -33,9 +33,13 @@ class SubmissionFormatTest : EduTestCase() {
 
     val submission = CourseraTaskChecker().createSubmissionJson(project, findTask(0, 0), courseraSettings, token)
     val submissionNode = MAPPER.readTree(submission)
-    checkJsonValues(submissionNode, mapOf(CourseraTaskChecker.ASSIGNMENT_KEY to assignmentKey,
-                                          "submitterEmail" to courseraSettings.email,
-                                          "secret" to token))
+    checkJsonValues(
+      submissionNode, mapOf(
+        CourseraTaskChecker.ASSIGNMENT_KEY to assignmentKey,
+        "submitterEmail" to courseraSettings.email,
+        "secret" to token
+      )
+    )
     assertEquals(mapOf(taskFilePath to "dGV4dA=="), submissionNode.files)
   }
 

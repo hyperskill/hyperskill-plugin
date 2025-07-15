@@ -266,21 +266,25 @@ class MarketplaceSolutionLoadingTest : SolutionLoadingTestBase() {
     ) {
       lesson("lesson1") {
         outputTask("task1", stepId = 1) {
-          kotlinTaskFile("src/Task.kt", """
+          kotlinTaskFile(
+            "src/Task.kt", """
           fun main() {
               println("OK")
           }
-        """)
+        """
+          )
           taskFile("test/output.txt") {
             withText("OK!")
           }
         }
         outputTask("task2", stepId = 2) {
-          kotlinTaskFile("src/Task.kt", """
+          kotlinTaskFile(
+            "src/Task.kt", """
           fun main() {
               print("OK")
           }
-        """)
+        """
+          )
           taskFile("test/output.txt") {
             withText("OK!")
           }
@@ -368,23 +372,23 @@ class MarketplaceSolutionLoadingTest : SolutionLoadingTestBase() {
     checkTaskStatuses(course.allTasks, listOf(CheckStatus.Solved, CheckStatus.Solved))
   }
 
-   private fun createMarketplaceCourse(courseVersion: Int = 1) = courseWithFiles(
-      language = FakeGradleBasedLanguage, courseProducer = ::EduCourse, id = 1
-    ) {
-      lesson("lesson1") {
-        eduTask("task1", stepId = 1) {
-          taskFile("src/Task.kt", "fun foo() {}")
-          taskFile("test/Tests.kt", "fun tests() {}")
-        }
-        eduTask("task2", stepId = 2) {
-          taskFile("src/Task.kt", "fun foo()2 {}")
-          taskFile("test/Tests.kt", "fun tests()2 {}")
-        }
+  private fun createMarketplaceCourse(courseVersion: Int = 1) = courseWithFiles(
+    language = FakeGradleBasedLanguage, courseProducer = ::EduCourse, id = 1
+  ) {
+    lesson("lesson1") {
+      eduTask("task1", stepId = 1) {
+        taskFile("src/Task.kt", "fun foo() {}")
+        taskFile("test/Tests.kt", "fun tests() {}")
       }
-    }.apply {
-      isMarketplace = true
-      marketplaceCourseVersion = courseVersion
-    } as EduCourse
+      eduTask("task2", stepId = 2) {
+        taskFile("src/Task.kt", "fun foo()2 {}")
+        taskFile("test/Tests.kt", "fun tests()2 {}")
+      }
+    }
+  }.apply {
+    isMarketplace = true
+    marketplaceCourseVersion = courseVersion
+  } as EduCourse
 
   companion object {
     fun getConfiguredSubmissionsList(

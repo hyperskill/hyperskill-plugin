@@ -45,11 +45,13 @@ class CppCreateTaskTest : EduActionTestCase() {
           file(TASK_CPP, getInternalTemplateText(TASK_CPP))
         }
         dir("test") {
-          file(TEST_CPP, when (environment) {
-            "GoogleTest" -> getInternalTemplateText(CppGTestCourseBuilder.TEST_TEMPLATE_NAME)
-            "Catch" -> getInternalTemplateText(CppCatchCourseBuilder.TEST_TEMPLATE_NAME)
-            else -> error("Test file undefined for environment `$environment`!")
-          })
+          file(
+            TEST_CPP, when (environment) {
+              "GoogleTest" -> getInternalTemplateText(CppGTestCourseBuilder.TEST_TEMPLATE_NAME)
+              "Catch" -> getInternalTemplateText(CppCatchCourseBuilder.TEST_TEMPLATE_NAME)
+              else -> error("Test file undefined for environment `$environment`!")
+            }
+          )
         }
         file(CMAKE_LISTS_TXT, getExpectedTaskCMakeText(course, defaultSettings, "global-lesson-task1"))
         file("task.md")
@@ -61,10 +63,12 @@ class CppCreateTaskTest : EduActionTestCase() {
             file("googletest.cmake")
             file("googletest-download.cmake")
           }
+
           "Catch" -> {
             file("catch.cmake")
             file("utils.cmake")
           }
+
           else -> error("Content of the `cmake` directory undefined for environment `$environment`")
         }
       }

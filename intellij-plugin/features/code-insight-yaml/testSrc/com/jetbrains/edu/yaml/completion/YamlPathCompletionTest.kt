@@ -23,7 +23,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     val taskDir = task.getDir(project.courseDir)!!
     GeneratorUtils.createTextChildFile(project, taskDir, "src/foo.txt", "")
 
-    doSingleCompletion(task, """
+    doSingleCompletion(
+      task, """
       |type: edu
       |files:
       |- name: src/taskfile1.txt
@@ -37,7 +38,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |  visible: true
       |- name: src/foo.txt
       |  visible: true      
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -52,7 +54,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     }
     val task = course.findTask("lesson1", "task1")
 
-    doSingleCompletion(task, """
+    doSingleCompletion(
+      task, """
       |type: edu
       |files:
       |- name: src/taskfile1.txt
@@ -66,7 +69,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |  visible: true
       |- name: src/foo.txt
       |  visible: true      
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -82,7 +86,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     val taskDir = task.getDir(project.courseDir)!!
     GeneratorUtils.createTextChildFile(project, taskDir, "src/taskfile2.txt", "")
 
-    doSingleCompletion(task, """
+    doSingleCompletion(
+      task, """
       |type: edu
       |files:
       |- name: src/taskfile1.txt
@@ -96,7 +101,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |  visible: true
       |- name: src/taskfile2.txt
       |  visible: true      
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -112,7 +118,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     val taskDir = task.getDir(project.courseDir)!!
     GeneratorUtils.createTextChildFile(project, taskDir, "taskfile2.txt", "")
 
-    doSingleCompletion(task, """
+    doSingleCompletion(
+      task, """
       |type: edu
       |files:
       |- name: src/taskfile1.txt
@@ -126,7 +133,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |  visible: true
       |- name: taskfile2.txt
       |  visible: true      
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -142,14 +150,16 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     val taskDir = task.getDir(project.courseDir)!!
     GeneratorUtils.createTextChildFile(project, taskDir, ".hidden_dir/hidden_file", "")
 
-    checkNoCompletion(task, """
+    checkNoCompletion(
+      task, """
       |type: edu
       |files:
       |- name: src/taskfile1.txt
       |  visible: true
       |- name: .hidden<caret>
       |  visible: false      
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -165,7 +175,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     val taskDir = task.getDir(project.courseDir)!!
     GeneratorUtils.createTextChildFile(project, taskDir, "src/task.txt", "")
 
-    doSingleCompletion(task, """
+    doSingleCompletion(
+      task, """
       |type: edu
       |files:
       |- name: src/taskfile1.txt
@@ -179,7 +190,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |  visible: true
       |- name: src/task.txt
       |  visible: true      
-    """.trimMargin("|"), invocationCount = 2)
+    """.trimMargin("|"), invocationCount = 2
+    )
   }
 
   @Test
@@ -193,7 +205,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     val taskDir = task.getDir(project.courseDir)!!
     GeneratorUtils.createTextChildFile(project, taskDir, "src/task.txt", "")
 
-    doSingleCompletion(task, """
+    doSingleCompletion(
+      task, """
       |type: edu
       |files:
       |- name: sr<caret>
@@ -203,7 +216,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |files:
       |- name: src/
       |  visible: true      
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -216,7 +230,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       project.courseDir.createChildDirectory(this, "section2")
     }
 
-    doSingleCompletion(course, """
+    doSingleCompletion(
+      course, """
       |title: Test Course
       |type: coursera
       |language: Russian
@@ -238,7 +253,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |content:
       |- lesson1
       |- section2
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -253,7 +269,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     val lessonDir = lesson.getDir(project.courseDir)!!
     runWriteAction { lessonDir.createChildDirectory(this, "task2") }
 
-    doSingleCompletion(lesson, """
+    doSingleCompletion(
+      lesson, """
       |content:
       |- task1
       |- tas<caret>
@@ -261,7 +278,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |content:
       |- task1
       |- task2
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -275,7 +293,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
 
     val section = course.getSection("section1")!!
 
-    doSingleCompletion(section, """
+    doSingleCompletion(
+      section, """
       |content:
       |- lesson1
       |- less<caret>
@@ -283,7 +302,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |content:
       |- lesson1
       |- lesson2
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -298,7 +318,8 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
     val lessonDir = lesson.getDir(project.courseDir)!!
     runWriteAction { lessonDir.createChildDirectory(this, "task2") }
 
-    doSingleCompletion(lesson, """
+    doSingleCompletion(
+      lesson, """
       |content:
       |- task1
       |- tas<caret>
@@ -306,6 +327,7 @@ class YamlPathCompletionTest : YamlCompletionTestBase() {
       |content:
       |- task1
       |- task2
-    """.trimMargin("|"), invocationCount = 2)
+    """.trimMargin("|"), invocationCount = 2
+    )
   }
 }

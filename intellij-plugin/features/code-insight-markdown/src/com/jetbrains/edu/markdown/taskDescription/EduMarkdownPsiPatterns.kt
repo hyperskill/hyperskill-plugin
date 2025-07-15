@@ -13,11 +13,11 @@ import org.intellij.plugins.markdown.lang.psi.impl.MarkdownLinkDestination
 object EduMarkdownPsiPatterns {
 
   val markdownLinkDestination: PsiElementPattern.Capture<out PsiElement> = psiElement<MarkdownLinkDestination>()
-      .inCourse()
-      .inFileWithName(DescriptionFormat.MD.fileName)
+    .inCourse()
+    .inFileWithName(DescriptionFormat.MD.fileName)
 
   val inMarkdownLinkDestination: PsiElementPattern.Capture<PsiElement> = psiElement<PsiElement>()
-      .withParent(markdownLinkDestination)
+    .withParent(markdownLinkDestination)
 
   val toolWindowIdUriPath: PsiElementPattern.Capture<PsiElement> = uriPathElement(TaskDescriptionLinkProtocol.TOOL_WINDOW)
 

@@ -26,10 +26,12 @@ class PyCheckersTest : PyCheckersTestBase() {
           }
         }
         outputTask("Output with input.txt") {
-          pythonTaskFile("hello_world.py", """
+          pythonTaskFile(
+            "hello_world.py", """
             a = input()
             print(a + " World!")
-          """)
+          """
+          )
           taskFile("output.txt") {
             withText("Hello, World!")
           }
@@ -39,10 +41,12 @@ class PyCheckersTest : PyCheckersTestBase() {
         }
         eduTask("NonZeroExitCodeInTests") {
           pythonTaskFile("hello_world.py", """print("Hello, world!")""")
-          pythonTaskFile("tests.py", """
+          pythonTaskFile(
+            "tests.py", """
             print("#educational_plugin test OK")
             exit(1)
-          """)
+          """
+          )
         }
       }
     }

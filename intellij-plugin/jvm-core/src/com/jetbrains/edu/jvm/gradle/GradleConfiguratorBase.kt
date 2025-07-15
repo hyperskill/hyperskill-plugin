@@ -5,8 +5,8 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.edu.jvm.JdkProjectSettings
 import com.jetbrains.edu.jvm.jvmEnvironmentSettings
 import com.jetbrains.edu.learning.EduNames
-import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
+import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.configuration.attributesEvaluator.AttributesEvaluator
 import com.jetbrains.edu.learning.gradle.GradleConstants.GRADLE
 import com.jetbrains.edu.learning.gradle.GradleConstants.GRADLE_PROPERTIES

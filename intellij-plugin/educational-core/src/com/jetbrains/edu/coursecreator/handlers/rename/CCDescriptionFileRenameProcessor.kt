@@ -31,7 +31,12 @@ class CCDescriptionFileRenameProcessor : RenamePsiFileProcessor() {
     return file.parent == task.getDir(project.courseDir)
   }
 
-  override fun createRenameDialog(project: Project, element: PsiElement, nameSuggestionContext: PsiElement?, editor: Editor?): RenameDialog {
+  override fun createRenameDialog(
+    project: Project,
+    element: PsiElement,
+    nameSuggestionContext: PsiElement?,
+    editor: Editor?
+  ): RenameDialog {
     val task = (element as PsiFile).virtualFile.getContainingTask(project)
                ?: return super.createRenameDialog(project, element, nameSuggestionContext, editor)
 

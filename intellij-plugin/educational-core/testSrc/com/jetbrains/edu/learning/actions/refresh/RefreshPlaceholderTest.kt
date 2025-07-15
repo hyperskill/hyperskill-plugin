@@ -36,10 +36,12 @@ class RefreshPlaceholderTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(52)
     myFixture.type("test")
     testAction(RefreshAnswerPlaceholder.ACTION_ID)
-    assertEquals("""
+    assertEquals(
+      """
       Look! There is test placeholder.
       Look! There is second placeholder.
-      """.trimIndent(), myFixture.getDocument(myFixture.file).text)
+      """.trimIndent(), myFixture.getDocument(myFixture.file).text
+    )
   }
 
   @Test
@@ -50,10 +52,12 @@ class RefreshPlaceholderTest : EduTestCase() {
     myFixture.editor.caretModel.moveToOffset(56)
     myFixture.type("test")
     testAction(RefreshAnswerPlaceholder.ACTION_ID)
-    assertEquals("""
+    assertEquals(
+      """
       Look! There is test test placeholder.
       Look! There is second placeholder.
-      """.trimIndent(), myFixture.getDocument(myFixture.file).text)
+      """.trimIndent(), myFixture.getDocument(myFixture.file).text
+    )
     val course = StudyTaskManager.getInstance(project).course
     val lesson = course!!.getLesson("lesson1")
     val task = lesson!!.getTask("task3")
@@ -73,10 +77,12 @@ class RefreshPlaceholderTest : EduTestCase() {
     myFixture.type("test")
     myFixture.editor.caretModel.moveToOffset(16)
     testAction(RefreshAnswerPlaceholder.ACTION_ID)
-    assertEquals("""
+    assertEquals(
+      """
       Look! There is first placeholder.
       Look! There is secotestnd placeholder.
-      """.trimIndent(), myFixture.getDocument(myFixture.file).text)
+      """.trimIndent(), myFixture.getDocument(myFixture.file).text
+    )
   }
 
   @Throws(IOException::class)

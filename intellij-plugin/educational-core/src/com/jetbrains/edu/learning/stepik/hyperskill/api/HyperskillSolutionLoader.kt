@@ -35,7 +35,8 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
                                      ?: return TaskSolutions.EMPTY
     if (lastSubmission !is StepikBasedSubmission)
       error(
-        "Hyperskill submission ${lastSubmission.id} for task ${task.name} is not instance of ${StepikBasedSubmission::class.simpleName} class")
+        "Hyperskill submission ${lastSubmission.id} for task ${task.name} is not instance of ${StepikBasedSubmission::class.simpleName} class"
+      )
 
     val files: Map<String, Solution> = when (task) {
       is EduTask -> lastSubmission.eduTaskFiles
@@ -60,11 +61,13 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
     return mapOf(taskFile.name to Solution(codeFromServer, true, emptyList()))
   }
 
-  override fun updateTasks(course: Course,
-                           tasks: List<Task>,
-                           submissions: List<Submission>,
-                           progressIndicator: ProgressIndicator?,
-                           force: Boolean) {
+  override fun updateTasks(
+    course: Course,
+    tasks: List<Task>,
+    submissions: List<Submission>,
+    progressIndicator: ProgressIndicator?,
+    force: Boolean
+  ) {
     super.updateTasks(course, tasks, submissions, progressIndicator, force)
     runInEdt {
       progressIndicator?.text = EduCoreBundle.message("update.setting.stage")

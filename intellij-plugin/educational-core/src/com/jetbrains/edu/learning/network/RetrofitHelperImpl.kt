@@ -67,7 +67,7 @@ class RetrofitHelperImpl : RetrofitHelper {
     }
   }
 
-  override fun customizeClient(builder: OkHttpClient.Builder, baseUrl: String): OkHttpClient.Builder  {
+  override fun customizeClient(builder: OkHttpClient.Builder, baseUrl: String): OkHttpClient.Builder {
     return builder
       .addProxy(baseUrl)
       .addEdtAssertions()

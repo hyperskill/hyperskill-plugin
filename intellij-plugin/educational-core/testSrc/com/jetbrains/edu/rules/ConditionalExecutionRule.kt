@@ -28,10 +28,11 @@ class ConditionalExecutionRule : TestRule {
 
   private fun shouldRun(description: Description): Boolean {
     val annotation = description.getAnnotation(MinPlatformVersion::class.java)
-      ?: description.testClass.getAnnotation(MinPlatformVersion::class.java)
-      ?: return true
+                     ?: description.testClass.getAnnotation(MinPlatformVersion::class.java)
+                     ?: return true
 
-    val minSupportedVersion = BuildNumber.fromString(annotation.version) ?: error("Can't create `BuildNumber` from `${annotation.version}` version")
+    val minSupportedVersion =
+      BuildNumber.fromString(annotation.version) ?: error("Can't create `BuildNumber` from `${annotation.version}` version")
     return ApplicationInfo.getInstance().build >= minSupportedVersion
   }
 }

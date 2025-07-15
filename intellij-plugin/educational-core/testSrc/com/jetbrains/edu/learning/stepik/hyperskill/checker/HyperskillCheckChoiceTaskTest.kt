@@ -3,11 +3,11 @@ package com.jetbrains.edu.learning.stepik.hyperskill.checker
 import com.jetbrains.edu.learning.MockResponseFactory
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.pathWithoutPrams
 import com.jetbrains.edu.learning.stepik.StepikTestUtils.format
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 import java.util.*

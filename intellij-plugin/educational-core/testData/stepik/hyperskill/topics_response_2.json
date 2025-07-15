@@ -1,14 +1,14 @@
 {
-  "meta": {
-    "page": 2,
-    "has_next": false,
-    "has_previous": true
+  "meta" : {
+    "page" : 2,
+    "has_next" : false,
+    "has_previous" : true
   },
-  "topics": [
+  "topics" : [
     {
-      "id": 260,
-      "theory": 3801,
-      "title": "IntelliJ IDEA"
+      "id" : 260,
+      "theory" : 3801,
+      "title" : "IntelliJ IDEA"
     }
   ]
 }

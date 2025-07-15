@@ -11,8 +11,8 @@ import com.jetbrains.edu.learning.yaml.errorHandling.unsupportedItemTypeMessage
 import com.jetbrains.edu.learning.yaml.format.CourseBuilder
 import com.jetbrains.edu.learning.yaml.format.CourseYamlMixin
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CONTENT
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.COURSE_TYPE_YAML
+import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ENVIRONMENT
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.FEEDBACK_LINK
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.GENERATED_EDU_ID

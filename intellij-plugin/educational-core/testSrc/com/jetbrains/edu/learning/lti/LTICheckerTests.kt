@@ -76,12 +76,14 @@ class LTICheckerTests : EduTestCase() {
       lesson {
         eduTask {
           taskFile("Task.txt")
-          taskFile("checkResult.txt", if (solved) {
-            "Solved"
-          }
-          else {
-            "Failed"
-          })
+          taskFile(
+            "checkResult.txt", if (solved) {
+              "Solved"
+            }
+            else {
+              "Failed"
+            }
+          )
         }
       }
     }.apply { isMarketplace = true }

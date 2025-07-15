@@ -153,12 +153,14 @@ class CourseGroupModel {
           val index = if (event.keyCode == KeyEvent.VK_HOME) 0 else courseCards.size - 1
           setSelection(courseCards[index])
         }
+
         KeyEvent.VK_UP -> {
           event.consume()
           val selectionIndex = getIndex(selectedCard)
           val index = max(selectionIndex - 1, 0)
           setSelection(courseCards[index])
         }
+
         KeyEvent.VK_DOWN -> {
           event.consume()
           val selectionIndex = getIndex(selectedCard)

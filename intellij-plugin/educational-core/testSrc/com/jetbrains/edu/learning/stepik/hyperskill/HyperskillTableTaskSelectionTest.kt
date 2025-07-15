@@ -4,7 +4,7 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.courseFormat.tasks.TableTask
 import org.junit.Test
 
-class HyperskillTableTaskSelectionTest: EduTestCase() {
+class HyperskillTableTaskSelectionTest : EduTestCase() {
   @Test
   fun `test initial selection`() {
     val task = createTableTask(false)

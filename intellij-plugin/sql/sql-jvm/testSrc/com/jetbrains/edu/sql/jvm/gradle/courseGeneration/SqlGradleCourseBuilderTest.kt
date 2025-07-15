@@ -40,7 +40,8 @@ class SqlGradleCourseBuilderTest : JvmCourseGenerationTestBase() {
       file("settings.gradle")
     }.assertEquals(rootDir)
 
-    assertListOfAdditionalFiles(newCourse,
+    assertListOfAdditionalFiles(
+      newCourse,
       "build.gradle" to null,
       "settings.gradle" to null
     )
@@ -142,7 +143,8 @@ class SqlGradleCourseBuilderTest : JvmCourseGenerationTestBase() {
     }
     createCourseStructure(newCourse)
 
-    assertListOfAdditionalFiles(newCourse,
+    assertListOfAdditionalFiles(
+      newCourse,
       "build.gradle.kts" to null,
       "settings.gradle.kts" to null
       //build.gradle and settings.gradle are not created

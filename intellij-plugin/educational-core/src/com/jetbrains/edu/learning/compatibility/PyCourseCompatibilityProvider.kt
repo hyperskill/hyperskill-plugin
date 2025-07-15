@@ -17,6 +17,7 @@ class PyCourseCompatibilityProvider : CourseCompatibilityProvider {
       // Actually, `isPyCharm()` covers DataSpell case as well, so `isDataSpell()` is only for readability improvement
       isPyCharm() || isDataSpell() ||
       isCLion() || isIntelliJ() || EduUtilsKt.isAndroidStudio() -> PYTHON_COMMUNITY
+
       else -> return null
     }
     requiredPlugins += TOML

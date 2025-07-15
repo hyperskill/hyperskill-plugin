@@ -7,7 +7,8 @@ import java.io.IOException
 
 // link and file name should not be changed for the backwards compatibility
 @VisibleForTesting
-const val MARKETPLACE_LISTED_COURSES_LINK = "https://raw.githubusercontent.com/JetBrains/educational-plugin/master/marketplaceListedCourses.txt"
+const val MARKETPLACE_LISTED_COURSES_LINK =
+  "https://raw.githubusercontent.com/JetBrains/educational-plugin/master/marketplaceListedCourses.txt"
 
 object MarketplaceListedCoursesIdsLoader {
   private val LOG = Logger.getInstance(MarketplaceListedCoursesIdsLoader::class.java)

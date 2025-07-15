@@ -26,9 +26,9 @@ class CreateNewYouTrackIssue : DumbAwareAction() {
                                          project != null && project.isEduProject()
   }
 
- override fun getActionUpdateThread() = ActionUpdateThread.BGT
+  override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
- override fun actionPerformed(e: AnActionEvent) {
+  override fun actionPerformed(e: AnActionEvent) {
     val course = e.project?.course
     val description = createIssueDescription(course)
     val link = "https://youtrack.jetbrains.com/newIssue?project=EDU&description=${URLUtil.encodeURIComponent(description)}"
@@ -40,26 +40,32 @@ class CreateNewYouTrackIssue : DumbAwareAction() {
     private fun createIssueDescription(course: Course?): String {
       val pluginVersion = pluginVersion(EduNames.PLUGIN_ID)!!
       return buildString {
-        appendLine("""
+        appendLine(
+          """
           ## Environment
           
           * **JetBrains Academy plugin version**: $pluginVersion
           * **IDE name and version**: $ideNameAndVersion
           * **Operating system**: ${SystemInfo.getOsNameAndVersion()}
-        """.trimIndent())
+        """.trimIndent()
+        )
         if (course != null) {
-          appendLine("""
+          appendLine(
+            """
             * **Course name**: ${course.name}
             * **Course info**: ${course.courseInfo}
             * **Course mode**: ${course.mode}
-            """.trimIndent())
+            """.trimIndent()
+          )
         }
-        appendLine("""
+        appendLine(
+          """
           
           ## Problem description
           
           ## Steps to reproduce
-        """.trimIndent())
+        """.trimIndent()
+        )
       }
     }
 

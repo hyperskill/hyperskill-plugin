@@ -25,8 +25,10 @@ import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.STUDENT_ANSWER
 
 @Suppress("unused") // used for yaml serialization
 @JsonDeserialize(builder = EduAnswerPlaceholderBuilder::class)
-@JsonPropertyOrder(OFFSET, LENGTH, PLACEHOLDER_TEXT, DEPENDENCY, INITIAL_STATE, INIT_FROM_DEPENDENCY, ENCRYPTED_POSSIBLE_ANSWER, SELECTED, STATUS,
-                   STUDENT_ANSWER, IS_VISIBLE)
+@JsonPropertyOrder(
+  OFFSET, LENGTH, PLACEHOLDER_TEXT, DEPENDENCY, INITIAL_STATE, INIT_FROM_DEPENDENCY, ENCRYPTED_POSSIBLE_ANSWER, SELECTED, STATUS,
+  STUDENT_ANSWER, IS_VISIBLE
+)
 abstract class StudentAnswerPlaceholderYamlMixin : AnswerPlaceholderYamlMixin() {
 
   @JsonProperty(INITIAL_STATE)

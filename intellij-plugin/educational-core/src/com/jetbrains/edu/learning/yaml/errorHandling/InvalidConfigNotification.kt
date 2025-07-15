@@ -29,7 +29,8 @@ fun showInvalidConfigNotification(project: Project, configFile: VirtualFile, cau
 private fun messageWithEditLink(project: Project, configFile: VirtualFile, cause: String): String {
   val courseConfig = if (configFile.name == COURSE_CONFIG) {
     configFile
-  } else {
+  }
+                     else {
     project.courseDir.findChild(COURSE_CONFIG)
   } ?: error(EduCoreBundle.message("yaml.editor.invalid.format.cannot.find.config"))
 
@@ -53,7 +54,8 @@ private fun messageWithEditLink(project: Project, configFile: VirtualFile, cause
 
 private fun pathToConfig(project: Project, configFile: VirtualFile): String =
   FileUtil.getRelativePath(project.courseDir.path, configFile.path, VfsUtil.VFS_SEPARATOR_CHAR) ?: error(
-    EduCoreBundle.message("yaml.editor.invalid.format.path.not.found", configFile))
+    EduCoreBundle.message("yaml.editor.invalid.format.path.not.found", configFile)
+  )
 
 private class GoToFileListener(val project: Project, val file: VirtualFile) : NotificationListener {
   override fun hyperlinkUpdate(notification: Notification, event: HyperlinkEvent) {

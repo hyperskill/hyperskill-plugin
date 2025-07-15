@@ -63,7 +63,9 @@ class PhpTaskChecker(
           project,
           listOf(configuration),
           indicator,
-          processListener = processListener)) {
+          processListener = processListener
+        )
+      ) {
         LOG.warn("Execution failed while trying to obtain errors for user message")
         destroyed = true
       }

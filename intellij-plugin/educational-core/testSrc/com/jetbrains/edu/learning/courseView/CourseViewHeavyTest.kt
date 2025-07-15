@@ -25,7 +25,8 @@ class CourseViewHeavyTest : CourseViewHeavyTestBase() {
     PlatformTestUtil.waitForAlarm(600)
     waitWhileBusy(tree)
 
-    PlatformTestUtil.assertTreeEqual(tree, """
+    PlatformTestUtil.assertTreeEqual(
+      tree, """
       -Project
        -CourseNode Edu test course  0/4
         -LessonNode lesson1
@@ -34,7 +35,8 @@ class CourseViewHeavyTest : CourseViewHeavyTestBase() {
          +TaskNode task2
          +TaskNode task3
          +TaskNode task4
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 
   @Test
@@ -51,7 +53,8 @@ class CourseViewHeavyTest : CourseViewHeavyTestBase() {
     navigateToNextTask()
     waitWhileBusy(tree)
 
-    PlatformTestUtil.assertTreeEqual(tree, """
+    PlatformTestUtil.assertTreeEqual(
+      tree, """
       -Project
        -CourseNode Edu test course  0/4
         -LessonNode lesson1
@@ -60,7 +63,8 @@ class CourseViewHeavyTest : CourseViewHeavyTestBase() {
           taskFile2.txt
          +TaskNode task3
          +TaskNode task4
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 
   @Test

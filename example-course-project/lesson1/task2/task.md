@@ -16,6 +16,7 @@ The following features are available in
   Type "hint" and press Tab.
   Hints should be added to an empty line in the task text.
   In hints you can use both HTML and Markdown.
+
 <div class="hint">
 
 Text of your hint

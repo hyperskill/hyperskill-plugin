@@ -33,6 +33,7 @@ class TaskFile : EduFile {
     }
 
   private var _answerPlaceholders = mutableListOf<AnswerPlaceholder>()
+
   @Transient
   private var _task: Task? = null
 

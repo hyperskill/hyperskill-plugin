@@ -43,11 +43,13 @@ class DiffConflictResolveStrategyTest : EduTestCase() {
 
   @Test
   fun `test do not resolve changes in conflict file`() {
-    val baseState = mapOf("a.kt" to """
+    val baseState = mapOf(
+      "a.kt" to """
         //TODO()
       """.trimIndent()
     )
-    val currentState = mapOf("a.kt" to """
+    val currentState = mapOf(
+      "a.kt" to """
         //TODO1()
         
         fun main() { println("MEM") }

@@ -13,7 +13,8 @@ import org.rust.lang.RsLanguage
 class RsDeleteActionTest : RsActionTestBase() {
 
   @Test
-  fun `test delete first lesson`() = doTest(createRustCourse(), "lesson1", """
+  fun `test delete first lesson`() = doTest(
+    createRustCourse(), "lesson1", """
       [workspace]
       
       members = [
@@ -25,10 +26,12 @@ class RsDeleteActionTest : RsActionTestBase() {
       exclude = [
           "**/*.yaml"
       ]
-  """)
+  """
+  )
 
   @Test
-  fun `test delete last lesson`() = doTest(createRustCourse(), "lesson4", """
+  fun `test delete last lesson`() = doTest(
+    createRustCourse(), "lesson4", """
       [workspace]
       
       members = [
@@ -40,7 +43,8 @@ class RsDeleteActionTest : RsActionTestBase() {
       exclude = [
           "**/*.yaml"
       ]
-  """)
+  """
+  )
 
   @Test
   fun `test delete last lesson with trailing comma`() {
@@ -58,7 +62,8 @@ class RsDeleteActionTest : RsActionTestBase() {
           rustTaskFile("main.rs")
         }
       }
-      additionalFile("Cargo.toml", """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
         
         members = [
@@ -69,10 +74,12 @@ class RsDeleteActionTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
 
-    doTest(course, "lesson2", """
+    doTest(
+      course, "lesson2", """
         [workspace]
         
         members = [
@@ -82,11 +89,13 @@ class RsDeleteActionTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-    """)
+    """
+    )
   }
 
   @Test
-  fun `test delete section`() = doTest(createRustCourse(), "section1", """
+  fun `test delete section`() = doTest(
+    createRustCourse(), "section1", """
       [workspace]
       
       members = [
@@ -97,10 +106,12 @@ class RsDeleteActionTest : RsActionTestBase() {
       exclude = [
           "**/*.yaml"
       ]
-  """)
+  """
+  )
 
   @Test
-  fun `test delete last task in lesson`() = doTest(createRustCourse(), "lesson1/task1", """
+  fun `test delete last task in lesson`() = doTest(
+    createRustCourse(), "lesson1/task1", """
       [workspace]
       
       members = [
@@ -112,26 +123,12 @@ class RsDeleteActionTest : RsActionTestBase() {
       exclude = [
           "**/*.yaml"
       ]
-  """)
+  """
+  )
 
   @Test
-  fun `test delete non-last task in lesson`() = doTest(createRustCourse(), "lesson4/task5", """
-      [workspace]
-      
-      members = [
-          "lesson1/*/",
-          "section1/lesson2/*/",
-          "section1/lesson3/*/" ,
-          "lesson4/*/"
-      ]
-      
-      exclude = [
-          "**/*.yaml"
-      ]
-  """)
-
-  @Test
-  fun `test delete empty lesson`() = doTest(createRustCourse(), "lesson5", """
+  fun `test delete non-last task in lesson`() = doTest(
+    createRustCourse(), "lesson4/task5", """
       [workspace]
       
       members = [
@@ -144,7 +141,26 @@ class RsDeleteActionTest : RsActionTestBase() {
       exclude = [
           "**/*.yaml"
       ]
-  """)
+  """
+  )
+
+  @Test
+  fun `test delete empty lesson`() = doTest(
+    createRustCourse(), "lesson5", """
+      [workspace]
+      
+      members = [
+          "lesson1/*/",
+          "section1/lesson2/*/",
+          "section1/lesson3/*/" ,
+          "lesson4/*/"
+      ]
+      
+      exclude = [
+          "**/*.yaml"
+      ]
+  """
+  )
 
   private fun createRustCourse(): Course {
     return courseWithFiles(
@@ -177,7 +193,8 @@ class RsDeleteActionTest : RsActionTestBase() {
         }
       }
       lesson("lesson5")
-      additionalFile("Cargo.toml", """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
         
         members = [
@@ -190,7 +207,8 @@ class RsDeleteActionTest : RsActionTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """.trimIndent())
+      """.trimIndent()
+      )
     }
   }
 

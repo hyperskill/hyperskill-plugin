@@ -7,7 +7,7 @@ internal fun <S> findService(service: Class<S>): S {
 
   val currentThread = Thread.currentThread()
   val originalClassLoader = currentThread.getContextClassLoader()
-  val pluginClassLoader = object{}.javaClass.enclosingClass.getClassLoader()
+  val pluginClassLoader = object {}.javaClass.enclosingClass.getClassLoader()
   try {
     currentThread.setContextClassLoader(pluginClassLoader)
     val serviceLoader = ServiceLoader.load(service)

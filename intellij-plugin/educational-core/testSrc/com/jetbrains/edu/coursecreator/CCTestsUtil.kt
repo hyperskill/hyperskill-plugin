@@ -1,8 +1,8 @@
 package com.jetbrains.edu.coursecreator
 
-import com.jetbrains.edu.learning.placeholder.PlaceholderPainter.getPaintedPlaceholder
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.TaskFile
+import com.jetbrains.edu.learning.placeholder.PlaceholderPainter.getPaintedPlaceholder
 
 object CCTestsUtil {
   private fun getPlaceholderPresentation(placeholder: AnswerPlaceholder): String {
@@ -17,7 +17,8 @@ object CCTestsUtil {
     if (paintedPlaceholders.contains(placeholder)) return
     for (paintedPlaceholder in paintedPlaceholders) {
       if (paintedPlaceholder.offset == placeholder.offset &&
-          paintedPlaceholder.length == placeholder.length) {
+          paintedPlaceholder.length == placeholder.length
+      ) {
         return
       }
     }

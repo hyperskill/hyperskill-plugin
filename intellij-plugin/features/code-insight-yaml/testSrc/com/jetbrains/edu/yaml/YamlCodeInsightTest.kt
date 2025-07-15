@@ -30,6 +30,7 @@ abstract class YamlCodeInsightTest : EduTestCase() {
           val jarPath = URLUtil.splitJarUrl(url)?.first ?: return@forEach
           Paths.get(jarPath)
         }
+
         else -> return@forEach
       }
       val path = file.toAbsolutePath().toString()

@@ -99,7 +99,8 @@ open class CCAddAnswerPlaceholder : CCAnswerPlaceholderAction() {
         val twStart = existingAnswerPlaceholder.offset
         val twEnd = existingAnswerPlaceholder.possibleAnswer.length + twStart
         if (start in twStart until twEnd || end in (twStart + 1)..twEnd ||
-            twStart in start until end || twEnd in (start + 1)..end) {
+            twStart in start until end || twEnd in (start + 1)..end
+        ) {
           return true
         }
       }

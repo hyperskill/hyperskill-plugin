@@ -15,12 +15,7 @@ import com.jetbrains.edu.learning.mockService
 import com.jetbrains.educational.core.format.enum.TranslationLanguage
 import com.jetbrains.educational.terms.format.CourseTermsResponse
 import com.jetbrains.educational.terms.format.domain.TermsVersion
-import io.mockk.MockKAdditionalAnswerScope
-import io.mockk.MockKStubScope
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test

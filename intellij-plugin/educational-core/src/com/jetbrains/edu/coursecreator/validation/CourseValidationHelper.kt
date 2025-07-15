@@ -43,9 +43,11 @@ class CourseValidationHelper(
           is ItemContainer -> {
             validate(project, item)
           }
+
           is Task -> {
             validate(project, item)
           }
+
           else -> error("Unreachable")
         }
       }
@@ -118,10 +120,11 @@ class CourseValidationHelper(
 
     return elements.flatMap {
       when (it.tagName()) {
-        "a" ->  {
+        "a" -> {
           val linkText = it.attr("href")
           listOfNotNull(TaskDescriptionLink.fromUrl(linkText))
         }
+
         "img" -> ImgLink.collectImageLinks(project, task, it)
         else -> emptyList()
       }

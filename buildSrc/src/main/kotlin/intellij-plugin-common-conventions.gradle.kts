@@ -49,7 +49,7 @@ dependencies {
   implementationWithoutKotlin(libs.findLibrary("retrofit").get())
   implementationWithoutKotlin(libs.findLibrary("converter.jackson").get())
   implementationWithoutKotlin(libs.findLibrary("kotlin.css.jvm").get())
-  
+
   testImplementation(libs.findLibrary("junit").get())
   testImplementation(libs.findLibrary("openTest4J").get())
   testImplementation(libs.findLibrary("classgraph").get())
@@ -96,6 +96,7 @@ private fun manifestFile(project: Project): File? {
     ":intellij-plugin" -> {
       filePath = "META-INF/plugin.xml"
     }
+
     ":intellij-plugin:educational-core" -> return manifestFile(project.parent!!)
     // Localization module is not supposed to have a plugin manifest.
     // Since it also is not supposed to have any code, only resources, no need to verify anything for it

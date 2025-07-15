@@ -110,7 +110,6 @@ class ChoiceTaskCheckerTest : EduTestCase() {
   }
 
 
-
   private fun selectOptions(optionsToSelect: List<Int>) {
     val task = findTask(0, 0)
     NavigationUtils.navigateToTask(project, task)

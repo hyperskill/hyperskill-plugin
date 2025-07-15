@@ -15,12 +15,14 @@ class XSettingsTest : EduSettingsServiceTestBase() {
   @Test
   fun `test serialization with old data`() {
     val settings = XSettings()
-    settings.loadStateAndCheck("""
+    settings.loadStateAndCheck(
+      """
       <XSettingsState>
         <option name="askToPost" value="true" />
         <option name="userId" value="username" />
       </XSettingsState>
-    """)
+    """
+    )
 
     assertTrue(settings.askToPost)
     assertEquals("username", settings.userId)
@@ -30,14 +32,16 @@ class XSettingsTest : EduSettingsServiceTestBase() {
   @Test
   fun `test serialization with full account data`() {
     val settings = XSettings()
-    settings.loadStateAndCheck("""
+    settings.loadStateAndCheck(
+      """
       <XSettingsState>
         <option name="askToPost" value="true" />
         <option name="expiresIn" value="12345" />
         <option name="name" value="name" />
         <option name="userId" value="username" />
       </XSettingsState>
-    """)
+    """
+    )
 
     assertTrue(settings.askToPost)
 

@@ -3,8 +3,8 @@ package com.jetbrains.edu.learning.stepik.hyperskill
 import com.intellij.openapi.extensions.PluginId
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
-import com.jetbrains.edu.learning.configuration.attributesEvaluator.AttributesEvaluator
 import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.attributesEvaluator.AttributesEvaluator
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.newproject.EduProjectSettings

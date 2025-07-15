@@ -7,7 +7,7 @@ import org.jetbrains.annotations.PropertyKey
 @NonNls
 private const val BUNDLE = "messages.EduCppBundle"
 
-object EduCppBundle: EduBundle(BUNDLE) {
+object EduCppBundle : EduBundle(BUNDLE) {
 
   fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any): String {
     return getMessage(key, *params)

@@ -31,6 +31,9 @@ import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.ai.TranslationProjectSettings
+import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
+import com.jetbrains.edu.learning.ai.terms.TheoryLookupSettings
+import com.jetbrains.edu.learning.combineStateFlow
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
@@ -50,15 +53,12 @@ import com.jetbrains.edu.learning.submissions.ui.SubmissionsTab
 import com.jetbrains.edu.learning.taskToolWindow.ui.check.CheckPanel
 import com.jetbrains.edu.learning.taskToolWindow.ui.navigationMap.NavigationMapAction
 import com.jetbrains.edu.learning.taskToolWindow.ui.navigationMap.NavigationMapToolbar
-import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabManager
-import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType
-import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType.SUBMISSIONS_TAB
-import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
-import com.jetbrains.edu.learning.ai.terms.TheoryLookupSettings
-import com.jetbrains.edu.learning.combineStateFlow
 import com.jetbrains.edu.learning.taskToolWindow.ui.notification.TaskToolWindowNotification
 import com.jetbrains.edu.learning.taskToolWindow.ui.notification.TaskToolWindowNotification.ActionLabel
 import com.jetbrains.edu.learning.taskToolWindow.ui.notification.TaskToolWindowNotificationsPanel
+import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabManager
+import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType
+import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType.SUBMISSIONS_TAB
 import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TaskToolWindowTab
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -238,10 +238,10 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
   override fun scrollNavMap(task: Task?) {
     task ?: return
     val selectedTask = navigationMapToolbar.components
-                       ?.filterIsInstance<ActionButton>()
-                       ?.find { (it.action as? NavigationMapAction)?.task == task } ?: return
+                         ?.filterIsInstance<ActionButton>()
+                         ?.find { (it.action as? NavigationMapAction)?.task == task } ?: return
     navigationMapToolbar.scrollRectToVisible(selectedTask.bounds)
-   }
+  }
 
   override fun readyToCheck() {
     checkPanel.readyToCheck()
@@ -265,11 +265,11 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
       ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
       ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS
     ).apply {
-          border = JBEmptyBorder(0)
-          preferredSize = Dimension(0, 51)
-          minimumSize = Dimension(0, 51)
-          maximumHeight = 51
-        }
+      border = JBEmptyBorder(0)
+      preferredSize = Dimension(0, 51)
+      minimumSize = Dimension(0, 51)
+      maximumHeight = 51
+    }
 
     mainPanel.add(navMapPanel)
 
@@ -279,7 +279,7 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
     taskName.alignmentX = Component.LEFT_ALIGNMENT
     taskNameBox.add(taskName)
     taskNameBox.add(Box.createHorizontalGlue())
-    taskNameBox.border = JBEmptyBorder(0,0,4,0)
+    taskNameBox.border = JBEmptyBorder(0, 0, 4, 0)
 
     mainPanel.add(taskNameBox)
 

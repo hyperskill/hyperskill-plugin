@@ -55,6 +55,7 @@ abstract class DownloadDatasetActionBase(
           return false
         }
       }
+
       course.isStepikRemote -> {
         if (EduSettings.getInstance().user == null) {
           EduNotificationManager.showErrorNotification(
@@ -65,6 +66,7 @@ abstract class DownloadDatasetActionBase(
           return false
         }
       }
+
       else -> return false
     }
     return true

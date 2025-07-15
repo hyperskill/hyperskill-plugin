@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.*
 import com.jetbrains.edu.learning.courseFormat.CheckFeedback
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.json.mixins.NotImplementedInMixin
-import com.jetbrains.edu.learning.yaml.format.tasks.TaskYamlMixin
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ACTUAL
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CUSTOM_NAME
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.EXPECTED
@@ -17,6 +16,7 @@ import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.STATUS
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.TAGS
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.TIME
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.TYPE
+import com.jetbrains.edu.learning.yaml.format.tasks.TaskYamlMixin
 import java.util.*
 
 @Suppress("UNUSED_PARAMETER", "unused") // used for yaml serialization
@@ -27,7 +27,9 @@ abstract class StudentTaskYamlMixin : TaskYamlMixin() {
     @JsonGetter(STATUS)
     get() = throw NotImplementedInMixin()
     @JsonSetter(STATUS)
-    set(value) { throw NotImplementedInMixin() }
+    set(value) {
+      throw NotImplementedInMixin()
+    }
 
   @JsonProperty(FEEDBACK)
   private lateinit var feedback: CheckFeedback

@@ -8,7 +8,10 @@ import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.xml.XmlFile
 import com.intellij.testFramework.IndexingTestUtil
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.EduTestCase
+import com.jetbrains.edu.learning.MockResponseFactory
+import com.jetbrains.edu.learning.MockWebServerHelper
+import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
@@ -75,7 +78,8 @@ class CourseValidationTest : EduTestCase() {
       }
     }
 
-    doTest(course, validateTests = true, validateLinks = false, """
+    doTest(
+      course, validateTests = true, validateLinks = false, """
       - Test Course:
         - lesson with unchecked tasks:
           - theory unchecked task:
@@ -97,7 +101,8 @@ class CourseValidationTest : EduTestCase() {
               - Tests: failed
             - output failed task:
               - Tests: failed
-    """)
+    """
+    )
   }
 
   @Test
@@ -106,24 +111,28 @@ class CourseValidationTest : EduTestCase() {
 
     val course = courseWithFiles {
       lesson("lesson1") {
-        eduTask("valid links", taskDescription = """
+        eduTask(
+          "valid links", taskDescription = """
           [http link](${helper.baseUrl}valid)
           [file link](file://foo/bar.txt)
           [course link](course://lesson1/invalid%20links/Task2.txt)
           [psi element link](psi_element://foo.bar)
           [tool window link](tool_window://Task)
           [settings link](settings://Educational)
-        """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD) {
+        """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD
+        ) {
           taskFile("Task1.txt")
         }
-        eduTask("invalid links", taskDescription = """
+        eduTask(
+          "invalid links", taskDescription = """
           [http link](${helper.baseUrl}invalid)
           [file link](file://foo/baz.txt)
           [course link](course://lesson1/valid%20links/Task3.txt)
           [psi element link](psi_element://foo.baz)
           [tool window link](tool_window://Task1)
           [settings link](settings://Educational2)
-        """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD) {
+        """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD
+        ) {
           taskFile("Task2.txt")
         }
       }
@@ -143,7 +152,8 @@ class CourseValidationTest : EduTestCase() {
       }
     }
 
-    doTest(course, validateTests = false, validateLinks = true, """
+    doTest(
+      course, validateTests = false, validateLinks = true, """
       - Test Course:
         - lesson1:
           - valid links:
@@ -162,7 +172,8 @@ class CourseValidationTest : EduTestCase() {
               - psi_element://foo.baz: failed
               - tool_window://Task1: failed
               - settings://Educational2: failed
-    """)
+    """
+    )
   }
 
   @Test
@@ -171,14 +182,16 @@ class CourseValidationTest : EduTestCase() {
 
     val course = courseWithFiles {
       lesson("lesson1") {
-        eduTask("valid links", taskDescription = """
+        eduTask(
+          "valid links", taskDescription = """
           ![img file link](images/md-image.png)
           ![img http link](${helper.baseUrl}valid-md-image.png)
           <img src="images/image-1.png" srcset="images/image-srcset.png"/>
           <img src="images/image-2.png" data-dark-src="images/image-dark-src.png"/>
           <img src="${helper.baseUrl}valid-src-img-1.png" srcset="${helper.baseUrl}valid-srcset-img.png"/>
           <img src="${helper.baseUrl}valid-src-img-2.png" data-dark-src="${helper.baseUrl}valid-dark-src-img.png"/>
-        """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD) {
+        """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD
+        ) {
           taskFile("Task1.txt")
           taskFile("images/md-image.png")
           taskFile("images/image-1.png")
@@ -193,14 +206,16 @@ class CourseValidationTest : EduTestCase() {
             }
           }
         }
-        eduTask("invalid links", taskDescription = """
+        eduTask(
+          "invalid links", taskDescription = """
           ![img file link](images/md-image.png)
           ![img http link](${helper.baseUrl}invalid-md-image.png)
           <img src="images/image-1.png" srcset="images/image-srcset.png"/>
           <img src="images/image-2.png" data-dark-src="images/image-dark-src.png"/>
           <img src="${helper.baseUrl}invalid-src-img-1.png" srcset="${helper.baseUrl}invalid-srcset-img.png"/>
           <img src="${helper.baseUrl}invalid-src-img-2.png" data-dark-src="${helper.baseUrl}invalid-dark-src-img.png"/>
-        """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD) {
+        """.trimIndent(), taskDescriptionFormat = DescriptionFormat.MD
+        ) {
           taskFile("Task2.txt")
         }
       }
@@ -215,7 +230,8 @@ class CourseValidationTest : EduTestCase() {
       }
     }
 
-    doTest(course, validateTests = false, validateLinks = true, """
+    doTest(
+      course, validateTests = false, validateLinks = true, """
       - Test Course:
         - lesson1:
           - valid links:
@@ -242,7 +258,8 @@ class CourseValidationTest : EduTestCase() {
               - ${helper.baseUrl}invalid-srcset-img.png: failed
               - ${helper.baseUrl}invalid-src-img-2.png: failed
               - ${helper.baseUrl}invalid-dark-src-img.png: failed
-    """)
+    """
+    )
   }
 
   private fun doTest(course: Course, validateTests: Boolean, validateLinks: Boolean, expected: String) {

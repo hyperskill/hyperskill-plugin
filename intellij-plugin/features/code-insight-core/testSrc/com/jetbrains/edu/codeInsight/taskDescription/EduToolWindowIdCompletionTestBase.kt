@@ -13,10 +13,14 @@ abstract class EduToolWindowIdCompletionTestBase(format: DescriptionFormat) : Ed
 
   @Test
   fun `test complete tool window id`() = doTest("tool_window://Tas<caret>", "tool_window://Task<caret>")
+
   @Test
-  fun `test complete library tool window id`() = doTest("tool_window://${LIBRARY_TOOL_WINDOW_ID.dropLast(1)}<caret>", "tool_window://$LIBRARY_TOOL_WINDOW_ID<caret>")
+  fun `test complete library tool window id`() =
+    doTest("tool_window://${LIBRARY_TOOL_WINDOW_ID.dropLast(1)}<caret>", "tool_window://$LIBRARY_TOOL_WINDOW_ID<caret>")
+
   @Test
-  fun `test complete facet tool window id`() = doTest("tool_window://${FACET_TOOL_WINDOW_ID.dropLast(1)}<caret>", "tool_window://$FACET_TOOL_WINDOW_ID<caret>")
+  fun `test complete facet tool window id`() =
+    doTest("tool_window://${FACET_TOOL_WINDOW_ID.dropLast(1)}<caret>", "tool_window://$FACET_TOOL_WINDOW_ID<caret>")
 
   companion object {
     private const val LIBRARY_TOOL_WINDOW_ID = "edu.test.library.window"

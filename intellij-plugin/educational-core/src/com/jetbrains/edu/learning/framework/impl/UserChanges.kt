@@ -9,15 +9,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.DataInputOutputUtil
-import com.jetbrains.edu.learning.EduDocumentListener
+import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.macro.EduMacroUtils
-import com.jetbrains.edu.learning.doWithoutReadOnlyAttribute
-import com.jetbrains.edu.learning.isToEncodeContent
-import com.jetbrains.edu.learning.removeWithEmptyParents
-import com.jetbrains.edu.learning.toCourseInfoHolder
 import org.apache.commons.codec.binary.Base64
 import java.io.DataInput
 import java.io.DataOutput
@@ -88,7 +84,6 @@ sealed class Change {
   }
 
 
-
   abstract fun apply(project: Project, taskDir: VirtualFile, task: Task)
   abstract fun apply(state: MutableMap<String, String>)
 
@@ -115,9 +110,10 @@ sealed class Change {
 
   class AddFile : Change {
 
-    constructor(path: String, text: String): super(path, text)
+    constructor(path: String, text: String) : super(path, text)
+
     @Throws(IOException::class)
-    constructor(input: DataInput): super(input)
+    constructor(input: DataInput) : super(input)
 
     override fun apply(project: Project, taskDir: VirtualFile, task: Task) {
       if (task.getTaskFile(path) == null) {
@@ -165,9 +161,10 @@ sealed class Change {
 
   class ChangeFile : Change {
 
-    constructor(path: String, text: String): super(path, text)
+    constructor(path: String, text: String) : super(path, text)
+
     @Throws(IOException::class)
-    constructor(input: DataInput): super(input)
+    constructor(input: DataInput) : super(input)
 
     override fun apply(project: Project, taskDir: VirtualFile, task: Task) {
       val file = taskDir.findFileByRelativePath(path)
@@ -206,9 +203,10 @@ sealed class Change {
 
   class PropagateLearnerCreatedTaskFile : Change {
 
-    constructor(path: String, text: String): super(path, text)
+    constructor(path: String, text: String) : super(path, text)
+
     @Throws(IOException::class)
-    constructor(input: DataInput): super(input)
+    constructor(input: DataInput) : super(input)
 
     override fun apply(project: Project, taskDir: VirtualFile, task: Task) {
       val taskFile = TaskFile(path, text).apply { isLearnerCreated = true }
@@ -223,9 +221,10 @@ sealed class Change {
 
   class RemoveTaskFile : Change {
 
-    constructor(path: String): super(path, "")
+    constructor(path: String) : super(path, "")
+
     @Throws(IOException::class)
-    constructor(input: DataInput): super(input)
+    constructor(input: DataInput) : super(input)
 
     override fun apply(project: Project, taskDir: VirtualFile, task: Task) {
       task.removeTaskFile(path)

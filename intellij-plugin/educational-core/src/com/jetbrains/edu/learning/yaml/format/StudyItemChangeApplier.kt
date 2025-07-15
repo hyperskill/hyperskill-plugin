@@ -58,8 +58,12 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
       return
     }
 
-    loadingError(EduCoreBundle.message("yaml.editor.invalid.unexpected.class", existingItem::class.simpleName.toString(),
-                                       deserializedItem.javaClass.simpleName))
+    loadingError(
+      EduCoreBundle.message(
+        "yaml.editor.invalid.unexpected.class", existingItem::class.simpleName.toString(),
+        deserializedItem.javaClass.simpleName
+      )
+    )
   }
 
   private fun updateChildren(deserializedItem: T, existingItem: T) {
@@ -77,7 +81,7 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
         // it is called from `YamlLoader.loadItem`
         val configFile = existingItem.getConfigFileForChild(project, titledItem.name) ?: continue
 
-        val deserializedChild = deserializeItemProcessingErrors(configFile, project, mapper=mapper) ?: continue
+        val deserializedChild = deserializeItemProcessingErrors(configFile, project, mapper = mapper) ?: continue
         deserializedChild.name = titledItem.name
         deserializedChild.index = titledItem.index
         deserializedChild.parent = existingItem

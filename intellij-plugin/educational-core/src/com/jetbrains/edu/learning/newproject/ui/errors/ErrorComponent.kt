@@ -29,6 +29,7 @@ class ErrorComponent(
 ) : NonOpaquePanel(), CourseSelectionListener {
   private val errorPanel = ErrorPanel(icon, hyperlinkListener, errorPanelTopBottomMargin, errorPanelLeftMargin)
   var validationMessageLink: String? = null
+
   init {
     isVisible = false
     add(errorPanel)

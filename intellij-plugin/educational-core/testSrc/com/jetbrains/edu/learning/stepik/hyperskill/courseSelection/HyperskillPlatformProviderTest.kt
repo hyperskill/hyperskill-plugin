@@ -37,6 +37,7 @@ class HyperskillPlatformProviderTest : EduTestCase() {
             "/api/projects/1" -> objectMapper.writeValueAsString(ProjectsList().also {
               it.projects = listOf(hyperskillCourse.hyperskillProject!!)
             })
+
             else -> return@withResponseHandler null
           }
         )

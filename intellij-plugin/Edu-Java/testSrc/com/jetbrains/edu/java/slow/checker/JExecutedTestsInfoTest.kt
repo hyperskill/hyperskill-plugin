@@ -15,7 +15,8 @@ class JExecutedTestsInfoTest : JdkCheckerTestBase() {
     lesson {
       eduTask("testFailed") {
         javaTaskFile("src/Task.java")
-        javaTaskFile("test/Tests.java", """
+        javaTaskFile(
+          "test/Tests.java", """
             import org.junit.Assert;
             import org.junit.Test;
             
@@ -36,7 +37,8 @@ class JExecutedTestsInfoTest : JdkCheckerTestBase() {
       }
       eduTask("testIgnored") {
         javaTaskFile("src/Task.java")
-        javaTaskFile("test/Tests.java", """
+        javaTaskFile(
+          "test/Tests.java", """
           import org.junit.Assert;
           import org.junit.Ignore;
           import org.junit.Test;
@@ -59,7 +61,8 @@ class JExecutedTestsInfoTest : JdkCheckerTestBase() {
       }
       eduTask("testPassed") {
         javaTaskFile("src/Task.java")
-        javaTaskFile("test/Tests.java", """
+        javaTaskFile(
+          "test/Tests.java", """
           import org.junit.Assert;
           import org.junit.Test;
           
@@ -86,7 +89,11 @@ class JExecutedTestsInfoTest : JdkCheckerTestBase() {
       val expectedTestsInfo = when (task.name) {
         "testFailed" -> listOf(EduTestInfo("Test class Tests:failedTest", FAILED), EduTestInfo("Test class Tests:failedTest2", FAILED))
         "testIgnored" -> listOf(EduTestInfo("Test class Tests:ignoredTest", IGNORED), EduTestInfo("Test class Tests:ignoredTest2", IGNORED))
-        "testPassed" -> listOf(EduTestInfo("Test class Tests:passedTest", COMPLETED), EduTestInfo("Test class Tests:passedTest2", COMPLETED))
+        "testPassed" -> listOf(
+          EduTestInfo("Test class Tests:passedTest", COMPLETED),
+          EduTestInfo("Test class Tests:passedTest2", COMPLETED)
+        )
+
         else -> error("Unexpected task `${task.name}`")
       }
       assertEquals(

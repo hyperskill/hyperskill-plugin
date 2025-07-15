@@ -19,7 +19,8 @@
       "type" : "lesson"
     }
   ],
-  "version" : <last version>,
+  "version" : <last
+  version>,
   "disabled_features" : [
     "ai-hints"
   ],

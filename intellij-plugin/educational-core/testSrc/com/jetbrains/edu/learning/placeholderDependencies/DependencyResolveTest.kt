@@ -12,18 +12,22 @@ class DependencyResolveTest : EduTestCase() {
     courseWithFiles {
       lesson("Introduction") {
         eduTask("Hello, world") {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p>print(1)</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
       }
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def <p>foo</p>():
           |  <p>type here</p>
-          """.trimMargin("|")) {
+          """.trimMargin("|")
+          ) {
             placeholder(1, dependency = "Introduction#Hello, world#Task.kt#1")
           }
         }
@@ -42,18 +46,22 @@ class DependencyResolveTest : EduTestCase() {
       courseWithFiles {
         lesson {
           eduTask {
-            taskFile("Task.kt", """
+            taskFile(
+              "Task.kt", """
           |def f():
           |  print(1)
-        """.trimMargin("|"))
+        """.trimMargin("|")
+            )
           }
         }
         lesson {
           eduTask {
-            taskFile("Task.kt", """
+            taskFile(
+              "Task.kt", """
           |def <p>foo</p>():
           |  <p>type here</p>
-          """.trimMargin("|")) {
+          """.trimMargin("|")
+            ) {
               placeholder(1, dependency = "lesson1#task1#Task.kt#1")
             }
           }
@@ -71,18 +79,22 @@ class DependencyResolveTest : EduTestCase() {
     courseWithFiles {
       lesson {
         eduTask {
-          taskFile("com/test/edu/Task.kt", """
+          taskFile(
+            "com/test/edu/Task.kt", """
           |def f():
           |  <p>print(1)</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
       }
       lesson {
         eduTask {
-          taskFile("Main.kt", """
+          taskFile(
+            "Main.kt", """
           |def <p>foo</p>():
           |  <p>type here</p>
-          """.trimMargin("|")) {
+          """.trimMargin("|")
+          ) {
             placeholder(1, dependency = "lesson1#task1#com/test/edu/Task.kt#1")
           }
         }
@@ -100,18 +112,22 @@ class DependencyResolveTest : EduTestCase() {
     courseWithFiles {
       lesson {
         eduTask {
-          taskFile("com/edu/test/Task.kt", """
+          taskFile(
+            "com/edu/test/Task.kt", """
           |def f():
           |  <p>print(1)</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
       }
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def <p>foo</p>():
           |  <p>type here</p>
-          """.trimMargin("|")) {
+          """.trimMargin("|")
+          ) {
             placeholder(1, dependency = "lesson1#task1#com\\edu\\test\\Task.kt#1")
           }
         }
@@ -130,19 +146,23 @@ class DependencyResolveTest : EduTestCase() {
       section("First section") {
         lesson("Introduction") {
           eduTask("Hello, world") {
-            taskFile("Task.kt", """
+            taskFile(
+              "Task.kt", """
             |def f():
             |  <p>print(1)</p>
-            """.trimMargin("|"))
+            """.trimMargin("|")
+            )
           }
         }
       }
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def <p>foo</p>():
           |  <p>type here</p>
-          """.trimMargin("|")) {
+          """.trimMargin("|")
+          ) {
             placeholder(1, dependency = "First section#Introduction#Hello, world#Task.kt#1")
           }
         }
@@ -157,8 +177,10 @@ class DependencyResolveTest : EduTestCase() {
   private fun checkPlaceholder(expectedOffset: Int, expectedLength: Int, actualPlaceholder: AnswerPlaceholder) {
     val actualOffset = actualPlaceholder.offset
     val actualLength = actualPlaceholder.length
-    assertTrue("Resolved to wrong placeholder. Expected offset=$expectedOffset, length=$expectedLength, " +
-                        "but got offset=$actualOffset, length=$actualLength",
-                        expectedOffset == actualOffset && expectedLength == expectedLength)
+    assertTrue(
+      "Resolved to wrong placeholder. Expected offset=$expectedOffset, length=$expectedLength, " +
+      "but got offset=$actualOffset, length=$actualLength",
+      expectedOffset == actualOffset && expectedLength == expectedLength
+    )
   }
 }

@@ -22,7 +22,8 @@ abstract class HyperskillTaskDescriptionHighlightingTest : TaskDescriptionHighli
 
   @Test
   fun `test class no-highlighting in hyperskill course`() {
-    doHtmlTest("""
+    doHtmlTest(
+      """
       <html>
        <body>
         <code class="language-no-highlight">$codeSample</code>
@@ -39,12 +40,14 @@ abstract class HyperskillTaskDescriptionHighlightingTest : TaskDescriptionHighli
         </div>
        </body>
       </html>
-    """)
+    """
+    )
   }
 
   @Test
   fun `test no language in hyperskill course`() {
-    doHtmlTest("""
+    doHtmlTest(
+      """
       <html>
        <body>
         <code>$codeSample</code>
@@ -61,12 +64,14 @@ abstract class HyperskillTaskDescriptionHighlightingTest : TaskDescriptionHighli
         </div>
        </body>
       </html>
-    """)
+    """
+    )
   }
 
   @Test
   fun `test highlighting`() {
-    doHtmlTest("""
+    doHtmlTest(
+      """
       <html>
        <body>
         <code class="language-${language.id.lowercase()}">$codeSample</code>
@@ -83,6 +88,7 @@ abstract class HyperskillTaskDescriptionHighlightingTest : TaskDescriptionHighli
         </div>
        </body>
       </html>
-    """)
+    """
+    )
   }
 }

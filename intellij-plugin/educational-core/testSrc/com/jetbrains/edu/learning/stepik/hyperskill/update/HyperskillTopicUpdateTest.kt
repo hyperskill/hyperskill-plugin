@@ -55,6 +55,7 @@ class HyperskillTopicUpdateTest : UpdateTestBase<HyperskillCourse>() {
           request.hasParams("ids" to "22") -> "steps_topics_update22.json"
           else -> return@withResponseHandler MockResponseFactory.notFound()
         }
+
         else -> return@withResponseHandler MockResponseFactory.notFound()
       }
       mockResponse(responseFileName)

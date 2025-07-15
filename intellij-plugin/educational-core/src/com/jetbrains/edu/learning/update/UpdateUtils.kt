@@ -32,13 +32,16 @@ object UpdateUtils {
         task.choiceOptions = remoteTask.choiceOptions
         task.isMultipleChoice = remoteTask.isMultipleChoice
       }
+
       task is SortingTask && remoteTask is SortingTask -> {
         task.options = remoteTask.options
       }
+
       task is MatchingTask && remoteTask is MatchingTask -> {
         task.captions = remoteTask.captions
         task.options = remoteTask.options
       }
+
       task is TableTask && remoteTask is TableTask -> {
         task.createTable(remoteTask.rows, remoteTask.columns, remoteTask.isMultipleChoice)
       }
@@ -51,7 +54,13 @@ object UpdateUtils {
     }
   }
 
-  fun updateFrameworkLessonFiles(project: Project, lesson: FrameworkLesson, task: Task, remoteTask: Task, updatePropagatableFiles: Boolean) {
+  fun updateFrameworkLessonFiles(
+    project: Project,
+    lesson: FrameworkLesson,
+    task: Task,
+    remoteTask: Task,
+    updatePropagatableFiles: Boolean
+  ) {
     fun updateTaskFiles(
       task: Task,
       remoteTaskFiles: Map<String, TaskFile>,
@@ -75,7 +84,13 @@ object UpdateUtils {
 
           val taskDir = task.getDir(project.courseDir)
           if (taskDir != null) {
-            GeneratorUtils.createChildFile(project.toCourseInfoHolder(), taskDir, path, currentTaskFile.contents, currentTaskFile.isEditable)
+            GeneratorUtils.createChildFile(
+              project.toCourseInfoHolder(),
+              taskDir,
+              path,
+              currentTaskFile.contents,
+              currentTaskFile.isEditable
+            )
           }
         }
       }

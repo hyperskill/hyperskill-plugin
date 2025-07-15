@@ -22,7 +22,8 @@ class RunTaskActionTest : EduActionTestCase() {
       lesson("lesson1") {
         eduTask("task1") {
           taskFile("src/Task.kt", "")
-          xmlTaskFile("runConfigurations/runner.run.xml", """
+          xmlTaskFile(
+            "runConfigurations/runner.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="Task1 from Lesson1" type="JetRunConfigurationType" activateToolWindowBeforeRun="false">
                 <option name="MAIN_CLASS_NAME" value="TaskKt" />
@@ -33,11 +34,13 @@ class RunTaskActionTest : EduActionTestCase() {
                 </method>
               </configuration>
             </component>
-          """.trimIndent())
+          """.trimIndent()
+          )
         }
         eduTask("task2") {
           taskFile("src/Task.kt", "")
-          xmlTaskFile("runConfigurations/some-other-name.run.xml", """
+          xmlTaskFile(
+            "runConfigurations/some-other-name.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="Task1 from Lesson1" type="JetRunConfigurationType" activateToolWindowBeforeRun="false">
                 <option name="MAIN_CLASS_NAME" value="TaskKt" />
@@ -48,11 +51,13 @@ class RunTaskActionTest : EduActionTestCase() {
                 </method>
               </configuration>
             </component>
-          """.trimIndent())
+          """.trimIndent()
+          )
         }
         theoryTask("task3") {
           taskFile("src/Task.kt", "")
-          xmlTaskFile("runConfigurations/runner.run.xml", """
+          xmlTaskFile(
+            "runConfigurations/runner.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="Task3 from lesson1" type="JetRunConfigurationType">
                 <option name="MAIN_CLASS_NAME" value="MainKt" />
@@ -63,7 +68,8 @@ class RunTaskActionTest : EduActionTestCase() {
                 </method>
               </configuration>
             </component>
-          """.trimIndent())
+          """.trimIndent()
+          )
         }
       }
     }

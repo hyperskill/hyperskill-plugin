@@ -5,8 +5,12 @@ import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.tree.TreeUtil
 import com.jetbrains.edu.coursecreator.framework.SyncChangesTaskFileState
-import java.awt.*
-import javax.swing.*
+import java.awt.BorderLayout
+import java.awt.Component
+import javax.swing.Icon
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JTree
 import javax.swing.tree.TreeCellRenderer
 
 /**

@@ -154,7 +154,7 @@ class GradleCommandLine private constructor(
       return GradleCommandLine(cmd, command)
     }
 
-    private fun calculateJavaOpts() : String {
+    private fun calculateJavaOpts(): String {
       val javaOpts = System.getenv(JAVA_OPTS) ?: return UTF_8_ENCODING_PARAM
       return when {
         javaOpts.isEmpty() -> UTF_8_ENCODING_PARAM

@@ -18,7 +18,8 @@ class GradleCommandMacroProvider : EduMacroProvider {
       val task = file.getContainingTask(holder) ?: error("Failed to find task for `$file` file")
       val gradleProjectName = getGradleProjectName(task)
       EduMacro(TASK_GRADLE_PROJECT_NAME, gradleProjectName)
-    } else {
+    }
+    else {
       null
     }
   }

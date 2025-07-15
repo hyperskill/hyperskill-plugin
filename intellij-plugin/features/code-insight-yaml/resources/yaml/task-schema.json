@@ -1,13 +1,13 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "com.jetbrains.edu.task",
-  "title": "Task Configuration",
-  "description": "Configuration file containing information about task",
-  "properties": {
-    "type": {
-      "description": "Task type",
-      "type": "string",
-      "enum": [
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "$id" : "com.jetbrains.edu.task",
+  "title" : "Task Configuration",
+  "description" : "Configuration file containing information about task",
+  "properties" : {
+    "type" : {
+      "description" : "Task type",
+      "type" : "string",
+      "enum" : [
         "edu",
         "theory",
         "output",
@@ -15,150 +15,150 @@
         "choice"
       ]
     },
-    "custom_name": {
-      "description": "Custom name for the task if it differs from its folder name",
-      "type": "string"
+    "custom_name" : {
+      "description" : "Custom name for the task if it differs from its folder name",
+      "type" : "string"
     },
-    "files": {
-      "description": "Files included in the task",
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/file"
+    "files" : {
+      "description" : "Files included in the task",
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/file"
       }
     },
-    "feedback_link": {
-      "type": "string",
-      "description": "Custom link for learners to leave their feedback about the task (ex. Google Forms link)"
+    "feedback_link" : {
+      "type" : "string",
+      "description" : "Custom link for learners to leave their feedback about the task (ex. Google Forms link)"
     },
-    "solution_hidden": {
-      "description": "If solution is available for learners to peek and compare with their answer",
-      "type": "boolean"
+    "solution_hidden" : {
+      "description" : "If solution is available for learners to peek and compare with their answer",
+      "type" : "boolean"
     },
-    "tags": {
-      "description": "Tags for content",
-      "type": "array",
-      "uniqueItems": true
+    "tags" : {
+      "description" : "Tags for content",
+      "type" : "array",
+      "uniqueItems" : true
     }
   },
-  "additionalProperties": false,
-  "required": [
+  "additionalProperties" : false,
+  "required" : [
     "type"
   ],
-  "definitions": {
-    "dependency": {
-      "properties": {
-        "section": {
-          "type": "string",
-          "description": "Section folder name if placeholder dependency is inside a section"
+  "definitions" : {
+    "dependency" : {
+      "properties" : {
+        "section" : {
+          "type" : "string",
+          "description" : "Section folder name if placeholder dependency is inside a section"
         },
-        "lesson": {
-          "type": "string",
-          "description": "Lesson folder name"
+        "lesson" : {
+          "type" : "string",
+          "description" : "Lesson folder name"
         },
-        "task": {
-          "type": "string",
-          "description": "Task folder name"
+        "task" : {
+          "type" : "string",
+          "description" : "Task folder name"
         },
-        "file": {
-          "type": "string",
-          "description": "File path relative to the directory of the task"
+        "file" : {
+          "type" : "string",
+          "description" : "File path relative to the directory of the task"
         },
-        "placeholder": {
-          "type": "number",
-          "description": "Placeholder index starting from 0",
-          "minimum": 0
+        "placeholder" : {
+          "type" : "number",
+          "description" : "Placeholder index starting from 0",
+          "minimum" : 0
         },
-        "is_visible": {
-          "type": "boolean",
-          "default": true,
-          "description": "If placeholder is drawn in place of dependency"
+        "is_visible" : {
+          "type" : "boolean",
+          "default" : true,
+          "description" : "If placeholder is drawn in place of dependency"
         }
       },
-      "required": [
+      "required" : [
         "lesson",
         "task",
         "file",
         "placeholder"
       ],
-      "additionalProperties": false
+      "additionalProperties" : false
     },
-    "placeholder": {
-      "properties": {
-        "offset": {
-          "type": "number",
-          "description": "Placeholder start offset",
-          "minimum": 0
+    "placeholder" : {
+      "properties" : {
+        "offset" : {
+          "type" : "number",
+          "description" : "Placeholder start offset",
+          "minimum" : 0
         },
-        "length": {
-          "type": "number",
-          "description": "Placeholder length",
-          "minimum": 0
+        "length" : {
+          "type" : "number",
+          "description" : "Placeholder length",
+          "minimum" : 0
         },
-        "placeholder_text": {
-          "type": "string",
-          "description": "Text which will be shown to learner in place of the placeholder"
+        "placeholder_text" : {
+          "type" : "string",
+          "description" : "Text which will be shown to learner in place of the placeholder"
         },
-        "dependency": {
-          "$ref": "#/definitions/dependency"
+        "dependency" : {
+          "$ref" : "#/definitions/dependency"
         },
-        "is_visible": {
-          "type": "boolean",
+        "is_visible" : {
+          "type" : "boolean",
           "description" : "If the placeholder is invisible, its borders will not be drawn for learners",
           "default" : true
         }
       },
-      "required": [
+      "required" : [
         "offset",
         "length",
         "placeholder_text"
       ],
-      "additionalProperties": false
+      "additionalProperties" : false
     },
-    "file": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "File path relative to the directory of the task"
+    "file" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "File path relative to the directory of the task"
         },
-        "visible": {
-          "type": "boolean",
-          "description": "If the file is shown to learner or not"
+        "visible" : {
+          "type" : "boolean",
+          "description" : "If the file is shown to learner or not"
         },
-        "is_binary": {
-          "type": "boolean",
-          "description": "Whether the file is binary",
-          "default": false
+        "is_binary" : {
+          "type" : "boolean",
+          "description" : "Whether the file is binary",
+          "default" : false
         },
-        "placeholders": {
-          "description": "Answer placeholders",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/placeholder"
+        "placeholders" : {
+          "description" : "Answer placeholders",
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/placeholder"
           }
         },
-        "editable": {
-          "type": "boolean",
-          "description": "Returns false if the learner can't modify the file, absent if they can"
+        "editable" : {
+          "type" : "boolean",
+          "description" : "Returns false if the learner can't modify the file, absent if they can"
         },
-        "propagatable": {
-          "type": "boolean",
-          "description": "Returns false if the file is ignored during propagation via the \"Sync changes...\" action, absent if it's participating"
+        "propagatable" : {
+          "type" : "boolean",
+          "description" : "Returns false if the file is ignored during propagation via the \"Sync changes...\" action, absent if it's participating"
         },
-        "highlight_level": {
+        "highlight_level" : {
           "type" : "string",
-          "enum": [
+          "enum" : [
             "NONE",
             "ALL_PROBLEMS"
           ],
           "description" : "File highlight level: it is currently possible to either highlight all problems in a file or highlight nothing"
         }
       },
-      "required": [
+      "required" : [
         "name",
         "visible"
       ],
-      "additionalProperties": false
+      "additionalProperties" : false
     }
   }
 }

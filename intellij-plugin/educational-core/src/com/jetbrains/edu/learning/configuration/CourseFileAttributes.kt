@@ -38,7 +38,7 @@ data class CourseFileAttributes(
    * The value is used when the course is migrated from a version without an implicit list of additional files (YAML before v2).
    * Other usages of this field are considered legacy and should be eliminated with time.
    */
-  val excludedFromArchive : Boolean,
+  val excludedFromArchive: Boolean,
 
   /**
    * See [ArchiveInclusionPolicy]. The default value is [ArchiveInclusionPolicy.AUTHOR_DECISION]

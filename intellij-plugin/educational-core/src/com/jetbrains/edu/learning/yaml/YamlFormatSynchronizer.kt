@@ -91,6 +91,7 @@ object YamlFormatSynchronizer {
         saveItemRemoteInfo(item)
         item.items.forEach { saveRemoteInfo(it) }
       }
+
       is Task -> {
         saveItemRemoteInfo(item)
       }

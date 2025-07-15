@@ -112,7 +112,7 @@ val StudyItemType.uploadToStepikTitleMessage: String
 
 val StudyItemType.moveItemMessage: String
   @Nls(capitalization = Nls.Capitalization.Title)
-  get() = when(this) {
+  get() = when (this) {
     COURSE_TYPE -> message("dialog.title.move.course")
     SECTION_TYPE -> message("dialog.title.move.section")
     LESSON_TYPE -> message("dialog.title.move.lesson")

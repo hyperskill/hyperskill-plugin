@@ -103,6 +103,7 @@ class EduOpenCourseAppStarter : IdeStarter() {
       when (dialogResult) {
         OpenCourseDialogResult.Ok,
         OpenCourseDialogResult.Canceled -> CliResult.OK
+
         is OpenCourseDialogResult.Error -> CliResult(1, dialogResult.message)
       }
     }

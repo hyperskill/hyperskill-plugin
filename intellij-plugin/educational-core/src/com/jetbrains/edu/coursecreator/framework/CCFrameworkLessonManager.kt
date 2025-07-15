@@ -16,7 +16,9 @@ import com.jetbrains.edu.coursecreator.framework.diff.resolveConflicts
 import com.jetbrains.edu.learning.EduTestAware
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.ext.*
+import com.jetbrains.edu.learning.courseFormat.ext.getDir
+import com.jetbrains.edu.learning.courseFormat.ext.getDocument
+import com.jetbrains.edu.learning.courseFormat.ext.visitTasks
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.framework.impl.FLTaskState
 import com.jetbrains.edu.learning.framework.impl.calculateChanges
@@ -40,7 +42,7 @@ import java.nio.file.Paths
  *
  * Currently, the key is the path to the task folder
  * TODO(use id of the task as a key instead of the path to the task)
-*/
+ */
 @Service(Service.Level.PROJECT)
 @State(name = "CCFrameworkLessonManager", storages = [Storage(StoragePathMacros.WORKSPACE_FILE, roamingType = RoamingType.DISABLED)])
 class CCFrameworkLessonManager(

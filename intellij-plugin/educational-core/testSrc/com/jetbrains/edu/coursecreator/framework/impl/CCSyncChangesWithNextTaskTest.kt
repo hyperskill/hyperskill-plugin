@@ -5,16 +5,16 @@ import com.intellij.openapi.vcs.merge.MergeSession.Resolution
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightPlatformTestCase
 import com.jetbrains.edu.coursecreator.actions.CCSyncChangesWithNextTasks
+import com.jetbrains.edu.coursecreator.framework.diff.withFLMultipleFileMergeUI
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.StudyItem
-import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.coursecreator.framework.diff.withFLMultipleFileMergeUI
 import com.jetbrains.edu.learning.courseFormat.TaskFile
+import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
+import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import org.junit.Test
 import kotlin.test.assertFails
 
@@ -38,10 +38,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
       dir("lesson1") {
         dir("task1") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -51,10 +53,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
         }
         dir("task2") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -64,10 +68,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
         }
         dir("task3") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun baz() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -177,10 +183,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
       dir("lesson1") {
         dir("task1") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -190,10 +198,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
         }
         dir("task2") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -247,10 +257,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
         }
         dir("task2") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -260,10 +272,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
         }
         dir("task3") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -297,10 +311,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests.kt", """
+            file(
+              "Tests.kt", """
               fun bar() {}
               fun tests() {}
-            """)
+            """
+            )
           }
           file("task.md")
         }
@@ -351,10 +367,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
         }
         dir("task2") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Bar.kt", "fun bar() {}")
           }
           dir("test") {
@@ -389,10 +407,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
       dir("lesson1") {
         dir("task1") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -402,10 +422,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
         }
         dir("task2") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -444,10 +466,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
       dir("lesson1") {
         dir("task1") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
@@ -457,10 +481,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
         }
         dir("task2") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun f() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Bar.kt", "fun bar() {}")
           }
           dir("test") {
@@ -498,10 +524,12 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
         dir("task1") {
           dir("src") {
             file("Task.kt", "fun foo() {}")
-            file("Baz.kt", """
+            file(
+              "Baz.kt", """
               fun baz() {}
               fun baz() {}
-            """)
+            """
+            )
           }
           dir("test") {
             file("Tests.kt", "fun tests() {}")
@@ -557,37 +585,49 @@ class CCSyncChangesWithNextTaskTest : EduActionTestCase() {
       dir("lesson1") {
         dir("task1") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
               fun foo() {}
-            """)
-            file("Bar.kt", """
+            """
+            )
+            file(
+              "Bar.kt", """
               fun bar() {}
               fun bar() {}
-            """)
-            file("Baz.kt", """
+            """
+            )
+            file(
+              "Baz.kt", """
               fun baz() {}
               fun baz() {}
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Tests.kt", """
+            file(
+              "Tests.kt", """
               fun tests() {}
               fun tests() {}
-            """)
+            """
+            )
           }
           file("task.md")
         }
         dir("task2") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
               fun foo() {}
-            """)
-            file("Bar.kt", """
+            """
+            )
+            file(
+              "Bar.kt", """
               fun bar() {}
               fun bar() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {

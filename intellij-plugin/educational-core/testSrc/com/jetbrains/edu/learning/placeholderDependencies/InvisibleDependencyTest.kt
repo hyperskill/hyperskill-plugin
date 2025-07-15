@@ -20,6 +20,7 @@ class InvisibleDependencyTest : CourseGenerationTestBase<EmptyProjectSettings>()
 
   @Test
   fun `test invisible placeholder with invisible dependency`() = doTest(CheckStatus.Solved, false, "\"Foo\"")
+
   @Test
   fun `test visible placeholder with invisible dependency`() = doTest(CheckStatus.Unchecked, true, "type Foo")
 
@@ -27,17 +28,21 @@ class InvisibleDependencyTest : CourseGenerationTestBase<EmptyProjectSettings>()
     val course = course {
       lesson("lesson1") {
         eduTask("task1") {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           fun foo(): String = <p>TODO()</p>
-        """) {
+        """
+          ) {
             placeholder(0, "\"Foo\"")
           }
         }
         eduTask("task2") {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           fun foo2(): String = <p>type Foo</p>
           fun bar(): String = <p>type Bar</p>
-        """) {
+        """
+          ) {
             placeholder(0, "\"Foo\"", dependency = "lesson1#task1#Task.kt#1", isVisible = false)
           }
         }

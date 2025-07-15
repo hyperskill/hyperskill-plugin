@@ -18,7 +18,12 @@ class RemoteInfoNotificationTest : NotificationsTestBase() {
     val yamlText = createRemoteYamlConfigText()
 
     withYamlFileTypeRegistered {
-      val configFile = GeneratorUtils.createTextChildFile(project, LightPlatformTestCase.getSourceRoot(), YamlConfigSettings.REMOTE_COURSE_CONFIG, yamlText)
+      val configFile = GeneratorUtils.createTextChildFile(
+        project,
+        LightPlatformTestCase.getSourceRoot(),
+        YamlConfigSettings.REMOTE_COURSE_CONFIG,
+        yamlText
+      )
       checkEditorNotification<GeneratedRemoteInfoNotificationProvider>(configFile!!)
     }
   }

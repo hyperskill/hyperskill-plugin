@@ -12,7 +12,13 @@ open class LTIConnectorImpl : LTIConnector {
   // to be overridden in tests
   open fun getUrlForService(onlineService: LTIOnlineService): String = onlineService.serviceURL
 
-  override fun postTaskChecked(onlineService: LTIOnlineService, launchId: String, courseEduId: Int, taskEduId: Int, solved: Boolean): PostTaskSolvedStatus {
+  override fun postTaskChecked(
+    onlineService: LTIOnlineService,
+    launchId: String,
+    courseEduId: Int,
+    taskEduId: Int,
+    solved: Boolean
+  ): PostTaskSolvedStatus {
     val serviceUrl = getUrlForService(onlineService)
     val retrofit = createRetrofitBuilder(serviceUrl, connectionPool, LTIAuthBundle.value("ltiServiceToken")).build()
     val ltiEndpoints = retrofit.create(LTIEndpoints::class.java)

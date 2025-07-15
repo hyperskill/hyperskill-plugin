@@ -50,8 +50,10 @@ class ValidStudyItemNameTest(
       // EDU-4761
       arrayOf("""A Journey of a Thousand Miles. . .""", "A Journey of a Thousand Miles", "EDU-4761 Trailing space-separated ellipsis"),
       // IDEA-253884
-      arrayOf("""Study item with trailing exclamation! """, "Study item with trailing exclamation",
-              "IDEA-253884 Trailing exclamation point with space"),
+      arrayOf(
+        """Study item with trailing exclamation! """, "Study item with trailing exclamation",
+        "IDEA-253884 Trailing exclamation point with space"
+      ),
 
       arrayOf("""Study item """, DEFAULT_RESULT, "Trailing space"),
       arrayOf(""" Study item""", " Study item", "Starting space"),

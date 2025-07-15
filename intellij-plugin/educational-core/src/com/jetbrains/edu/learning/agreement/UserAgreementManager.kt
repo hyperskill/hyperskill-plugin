@@ -79,6 +79,7 @@ class UserAgreementManager(private val scope: CoroutineScope) {
               UserAgreementState.NOT_SHOWN, UserAgreementState.DECLINED -> {
                 submitAgreementAcceptanceAnonymously()
               }
+
               else -> return@collectLatest
             }
           }

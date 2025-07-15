@@ -22,8 +22,10 @@ class HyperskillRemoteTaskChecker : RemoteTaskChecker {
   }
 
   override fun check(project: Project, task: Task, indicator: ProgressIndicator): CheckResult {
-    HyperskillSettings.INSTANCE.account ?: return CheckResult(CheckStatus.Unchecked,
-                                                              EduCoreBundle.message("check.login.error", EduNames.JBA))
+    HyperskillSettings.INSTANCE.account ?: return CheckResult(
+      CheckStatus.Unchecked,
+      EduCoreBundle.message("check.login.error", EduNames.JBA)
+    )
     return when (task) {
       is AnswerTask -> HyperskillCheckConnector.checkAnswerTask(project, task)
       is ChoiceTask -> HyperskillCheckConnector.checkChoiceTask(project, task)

@@ -167,7 +167,8 @@ class SqlDatabaseSetupTest : SqlCourseGenerationTestBase() {
 
     val tree = prepareDatabaseView()
 
-    checkDatabaseTree(tree, """
+    checkDatabaseTree(
+      tree, """
       -Root Group
        -Group (lesson1) inside Root Group
         -task1: DSN
@@ -208,7 +209,8 @@ class SqlDatabaseSetupTest : SqlCourseGenerationTestBase() {
           $EMPTY_DATA_SOURCE_PLACEHOLDER
          -task9: DSN
           $EMPTY_DATA_SOURCE_PLACEHOLDER
-    """)
+    """
+    )
   }
 
   @Suppress("SqlDialectInspection", "SqlNoDataSourceInspection")
@@ -218,15 +220,19 @@ class SqlDatabaseSetupTest : SqlCourseGenerationTestBase() {
       lesson("lesson1") {
         eduTask("task1") {
           taskFile("src/task.sql")
-          sqlTaskFile(INIT_SQL, """
+          sqlTaskFile(
+            INIT_SQL, """
             create table if not exists STUDENTS_1;
-          """)
+          """
+          )
         }
         eduTask("task2") {
           taskFile("src/task.sql")
-          sqlTaskFile(INIT_SQL, """
+          sqlTaskFile(
+            INIT_SQL, """
             create table if not exists STUDENTS_2;
-          """)
+          """
+          )
         }
       }
     }
@@ -244,15 +250,19 @@ class SqlDatabaseSetupTest : SqlCourseGenerationTestBase() {
       frameworkLesson("lesson1") {
         eduTask("task1") {
           taskFile("src/task.sql")
-          sqlTaskFile(INIT_SQL, """
+          sqlTaskFile(
+            INIT_SQL, """
             create table if not exists STUDENTS_1;
-          """)
+          """
+          )
         }
         eduTask("task2") {
           taskFile("src/task.sql")
-          sqlTaskFile(INIT_SQL, """
+          sqlTaskFile(
+            INIT_SQL, """
             create table if not exists STUDENTS_2;
-          """)
+          """
+          )
         }
       }
     }
@@ -271,9 +281,11 @@ class SqlDatabaseSetupTest : SqlCourseGenerationTestBase() {
       val initSql = findFile("lesson1/task/$INIT_SQL")
       runWriteAction {
         // language=SQL
-        VfsUtil.saveText(initSql, """
+        VfsUtil.saveText(
+          initSql, """
           create table if not exists STUDENTS_1_1;          
-        """.trimIndent())
+        """.trimIndent()
+        )
       }
 
       task1.status = CheckStatus.Solved

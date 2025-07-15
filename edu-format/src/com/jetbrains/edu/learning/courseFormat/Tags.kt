@@ -5,6 +5,7 @@ import java.util.*
 
 @NonNls
 private const val PROGRAMMING_LANGUAGE_TAG_SEARCH_OPTION = "programming_language"
+
 @NonNls
 private const val LANGUAGE_TAG_SEARCH_OPTION = "language"
 

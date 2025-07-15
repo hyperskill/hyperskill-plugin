@@ -78,7 +78,7 @@ private fun createOkHttpClient(
   return builder.build()
 }
 
-fun OkHttpClient.Builder.customizeClient(baseUrl: String) : OkHttpClient.Builder {
+fun OkHttpClient.Builder.customizeClient(baseUrl: String): OkHttpClient.Builder {
   val executor = findService(RetrofitHelper::class.java)
   return executor.customizeClient(this, baseUrl)
 }
@@ -121,10 +121,12 @@ fun <T> Response<T>.executeParsingErrors(omitErrors: Boolean = false): Result<Re
       val errorMessage = processForbiddenErrorMessage(error) ?: message("error.access.denied")
       Err(errorMessage)
     }
+
     HTTP_UNAVAILABLE_FOR_LEGAL_REASONS -> { // 451
       LOG.warning(message("error.agreement.not.accepted"))
       Err(fullErrorText)
     }
+
     in HTTP_BAD_REQUEST..HTTP_UNSUPPORTED_TYPE ->
       Err(message("error.unexpected.error", error)) // 400x
     else -> {
@@ -159,7 +161,8 @@ private fun processForbiddenErrorMessage(jsonText: String): String? {
   }
   catch (e: ClassCastException) {
     null
-  } catch (e: JsonParseException) {
+  }
+  catch (e: JsonParseException) {
     null
   }
 }

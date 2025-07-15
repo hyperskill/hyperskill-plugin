@@ -32,21 +32,25 @@ class PyTestEventsConverter(
         is TestMessage.TextLine -> {
           messages += if (ProcessOutputType.isStdout(outputType)) {
             createTestStdOutMessage(message.text)
-          } else {
+          }
+          else {
             createTestStdErrMessage(message.text)
           }
         }
+
         is TestMessage.Ok -> {
           val nodeId = nextId++
           messages += createTestStartedMessage(nodeId, message.testName)
           messages += createTestFinishedMessage(nodeId, message.testName)
         }
+
         is TestMessage.Failed -> {
           val nodeId = nextId++
           messages += createTestStartedMessage(nodeId, message.testName)
           messages += createTestFailedMessage(nodeId, message)
           messages += createTestFinishedMessage(nodeId, message.testName)
         }
+
         else -> Unit
       }
     }

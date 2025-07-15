@@ -156,7 +156,8 @@ abstract class SqlCourseGenerationTestBase : JvmCourseGenerationTestBase() {
 
     private val promiseMakeVisible: Method by lazy {
       val clazz = TreeUtil::class.java
-      val promiseMakeVisible = clazz.getDeclaredMethod("promiseMakeVisible", JTree::class.java, TreeVisitor::class.java, AsyncPromise::class.java)
+      val promiseMakeVisible =
+        clazz.getDeclaredMethod("promiseMakeVisible", JTree::class.java, TreeVisitor::class.java, AsyncPromise::class.java)
       promiseMakeVisible.isAccessible = true
       promiseMakeVisible
     }

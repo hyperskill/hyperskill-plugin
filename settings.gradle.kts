@@ -4,7 +4,7 @@ import java.net.UnknownHostException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import java.util.*
+import java.util.Properties
 
 rootProject.name = "educational-plugin"
 include(

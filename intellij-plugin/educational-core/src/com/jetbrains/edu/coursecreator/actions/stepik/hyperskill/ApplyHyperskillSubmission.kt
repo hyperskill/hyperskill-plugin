@@ -52,17 +52,21 @@ class ApplyHyperskillSubmission : DumbAwareAction(
       }
     }
 
-    val idText = Messages.showInputDialog(project, EduCoreBundle.message("submission.id"),
-                                          EduCoreBundle.message("action.apply.submission.text", HYPERSKILL),
-                                          null, null, validator) ?: return
+    val idText = Messages.showInputDialog(
+      project, EduCoreBundle.message("submission.id"),
+      EduCoreBundle.message("action.apply.submission.text", HYPERSKILL),
+      null, null, validator
+    ) ?: return
 
     val id = Integer.valueOf(idText) // valid int because of validator
 
     computeUnderProgress(project, EduCoreBundle.message("submission.applying"), false) {
       val submission = HyperskillConnector.getInstance().getSubmission(id).onError {
         runInEdt {
-          Messages.showErrorDialog(EduCoreBundle.message("error.submission.failed.to.retrieve", idText),
-                                   EduCoreBundle.message("error.submission.not.applied"))
+          Messages.showErrorDialog(
+            EduCoreBundle.message("error.submission.failed.to.retrieve", idText),
+            EduCoreBundle.message("error.submission.not.applied")
+          )
         }
         return@computeUnderProgress
       }

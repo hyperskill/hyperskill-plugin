@@ -15,7 +15,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.OutputTaskBase
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.withRegistryKeyOff
 
-abstract class OutputTaskCheckerBase<T: OutputTaskBase>(
+abstract class OutputTaskCheckerBase<T : OutputTaskBase>(
   task: T,
   private val envChecker: EnvironmentChecker,
   project: Project,
@@ -81,7 +81,7 @@ abstract class OutputTaskCheckerBase<T: OutputTaskBase>(
 
   private fun getDocument(virtualFile: VirtualFile): Document {
     return runReadAction { FileDocumentManager.getInstance().getDocument(virtualFile) }
-    ?: error("Can't get document of ${virtualFile.name} file - ${virtualFile.path}")
+           ?: error("Can't get document of ${virtualFile.name} file - ${virtualFile.path}")
   }
 
   companion object {

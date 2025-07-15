@@ -28,9 +28,10 @@ import org.jetbrains.annotations.NonNls
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.Supplier
 
-class RetryAction(actionText: Supplier<@ActionText String>,
-                  private val processMessage: String = PROCESS_MESSAGE,
-                  private val expectedTaskStatus: CheckStatus = CheckStatus.Failed
+class RetryAction(
+  actionText: Supplier<@ActionText String>,
+  private val processMessage: String = PROCESS_MESSAGE,
+  private val expectedTaskStatus: CheckStatus = CheckStatus.Failed
 ) : ActionWithProgressIcon(actionText),
     DumbAware {
 
@@ -38,7 +39,7 @@ class RetryAction(actionText: Supplier<@ActionText String>,
     setUpSpinnerPanel(processMessage)
   }
 
- override fun actionPerformed(e: AnActionEvent) {
+  override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     val task = project.getCurrentTask() ?: return
 
@@ -71,11 +72,14 @@ class RetryAction(actionText: Supplier<@ActionText String>,
     if (task.status != expectedTaskStatus) return
   }
 
-  private inner class RetryTask(project: Project,
-                                private val task: Task,
-                                private val context: DataContext
-  ) : com.intellij.openapi.progress.Task.Backgroundable(project,
-                                                        EduCoreBundle.message("action.retry.task.background"), true) {
+  private inner class RetryTask(
+    project: Project,
+    private val task: Task,
+    private val context: DataContext
+  ) : com.intellij.openapi.progress.Task.Backgroundable(
+    project,
+    EduCoreBundle.message("action.retry.task.background"), true
+  ) {
     private lateinit var result: Result<Boolean, String>
 
     override fun run(indicator: ProgressIndicator) {

@@ -240,7 +240,7 @@ class MarketplaceSectionUpdateTest : UpdateTestBase<EduCourse>() {
     updateCourse(remoteCourse)
 
     val sections = localCourse.sections[0]
-    assertEquals(updatedSectionName,sections.name)
+    assertEquals(updatedSectionName, sections.name)
     assertEquals(updatedLessonName, sections.lessons[0].name)
     assertEquals(updatedTaskName, sections.lessons[0].taskList[0].name)
 

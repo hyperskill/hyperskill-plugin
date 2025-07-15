@@ -4,8 +4,8 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtilCore.VFS_SEPARATOR_CHAR
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.learning.CourseInfoHolder
-import com.jetbrains.edu.learning.configuration.CourseFileAttributes
 import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
+import com.jetbrains.edu.learning.configuration.CourseFileAttributes
 import com.jetbrains.edu.learning.courseFormat.Course
 
 /**

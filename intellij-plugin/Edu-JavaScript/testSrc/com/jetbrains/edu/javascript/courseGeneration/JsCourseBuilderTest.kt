@@ -40,7 +40,8 @@ class JsCourseBuilderTest : CourseGenerationTestBase<JsNewProjectSettings>() {
       file("package.json")
     }.assertEquals(rootDir)
 
-    assertListOfAdditionalFiles(newCourse,
+    assertListOfAdditionalFiles(
+      newCourse,
       "package.json" to getInternalTemplateText(NodeModuleNamesUtil.PACKAGE_JSON)
     )
   }
@@ -72,7 +73,8 @@ class JsCourseBuilderTest : CourseGenerationTestBase<JsNewProjectSettings>() {
     }.assertEquals(rootDir)
 
     // package.json should not be overridden
-    assertListOfAdditionalFiles(course,
+    assertListOfAdditionalFiles(
+      course,
       "package.json" to "tmp"
     )
   }

@@ -5,22 +5,22 @@
       "plugins" : [
         {
           "id" : "1",
-          "lastUpdateDate": 1619697473000,
-          "cdate": 1623321716000,
+          "lastUpdateDate" : 1619697473000,
+          "cdate" : 1623321716000,
           "name" : "Introduction to Python",
           "description" : "Introduction course to Python",
           "downloads" : 2,
           "rating" : 5.0,
-          "authors": [
+          "authors" : [
             {
-              "name": "FirstName LastName"
+              "name" : "FirstName LastName"
             }
           ],
           "fields" : {
-            "environment": null,
+            "environment" : null,
             "programmingLanguageId" : "Python",
             "language" : "en",
-            "isPrivate": false
+            "isPrivate" : false
           },
           "organization" : {
             "name" : "JetBrains s.r.o."
@@ -30,48 +30,48 @@
         },
         {
           "id" : "2",
-          "lastUpdateDate": 1619697473000,
-          "cdate": 1623321716000,
+          "lastUpdateDate" : 1619697473000,
+          "cdate" : 1623321716000,
           "name" : "Introduction to Java",
           "description" : "Introduction course to Java",
           "downloads" : 5,
           "rating" : 5.0,
-          "authors": [
+          "authors" : [
             {
-              "name": "user1 LastName1"
+              "name" : "user1 LastName1"
             },
             {
-              "name": "user2 LastName2"
+              "name" : "user2 LastName2"
             }
           ],
           "fields" : {
-            "environment": null,
+            "environment" : null,
             "programmingLanguageId" : "JAVA",
             "language" : "ru",
-            "isPrivate": false
+            "isPrivate" : false
           },
           "link" : "courseLink",
           "license" : "https://licenses/"
         },
         {
-          "id": "3",
-          "lastUpdateDate": 1619697473000,
-          "cdate": 1623321716000,
-          "name": "Scala course",
-          "organization": null,
+          "id" : "3",
+          "lastUpdateDate" : 1619697473000,
+          "cdate" : 1623321716000,
+          "name" : "Scala course",
+          "organization" : null,
           "description" : "Introduction course to Scala",
           "downloads" : 5,
           "rating" : 4.75,
-          "authors": [
+          "authors" : [
             {
-              "name": "FirstName LastName"
+              "name" : "FirstName LastName"
             }
           ],
-          "fields": {
-            "environment": "sbt",
-            "programmingLanguageId": "Scala",
-            "language": "en",
-            "isPrivate": false
+          "fields" : {
+            "environment" : "sbt",
+            "programmingLanguageId" : "Scala",
+            "language" : "en",
+            "isPrivate" : false
           },
           "link" : "courseLink",
           "license" : "https://licenses/"

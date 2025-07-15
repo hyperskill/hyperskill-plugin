@@ -3,15 +3,7 @@ package com.jetbrains.edu.aiHints.python.impl
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.jetbrains.python.psi.PyElementGenerator
-import com.jetbrains.python.psi.PyForStatement
-import com.jetbrains.python.psi.PyIfStatement
-import com.jetbrains.python.psi.PyPassStatement
-import com.jetbrains.python.psi.PyStatement
-import com.jetbrains.python.psi.PyStatementList
-import com.jetbrains.python.psi.PyStatementListContainer
-import com.jetbrains.python.psi.PyStatementPart
-import com.jetbrains.python.psi.PyWhileStatement
+import com.jetbrains.python.psi.*
 
 /**
  * Compare given [PyStatementListContainer] (e.g. [com.jetbrains.python.psi.PyFunction]) with [another] statement by statement

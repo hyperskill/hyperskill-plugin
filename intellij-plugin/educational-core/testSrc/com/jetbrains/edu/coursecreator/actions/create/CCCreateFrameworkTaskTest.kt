@@ -108,23 +108,29 @@ class CCCreateFrameworkTaskTest : EduActionTestCase() {
     val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
       frameworkLesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
             fun foo(): String = <p>TODO()</p>
             fun bar(): String = <p>TODO()</p>
-          """) {
+          """
+          ) {
             placeholder(0, "\"Foo\"")
             placeholder(1, "\"Bar\"")
           }
         }
         eduTask {
-          taskFile("Foo.kt", """
+          taskFile(
+            "Foo.kt", """
             fun foo(): String = <p>TODO()</p>
-          """) {
+          """
+          ) {
             placeholder(0, "\"Foo\"", dependency = "lesson1#task1#Task.kt#1")
           }
-          taskFile("Bar.kt", """
+          taskFile(
+            "Bar.kt", """
             fun bar(): String = <p>TODO()</p>
-          """) {
+          """
+          ) {
             placeholder(0, "\"Bar\"", dependency = "lesson1#task1#Task.kt#2")
           }
         }
@@ -142,16 +148,24 @@ class CCCreateFrameworkTaskTest : EduActionTestCase() {
     val taskFile = insertedTask.getTaskFile("Task.kt") ?: error("Can't find `Task.kt` in `task1.5`")
 
     // Check that all placeholders of new task refer to prev task
-    assertEquals(task1.getTaskFile("Task.kt")!!.answerPlaceholders[0],
-                 taskFile.answerPlaceholders[0].placeholderDependency?.resolve(course))
-    assertEquals(task1.getTaskFile("Task.kt")!!.answerPlaceholders[1],
-                 taskFile.answerPlaceholders[1].placeholderDependency?.resolve(course))
+    assertEquals(
+      task1.getTaskFile("Task.kt")!!.answerPlaceholders[0],
+      taskFile.answerPlaceholders[0].placeholderDependency?.resolve(course)
+    )
+    assertEquals(
+      task1.getTaskFile("Task.kt")!!.answerPlaceholders[1],
+      taskFile.answerPlaceholders[1].placeholderDependency?.resolve(course)
+    )
 
     // Check that all placeholders of next task refer to new task
-    assertEquals(taskFile.answerPlaceholders[0],
-                 task2.getTaskFile("Foo.kt")?.answerPlaceholders?.get(0)?.placeholderDependency?.resolve(course))
-    assertEquals(taskFile.answerPlaceholders[1],
-                 task2.getTaskFile("Bar.kt")?.answerPlaceholders?.get(0)?.placeholderDependency?.resolve(course))
+    assertEquals(
+      taskFile.answerPlaceholders[0],
+      task2.getTaskFile("Foo.kt")?.answerPlaceholders?.get(0)?.placeholderDependency?.resolve(course)
+    )
+    assertEquals(
+      taskFile.answerPlaceholders[1],
+      task2.getTaskFile("Bar.kt")?.answerPlaceholders?.get(0)?.placeholderDependency?.resolve(course)
+    )
   }
 
   @Test
@@ -197,9 +211,11 @@ class CCCreateFrameworkTaskTest : EduActionTestCase() {
     val originalImage = findFile("$lessonName/task1/$imageName")
     val imageCopy = findFile("$lessonName/$newTaskName/$imageName")
 
-    assertArrayEquals("Contents of `$originalImage` and `$imageCopy` differ",
-                      VfsUtil.loadBytes(originalImage),
-                      VfsUtil.loadBytes(imageCopy))
+    assertArrayEquals(
+      "Contents of `$originalImage` and `$imageCopy` differ",
+      VfsUtil.loadBytes(originalImage),
+      VfsUtil.loadBytes(imageCopy)
+    )
   }
 
   @Test
@@ -229,25 +245,33 @@ class CCCreateFrameworkTaskTest : EduActionTestCase() {
     fileTree {
       dir(lessonName) {
         dir("task1") {
-          file("Task.kt", """
+          file(
+            "Task.kt", """
             fun foo(): String = TODO()
             fun bar(): String = TODO()
-          """)
-          file("build.gradle", """
+          """
+          )
+          file(
+            "build.gradle", """
             apply plugin: "kotlin"
             apply plugin: "java"
-          """)
+          """
+          )
           file("task.md")
         }
         dir(newTaskName) {
-          file("Task.kt", """
+          file(
+            "Task.kt", """
             fun foo(): String = TODO()
             fun bar(): String = TODO()
-          """)
-          file("build.gradle", """
+          """
+          )
+          file(
+            "build.gradle", """
             apply plugin: "kotlin"
             apply plugin: "java"
-          """)
+          """
+          )
           file("task.md")
           dir("tests") {
             file("Tests.txt")

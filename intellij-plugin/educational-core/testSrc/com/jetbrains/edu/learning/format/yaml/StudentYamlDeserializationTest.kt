@@ -616,7 +616,8 @@ class StudentYamlDeserializationTest : EduTestCase() {
 
   @Test
   fun `test placeholder with invisible dependency`() = doTestPlaceholderAndDependencyVisibility(
-    studentMapper().deserializeTask("""
+    studentMapper().deserializeTask(
+      """
         |type: edu
         |files:
         |- name: Test.java
@@ -637,11 +638,13 @@ class StudentYamlDeserializationTest : EduTestCase() {
         |      offset: 0
         |      length: 1
     """.trimMargin()
-    ), expectedPlaceholderVisibility = false)
+    ), expectedPlaceholderVisibility = false
+  )
 
   @Test
   fun `test invisible placeholder`() = doTestPlaceholderAndDependencyVisibility(
-    studentMapper().deserializeTask("""
+    studentMapper().deserializeTask(
+      """
         |type: edu
         |files:
         |- name: Test.java
@@ -657,11 +660,13 @@ class StudentYamlDeserializationTest : EduTestCase() {
         |      offset: 0
         |      length: 1
     """.trimMargin()
-    ), expectedPlaceholderVisibility = false)
+    ), expectedPlaceholderVisibility = false
+  )
 
   @Test
   fun `test placeholder without visibility field in student mode`() = doTestPlaceholderAndDependencyVisibility(
-    studentMapper().deserializeTask("""
+    studentMapper().deserializeTask(
+      """
         |type: edu
         |files:
         |- name: Test.java
@@ -676,11 +681,13 @@ class StudentYamlDeserializationTest : EduTestCase() {
         |      offset: 0
         |      length: 1
     """.trimMargin()
-    ), expectedPlaceholderVisibility = true)
+    ), expectedPlaceholderVisibility = true
+  )
 
   @Test
   fun `test visible placeholder and invisible dependency`() = doTestPlaceholderAndDependencyVisibility(
-    studentMapper().deserializeTask("""
+    studentMapper().deserializeTask(
+      """
         |type: edu
         |files:
         |- name: Test.java
@@ -702,11 +709,13 @@ class StudentYamlDeserializationTest : EduTestCase() {
         |      offset: 0
         |      length: 1
     """.trimMargin()
-    ), expectedPlaceholderVisibility = false)
+    ), expectedPlaceholderVisibility = false
+  )
 
   @Test
   fun `test disabled features`() {
-    val course = studentMapper().deserializeCourse("""
+    val course = studentMapper().deserializeCourse(
+      """
       |title: Test Course
       |mode: Study
       |language: Russian
@@ -714,7 +723,8 @@ class StudentYamlDeserializationTest : EduTestCase() {
       |programming_language: Plain text
       |disabled_features:
       |- ai-hints
-    """.trimMargin())
+    """.trimMargin()
+    )
 
     assertNotNull(course)
     assertContainsElements(course.disabledFeatures, "ai-hints")

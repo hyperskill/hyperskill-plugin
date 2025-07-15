@@ -76,7 +76,8 @@ class UserAgreementOptions : BoundConfigurable(EduCoreBundle.message("user.agree
     val aiServiceAgreementState =
       if (aiAgreementAccepted.get() && pluginAgreementAccepted) UserAgreementState.ACCEPTED else UserAgreementState.TERMINATED
     val solutionSharingPreference = if (solutionSharingAccepted && pluginAgreementAccepted)
-      SolutionSharingPreference.ALWAYS else SolutionSharingPreference.NEVER
+      SolutionSharingPreference.ALWAYS
+    else SolutionSharingPreference.NEVER
 
     userAgreementSettings.updatePluginAgreementState(
       pluginAgreementState,

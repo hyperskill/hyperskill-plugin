@@ -50,6 +50,7 @@ class MarketplaceOpenInIdeTest : EduTestCase() {
           mockResponse(fileName)
         }
         else mockResponse("update_info.json")
+
         LOAD_STRUCTURE_REQUEST_RE.matches(path) -> mockResponse("test_course_structure.zip")
         else -> return@withResponseHandler null
       }
@@ -78,7 +79,7 @@ class MarketplaceOpenInIdeTest : EduTestCase() {
   @Test
   fun `test language supported with plugin`() {
     configureCoursesResponse("python_course_info.json")
-    doLanguageValidationTest {  assertTrue("actual: $it", it is PluginsRequired) }
+    doLanguageValidationTest { assertTrue("actual: $it", it is PluginsRequired) }
   }
 
   @Test

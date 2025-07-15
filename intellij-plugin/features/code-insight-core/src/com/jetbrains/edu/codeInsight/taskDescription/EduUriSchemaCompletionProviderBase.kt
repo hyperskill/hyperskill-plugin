@@ -40,7 +40,11 @@ abstract class EduUriSchemaCompletionProviderBase : CompletionProvider<Completio
       UriSchemaCompletionVariant(PSI_ELEMENT, EduCodeInsightBundle.message("task.description.completion.psi.schema.description"), false),
       UriSchemaCompletionVariant(COURSE, EduCodeInsightBundle.message("task.description.completion.course.schema.description"), true),
       UriSchemaCompletionVariant(SETTINGS, EduCodeInsightBundle.message("task.description.completion.settings.schema.description"), true),
-      UriSchemaCompletionVariant(TOOL_WINDOW, EduCodeInsightBundle.message("task.description.completion.tool.window.schema.description"), true)
+      UriSchemaCompletionVariant(
+        TOOL_WINDOW,
+        EduCodeInsightBundle.message("task.description.completion.tool.window.schema.description"),
+        true
+      )
     )
   }
 

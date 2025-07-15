@@ -35,7 +35,8 @@ class AdditionalFilesMigratorTest(
       }
     }
 
-    openStudentProjectThenReopenStudentProject(course,
+    openStudentProjectThenReopenStudentProject(
+      course,
       { project ->
         // make YAML files to be of version 1, when additional files are not in course-info.yaml
         val mode = if (courseMode == CourseMode.STUDENT) "mode: Study" else ""

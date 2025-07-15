@@ -23,13 +23,17 @@ class ChangeFileEditableTest : EduTestCase() {
       }
     }
 
-    checkEditabilityOfFile(path = "lesson1/task/nonEditableFile.txt",
-                           initialTextInTask = initialTextInNonEditableFile,
-                           mustBeEditable = false)
+    checkEditabilityOfFile(
+      path = "lesson1/task/nonEditableFile.txt",
+      initialTextInTask = initialTextInNonEditableFile,
+      mustBeEditable = false
+    )
 
-    checkEditabilityOfFile(path = "lesson1/task/editableFile.txt",
-                           initialTextInTask = initialTextInEditableFile,
-                           mustBeEditable = true)
+    checkEditabilityOfFile(
+      path = "lesson1/task/editableFile.txt",
+      initialTextInTask = initialTextInEditableFile,
+      mustBeEditable = true
+    )
   }
 
 
@@ -47,12 +51,16 @@ class ChangeFileEditableTest : EduTestCase() {
       }
     }
 
-    checkEditabilityOfFile(path = "lesson1/task/nonEditableFile.txt",
-                           initialTextInTask = initialTextInNonEditableFile,
-                           mustBeEditable = true)
-    checkEditabilityOfFile(path = "lesson1/task/editableFile.txt",
-                           initialTextInTask = initialTextInEditableFile,
-                           mustBeEditable = true)
+    checkEditabilityOfFile(
+      path = "lesson1/task/nonEditableFile.txt",
+      initialTextInTask = initialTextInNonEditableFile,
+      mustBeEditable = true
+    )
+    checkEditabilityOfFile(
+      path = "lesson1/task/editableFile.txt",
+      initialTextInTask = initialTextInEditableFile,
+      mustBeEditable = true
+    )
   }
 
   private fun checkEditabilityOfFile(path: String, initialTextInTask: String, mustBeEditable: Boolean) {

@@ -74,11 +74,13 @@ class HyperskillCheckStringTaskTest : HyperskillCheckAnswerTaskTest() {
     assertEquals(1, createdTask.getTaskFile(AnswerTask.ANSWER_FILE_NAME)?.answerPlaceholders?.size)
     assertEquals(
       EduCoreBundle.message("string.task.comment.file"),
-      createdTask.getTaskFile(AnswerTask.ANSWER_FILE_NAME)?.answerPlaceholders?.first()?.placeholderText)
+      createdTask.getTaskFile(AnswerTask.ANSWER_FILE_NAME)?.answerPlaceholders?.first()?.placeholderText
+    )
     assertEquals(0, createdTask.getTaskFile(AnswerTask.ANSWER_FILE_NAME)?.answerPlaceholders?.first()?.offset)
     assertEquals(
       EduCoreBundle.message("string.task.comment.file").length,
-      createdTask.getTaskFile(AnswerTask.ANSWER_FILE_NAME)?.answerPlaceholders?.first()?.endOffset)
+      createdTask.getTaskFile(AnswerTask.ANSWER_FILE_NAME)?.answerPlaceholders?.first()?.endOffset
+    )
   }
 
   /**

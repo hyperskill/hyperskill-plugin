@@ -90,7 +90,7 @@ class GenerateTaskTests : AnAction() {
 
     val testFileName = configurator.testFileName
     val testDirFile = directory.findChild(testDir)
-      ?: error("Cannot find test directory: ${directory.path}/$testDir")
+                      ?: error("Cannot find test directory: ${directory.path}/$testDir")
     val testFile = testDirFile.findChild(testFileName) ?: testDirFile.createChildData(this, testFileName)
 
     // should be moved to ml-lib
@@ -99,10 +99,12 @@ class GenerateTaskTests : AnAction() {
         Tests must be in Kotlin, inside a class called 'Tests', and must use the JUnit library with the '@Test' annotation for evey test.
         If the code snippet requires the user to implement a function or a class, to you have to import this function or class in tests.
         """.trimIndent()
+
       "python" -> """
         Tests must be in Python and use the unittest library for tests.
         If the code snippet requires the user to implement a function or a class, to you have to import this function or class in tests from the task file.
         """.trimIndent()
+
       else -> error("Unsupported language: $language")
     }
 

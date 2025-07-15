@@ -72,6 +72,7 @@ class GoLanguageSettings : LanguageSettings<GoProjectSettings>() {
       !sdk.isValid -> ValidationMessage(EduGoBundle.message("error.invalid.sdk"), ENVIRONMENT_CONFIGURATION_LINK_GO)
       courseLocation != null && isAncestor(courseLocation, sdk.homePath, false) ->
         ValidationMessage(EduGoBundle.message("error.invalid.sdk.location"), ENVIRONMENT_CONFIGURATION_LINK_GO)
+
       else -> null
     }
 

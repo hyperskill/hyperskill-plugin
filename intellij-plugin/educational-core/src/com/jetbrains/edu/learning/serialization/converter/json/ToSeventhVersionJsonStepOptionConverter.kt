@@ -19,8 +19,8 @@ class ToSeventhVersionJsonStepOptionConverter : JsonStepOptionsConverter {
     val taskFiles = stepOptionsJson.get(FILES) ?: ObjectMapper().createArrayNode()
     val testFiles = stepOptionsJson.get(TESTS) ?: ObjectMapper().createArrayNode()
 
-    if (taskFiles.any{ it.get(NAME).asText().endsWith(".py") }) return stepOptionsJson
-    if (testFiles.any{ it.get(NAME).asText().endsWith(".py") }) return stepOptionsJson
+    if (taskFiles.any { it.get(NAME).asText().endsWith(".py") }) return stepOptionsJson
+    if (testFiles.any { it.get(NAME).asText().endsWith(".py") }) return stepOptionsJson
 
     for (taskFile in taskFiles) {
       if (taskFile !is ObjectNode) continue

@@ -10,7 +10,8 @@ class CCDeleteAnswerPlaceholder : CCAnswerPlaceholderAction() {
   override fun performAnswerPlaceholderAction(state: EduState) {
     val taskFile = state.taskFile
     val answerPlaceholder = state.answerPlaceholder ?: error("Delete Placeholder action called, but no placeholder found")
-    runUndoableAction(state.project, message("action.Educational.Educator.DeleteAnswerPlaceholder.text.full"),
+    runUndoableAction(
+      state.project, message("action.Educational.Educator.DeleteAnswerPlaceholder.text.full"),
       object : CCAddAnswerPlaceholder.AddAction(state.project, answerPlaceholder, taskFile, state.editor) {
         override fun undo() {
           super.redo()

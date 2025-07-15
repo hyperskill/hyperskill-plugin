@@ -252,6 +252,7 @@ class DownloadDataset(
               val yOffset = tree.getPathBounds(tree.selectionPath)?.height?.div(2) ?: 0
               location.point.addXOffset(xOffset).addYOffset(-yOffset)
             }
+
             else -> {
               LOG.warn("Unsupported position ${tooltip.position}")
               location.point

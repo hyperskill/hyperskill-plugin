@@ -8,7 +8,7 @@ import com.jetbrains.edu.learning.taskToolWindow.ui.createButton
 import java.awt.event.ItemEvent
 import java.awt.event.ItemListener
 
-class TableTaskSpecificPanel(task: TableTask): Wrapper() {
+class TableTaskSpecificPanel(task: TableTask) : Wrapper() {
   init {
     val panel = panel {
       createHeader(task)

@@ -160,7 +160,8 @@ class TaskDescriptionTest : EduTestCase() {
 
   @Test
   fun `test shortcut inside tag`() {
-    val taskText = "You can use <code>&shortcut:OverrideMethods;</code> to override methods. One more useful shortcut: &shortcut:GotoAction;"
+    val taskText =
+      "You can use <code>&shortcut:OverrideMethods;</code> to override methods. One more useful shortcut: &shortcut:GotoAction;"
     val taskTextWithShortcuts = "You can use $overrideMethodShortcut to override methods. One more useful shortcut: $goToActionShortcut"
     doTestShortcut(taskText, taskTextWithShortcuts)
   }
@@ -375,10 +376,12 @@ class TaskDescriptionTest : EduTestCase() {
     assertEquals(expectedText, actualText)
   }
 
-  private fun doTestShortcut(taskText: String,
-                             taskTextWithShortcuts: String,
-                             keymapName: String = "Default for XWin",
-                             descriptionFormat: DescriptionFormat = DescriptionFormat.HTML) {
+  private fun doTestShortcut(
+    taskText: String,
+    taskTextWithShortcuts: String,
+    keymapName: String = "Default for XWin",
+    descriptionFormat: DescriptionFormat = DescriptionFormat.HTML
+  ) {
     createCourseWithDescription(taskText, descriptionFormat)
     val oldActiveKeymap = KeymapManager.getInstance().activeKeymap
     val keymapManager = KeymapManager.getInstance() as KeymapManagerImpl

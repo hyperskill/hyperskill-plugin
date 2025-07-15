@@ -111,7 +111,7 @@ class RunTaskActionState(private val project: Project) : Disposable {
    * If it is a run configuration corresponding to some task, then we pretend that this
    * task is running.
    */
-  private inner class RunningTasksListener: ExecutionListener {
+  private inner class RunningTasksListener : ExecutionListener {
     override fun processStartScheduled(executorId: String, env: ExecutionEnvironment) {
       if (executorId != DefaultRunExecutor.EXECUTOR_ID) return
 

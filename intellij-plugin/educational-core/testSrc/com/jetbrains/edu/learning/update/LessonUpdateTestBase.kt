@@ -13,7 +13,7 @@ abstract class LessonUpdateTestBase<T : Course> : UpdateTestBase<T>() {
 
     val newLessonName = "newLessonName"
     val remoteCourse = toRemoteCourse {
-      lessons[0].name  = newLessonName
+      lessons[0].name = newLessonName
     }
 
     updateCourse(remoteCourse)
@@ -59,7 +59,7 @@ abstract class LessonUpdateTestBase<T : Course> : UpdateTestBase<T>() {
 
     val newLessonName = "newLessonName"
     val remoteCourse = toRemoteCourse {
-      lessons[0].name  = newLessonName
+      lessons[0].name = newLessonName
     }
 
     updateCourse(remoteCourse)

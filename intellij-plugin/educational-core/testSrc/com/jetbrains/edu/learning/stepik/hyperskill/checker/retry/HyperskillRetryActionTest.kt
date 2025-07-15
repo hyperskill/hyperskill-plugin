@@ -4,6 +4,7 @@ import com.jetbrains.edu.learning.MockResponseFactory
 import com.jetbrains.edu.learning.actions.RetryAction
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
@@ -11,7 +12,6 @@ import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.pathWithoutPrams
 import com.jetbrains.edu.learning.stepik.StepikTestUtils.format
 import com.jetbrains.edu.learning.stepik.hyperskill.checker.HyperskillActionTestBase
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.testAction
 import org.intellij.lang.annotations.Language
 import org.junit.Test

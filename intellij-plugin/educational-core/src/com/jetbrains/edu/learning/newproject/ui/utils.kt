@@ -107,10 +107,12 @@ fun createHyperlinkWithContextHelp(actionWrapper: ToolbarActionWrapper): JPanel 
   val action = actionWrapper.action
   val hyperlinkLabel = HyperlinkLabel(actionWrapper.text.get())
   hyperlinkLabel.addHyperlinkListener {
-    val actionEvent = AnActionEvent.createFromAnAction(action,
-                                                       null,
-                                                       BrowseCoursesDialog.ACTION_PLACE,
-                                                       DataManager.getInstance().getDataContext(hyperlinkLabel))
+    val actionEvent = AnActionEvent.createFromAnAction(
+      action,
+      null,
+      BrowseCoursesDialog.ACTION_PLACE,
+      DataManager.getInstance().getDataContext(hyperlinkLabel)
+    )
     action.actionPerformed(actionEvent)
   }
 

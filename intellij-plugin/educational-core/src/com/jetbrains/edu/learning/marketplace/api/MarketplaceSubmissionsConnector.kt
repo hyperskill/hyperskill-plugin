@@ -98,7 +98,8 @@ class MarketplaceSubmissionsConnector {
       if (!response.isSuccessful) {
         LOG.warn("Failed to send anonymous plugin agreement statistics: ${response.errorBody()?.string()}")
       }
-    } catch (e: Exception) {
+    }
+    catch (e: Exception) {
       LOG.warn("Failed to send anonymous plugin agreement statistics", e)
     }
   }
@@ -317,10 +318,11 @@ class MarketplaceSubmissionsConnector {
 
   private fun doPostSubmission(courseId: Int, taskId: Int, submission: MarketplaceSubmission): Result<MarketplaceSubmission, String> {
     LOG.info("Posting submission for task $taskId")
-    val response = submissionsService.postSubmission(courseId, submission.courseVersion, taskId, submission).executeParsingErrors().onError {
-      LOG.warn("Failed to post submission for task $taskId")
-      return Err(it)
-    }.body() ?: return Err(EduCoreBundle.message("error.failed.to.post.solution"))
+    val response =
+      submissionsService.postSubmission(courseId, submission.courseVersion, taskId, submission).executeParsingErrors().onError {
+        LOG.warn("Failed to post submission for task $taskId")
+        return Err(it)
+      }.body() ?: return Err(EduCoreBundle.message("error.failed.to.post.solution"))
     return Ok(response)
   }
 
@@ -374,7 +376,8 @@ class MarketplaceSubmissionsConnector {
     do {
       val remainingStates = doPostChunked(currentStates, course)
       attempts++
-    } while (remainingStates.isNotEmpty() && attempts < 4)
+    }
+    while (remainingStates.isNotEmpty() && attempts < 4)
   }
 
   private fun doPostChunked(currentStates: List<MarketplaceStateOnClosePost>, course: EduCourse): List<MarketplaceStateOnClosePost> {
@@ -384,6 +387,7 @@ class MarketplaceSubmissionsConnector {
         is Ok -> {
           LOG.info("Successfully sent ${stateChunk.size} states")
         }
+
         is Err -> {
           LOG.info("Failed to send states with error `${res.error}`")
           remainingStates.addAll(stateChunk)
@@ -393,7 +397,7 @@ class MarketplaceSubmissionsConnector {
     return remainingStates
   }
 
-  private fun logAndNotifyAfterDeletionAttempt(response: Response<ResponseBody>, project: Project?, courseId: Int?,loginName: String?) {
+  private fun logAndNotifyAfterDeletionAttempt(response: Response<ResponseBody>, project: Project?, courseId: Int?, loginName: String?) {
     when (response.code()) {
       HTTP_NO_CONTENT -> {
         LOG.info("Successfully deleted all submissions ${logLoginName(loginName)} ${logCourseId(courseId)}")
@@ -426,13 +430,17 @@ class MarketplaceSubmissionsConnector {
       }
     }
     catch (e: Exception) {
-      LOG.error("Error occurred while changing plugin agreement to $pluginAgreement and ai agreement to $aiAgreement for user $loginName", e)
+      LOG.error(
+        "Error occurred while changing plugin agreement to $pluginAgreement and ai agreement to $aiAgreement for user $loginName",
+        e
+      )
       Err(e.message ?: "Unknown error")
     }
   }
 
   companion object {
     private val LOG = logger<MarketplaceConnector>()
+
     @VisibleForTesting
     const val STATES_PER_REQUEST: Int = 100
 

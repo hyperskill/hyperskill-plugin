@@ -17,7 +17,6 @@ import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.ai.translation.connector.TranslationServiceConnector
 import com.jetbrains.edu.ai.translation.settings.TranslationSettings
 import com.jetbrains.edu.ai.translation.statistics.EduAIFeaturesCounterUsageCollector
-import com.jetbrains.edu.learning.taskToolWindow.ui.notification.TaskToolWindowNotification.ActionLabel
 import com.jetbrains.edu.learning.Err
 import com.jetbrains.edu.learning.Result
 import com.jetbrains.edu.learning.ai.TranslationProjectSettings
@@ -33,6 +32,7 @@ import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.onError
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import com.jetbrains.edu.learning.taskToolWindow.ui.notification.TaskToolWindowNotification.ActionLabel
 import com.jetbrains.educational.core.format.enum.TranslationLanguage
 import com.jetbrains.educational.translation.format.CourseTranslationResponse
 import com.jetbrains.educational.translation.format.TranslatedText
@@ -203,6 +203,7 @@ class TranslationLoader(private val project: Project, private val scope: Corouti
               actionLabel
             )
           }
+
           is CommonAIServiceError -> {
             TaskToolWindowView.getInstance(project).showTaskDescriptionNotification(
               CommonAIServiceError.NOTIFICATION_ID,

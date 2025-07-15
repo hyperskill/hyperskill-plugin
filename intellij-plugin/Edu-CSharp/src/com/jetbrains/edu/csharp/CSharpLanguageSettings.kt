@@ -22,7 +22,8 @@ class CSharpLanguageSettings : LanguageSettings<CSharpProjectSettings>() {
   ): List<LabeledComponent<JComponent>> {
 
     if (course is HyperskillCourse) return emptyList()
-    val versions = course.configurator?.courseBuilder?.getSupportedLanguageVersions()?.toTypedArray() ?: error("No builder associated with course found")
+    val versions =
+      course.configurator?.courseBuilder?.getSupportedLanguageVersions()?.toTypedArray() ?: error("No builder associated with course found")
     val langStandardComboBox = ComboBox(versions)
     val courseTargetFrameworkVersion = course.languageVersion
     if (courseTargetFrameworkVersion != null && versions.contains(courseTargetFrameworkVersion)) {

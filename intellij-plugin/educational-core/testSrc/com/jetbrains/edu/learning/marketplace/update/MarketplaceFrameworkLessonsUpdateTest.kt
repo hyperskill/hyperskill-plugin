@@ -82,7 +82,10 @@ class MarketplaceFrameworkLessonsUpdateTest : FrameworkLessonsUpdateTest<EduCour
 
     assertTaskFolder {
       file("Task.kt", "fun taskMod1() {}") // previous is not propagated
-      file("NonEdit.kt", "val p = 141") // the file became propagatable after the update, but the task is not modified, so we see the new text
+      file(
+        "NonEdit.kt",
+        "val p = 141"
+      ) // the file became propagatable after the update, but the task is not modified, so we see the new text
       file("Tests2.kt", "fun test2() {}")
     }
   }

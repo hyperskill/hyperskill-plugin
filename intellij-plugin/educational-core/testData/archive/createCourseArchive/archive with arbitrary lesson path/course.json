@@ -74,7 +74,8 @@
       "type" : "lesson"
     }
   ],
-  "version" : <last version>,
+  "version" : <last
+  version>,
   "custom_content_path" : "some/arbitrary/path",
   "edu_plugin_version" : "yyyy.2-yyyy.1-TEST"
 }

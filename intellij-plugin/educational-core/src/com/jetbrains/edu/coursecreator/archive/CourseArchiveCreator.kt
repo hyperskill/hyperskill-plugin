@@ -74,8 +74,8 @@ class CourseArchiveCreator(
     ThreadingAssertions.assertEventDispatchThread()
 
     val result = prepareCourseCopy(course)
-        .flatMap { validateCourse(it) }
-        .flatMap { courseCopy -> generateArchive(courseCopy) }
+      .flatMap { validateCourse(it) }
+      .flatMap { courseCopy -> generateArchive(courseCopy) }
 
     return when (result) {
       is Err -> {
@@ -87,6 +87,7 @@ class CourseArchiveCreator(
         error.immediateAction(project)
         error
       }
+
       is Ok -> null
     }
   }
@@ -157,7 +158,10 @@ class CourseArchiveCreator(
           baseMessage
         }
         else {
-          baseMessage + " " + EduCoreBundle.message("error.failed.to.generate.course.archive.io.exception.additional.message", exceptionMessage)
+          baseMessage + " " + EduCoreBundle.message(
+            "error.failed.to.generate.course.archive.io.exception.additional.message",
+            exceptionMessage
+          )
         }
         Err(OtherError(e, message))
       }
@@ -291,8 +295,10 @@ class CourseArchiveCreator(
       val javaType = provider.constructType(value::class.java)
       val beanDesc: BeanDescription = provider.config.introspect(javaType)
       val serializer: JsonSerializer<Any> =
-        BeanSerializerFactory.instance.findBeanOrAddOnSerializer(provider, javaType, beanDesc,
-                                                                 provider.isEnabled(MapperFeature.USE_STATIC_TYPING))
+        BeanSerializerFactory.instance.findBeanOrAddOnSerializer(
+          provider, javaType, beanDesc,
+          provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
+        )
       serializer.unwrappingSerializer(null).serialize(value, jgen, provider)
       jgen.addPluginVersion()
       jgen.writeEndObject()
@@ -375,7 +381,7 @@ class CourseArchiveCreator(
     }
 
     private fun loadActualText(additionalFile: EduFile, fsFile: VirtualFile) {
-      additionalFile.contents = when(additionalFile.isBinary) {
+      additionalFile.contents = when (additionalFile.isBinary) {
         false -> TextualContentsFromDisk(fsFile)
         true -> BinaryContentsFromDisk(fsFile)
         // Undetermined contents seem impossible because additional files
@@ -414,10 +420,12 @@ class CourseArchiveCreator(
         // See https://youtrack.jetbrains.com/issue/EDU-4514
         .filter { it.pluginId !in requiredPluginIds }
         .map {
-          PluginInfo(it.pluginId,
-                     PluginManager.getInstance().findEnabledPlugin(PluginId.getId(it.pluginId))?.name ?: it.pluginId,
-                     it.minVersion,
-                     it.maxVersion)
+          PluginInfo(
+            it.pluginId,
+            PluginManager.getInstance().findEnabledPlugin(PluginId.getId(it.pluginId))?.name ?: it.pluginId,
+            it.minVersion,
+            it.maxVersion
+          )
         }
     }
   }

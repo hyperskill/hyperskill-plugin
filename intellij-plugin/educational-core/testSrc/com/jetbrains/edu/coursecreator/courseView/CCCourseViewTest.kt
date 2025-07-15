@@ -17,9 +17,11 @@ class CCCourseViewTest : CourseViewTestBase() {
     val lesson = course.lessons.first()
     lesson.customPresentableName = "custom name"
 
-    doTest("-Project\n" +
-                   " -CCCourseNode Test Course (Course Creation)\n" +
-                   "  CCLessonNode custom name (lesson1)\n")
+    doTest(
+      "-Project\n" +
+      " -CCCourseNode Test Course (Course Creation)\n" +
+      "  CCLessonNode custom name (lesson1)\n"
+    )
   }
 
   @Test
@@ -31,9 +33,11 @@ class CCCourseViewTest : CourseViewTestBase() {
     val section = course.sections.first()
     section.customPresentableName = "custom name"
 
-    doTest("-Project\n" +
-                    " -CCCourseNode Test Course (Course Creation)\n" +
-                    "  CCSectionNode custom name (section1)\n")
+    doTest(
+      "-Project\n" +
+      " -CCCourseNode Test Course (Course Creation)\n" +
+      "  CCSectionNode custom name (section1)\n"
+    )
   }
 
   @Test
@@ -48,7 +52,8 @@ class CCCourseViewTest : CourseViewTestBase() {
     val task = course.lessons.first().taskList.first()
     task.customPresentableName = "custom name"
 
-    doTest("""
+    doTest(
+      """
       -Project
        -CCCourseNode Test Course (Course Creation)
         -CCLessonNode lesson1
@@ -56,7 +61,8 @@ class CCCourseViewTest : CourseViewTestBase() {
           CCStudentInvisibleFileNode task.md
          -CCTaskNode task2
           CCStudentInvisibleFileNode task.md
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 
   @Test
@@ -67,7 +73,8 @@ class CCCourseViewTest : CourseViewTestBase() {
         eduTask()
       }
     }
-    doTest("""
+    doTest(
+      """
       -Project
        -CCCourseNode Test Course (Course Creation)
         -CCIntermediateDirectoryNode some
@@ -77,7 +84,8 @@ class CCCourseViewTest : CourseViewTestBase() {
             CCStudentInvisibleFileNode task.md
            -CCTaskNode task2
             CCStudentInvisibleFileNode task.md
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 
   private fun doTest(structure: String) {

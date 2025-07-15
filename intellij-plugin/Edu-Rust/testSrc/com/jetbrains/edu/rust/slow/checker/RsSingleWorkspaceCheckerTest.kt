@@ -15,7 +15,8 @@ class RsSingleWorkspaceCheckerTest : RsCheckersTestBase() {
 
   override fun createCourse(): Course {
     return course(language = RsLanguage) {
-      additionalFile("Cargo.toml",  """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
         members = [
             "lesson1/*/",
@@ -23,86 +24,110 @@ class RsSingleWorkspaceCheckerTest : RsCheckersTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """)
+      """
+      )
       lesson("lesson1") {
         eduTask("EduOk") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "edu_task_ok"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/lib.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/lib.rs", """
               pub fn foo() -> String {
                   String::from("foo")
               }
-          """)
-          rustTaskFile("tests/tests.rs", """
+          """
+          )
+          rustTaskFile(
+            "tests/tests.rs", """
               use edu_task_ok::foo;
 
               #[test]
               fn test() {
                   assert_eq!(String::from("foo"), foo());
               }
-          """)
+          """
+          )
         }
         eduTask("EduErr") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "edu_task_err"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/lib.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/lib.rs", """
               pub fn foo() -> String {
                   String::from("foo")
               }
-          """)
-          rustTaskFile("tests/tests.rs", """
+          """
+          )
+          rustTaskFile(
+            "tests/tests.rs", """
               use edu_task_err::foo;
 
               #[test]
               fn test() {
                   assert_eq!(String::from("bar"), foo());
               }
-          """)
+          """
+          )
         }
         eduTask("EduCompilationErr") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "edu_task_compilation_err"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/lib.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/lib.rs", """
               pub fn foo() ->  {
                   String::from("foo")
               }
-          """)
-          rustTaskFile("tests/tests.rs", """
+          """
+          )
+          rustTaskFile(
+            "tests/tests.rs", """
               use edu_task_compilation_err::foo;
 
               #[test]
               fn test() {
                   assert_eq!(String::from("bar"), foo());
               }
-          """)
+          """
+          )
         }
         eduTask("EduWithCustomRunConfigurationOk") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "edu_with_custom_run_configuration_ok"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/lib.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/lib.rs", """
               use std::env;
 
               pub fn hello() -> String {
                   return env::var("EXAMPLE_ENV").unwrap()
               }
-          """)
-          rustTaskFile("tests/tests.rs", """
+          """
+          )
+          rustTaskFile(
+            "tests/tests.rs", """
               use edu_with_custom_run_configuration_ok::hello;
 
               #[test]
@@ -114,8 +139,10 @@ class RsSingleWorkspaceCheckerTest : RsCheckersTestBase() {
               fn fail() {
                   panic!("Error message")
               }
-          """)
-          xmlTaskFile("runConfigurations/CustomCheckOk.run.xml", """
+          """
+          )
+          xmlTaskFile(
+            "runConfigurations/CustomCheckOk.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomCheckOk" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
                 <option name="command" value="test --package edu_with_custom_run_configuration_ok --test tests test -- --exact" />
@@ -135,23 +162,29 @@ class RsSingleWorkspaceCheckerTest : RsCheckersTestBase() {
                 </method>
               </configuration>
             </component>
-          """)
+          """
+          )
         }
         eduTask("EduWithCustomRunConfigurationErr") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "edu_with_custom_run_configuration_err"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/lib.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/lib.rs", """
               use std::env;
 
               pub fn hello() -> String {
                   return env::var("EXAMPLE_ENV").unwrap()
               }
-          """)
-          rustTaskFile("tests/tests.rs", """
+          """
+          )
+          rustTaskFile(
+            "tests/tests.rs", """
               use edu_with_custom_run_configuration_err::hello;
 
               #[test]
@@ -163,8 +196,10 @@ class RsSingleWorkspaceCheckerTest : RsCheckersTestBase() {
               fn fail() {
                   panic!("Error message")
               }
-          """)
-          xmlTaskFile("runConfigurations/CustomCheckErr.run.xml", """
+          """
+          )
+          xmlTaskFile(
+            "runConfigurations/CustomCheckErr.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomCheckErr" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
                 <option name="command" value="test --package edu_with_custom_run_configuration_err --test tests test -- --exact" />
@@ -184,20 +219,25 @@ class RsSingleWorkspaceCheckerTest : RsCheckersTestBase() {
                 </method>
               </configuration>
             </component>
-          """)
+          """
+          )
         }
         outputTask("Output") {
-          taskFile("Cargo.toml", """
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "output_task"
             version = "0.1.0"
             edition = "2018"
-          """)
-          rustTaskFile("src/main.rs", """
+          """
+          )
+          rustTaskFile(
+            "src/main.rs", """
               fn main() {
                   println!("Hello, World!");
               }
-          """)
+          """
+          )
           taskFile("tests/output.txt") {
             withText("Hello, World!\n")
           }

@@ -38,10 +38,12 @@ class CreateCourseFromZipTest : EduTestCase() {
     assertEquals(1, marketplaceCourse.marketplaceCourseVersion)
   }
 
-  private fun doTestCreateEduCourseFromZip(fileName: String,
-                                           jsonVersion: Int,
-                                           courseName: String = "Introduction to Python",
-                                           lessonsSize: Int = 10): Course {
+  private fun doTestCreateEduCourseFromZip(
+    fileName: String,
+    jsonVersion: Int,
+    courseName: String = "Introduction to Python",
+    lessonsSize: Int = 10
+  ): Course {
     val zipPath = "$testDataPath/$fileName"
     val course = EduUtilsKt.getLocalCourse(zipPath) ?: error("Failed to load course from $zipPath")
 

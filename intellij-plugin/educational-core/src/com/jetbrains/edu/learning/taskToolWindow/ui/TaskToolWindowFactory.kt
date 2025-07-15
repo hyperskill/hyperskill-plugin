@@ -49,7 +49,8 @@ class TaskToolWindowFactory : ToolWindowFactory, DumbAware {
    */
   private fun Int.toReverseIndex() = FontSize.values().size - 1 - this
 
-  private inner class AdjustFontSize(private val project: Project) : DumbAwareAction(EduCoreBundle.message("action.adjust.font.size.text")) {
+  private inner class AdjustFontSize(private val project: Project) :
+    DumbAwareAction(EduCoreBundle.message("action.adjust.font.size.text")) {
     override fun actionPerformed(e: AnActionEvent) {
       val fontSizeSlider = JSlider(SwingConstants.HORIZONTAL, 0, FontSize.values().size - 1, getInitialIndex())
       fontSizeSlider.minorTickSpacing = 1
@@ -64,8 +65,11 @@ class TaskToolWindowFactory : ToolWindowFactory, DumbAware {
       }
       val popup = JBPopupFactory.getInstance().createComponentPopupBuilder(fontSizeSlider, fontSizeSlider).createPopup()
       val location = MouseInfo.getPointerInfo().location
-      popup.show(RelativePoint(
-        Point(location.x - fontSizeSlider.preferredSize.width, location.y + fontSizeSlider.preferredSize.height)))
+      popup.show(
+        RelativePoint(
+          Point(location.x - fontSizeSlider.preferredSize.width, location.y + fontSizeSlider.preferredSize.height)
+        )
+      )
     }
 
     private fun getInitialIndex(): Int {

@@ -23,7 +23,7 @@ import com.jetbrains.edu.learning.ui.EduColors
 import java.awt.*
 import java.awt.geom.Path2D
 import java.awt.geom.RoundRectangle2D
-import javax.swing.*
+import javax.swing.JComponent
 
 class NavigationMapToolbar(private val defaultActionGroup: DefaultActionGroup = DefaultActionGroup()) : ActionToolbarImpl(
   ACTION_PLACE,

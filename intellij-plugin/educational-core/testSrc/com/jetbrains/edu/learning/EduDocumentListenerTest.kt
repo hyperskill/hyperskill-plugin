@@ -289,8 +289,11 @@ class EduDocumentListenerTest : EduTestCase() {
     val taskFileName = "taskFile2.txt"
     configureByTaskFile(1, 2, taskFileName)
 
-    CommandProcessor.getInstance().runUndoTransparentAction { runWriteAction {
-      myFixture.getDocument(myFixture.file).deleteString(49, 51) } }
+    CommandProcessor.getInstance().runUndoTransparentAction {
+      runWriteAction {
+        myFixture.getDocument(myFixture.file).deleteString(49, 51)
+      }
+    }
 
     val lesson = StudyTaskManager.getInstance(myFixture.project).course!!.getLesson("lesson1")
     val task = lesson!!.getTask("task2")
@@ -338,10 +341,11 @@ class EduDocumentListenerTest : EduTestCase() {
     assertEquals("is another", placeholder3.currentText)
   }
 
-  private val AnswerPlaceholder.currentText: String get() {
-    val document = taskFile.getDocument(project)!!
-    return document.text.substring(offset, endOffset)
-  }
+  private val AnswerPlaceholder.currentText: String
+    get() {
+      val document = taskFile.getDocument(project)!!
+      return document.text.substring(offset, endOffset)
+    }
 
   @Throws(IOException::class)
   override fun createCourse() {

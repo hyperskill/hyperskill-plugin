@@ -107,7 +107,8 @@ private class CourseDescriptionHtmlPanel : CourseHtmlPanel() {
   override fun getBodyFont(): Font = Font(
     TypographyManager().bodyFont,
     Font.PLAIN,
-    JBUI.scaleFontSize(EditorColorsManager.getInstance().globalScheme.editorFontSize.toFloat()))
+    JBUI.scaleFontSize(EditorColorsManager.getInstance().globalScheme.editorFontSize.toFloat())
+  )
 }
 
 private class CourseStatisticsPanel : NonOpaquePanel(HorizontalLayout(0)) {
@@ -169,8 +170,10 @@ private class CourseStatisticsPanel : NonOpaquePanel(HorizontalLayout(0)) {
 
     lastDotLabel.isVisible = course.updateDate != Date(0)
     date.isVisible = course.updateDate != Date(0)
-    date.text = EduCoreBundle.message("course.dialog.updated",
-                                      SimpleDateFormat(CourseDetailsPanel.DATE_PATTERN, Locale.US).format(course.updateDate))
+    date.text = EduCoreBundle.message(
+      "course.dialog.updated",
+      SimpleDateFormat(CourseDetailsPanel.DATE_PATTERN, Locale.US).format(course.updateDate)
+    )
     if (date.isVisible) {
       hasStatistics = true
     }

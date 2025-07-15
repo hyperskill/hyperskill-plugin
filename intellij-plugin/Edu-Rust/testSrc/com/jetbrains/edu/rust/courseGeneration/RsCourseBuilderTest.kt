@@ -30,7 +30,8 @@ class RsCourseBuilderTest : CourseGenerationTestBase<RsProjectSettings>() {
         file("Cargo.toml")
         file("task.md")
       }
-      file("Cargo.toml", """
+      file(
+        "Cargo.toml", """
           [workspace]
           
           members = [
@@ -41,10 +42,12 @@ class RsCourseBuilderTest : CourseGenerationTestBase<RsProjectSettings>() {
               "**/*.yaml"
           ]
 
-      """)
+      """
+      )
     }.assertEquals(rootDir)
 
-    assertListOfAdditionalFiles(newCourse,
+    assertListOfAdditionalFiles(
+      newCourse,
       "Cargo.toml" to null
     )
   }

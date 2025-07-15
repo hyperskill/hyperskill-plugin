@@ -42,7 +42,7 @@ object EduGradleUtils {
 
   fun hasCourseHaveGradleKtsFiles(course: Course): Boolean =
     course.additionalFiles.find { it.name == GradleConstants.KOTLIN_DSL_SCRIPT_NAME } != null &&
-      course.additionalFiles.find { it.name == GradleConstants.KOTLIN_DSL_SETTINGS_FILE_NAME } != null
+    course.additionalFiles.find { it.name == GradleConstants.KOTLIN_DSL_SETTINGS_FILE_NAME } != null
 
   @Throws(IOException::class)
   fun createProjectGradleFiles(

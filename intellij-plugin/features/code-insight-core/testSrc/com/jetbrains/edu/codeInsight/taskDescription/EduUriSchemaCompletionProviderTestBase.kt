@@ -22,15 +22,19 @@ abstract class EduUriSchemaCompletionProviderTestBase(format: DescriptionFormat)
 
   @Test
   fun `test course schema`() = doTest("cour<caret>", "course://<caret>", popupExpected = true)
+
   @Test
   fun `test psi_element schema`() = doTest("psi<caret>", "psi_element://<caret>", popupExpected = false)
+
   @Test
   fun `test settings schema`() = doTest("sett<caret>", "settings://<caret>", popupExpected = true)
+
   @Test
   fun `test tool window schema`() = doTest("tool<caret>", "tool_window://<caret>", popupExpected = true)
 
   @Test
   fun `test complete in any part of schema 1`() = doTest("settings:<caret>", "settings://<caret>")
+
   @Test
   fun `test complete in any part of schema 2`() = doTest("tool_window:/<caret>", "tool_window://<caret>")
 

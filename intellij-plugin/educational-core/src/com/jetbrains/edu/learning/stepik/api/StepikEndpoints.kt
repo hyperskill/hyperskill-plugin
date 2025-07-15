@@ -14,8 +14,10 @@ interface StepikEndpoints {
   fun getCurrentUser(): Call<UsersList>
 
   @GET("api/courses/{id}")
-  fun courses(@Path("id") courseId: Int,
-              @Query("is_idea_compatible") isIdeaCompatible: Boolean?): Call<CoursesList>
+  fun courses(
+    @Path("id") courseId: Int,
+    @Query("is_idea_compatible") isIdeaCompatible: Boolean?
+  ): Call<CoursesList>
 
   @GET("api/lessons")
   fun lessons(@Query("ids[]") vararg ids: Int): Call<LessonsList>

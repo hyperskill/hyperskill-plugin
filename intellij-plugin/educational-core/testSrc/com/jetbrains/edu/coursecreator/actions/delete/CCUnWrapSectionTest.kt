@@ -6,8 +6,10 @@ import com.intellij.testFramework.LightPlatformTestCase
 import com.jetbrains.edu.coursecreator.actions.studyItem.CCRemoveSection
 import com.jetbrains.edu.coursecreator.framework.CCFrameworkLessonManager
 import com.jetbrains.edu.coursecreator.handlers.CCVirtualFileListener
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.EduActionTestCase
 import com.jetbrains.edu.learning.courseFormat.CourseMode
+import com.jetbrains.edu.learning.fileTree
+import com.jetbrains.edu.learning.testAction
 import org.junit.Test
 
 class CCUnWrapSectionTest : EduActionTestCase() {
@@ -117,7 +119,8 @@ class CCUnWrapSectionTest : EduActionTestCase() {
       testAction(CCRemoveSection.ACTION_ID, dataContext(arrayOf(section2)))
       fail("Expected failed to move lesson out message")
     }
-    catch (_: Throwable) {}
+    catch (_: Throwable) {
+    }
 
     assertEquals(3, course.items.size)
     val section = course.getSection("section2")

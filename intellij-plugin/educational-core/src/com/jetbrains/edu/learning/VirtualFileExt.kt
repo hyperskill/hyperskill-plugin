@@ -333,11 +333,12 @@ fun VirtualFile.setHighlightLevelInsideWriteAction(project: Project, highlightLe
 
   val fileHighlightLevel = if (highlightLevel == EduFileErrorHighlightLevel.NONE) {
     FileHighlightingSetting.SKIP_HIGHLIGHTING
-  } else {
+  }
+  else {
     FileHighlightingSetting.FORCE_HIGHLIGHTING
   }
   val psiFile = PsiManager.getInstance(project).findFile(this) ?: return
-  
+
   // TriggerCompilerHighlightingService will fail if the document for the virtualFile is null.
   // Read the documentation for FileDocumentManager.getDocument to find out when the document may be null.
   if (FileDocumentManager.getInstance().getDocument(this) == null) return

@@ -28,7 +28,8 @@ class FLMultipleFileMergeUIImpl : FLMultipleFileMergeUI {
     currentTaskName: String,
     targetTaskName: String
   ): Boolean {
-    val multipleFileMergeDialog = createFLMultipleFileMergeDialog(project, files, mergeProvider, mergeCustomizer, currentTaskName, targetTaskName)
+    val multipleFileMergeDialog =
+      createFLMultipleFileMergeDialog(project, files, mergeProvider, mergeCustomizer, currentTaskName, targetTaskName)
     multipleFileMergeDialog.show()
     // multipleFileMergeDialog always exits with cancel code
     return multipleFileMergeDialog.processedFiles.size == files.size
@@ -51,8 +52,10 @@ fun createFLMultipleFileMergeDialog(
         val acceptYoursButton = buttons.find { it.text == VcsBundle.message("multiple.file.merge.accept.yours") }
         val acceptTheirsButton = buttons.find { it.text == VcsBundle.message("multiple.file.merge.accept.theirs") }
 
-        acceptYoursButton?.text = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.MergeDialog.AcceptFromButton.text", currentTaskName)
-        acceptTheirsButton?.text = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.MergeDialog.AcceptFromButton.text", targetTaskName)
+        acceptYoursButton?.text =
+          EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.MergeDialog.AcceptFromButton.text", currentTaskName)
+        acceptTheirsButton?.text =
+          EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.MergeDialog.AcceptFromButton.text", targetTaskName)
       }
     }
   }

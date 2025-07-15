@@ -62,7 +62,16 @@ class HyperskillTopLoginPanelWithBanner : Wrapper() {
 
     val ins = insets
 
-    g2d.clip(RoundRectangle2D.Double(ins.left.toDouble(), ins.top.toDouble(), (width - ins.width).toDouble(), (height - ins.height).toDouble(), radius.toDouble(), radius.toDouble()))
+    g2d.clip(
+      RoundRectangle2D.Double(
+        ins.left.toDouble(),
+        ins.top.toDouble(),
+        (width - ins.width).toDouble(),
+        (height - ins.height).toDouble(),
+        radius.toDouble(),
+        radius.toDouble()
+      )
+    )
     super.paintComponent(g2d)
 
     config.restore()

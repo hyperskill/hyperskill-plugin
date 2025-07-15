@@ -62,7 +62,8 @@ interface EduCourseBuilder<Settings : EduProjectSettings> {
    */
   @RequiresEdt
   @RequiresBlockingContext
-  fun refreshProject(project: Project, cause: RefreshCause) {}
+  fun refreshProject(project: Project, cause: RefreshCause) {
+  }
 
   fun createInitialLesson(holder: CourseInfoHolder<Course>, lessonProducer: () -> Lesson): Lesson? {
     val lessonInfo = NewStudyItemInfo(LESSON + 1, 1, lessonProducer)
@@ -165,6 +166,7 @@ interface EduCourseBuilder<Settings : EduProjectSettings> {
         )
         getExecutableTaskTemplates(course, info, withSources) + outputTemplate + inputTemplate
       }
+
       is ChoiceTask -> getExecutableTaskTemplates(course, info, withSources)
       is TheoryTask -> getExecutableTaskTemplates(course, info, withSources)
       is IdeTask -> getExecutableTaskTemplates(course, info, withSources)

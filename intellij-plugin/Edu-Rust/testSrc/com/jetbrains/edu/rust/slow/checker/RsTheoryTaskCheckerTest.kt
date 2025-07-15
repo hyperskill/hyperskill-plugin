@@ -14,7 +14,8 @@ class RsTheoryTaskCheckerTest : RsCheckersTestBase() {
 
   override fun createCourse(): Course {
     return course(language = RsLanguage) {
-      additionalFile("Cargo.toml",  """
+      additionalFile(
+        "Cargo.toml", """
         [workspace]
         members = [
             "lesson1/*/",
@@ -22,36 +23,46 @@ class RsTheoryTaskCheckerTest : RsCheckersTestBase() {
         exclude = [
             "**/*.yaml"
         ]
-      """)
+      """
+      )
       lesson("lesson1") {
         theoryTask("Theory") {
-          rustTaskFile("src/main.rs", """
+          rustTaskFile(
+            "src/main.rs", """
               fn main() {
                   println!("Hello!")
               }
-          """)
-          taskFile("Cargo.toml", """
+          """
+          )
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "theory"
             version = "0.1.0"
             edition = "2018"
-          """)
+          """
+          )
         }
         theoryTask("TheoryWithCustomRunConfiguration") {
-          rustTaskFile("src/main.rs", """
+          rustTaskFile(
+            "src/main.rs", """
             use std::env;
             fn main() {
                 println!("{}", env::var("EXAMPLE_ENV").unwrap())
             }
-          """)
-          taskFile("Cargo.toml", """
+          """
+          )
+          taskFile(
+            "Cargo.toml", """
             [package]
             name = "theory-with-custom-run-configuration"
             version = "0.1.0"
             edition = "2018"
-          """)
+          """
+          )
           dir("runConfigurations") {
-            xmlTaskFile("CustomRun.run.xml", """
+            xmlTaskFile(
+              "CustomRun.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration default="false" name="CustomRun" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
                   <option name="command" value="run --package theory-with-custom-run-configuration --bin theory-with-custom-run-configuration" />
@@ -71,7 +82,8 @@ class RsTheoryTaskCheckerTest : RsCheckersTestBase() {
                   </method>
                 </configuration>
               </component>              
-            """)
+            """
+            )
           }
         }
       }

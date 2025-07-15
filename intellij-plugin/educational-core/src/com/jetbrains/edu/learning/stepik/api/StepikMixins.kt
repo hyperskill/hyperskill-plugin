@@ -186,7 +186,7 @@ class StepikAnswerPlaceholderMixin {
   lateinit var placeholderDependency: AnswerPlaceholderDependency
 
   @JsonProperty(POSSIBLE_ANSWER)
-  lateinit var possibleAnswer : String
+  lateinit var possibleAnswer: String
 
   @JsonProperty(PLACEHOLDER_TEXT)
   lateinit var placeholderText: String

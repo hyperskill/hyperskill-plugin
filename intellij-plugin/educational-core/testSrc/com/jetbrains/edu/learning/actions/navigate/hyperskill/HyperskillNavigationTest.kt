@@ -7,9 +7,9 @@ import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.actions.PreviousTaskAction
 import com.jetbrains.edu.learning.actions.navigate.NavigationTestBase
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.framework.FrameworkLessonManager
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.CoreMatchers.not
@@ -33,16 +33,20 @@ class HyperskillNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -80,15 +84,19 @@ class HyperskillNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests1.kt", """
+            file(
+              "Tests1.kt", """
               fun tests1() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -134,16 +142,20 @@ class HyperskillNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -189,16 +201,20 @@ class HyperskillNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -244,16 +260,20 @@ class HyperskillNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun baz() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -292,18 +312,24 @@ class HyperskillNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
-            """)
-            file("Bar.kt", """
+            """
+            )
+            file(
+              "Bar.kt", """
               fun bar() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -345,17 +371,23 @@ class HyperskillNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
-            """)
-            file("Baz.kt", """
+            """
+            )
+            file(
+              "Baz.kt", """
               fun baz() {}
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -395,14 +427,18 @@ class HyperskillNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foo() {}
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {

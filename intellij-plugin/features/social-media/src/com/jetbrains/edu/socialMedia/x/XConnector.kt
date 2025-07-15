@@ -135,7 +135,7 @@ class XConnector : EduOAuthCodeFlowConnector<XAccount, XUserInfo> {
 
     // 3. Finalize uploading and receiving media status
     var uploadInfo = endpoints.mediaUploadFinalize(mediaId)
-      .executeHandlingExceptions(omitErrors = true)?.body() ?: return null
+                       .executeHandlingExceptions(omitErrors = true)?.body() ?: return null
 
     // 4. Checking uploading status
     var totalWaitingDuration = 0L
@@ -151,6 +151,7 @@ class XConnector : EduOAuthCodeFlowConnector<XAccount, XUserInfo> {
           ProgressIndicatorUtils.awaitWithCheckCanceled(waitingTime)
           uploadInfo = endpoints.mediaUploadStatus(mediaId).executeHandlingExceptions(omitErrors = true)?.body() ?: return null
         }
+
         PendingState.SUCCEEDED -> break
         PendingState.FAILED -> return null
       }

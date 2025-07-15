@@ -172,6 +172,7 @@ class HyperskillDownloadDatasetTest : EduActionTestCase() {
           request.hasParams("ide_rpc_port" to port) -> newAttemptForTask1
           else -> error("Wrong path: $path")
         }
+
         "/api/attempts/101/dataset" -> TASK_1_DATASET_TEXT
         "/api/attempts/102/dataset" -> TASK_2_NEW_DATASET_TEXT
         "/api/attempts/103/dataset" -> TASK_3_NEW_DATASET_TEXT

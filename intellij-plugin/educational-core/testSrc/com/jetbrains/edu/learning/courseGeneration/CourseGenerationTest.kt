@@ -45,11 +45,13 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
     val course = course(courseMode = CourseMode.EDUCATOR) {
       lesson("lesson1") {
         eduTask("task1") {
-          taskFile("TaskFile1.kt", """
+          taskFile(
+            "TaskFile1.kt", """
             fun foo(): String = <p>TODO()</p>
             fun bar(): Int = <p>TODO()</p>
             fun baz(): Boolean = <p>TODO()</p>
-          """) {
+          """
+          ) {
             placeholder(0, "\"\"")
             placeholder(1, "0")
             placeholder(2, "false")
@@ -61,11 +63,13 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
 
     fileTree {
       dir("lesson1/task1") {
-        file("TaskFile1.kt", """
+        file(
+          "TaskFile1.kt", """
           fun foo(): String = ""
           fun bar(): Int = 0
           fun baz(): Boolean = false
-        """)
+        """
+        )
         file("task.md")
       }
     }.assertEquals(rootDir)
@@ -76,11 +80,13 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
     val course = course(courseMode = CourseMode.EDUCATOR) {
       lesson("lesson1") {
         eduTask("task1") {
-          taskFile("TaskFile1.kt", """
+          taskFile(
+            "TaskFile1.kt", """
             fun foo(): String = <p>TODO()</p>
             fun bar(): Int = <p>TODO()</p>
             fun baz(): Boolean = <p>TODO()</p>
-          """) {
+          """
+          ) {
             placeholder(0, "\"\"")
             placeholder(1, "0")
             placeholder(2, "false")
@@ -92,11 +98,13 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
 
     fileTree {
       dir("lesson1/task1") {
-        file("TaskFile1.kt", """
+        file(
+          "TaskFile1.kt", """
           fun foo(): String = ""
           fun bar(): Int = 0
           fun baz(): Boolean = false
-        """)
+        """
+        )
         file("task.md")
       }
     }.assertEquals(rootDir)
@@ -124,6 +132,9 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
 
     createCourseStructure(coursePreview)
 
-    assertFalse("Course `${coursePreview.name}` shouldn't be added to course storage", CoursesStorage.getInstance().hasCourse(coursePreview))
+    assertFalse(
+      "Course `${coursePreview.name}` shouldn't be added to course storage",
+      CoursesStorage.getInstance().hasCourse(coursePreview)
+    )
   }
 }

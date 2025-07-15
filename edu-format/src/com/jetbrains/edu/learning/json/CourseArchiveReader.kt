@@ -30,7 +30,7 @@ import java.util.*
 
 private val LOG = logger<LocalEduCourseMixin>()
 
-private class CourseJsonParsingException(message: String): Exception(message)
+private class CourseJsonParsingException(message: String) : Exception(message)
 
 fun readCourseJson(reader: () -> Reader, fileContentsFactory: FileContentsFactory = EmtpyFileContentFactory): Course? {
   return try {
@@ -86,6 +86,7 @@ private fun getFormatVersionAndCourseTypeFromJson(
         version = parser.nextIntValue(-1)
         if (version == -1) throw CourseJsonParsingException("Course format version specified incorrectly")
       }
+
       COURSE_TYPE -> courseType = parser.nextTextValue()
       else -> {
         parser.nextToken()
@@ -135,9 +136,13 @@ fun getCourseMapper(fileContentsFactory: FileContentsFactory): ObjectMapper {
     .disable(MapperFeature.AUTO_DETECT_GETTERS)
     .disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
     .disable(MapperFeature.AUTO_DETECT_CREATORS)
-    .injectableValues(InjectableValues.Std(mapOf(
-      FILE_CONTENTS_FACTORY_INJECTABLE_VALUE to fileContentsFactory
-    )))
+    .injectableValues(
+      InjectableValues.Std(
+        mapOf(
+          FILE_CONTENTS_FACTORY_INJECTABLE_VALUE to fileContentsFactory
+        )
+      )
+    )
     .setDateFormat()
     .build()
 }

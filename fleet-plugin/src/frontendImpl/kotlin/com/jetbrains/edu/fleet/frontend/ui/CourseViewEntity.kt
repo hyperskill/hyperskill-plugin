@@ -41,8 +41,9 @@ fun NoriaContext.renderCourseTreeEntity(courseViewEntity: CourseViewEntity) {
   val course = byEntityType(CourseEntity::class).firstOrNull()?.course ?: return
   val rootItem = courseNode(course)
 
-  val state = dbCell(read = { courseViewEntity.treeState },
-                     write = { courseViewEntity.treeState = it })
+  val state = dbCell(
+    read = { courseViewEntity.treeState },
+    write = { courseViewEntity.treeState = it })
   val treeViewOptions = TreeViewOptions(indentLeaves = false, speedSearchOptions = SpeedSearchOptions.Default())
   val treeModel = treeModel(rootItem, options = treeViewOptions, state = state)
   focusable {
@@ -51,9 +52,11 @@ fun NoriaContext.renderCourseTreeEntity(courseViewEntity: CourseViewEntity) {
 }
 
 val courseViewAction = Action(
-  defaultPresentation = ActionPresentation(name = "Course",
-                                           icon = IconKeys.Folder,
-                                           tags = listOf(NEW_TOOL_ACTION_TAG)),
+  defaultPresentation = ActionPresentation(
+    name = "Course",
+    icon = IconKeys.Folder,
+    tags = listOf(NEW_TOOL_ACTION_TAG)
+  ),
   perform = sagaAction { context ->
     change {
       openTool(newCourseTreeView(), ShowOpts(window = context.windowEntity))

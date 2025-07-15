@@ -30,7 +30,8 @@ class JCEFTextPanel(project: Project) : TabTextPanel(project) {
 
     Disposer.register(this, jcefBrowser)
     ApplicationManager.getApplication().messageBus.connect(this)
-      .subscribe(LafManagerListener.TOPIC,
+      .subscribe(
+        LafManagerListener.TOPIC,
         LafManagerListener {
           TaskToolWindowView.updateAllTabs(project)
         })

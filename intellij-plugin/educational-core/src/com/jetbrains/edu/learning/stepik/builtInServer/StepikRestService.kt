@@ -31,7 +31,9 @@ class StepikRestService : OAuthRestService(StepikNames.STEPIK) {
   ): Boolean {
     return if (request.method() === HttpMethod.GET
                // If isOriginAllowed is `false` check if it is a valid oAuth request with empty origin
-               && ((isOriginAllowed(request) === OriginCheckResult.ALLOW || StepikConnector.getInstance().isValidOAuthRequest(request, urlDecoder)))) {
+               && ((isOriginAllowed(request) === OriginCheckResult.ALLOW || StepikConnector.getInstance()
+        .isValidOAuthRequest(request, urlDecoder)))
+    ) {
       true
     }
     else {

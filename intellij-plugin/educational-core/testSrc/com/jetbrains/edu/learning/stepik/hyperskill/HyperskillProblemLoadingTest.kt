@@ -39,10 +39,13 @@ class HyperskillProblemLoadingTest : EduTestCase() {
 
   @Test
   fun `test load step with hidden header and footer`() = doTest("steps_response_header_footer.json", shouldDisableHighlight = true)
+
   @Test
   fun `test load step with hidden header`() = doTest("steps_response_header.json", shouldDisableHighlight = true)
+
   @Test
   fun `test load step with hidden footer`() = doTest("steps_response_footer.json", shouldDisableHighlight = true)
+
   @Test
   fun `test load step without hidden header or footer`() = doTest("steps_response_no_header_footer.json", shouldDisableHighlight = false)
 

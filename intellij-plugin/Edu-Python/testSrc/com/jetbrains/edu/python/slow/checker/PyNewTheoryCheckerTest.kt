@@ -17,22 +17,27 @@ class PyNewTheoryCheckerTest : PyCheckersTestBase() {
     return course(language = PythonLanguage.INSTANCE, environment = "unittest") {
       lesson("lesson1") {
         theoryTask("Theory") {
-          pythonTaskFile("main.py", """
+          pythonTaskFile(
+            "main.py", """
             if __name__ == "__main__":
                 print("Hello!")
-          """)
+          """
+          )
           taskFile("__init__.py")
         }
         theoryTask("TheoryWithCustomRunConfiguration") {
-          pythonTaskFile("main.py", """
+          pythonTaskFile(
+            "main.py", """
             import os
 
             if __name__ == "__main__":
                 print(os.getenv("EXAMPLE_ENV"))
-          """)
+          """
+          )
           taskFile("__init__.py")
           dir("runConfigurations") {
-            xmlTaskFile("CustomRun.run.xml", """
+            xmlTaskFile(
+              "CustomRun.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration default="false" name="CustomRun" type="PythonConfigurationType" factoryName="Python">
                   <module name="Python Course7" />
@@ -58,21 +63,25 @@ class PyNewTheoryCheckerTest : PyCheckersTestBase() {
                   <method v="2" />
                 </configuration>
               </component>
-            """)
+            """
+            )
           }
         }
       }
       frameworkLesson {
         theoryTask("FrameworkTheoryWithCustomRunConfiguration1") {
-          pythonTaskFile("main.py", """
+          pythonTaskFile(
+            "main.py", """
             import os
             
             if __name__ == "__main__":
                 print(os.getenv("EXAMPLE_ENV"))
-          """)
+          """
+          )
           taskFile("__init__.py")
           dir("runConfigurations") {
-            xmlTaskFile("CustomRun.run.xml", """
+            xmlTaskFile(
+              "CustomRun.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration default="false" name="CustomRun1" type="PythonConfigurationType" factoryName="Python">
                   <module name="Python Course" />
@@ -98,19 +107,23 @@ class PyNewTheoryCheckerTest : PyCheckersTestBase() {
                   <method v="2" />
                 </configuration>
               </component>              
-            """)
+            """
+            )
           }
         }
         theoryTask("FrameworkTheoryWithCustomRunConfiguration2") {
-          pythonTaskFile("main.py", """
+          pythonTaskFile(
+            "main.py", """
             import os
             
             if __name__ == "__main__":
                 print(os.getenv("EXAMPLE_ENV"))
-          """)
+          """
+          )
           taskFile("__init__.py")
           dir("runConfigurations") {
-            xmlTaskFile("CustomRun.run.xml", """
+            xmlTaskFile(
+              "CustomRun.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration default="false" name="CustomRun2" type="PythonConfigurationType" factoryName="Python">
                   <module name="Python Course" />
@@ -136,7 +149,8 @@ class PyNewTheoryCheckerTest : PyCheckersTestBase() {
                   <method v="2" />
                 </configuration>
               </component>              
-            """)
+            """
+            )
           }
         }
       }

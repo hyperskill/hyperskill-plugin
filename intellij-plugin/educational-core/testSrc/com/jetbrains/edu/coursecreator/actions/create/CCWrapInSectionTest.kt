@@ -93,7 +93,7 @@ class CCWrapInSectionTest : EduActionTestCase() {
     assertEquals(2, section.getLesson("lesson2")!!.index)
     assertEquals(3, section.getLesson("lesson3")!!.index)
   }
-  
+
   @Test
   fun `test lesson wrapping is available only for top level lessons`() {
     courseWithFiles(courseMode = CourseMode.EDUCATOR) {

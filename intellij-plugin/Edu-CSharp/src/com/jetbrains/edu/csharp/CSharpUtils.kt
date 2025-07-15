@@ -34,7 +34,8 @@ fun String.formatForCSProj(): String = split("/").joinToString(".") { it.capital
 fun Task.getTestName(): String = getCSProjFileNameWithoutExtension().toTestName()
 
 fun String.toTestName(): String = filter { it != '.' } + "Test"
-fun Task.toProjectModelEntity(project: Project): ProjectModelEntity? = WorkspaceModel.getInstance(project).findProjectsByName(getCSProjFileNameWithoutExtension()).firstOrNull()
+fun Task.toProjectModelEntity(project: Project): ProjectModelEntity? =
+  WorkspaceModel.getInstance(project).findProjectsByName(getCSProjFileNameWithoutExtension()).firstOrNull()
 
 fun Project.getSolutionEntity(): ProjectModelEntity? = WorkspaceModel.getInstance(this).getSolutionEntity()
 

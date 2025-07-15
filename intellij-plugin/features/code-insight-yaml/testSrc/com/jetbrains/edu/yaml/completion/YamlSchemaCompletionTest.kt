@@ -13,7 +13,8 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       lesson {}
     }
 
-    openConfigFileWithText(getCourse(), """
+    openConfigFileWithText(
+      getCourse(), """
       |title: Test Course
       |type: coursera
       |language: Russian
@@ -24,12 +25,15 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       |content:
       |- lesson1
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
 
     val lookupElements = myFixture.completeBasic()
     assertEquals(2, lookupElements.size)
-    assertContainsElements(lookupElements.map { it.lookupString }, FakeGradleBasedLanguage.displayName,
-                           PlainTextLanguage.INSTANCE.displayName)
+    assertContainsElements(
+      lookupElements.map { it.lookupString }, FakeGradleBasedLanguage.displayName,
+      PlainTextLanguage.INSTANCE.displayName
+    )
   }
 
   @Test
@@ -38,7 +42,8 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       lesson {}
     }
 
-    openConfigFileWithText(getCourse(), """
+    openConfigFileWithText(
+      getCourse(), """
       |title: Test Course
       |type: coursera
       |language: Russian
@@ -49,7 +54,8 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       |content:
       |- lesson1
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
 
     val lookupElements = myFixture.completeBasic()
     assertEquals(1, lookupElements.size)
@@ -62,7 +68,8 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       lesson {}
     }
 
-    openConfigFileWithText(getCourse(), """
+    openConfigFileWithText(
+      getCourse(), """
       |title: Test Course
       |type: coursera
       |language: <caret>Russian
@@ -73,7 +80,8 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       |content:
       |- lesson1
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
 
     val lookupElements = myFixture.completeBasic()
     assertNotEquals(0, lookupElements.size)
@@ -86,7 +94,8 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       lesson {}
     }
 
-    openConfigFileWithText(getCourse(), """
+    openConfigFileWithText(
+      getCourse(), """
       |title: Test Course
       |type: coursera
       |language: Russian
@@ -97,7 +106,8 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       |content:
       |- lesson1
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
 
     val lookupElements = myFixture.completeBasic()
     assertEquals(2, lookupElements.size)
@@ -110,12 +120,14 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       lesson {}
     }
 
-    openConfigFileWithText(getCourse(), """
+    openConfigFileWithText(
+      getCourse(), """
       |title: Test Course
       |content:
       |- lesson1
       |di<caret>
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
 
     val lookupElements = myFixture.completeBasic()
     assertNotNull(lookupElements)
@@ -124,7 +136,8 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
 
   @Test
   fun `test no completion in non-config file`() {
-    myFixture.configureByText("random.yaml", """
+    myFixture.configureByText(
+      "random.yaml", """
       |title: Test Course
       |type: coursera
       |language: <caret>Russian
@@ -135,7 +148,8 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
       |content:
       |- lesson1
       |
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
 
     val lookupElements = myFixture.completeBasic()
     assertEmpty(lookupElements)
@@ -148,9 +162,11 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
     }
     val lesson = course.getLesson("lesson1")!!
 
-    checkNoCompletion(lesson, """
+    checkNoCompletion(
+      lesson, """
       |is_templa<caret>
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -160,12 +176,14 @@ class YamlSchemaCompletionTest : YamlCompletionTestBase() {
     }
     val lesson = course.getLesson("lesson1")!!
 
-    doSingleCompletion(lesson, """
+    doSingleCompletion(
+      lesson, """
       |type: framework
       |is_templa<caret>
     """.trimMargin(), """
       |type: framework
       |is_template_based: <selection>false</selection>
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 }

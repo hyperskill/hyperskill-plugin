@@ -60,7 +60,8 @@ class ScalaSbtCourseBuilderTest : JvmCourseGenerationTestBase() {
 
     expectedFileTree.assertEquals(rootDir)
 
-    assertListOfAdditionalFiles(course,
+    assertListOfAdditionalFiles(
+      course,
       "build.sbt" to null,
       "project/build.properties" to null
     )
@@ -75,7 +76,8 @@ class ScalaSbtCourseBuilderTest : JvmCourseGenerationTestBase() {
     }
     createCourseStructure(course)
 
-    assertListOfAdditionalFiles(course,
+    assertListOfAdditionalFiles(
+      course,
       "build.sbt" to "template example: ${project.courseDir.name}",
       "project/build.properties" to "template example: ${project.courseDir.name}",
       "extra.file" to "not changed"

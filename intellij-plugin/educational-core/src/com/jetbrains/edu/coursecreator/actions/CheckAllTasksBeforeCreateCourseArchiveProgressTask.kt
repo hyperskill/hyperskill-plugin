@@ -25,7 +25,7 @@ class CheckAllTasksBeforeCreateCourseArchiveProgressTask(
   project: Project,
   private val course: Course,
   private val doIfNeedToCreateTheArchive: () -> Unit
-): Backgroundable(
+) : Backgroundable(
   project,
   EduCoreBundle.message("action.create.course.archive.progress.bar"),
   true
@@ -55,6 +55,7 @@ class CheckAllTasksBeforeCreateCourseArchiveProgressTask(
         showFailedTasksNotification(project, failedTasks, failedTasks.size)
         false
       }
+
       else -> true
     }
 

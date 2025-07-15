@@ -18,10 +18,13 @@ class KtOneModuleCheckerTest : JdkCheckerTestBase() {
   override fun createCourse(): Course = course(language = KotlinLanguage.INSTANCE) {
     lesson {
       eduTask("EduTask") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo() = 42
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -31,13 +34,17 @@ class KtOneModuleCheckerTest : JdkCheckerTestBase() {
                   Assert.assertTrue("foo() should return 42", foo() == 42)
               }
           }
-        """)
+        """
+        )
       }
       eduTask("EduTaskWithGradleCustomRunConfiguration") {
-        kotlinTaskFile("src/CustomTask.kt", """
+        kotlinTaskFile(
+          "src/CustomTask.kt", """
           fun bar(): String? = System.getenv("EXAMPLE_ENV")
-        """)
-        kotlinTaskFile("test/CustomTests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/CustomTests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -52,9 +59,11 @@ class KtOneModuleCheckerTest : JdkCheckerTestBase() {
                   Assert.assertEquals("Hello!", bar())
               }
           }
-        """)
+        """
+        )
         dir("runConfigurations") {
-          xmlTaskFile("CustomGradleCheck.run.xml", """
+          xmlTaskFile(
+            "CustomGradleCheck.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomTests.test" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -85,23 +94,28 @@ class KtOneModuleCheckerTest : JdkCheckerTestBase() {
                 <method v="2" />
               </configuration>
             </component>
-          """)
+          """
+          )
         }
       }
       theoryTask("TheoryTask") {
-        kotlinTaskFile("src/Task1.kt", """
+        kotlinTaskFile(
+          "src/Task1.kt", """
           fun main(args: Array<String>) {
               val a = 1
               println(a)
           }
-        """)
+        """
+        )
       }
       outputTask("OutputTask") {
-        kotlinTaskFile("src/Task2.kt", """
+        kotlinTaskFile(
+          "src/Task2.kt", """
           fun main(args: Array<String>) {
               println("OK")
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("OK\n")
         }
@@ -110,7 +124,8 @@ class KtOneModuleCheckerTest : JdkCheckerTestBase() {
 
     lesson("Unit Testing") {
       theoryTask {
-        kotlinTaskFile("src/NoFramework.kt", """
+        kotlinTaskFile(
+          "src/NoFramework.kt", """
           // UnitTesting/NoFramework.kt
           package unittesting
           import kotlin.test.assertEquals
@@ -128,7 +143,8 @@ class KtOneModuleCheckerTest : JdkCheckerTestBase() {
           fun main(args: Array<String>){
             testFortyTwo()
             }
-    """)
+    """
+        )
       }
     }
 

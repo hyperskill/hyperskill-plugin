@@ -21,7 +21,8 @@ class SqlGradleCourseBuilder : GradleCourseBuilderBase() {
     val templates = super.getDefaultTaskTemplates(course, info, withSources, withTests)
     return if (withSources) {
       templates + TemplateFileInfo(INIT_SQL, INIT_SQL, isVisible = false)
-    } else {
+    }
+    else {
       templates
     }
   }

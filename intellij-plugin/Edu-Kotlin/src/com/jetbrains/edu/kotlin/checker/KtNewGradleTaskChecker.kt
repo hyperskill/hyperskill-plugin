@@ -20,7 +20,8 @@ class KtNewGradleTaskChecker(task: EduTask, envChecker: EnvironmentChecker, proj
   override fun computePossibleErrorResult(indicator: ProgressIndicator, stderr: String): CheckResult {
     return if (task.hasSeparateModule(project)) {
       super.computePossibleErrorResult(indicator, stderr)
-    } else  {
+    }
+    else {
       GradleCommandLine.create(project, "testClasses")?.launchAndCheck(indicator) ?: CheckResult.failedToCheck
     }
   }
@@ -54,7 +55,7 @@ class KtNewGradleTaskChecker(task: EduTask, envChecker: EnvironmentChecker, proj
       }
     }
 
-    configuration.settings.taskNames = configuration.settings.taskNames + "--tests" + testClasses.map { "\"$it\""  }
+    configuration.settings.taskNames = configuration.settings.taskNames + "--tests" + testClasses.map { "\"$it\"" }
     return testConfigurations
   }
 }

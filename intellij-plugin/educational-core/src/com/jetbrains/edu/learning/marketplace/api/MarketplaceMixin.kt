@@ -58,7 +58,8 @@ private class MarketplaceCourseBuilder(
       if (!fieldsLanguageId.isNullOrEmpty()) {
         languageId = fieldsLanguageId
         languageVersion = fields.languageVersion
-      } else {
+      }
+      else {
         fields.programmingLanguage.split(" ").apply {
           languageId = first()
           languageVersion = getOrNull(1)

@@ -138,10 +138,22 @@ class CCNewCoursePanel(
               titleField.text.isNullOrBlank()
             }
             val excessTitleLength = titleField.text.length - MAX_COURSE_TITLE_LENGTH
-            addInputRule(EduCoreBundle.message("cc.new.course.error.exceeds.max.title.length", excessTitleLength, MAX_COURSE_TITLE_LENGTH)) {
+            addInputRule(
+              EduCoreBundle.message(
+                "cc.new.course.error.exceeds.max.title.length",
+                excessTitleLength,
+                MAX_COURSE_TITLE_LENGTH
+              )
+            ) {
               excessTitleLength > 0
             }
-            addApplyRule(EduCoreBundle.message("cc.new.course.error.exceeds.max.title.length", excessTitleLength, MAX_COURSE_TITLE_LENGTH)) {
+            addApplyRule(
+              EduCoreBundle.message(
+                "cc.new.course.error.exceeds.max.title.length",
+                excessTitleLength,
+                MAX_COURSE_TITLE_LENGTH
+              )
+            ) {
               excessTitleLength > 0
             }
           }
@@ -235,7 +247,9 @@ class CCNewCoursePanel(
     val validationMessage = when {
       locationString.isBlank() -> ValidationMessage(EduCoreBundle.message("error.enter.location"))
       !FileUtil.ensureCanCreateFile(File(FileUtil.toSystemDependentName(locationString))) -> ValidationMessage(
-        EduCoreBundle.message("error.wrong.location"))
+        EduCoreBundle.message("error.wrong.location")
+      )
+
       else -> null
     }
     processValidationResult(SettingsValidationResult.Ready(validationMessage))
@@ -254,6 +268,7 @@ class CCNewCoursePanel(
       is SettingsValidationResult.Pending -> {
         validationListener?.onInputDataValidated(false)
       }
+
       is SettingsValidationResult.Ready -> {
         val validationMessage = settingsValidationResult.validationMessage
         if (validationMessage != null) {
@@ -296,8 +311,10 @@ class CCNewCoursePanel(
       }
     }
 
-    val configurator = EduConfiguratorManager.findConfigurator(courseData.courseType, courseData.environment,
-                                                               courseData.language) ?: return
+    val configurator = EduConfiguratorManager.findConfigurator(
+      courseData.courseType, courseData.environment,
+      courseData.language
+    ) ?: return
     _course.languageId = courseData.language.id
     _course.environment = courseData.environment
     languageSettings = configurator.courseBuilder.getLanguageSettings()
@@ -367,6 +384,7 @@ class CCNewCoursePanel(
 
   companion object {
     private val LOG = Logger.getInstance(CCNewCoursePanel::class.java)
+
     // max course title length according to https://github.com/JetBrains/intellij-plugin-verifier/pull/67/files
     private const val MAX_COURSE_TITLE_LENGTH = 64
   }

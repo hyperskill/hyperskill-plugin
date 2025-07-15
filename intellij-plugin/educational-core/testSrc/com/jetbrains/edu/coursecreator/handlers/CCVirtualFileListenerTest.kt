@@ -4,16 +4,12 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.coursecreator.actions.CCCreateCourseArchiveAction
+import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.configurators.FakeGradleConfigurator
-import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.ItemContainer
-import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.getStudyItem
 import com.jetbrains.edu.learning.handlers.EduVirtualFileListener
 import com.jetbrains.edu.learning.handlers.VirtualFileListenerTestBase
-import com.jetbrains.edu.learning.`in`
-import com.jetbrains.edu.learning.notIn
 import org.junit.Test
 
 class CCVirtualFileListenerTest : VirtualFileListenerTestBase() {
@@ -467,7 +463,7 @@ class CCVirtualFileListenerTest : VirtualFileListenerTestBase() {
     val itemsListAfter = (parentItemAfter as? ItemContainer)?.items?.toList() ?: listOf()
 
     assertEquals(parentItemBefore?.itemType, parentItemAfter?.itemType)
-    assertEquals(itemsListBefore.map {it.itemType}, itemsListAfter.map {it.itemType})
+    assertEquals(itemsListBefore.map { it.itemType }, itemsListAfter.map { it.itemType })
   }
 
   @Test
@@ -666,7 +662,8 @@ class CCVirtualFileListenerTest : VirtualFileListenerTestBase() {
   @Test
   fun `moving out of a task folder creates additional files`() {
     val mustBeExcludedFile = "dir/must_be_excluded.iml" // must be excluded because of the IML extension
-    val fileStartingWithDot = "dir/.hidden_file" //a file starting with a dot is tested because such files used to be excluded in older versions
+    val fileStartingWithDot =
+      "dir/.hidden_file" //a file starting with a dot is tested because such files used to be excluded in older versions
 
     doTestAdditionalFilesAfterFSActions(
       emptyList(),

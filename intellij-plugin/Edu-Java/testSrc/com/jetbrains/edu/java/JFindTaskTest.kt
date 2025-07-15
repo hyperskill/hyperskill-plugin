@@ -9,7 +9,8 @@ class JFindTaskTest : JvmFindTaskFileTestBase() {
   fun `test get task dir`() = doTestGetTaskDir(
     pathToCourseJson = "testData/newCourse/java_course.json",
     filePath = "./lesson1/task1/src/Task.java",
-    taskDirPath = "./lesson1/task1")
+    taskDirPath = "./lesson1/task1"
+  )
 
   @Test
   fun `test get task for file`() = doTestGetTaskForFile(

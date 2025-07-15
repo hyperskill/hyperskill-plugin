@@ -49,7 +49,7 @@ object YamlDeepLoader {
     // the initial mapper has no idea whether the course is in the CC or in the Student mode
     val initialMapper = YamlMapper.basicMapper()
     initialMapper.setupForMigration(project)
-    val deserializedCourse = deserializeItemProcessingErrors(courseConfig, project, mapper=initialMapper) as? Course ?: return null
+    val deserializedCourse = deserializeItemProcessingErrors(courseConfig, project, mapper = initialMapper) as? Course ?: return null
     val needMigration = YamlMigrator(initialMapper).needMigration()
 
     // this mapper already respects course mode, it will be used to deserialize all other course items
@@ -69,6 +69,7 @@ object YamlDeepLoader {
             it.items = it.deserializeContent(project, it.taskList, mapper)
           }
         }
+
         is Lesson -> {
           // set parent to correctly obtain dirs in deserializeContent method
           deserializedItem.parent = deserializedCourse
@@ -137,7 +138,7 @@ object YamlDeepLoader {
       task.parent = this
       val taskDir = task.getDir(project.courseDir)
       val invalidTaskFilesNames = task.taskFiles
-        .filter { (name, _) -> taskDir?.findFileByRelativePath(name) == null && !task.shouldBeEmpty(name)}.map { it.key }
+        .filter { (name, _) -> taskDir?.findFileByRelativePath(name) == null && !task.shouldBeEmpty(name) }.map { it.key }
       invalidTaskFilesNames.forEach { task.removeTaskFile(it) }
     }
   }

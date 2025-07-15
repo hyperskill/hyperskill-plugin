@@ -42,10 +42,12 @@ class ErrorStateHyperlinkListener(private val parentDisposable: Disposable) : Hy
       is ErrorState.HyperskillLoginNeeded -> {
         HyperskillConnector.getInstance().doAuthorize(*postLoginActions, authorizationPlace = AuthorizationPlace.START_COURSE_DIALOG)
       }
+
       is ErrorState.StepikLoginRequired, ErrorState.NotLoggedIn -> {
         // TODO: Update course list
         StepikConnector.getInstance().doAuthorize(*postLoginActions, authorizationPlace = AuthorizationPlace.START_COURSE_DIALOG)
       }
+
       is ErrorState.JCEFRequired -> invokeSwitchUILibrary(coursePanel)
       is ErrorState.IncompatibleVersion -> installAndEnablePlugin(setOf(PluginId.getId(EduNames.PLUGIN_ID))) {}
       is ErrorState.RequirePlugins -> {
@@ -66,6 +68,7 @@ class ErrorStateHyperlinkListener(private val parentDisposable: Disposable) : Hy
         PluginStateManager.addStateListener(listener)
         installAndEnablePlugin(pluginStringIds) {}
       }
+
       is ErrorState.RestartNeeded -> {
         //close Course Selection View if it's open
         DialogWrapper.findInstance(coursesPanel)?.close(DialogWrapper.OK_EXIT_CODE)
@@ -75,6 +78,7 @@ class ErrorStateHyperlinkListener(private val parentDisposable: Disposable) : Hy
 
         ApplicationManager.getApplication().exit(true, true, true)
       }
+
       is ErrorState.CustomSevereError -> state.action?.run()
       else -> browseHyperlink(state.message)
     }

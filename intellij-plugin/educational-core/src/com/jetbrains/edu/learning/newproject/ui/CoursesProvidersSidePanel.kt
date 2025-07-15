@@ -84,7 +84,8 @@ class CoursesProvidersSidePanel(private val myCoursesProvider: MyCoursesProvider
       dialog?.dialogWrapper?.close(DialogWrapper.OK_EXIT_CODE)
     }
 
-    val courseAction = ToolbarActionWrapper(EduCoreBundle.lazyMessage("course.dialog.create.course"), CCNewCourseAction(onOKAction = ::closeDialog))
+    val courseAction =
+      ToolbarActionWrapper(EduCoreBundle.lazyMessage("course.dialog.create.course"), CCNewCourseAction(onOKAction = ::closeDialog))
     return createHyperlinkWithContextHelp(courseAction).apply {
       border = JBUI.Borders.empty(12)
     }
@@ -106,13 +107,15 @@ class CoursesProvidersSidePanel(private val myCoursesProvider: MyCoursesProvider
       component.add(textLabel)
     }
 
-    override fun getTreeCellRendererComponent(tree: JTree?,
-                                              value: Any?,
-                                              selected: Boolean,
-                                              expanded: Boolean,
-                                              leaf: Boolean,
-                                              row: Int,
-                                              hasFocus: Boolean): Component {
+    override fun getTreeCellRendererComponent(
+      tree: JTree?,
+      value: Any?,
+      selected: Boolean,
+      expanded: Boolean,
+      leaf: Boolean,
+      row: Int,
+      hasFocus: Boolean
+    ): Component {
       if (value is DefaultMutableTreeNode) {
         val userObject = value.userObject
         val tabName = if (userObject is CoursesPlatformProvider) userObject.name else userObject.toString()
@@ -123,6 +126,7 @@ class CoursesProvidersSidePanel(private val myCoursesProvider: MyCoursesProvider
             iconLabel.icon = null
             component.border = JBUI.Borders.empty(PROVIDER_TOP_BOTTOM_OFFSET, 0)
           }
+
           is CoursesPlatformProvider -> {
             textLabel.text = tabName
             iconLabel.icon = userObject.icon

@@ -1,5 +1,8 @@
 package com.jetbrains.edu.learning.submissions
 
+import com.jetbrains.edu.learning.submissions.SolutionSharingPreference.*
+
+
 /**
  * Reflects user's preference towards sharing his correct submission
  * @property NEVER never share the correct submissions

@@ -10,7 +10,8 @@ class PyTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
   override val language: Language = PythonLanguage.INSTANCE
 
   @Test
-  fun `test markdown description highlighting`() = doMarkdownTest("""
+  fun `test markdown description highlighting`() = doMarkdownTest(
+    """
     Code block with default language:
     ```
       def foo():
@@ -43,10 +44,12 @@ class PyTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 
   @Test
-  fun `test html description highlighting`() = doHtmlTest("""
+  fun `test html description highlighting`() = doHtmlTest(
+    """
     <html>
     <p>Code block with default language:</p>
     <pre><code>
@@ -79,5 +82,6 @@ class PyTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
       </div>
      </body>
     </html>
-  """)
+  """
+  )
 }

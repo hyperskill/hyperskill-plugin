@@ -209,6 +209,7 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
 
   @Suppress("UnstableApiUsage")
   override fun supportsFoldersAlwaysOnTop(): Boolean = false
+
   @Suppress("UnstableApiUsage")
   override fun supportsSortByType(): Boolean = false
 

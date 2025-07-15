@@ -5,8 +5,8 @@ import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.testFramework.runInEdtAndWait
 import com.jetbrains.edu.learning.checker.EduCheckerFixture
-import com.jetbrains.edu.python.learning.newproject.PySdkToCreateVirtualEnv
 import com.jetbrains.edu.python.learning.newproject.PyProjectSettings
+import com.jetbrains.edu.python.learning.newproject.PySdkToCreateVirtualEnv
 import com.jetbrains.python.sdk.PythonSdkType
 import com.jetbrains.python.sdk.flavors.PythonSdkFlavor
 import java.nio.file.Paths
@@ -38,7 +38,8 @@ class PyCheckerFixture : EduCheckerFixture<PyProjectSettings>() {
   override fun getSkipTestReason(): String? {
     return if (sdkLocation == null) {
       "No Python SDK location defined. Use `$PYTHON_SDK` environment variable to provide sdk location"
-    } else {
+    }
+    else {
       super.getSkipTestReason()
     }
   }

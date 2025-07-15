@@ -40,8 +40,10 @@ class HyperskillNextActivityTest : EduTestCase() {
     configureResponsesForCurrentTask(task)
     withNotificationCheck(project, testRootDisposable, { shown, content ->
       assertEquals(true, shown)
-      assertEquals(EduCoreBundle.message("notification.hyperskill.no.next.activity.content", stepLink(codeStepFromInitialProject.id)),
-                   content)
+      assertEquals(
+        EduCoreBundle.message("notification.hyperskill.no.next.activity.content", stepLink(codeStepFromInitialProject.id)),
+        content
+      )
     }) {
       openNextActivity(project, findTask(0, 0, 1))
     }
@@ -52,8 +54,10 @@ class HyperskillNextActivityTest : EduTestCase() {
     initProject()
     withNotificationCheck(project, testRootDisposable, { shown, content ->
       assertEquals(true, shown)
-      assertEquals(EduCoreBundle.message("notification.hyperskill.no.next.activity.content", stepLink(codeStepFromInitialProject.id)),
-                   content)
+      assertEquals(
+        EduCoreBundle.message("notification.hyperskill.no.next.activity.content", stepLink(codeStepFromInitialProject.id)),
+        content
+      )
     }) {
       openNextActivity(project, findTask(0, 0, 1))
     }
@@ -127,8 +131,10 @@ class HyperskillNextActivityTest : EduTestCase() {
 
     withNotificationCheck(project, testRootDisposable, { shown, content ->
       assertEquals(true, shown)
-      assertEquals(EduCoreBundle.message("notification.hyperskill.no.next.activity.content", stepLink(codeStepFromInitialProject.id)),
-                   content)
+      assertEquals(
+        EduCoreBundle.message("notification.hyperskill.no.next.activity.content", stepLink(codeStepFromInitialProject.id)),
+        content
+      )
     }) {
       openNextActivity(project, findTask(0, 0, 1))
     }

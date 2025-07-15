@@ -24,7 +24,8 @@ fun showNewStudyItemDialog(
 ) {
   val ui = if (isUnitTestMode) {
     MOCK ?: error("You should set mock ui via `withMockCreateStudyItemUi`")
-  } else {
+  }
+  else {
     NewStudyItemPopupUi()
   }
   val validator = CCStudyItemPathInputValidator(project, course, model.itemType, model.parentDir)
@@ -37,7 +38,8 @@ fun withMockCreateStudyItemUi(mockUi: NewStudyItemUi, action: () -> Unit) {
   try {
     MOCK = mockUi
     action()
-  } finally {
+  }
+  finally {
     MOCK = null
   }
 }

@@ -17,17 +17,17 @@ internal data class PathSegmentSpecification(
 }
 
 /** A CSS-style rule on a sequence of path segments.
-* It consists of several [PathSegmentSpecification]s, and matches paths that have a sub-list (not necessarily consequent) of path
-* segments matching these specifications.
-*
-* For example, a Rule
-* `dir("dir1")  dir("dir2")  file("a.txt")` matches paths that correspond to files `a.txt` located in a directory `dir2`, located in
-* directory `dir1`: All these match: `dir1/dir2/a.txt`, `a/dir1/b/dir2/c/a.txt`.
-*
-* `dir("dir1", direct=true) dir("dir2", direct=true) file(a.txt)` corresponds to paths: `dir1/dir2/a.txt`, `dir1/dir2/x/y/z/a.txt`.
-*
-* `dir("a", "b", "c") file("a.txt")` corresponds to paths of the form: `xxx/a/yyy/a.txt`, `xxx/b/yyy/a.txt`, `xxx/c/yyy/a.txt`.
-* */
+ * It consists of several [PathSegmentSpecification]s, and matches paths that have a sub-list (not necessarily consequent) of path
+ * segments matching these specifications.
+ *
+ * For example, a Rule
+ * `dir("dir1")  dir("dir2")  file("a.txt")` matches paths that correspond to files `a.txt` located in a directory `dir2`, located in
+ * directory `dir1`: All these match: `dir1/dir2/a.txt`, `a/dir1/b/dir2/c/a.txt`.
+ *
+ * `dir("dir1", direct=true) dir("dir2", direct=true) file(a.txt)` corresponds to paths: `dir1/dir2/a.txt`, `dir1/dir2/x/y/z/a.txt`.
+ *
+ * `dir("a", "b", "c") file("a.txt")` corresponds to paths of the form: `xxx/a/yyy/a.txt`, `xxx/b/yyy/a.txt`, `xxx/c/yyy/a.txt`.
+ * */
 internal data class Rule(
   /**
    * The more specific the rule is, the later it is applied. So attributes of a file are taken from the most specific rules.

@@ -1,153 +1,153 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "com.jetbrains.edu.course",
-  "title": "Course Configuration",
-  "description": "Configuration file containing information about course",
-  "properties": {
-    "yaml_version": {
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "$id" : "com.jetbrains.edu.course",
+  "title" : "Course Configuration",
+  "description" : "Configuration file containing information about course",
+  "properties" : {
+    "yaml_version" : {
       "description" : "version of the yaml configuration for the entire course",
-      "type": "integer"
+      "type" : "integer"
     },
-    "type": {
-      "description": "Course type",
-      "type": "string",
-      "enum": [
+    "type" : {
+      "description" : "Course type",
+      "type" : "string",
+      "enum" : [
         "edu",
         "coursera",
         "marketplace"
       ]
     },
-    "title": {
-      "description": "Title of the course",
-      "type": "string"
+    "title" : {
+      "description" : "Title of the course",
+      "type" : "string"
     },
-    "language": {
-      "description": "Language used for course materials",
-      "type": "string",
-      "examples": [
+    "language" : {
+      "description" : "Language used for course materials",
+      "type" : "string",
+      "examples" : [
         "English",
         "Russian"
       ]
     },
-    "summary": {
-      "description": "Summary describing what the course is about",
-      "type": "string"
+    "summary" : {
+      "description" : "Summary describing what the course is about",
+      "type" : "string"
     },
-    "programming_language": {
-      "description": "Programming language of the course",
-      "type": "string",
-      "examples": [
+    "programming_language" : {
+      "description" : "Programming language of the course",
+      "type" : "string",
+      "examples" : [
         "Java",
         "Python",
         "Kotlin"
       ]
     },
-    "programming_language_version": {
-      "description": "Optional version of programming language",
-      "type": [
+    "programming_language_version" : {
+      "description" : "Optional version of programming language",
+      "type" : [
         "number",
         "string"
       ]
     },
-    "solutions_hidden": {
-      "description": "If solutions are available for learners to peek and compare with their answers",
-      "type": "boolean"
+    "solutions_hidden" : {
+      "description" : "If solutions are available for learners to peek and compare with their answers",
+      "type" : "boolean"
     },
-    "environment": {
-      "description": "Additional information about course environment. For example, Kotlin courses are supported for Android environment",
-      "type": [
+    "environment" : {
+      "description" : "Additional information about course environment. For example, Kotlin courses are supported for Android environment",
+      "type" : [
         "string",
         "null"
       ]
     },
-    "content": {
-      "description": "Folder names of lessons or sections included in the course",
-      "type": [
+    "content" : {
+      "description" : "Folder names of lessons or sections included in the course",
+      "type" : [
         "array"
       ],
-      "uniqueItems": true
+      "uniqueItems" : true
     },
-    "vendor": {
-      "description": "Vendor name, email and url information",
-      "type": [
+    "vendor" : {
+      "description" : "Vendor name, email and url information",
+      "type" : [
         "object",
         "null"
       ],
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Vendor name"
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Vendor name"
         },
-        "url": {
-          "type": "string",
-          "description": "Vendor url"
+        "url" : {
+          "type" : "string",
+          "description" : "Vendor url"
         },
-        "email": {
-          "type": "string",
-          "description": "Vendor email"
+        "email" : {
+          "type" : "string",
+          "description" : "Vendor email"
         }
       },
-      "required": [
+      "required" : [
         "name"
       ],
-      "additionalProperties": false
+      "additionalProperties" : false
     },
-    "tags": {
-      "description": "Tags for content",
-      "type": "array",
-      "uniqueItems": true
+    "tags" : {
+      "description" : "Tags for content",
+      "type" : "array",
+      "uniqueItems" : true
     },
-    "environment_settings": {
+    "environment_settings" : {
       "description" : "Course specific properties",
       "type" : "object",
       "uniqueItems" : true
     },
-    "additional_files": {
-      "description": "Files outside the task folders, that should be included in the course archive, i.e. be available for a learner",
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/file"
+    "additional_files" : {
+      "description" : "Files outside the task folders, that should be included in the course archive, i.e. be available for a learner",
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/file"
       }
     },
-    "custom_content_path": {
-      "description": "Path to the content inside the course",
-      "type": "string"
+    "custom_content_path" : {
+      "description" : "Path to the content inside the course",
+      "type" : "string"
     },
-    "disabled_features": {
-      "description": "Disabled features for the course",
-      "type": "array",
-      "items": {
-        "type": "string"
+    "disabled_features" : {
+      "description" : "Disabled features for the course",
+      "type" : "array",
+      "items" : {
+        "type" : "string"
       },
-      "uniqueItems": true
+      "uniqueItems" : true
     }
   },
-  "required": [
+  "required" : [
     "yaml_version",
     "title",
     "language",
     "programming_language",
     "summary"
   ],
-  "additionalProperties": false,
-  "definitions": {
-    "file": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "File path relative to the course base directory"
+  "additionalProperties" : false,
+  "definitions" : {
+    "file" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "File path relative to the course base directory"
         },
-        "is_binary": {
-          "type": "boolean",
-          "description": "Whether the file is binary",
-          "default": false
+        "is_binary" : {
+          "type" : "boolean",
+          "description" : "Whether the file is binary",
+          "default" : false
         }
       },
-      "required": [
+      "required" : [
         "name"
       ],
-      "additionalProperties": false
+      "additionalProperties" : false
     }
   }
 }

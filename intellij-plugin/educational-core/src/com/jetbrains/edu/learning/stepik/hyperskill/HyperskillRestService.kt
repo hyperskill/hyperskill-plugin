@@ -30,7 +30,9 @@ class HyperskillRestService : OAuthRestService(HYPERSKILL) {
   override fun isHostTrusted(request: FullHttpRequest, urlDecoder: QueryStringDecoder): Boolean {
     return if (request.method() === HttpMethod.GET
                // If isOriginAllowed is `false` check if it is a valid oAuth request with empty origin
-               && ((isOriginAllowed(request) === OriginCheckResult.ALLOW || HyperskillConnector.getInstance().isValidOAuthRequest(request, urlDecoder)))) {
+               && ((isOriginAllowed(request) === OriginCheckResult.ALLOW || HyperskillConnector.getInstance()
+        .isValidOAuthRequest(request, urlDecoder)))
+    ) {
       true
     }
     else {
@@ -39,9 +41,11 @@ class HyperskillRestService : OAuthRestService(HYPERSKILL) {
   }
 
   @Throws(IOException::class)
-  override fun execute(urlDecoder: QueryStringDecoder,
-                       request: FullHttpRequest,
-                       context: ChannelHandlerContext): String? {
+  override fun execute(
+    urlDecoder: QueryStringDecoder,
+    request: FullHttpRequest,
+    context: ChannelHandlerContext
+  ): String? {
     val uri = urlDecoder.uri()
     val hyperskillConnector = HyperskillConnector.getInstance()
     if (hyperskillConnector.getServicePattern("/info").matcher(uri).matches()) {
@@ -137,6 +141,7 @@ class HyperskillRestService : OAuthRestService(HYPERSKILL) {
         HyperskillConnector.getInstance().doAuthorize(Runnable { action() })
         null
       }
+
       NO -> action()
       CANCEL -> "Mismatching Hyperskill Accounts dialog has been canceled"
     }
@@ -191,8 +196,12 @@ class HyperskillRestService : OAuthRestService(HYPERSKILL) {
       requestFocus()
 
       val dialogResult = Messages.showDialog(
-        "<html>${EduCoreBundle.message("hyperskill.accounts.are.different", localAccount.userInfo.getFullName(),
-                                       browserAccount.fullname)}</html>",
+        "<html>${
+          EduCoreBundle.message(
+            "hyperskill.accounts.are.different", localAccount.userInfo.getFullName(),
+            browserAccount.fullname
+          )
+        }</html>",
         EduCoreBundle.message("hyperskill.accounts.are.different.title"),
         arrayOf(
           EduCoreBundle.message("hyperskill.accounts.are.different.re.login", browserAccount.fullname),
@@ -205,9 +214,11 @@ class HyperskillRestService : OAuthRestService(HYPERSKILL) {
     }
   }
 
-  private fun openInIDE(openInProjectRequest: HyperskillOpenRequest,
-                        request: FullHttpRequest,
-                        context: ChannelHandlerContext): String? {
+  private fun openInIDE(
+    openInProjectRequest: HyperskillOpenRequest,
+    request: FullHttpRequest,
+    context: ChannelHandlerContext
+  ): String? {
     LOG.info("Opening ${EduNames.JBA} project: $openInProjectRequest")
     return when (val result = ProjectOpener.getInstance().open(HyperskillOpenInIdeRequestHandler, openInProjectRequest)) {
       is Ok -> {
@@ -215,6 +226,7 @@ class HyperskillRestService : OAuthRestService(HYPERSKILL) {
         LOG.info("${EduNames.JBA} project opened: $openInProjectRequest")
         null
       }
+
       is Err -> {
         val validationResult = result.error
         val message = validationResult.message

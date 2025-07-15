@@ -19,12 +19,8 @@ import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.ChoiceTa
 import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.SortingBasedTaskQueryManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TableTaskQueryManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TaskQueryManager
-import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.ChoiceTaskResourcesManager
-import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.StyleManager
-import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.StyleResourcesManager
+import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.*
 import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.StyleResourcesManager.INTELLIJ_ICON_QUICKFIX_OFF_BULB
-import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.TableTaskResourcesManager
-import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.TaskToolWindowBundle
 import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.sortingBasedTask.MatchingTaskResourcesManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.sortingBasedTask.SortingTaskResourcesManager
 import com.jetbrains.edu.learning.xmlEscaped
@@ -46,11 +42,13 @@ class JCEFToolWindowRequestHandler(private val jcefLinkHandler: JCefToolWindowLi
    *
    * @return true to cancel the navigation or false to allow the navigation to proceed.
    */
-  override fun onBeforeBrowse(browser: CefBrowser?,
-                              frame: CefFrame?,
-                              request: CefRequest?,
-                              user_gesture: Boolean,
-                              is_redirect: Boolean): Boolean {
+  override fun onBeforeBrowse(
+    browser: CefBrowser?,
+    frame: CefFrame?,
+    request: CefRequest?,
+    user_gesture: Boolean,
+    is_redirect: Boolean
+  ): Boolean {
     val url = request?.url ?: return false
     val referUrl = request.referrerURL
     return jcefLinkHandler.process(url, referUrl)
@@ -82,6 +80,7 @@ private const val HINT_EXPANDED_BLOCK_TEMPLATE: String = """
                                                      %s
                                                    </div>
                                                    """
+
 fun wrapHintJCEF(project: Project, hintElement: Element, displayedHintNumber: String, hintTitle: String): String {
   val course = StudyTaskManager.getInstance(project).course
   val hintText: String = hintElement.html()
@@ -115,7 +114,7 @@ fun getHTMLTemplateText(task: Task?): String? = when (task) {
   else -> null
 }
 
-fun getTaskSpecificQueryManager(task: Task?, browserBase: JBCefBrowser): TaskQueryManager<out Task>? = when(task) {
+fun getTaskSpecificQueryManager(task: Task?, browserBase: JBCefBrowser): TaskQueryManager<out Task>? = when (task) {
   is ChoiceTask -> ChoiceTaskQueryManager(task, browserBase)
   is SortingBasedTask -> SortingBasedTaskQueryManager(task, browserBase)
   is TableTask -> TableTaskQueryManager(task, browserBase)

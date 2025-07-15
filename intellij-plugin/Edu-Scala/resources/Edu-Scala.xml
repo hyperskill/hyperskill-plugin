@@ -1,4 +1,4 @@
-<idea-plugin package="com.jetbrains.edu.scala" xmlns:xi="http://www.w3.org/2001/XInclude">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.scala">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <!--suppress PluginXmlValidity -->

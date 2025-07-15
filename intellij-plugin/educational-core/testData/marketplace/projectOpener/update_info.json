@@ -7,8 +7,8 @@
           "id" : "1",
           "pluginId" : 1,
           "version" : "1",
-          "compatibility": {
-            "gte": 13
+          "compatibility" : {
+            "gte" : 13
           }
         }
       ]

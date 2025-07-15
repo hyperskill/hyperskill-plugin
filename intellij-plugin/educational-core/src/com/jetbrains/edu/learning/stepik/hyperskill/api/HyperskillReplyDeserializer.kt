@@ -36,7 +36,8 @@ class HyperskillReplyDeserializer(vc: Class<*>? = null) : StdDeserializer<Reply>
       if (possibleTypes.size != 1) {
         if (possibleTypes.size > 1) {
           LOG.error("Could not guess type of reply: the choice of type is ambiguous.")
-        } else {
+        }
+        else {
           // Don't want to log this as an error because this is the way for submissions of unsupported hyperskill tasks
           LOG.warn("Could not guess type of reply: cannot be mapped to an already existing type.")
         }
@@ -46,7 +47,8 @@ class HyperskillReplyDeserializer(vc: Class<*>? = null) : StdDeserializer<Reply>
       val (type, field) = possibleTypes.first()
       return if (field != CHOICES) {
         type
-      } else {
+      }
+      else {
         tryGuessChoicesType()
       }
     }
@@ -59,7 +61,8 @@ class HyperskillReplyDeserializer(vc: Class<*>? = null) : StdDeserializer<Reply>
       }
       return if (choices.first().isBoolean) {
         ChoiceTaskReply::class.java
-      } else {
+      }
+      else {
         TableTaskReply::class.java
       }
     }

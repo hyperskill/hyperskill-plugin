@@ -27,6 +27,7 @@ interface TaskCheckerProvider {
       is MatchingTask, is SortingTask,
       is CodeTask, is DataTask, is TableTask,
       is TheoryTask, is UnsupportedTask -> null
+
       is EduTask -> getEduTaskChecker(task, project)
       is OutputTask -> OutputTaskChecker(task, envChecker, project, codeExecutor)
       is ChoiceTask -> if (task.canCheckLocally) ChoiceTaskChecker(task, project) else null

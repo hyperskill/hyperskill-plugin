@@ -19,13 +19,17 @@ class AssignmentFormatTest : EduTestCase() {
     assertTrue(task.descriptionText.isNotEmpty())
 
     val pathWithPlaceholders = "src/mastermind/evaluateGuess.kt"
-    assertEquals(setOf(pathWithPlaceholders,
-                       "src/mastermind/playMastermind.kt",
-                       "test/mastermind/MastermindTestUtil.kt",
-                       "test/mastermind/TestMastermindDifferentLetters.kt",
-                       "test/mastermind/TestMastermindRepeatedLetters.kt",
-                       CourseraTaskChecker.PART_ID,
-                       CourseraTaskChecker.ASSIGNMENT_KEY), task.taskFiles.keys)
+    assertEquals(
+      setOf(
+        pathWithPlaceholders,
+        "src/mastermind/playMastermind.kt",
+        "test/mastermind/MastermindTestUtil.kt",
+        "test/mastermind/TestMastermindDifferentLetters.kt",
+        "test/mastermind/TestMastermindRepeatedLetters.kt",
+        CourseraTaskChecker.PART_ID,
+        CourseraTaskChecker.ASSIGNMENT_KEY
+      ), task.taskFiles.keys
+    )
 
     assertFalse(findTaskFile(0, 0, CourseraTaskChecker.PART_ID).isVisible)
     assertEquals(1, findTaskFile(0, 0, pathWithPlaceholders).answerPlaceholders.size)

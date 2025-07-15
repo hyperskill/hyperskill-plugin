@@ -4,7 +4,7 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.EduUtilsKt
 import org.junit.Test
 
-class DescriptionFormatTest: EduTestCase() {
+class DescriptionFormatTest : EduTestCase() {
   @Test
   fun `test HTML description file`() {
     val fileName = DescriptionFormat.HTML.fileName

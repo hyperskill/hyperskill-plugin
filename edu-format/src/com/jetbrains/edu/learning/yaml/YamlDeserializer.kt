@@ -11,13 +11,11 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.stepik.StepikLesson
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask.Companion.CODE_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
 import com.jetbrains.edu.learning.courseFormat.tasks.DataTask.Companion.DATA_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask.Companion.EDU_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.IdeTask.Companion.IDE_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.NumberTask.Companion.NUMBER_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask.Companion.OUTPUT_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask.Companion.REMOTE_EDU_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.StringTask.Companion.STRING_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.TableTask.Companion.TABLE_TASK_TYPE
@@ -56,7 +54,13 @@ import org.jetbrains.annotations.VisibleForTesting
  * should be applied to existing one that is done in [com.jetbrains.edu.learning.yaml.YamlLoader.loadItem].
  */
 object YamlDeserializer {
-  fun deserializeItem(configName: String, mapper: ObjectMapper, configFileText: String, parentItem: StudyItem?, itemFolder: String?): StudyItem {
+  fun deserializeItem(
+    configName: String,
+    mapper: ObjectMapper,
+    configFileText: String,
+    parentItem: StudyItem?,
+    itemFolder: String?
+  ): StudyItem {
     return when (configName) {
       COURSE_CONFIG -> mapper.deserializeCourse(configFileText)
       SECTION_CONFIG -> mapper.deserializeSection(configFileText, parentItem as? Course, itemFolder)

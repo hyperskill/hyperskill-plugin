@@ -9,9 +9,9 @@
           "description" : "Introduction course to Python",
           "downloads" : 2,
           "rating" : 5.0,
-          "authors": [
+          "authors" : [
             {
-              "name": "FirstName LastName"
+              "name" : "FirstName LastName"
             }
           ],
           "fields" : {

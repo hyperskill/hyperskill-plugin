@@ -42,7 +42,8 @@ class CodeHintInlineBanner(
       val dialog = CodeHintFeedbackDialog(project, course, task, studentSolution, textHint, codeHint, likeness)
       if (dialog.showAndGet()) {
         dialog.getLikenessAnswer() ?: likeness
-      } else {
+      }
+      else {
         LikeBlock.FeedbackLikenessAnswer.NO_ANSWER
       }
     }

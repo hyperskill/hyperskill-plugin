@@ -39,6 +39,7 @@ class XRestService : OAuthRestService(XUtils.PLATFORM_NAME) {
         }
         return sendErrorResponse(request, context, "Failed to log in using provided code")
       }
+
       null -> {
         sendStatus(HttpResponseStatus.BAD_REQUEST, false, context.channel())
         "Unknown command: ${urlDecoder.uri()}"

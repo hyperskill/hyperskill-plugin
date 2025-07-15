@@ -42,14 +42,16 @@ open class EduTestInputDialog(override val defaultReturnValue: String) : EduTest
   }
 }
 
-inline fun <T: EduTestDialogBase<*>> withEduTestDialog(dialog: T, action: () -> Unit): T {
+inline fun <T : EduTestDialogBase<*>> withEduTestDialog(dialog: T, action: () -> Unit): T {
   when (dialog) {
     is EduTestDialog -> {
       withTestDialog(dialog, action)
     }
+
     is EduTestInputDialog -> {
       withTestDialog(dialog, action)
     }
+
     else -> error("Unexpected dialog type: `${dialog.javaClass.canonicalName}`")
   }
 

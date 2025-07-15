@@ -348,15 +348,17 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
     assertEquals(newCheckProfile, task.checkProfile)
   }
 
-  private fun <T: Task> T.toTaskUpdate(changeTask: T.() -> Unit): TaskUpdateInfo {
+  private fun <T : Task> T.toTaskUpdate(changeTask: T.() -> Unit): TaskUpdateInfo {
     val remoteTask = copy()
     remoteTask.changeTask()
     remoteTask.init(parent, false)
     return TaskUpdateInfo(this, remoteTask)
   }
 
-  private fun updateCourseWithProblems(problemsUpdates: List<TaskUpdateInfo>,
-                                       changeCourse: (HyperskillCourse.() -> Unit)? = null) {
+  private fun updateCourseWithProblems(
+    problemsUpdates: List<TaskUpdateInfo>,
+    changeCourse: (HyperskillCourse.() -> Unit)? = null
+  ) {
     val remoteCourse = changeCourse?.let { toRemoteCourse(changeCourse) }
     HyperskillCourseUpdater(project, localCourse).doUpdate(remoteCourse, problemsUpdates)
     val isProjectUpToDate = remoteCourse == null || localCourse.getProjectLesson()?.shouldBeUpdated(project, remoteCourse) == false

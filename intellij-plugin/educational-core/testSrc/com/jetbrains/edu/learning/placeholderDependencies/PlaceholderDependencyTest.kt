@@ -20,18 +20,22 @@ class PlaceholderDependencyTest : NotificationsTestBase() {
     courseWithFiles {
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p>print(1)</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
       }
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def <p>foo</p>():
           |  <p>type here</p>
-          """.trimMargin("|")) {
+          """.trimMargin("|")
+          ) {
             placeholder(1, dependency = "lesson1#task1#Task.kt#1")
           }
         }
@@ -64,7 +68,10 @@ class PlaceholderDependencyTest : NotificationsTestBase() {
     val virtualFile = findFileInTask(1, 0, "task.txt")
     myFixture.openFileInEditor(virtualFile)
 
-    checkEditorNotification<UnsolvedDependenciesNotificationProvider>(virtualFile, UnsolvedDependenciesNotificationProvider.getText(listOf("task1")))
+    checkEditorNotification<UnsolvedDependenciesNotificationProvider>(
+      virtualFile,
+      UnsolvedDependenciesNotificationProvider.getText(listOf("task1"))
+    )
 
     checkPlaceholderContent("type here", findPlaceholder(1, 0, "task.txt", 0))
   }
@@ -74,18 +81,22 @@ class PlaceholderDependencyTest : NotificationsTestBase() {
     courseWithFiles {
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p>print(1)</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
       }
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def <p>foo</p>():
           |  <p>type here</p>
-          """.trimMargin("|")) {
+          """.trimMargin("|")
+          ) {
             placeholder(1, dependency = "lesson1#task1#Task.kt#1")
           }
         }
@@ -105,24 +116,30 @@ class PlaceholderDependencyTest : NotificationsTestBase() {
     courseWithFiles {
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p>print(1)</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
       }
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def foo():
           |  <p>type here</p>
-          """.trimMargin("|")) {
+          """.trimMargin("|")
+          ) {
             placeholder(0, dependency = "lesson1#task1#Task.kt#1")
           }
-          taskFile("Task1.kt", """
+          taskFile(
+            "Task1.kt", """
             |def bar():
             |<p>type here</p>
-          """.trimMargin("|")) {
+          """.trimMargin("|")
+          ) {
             placeholder(0, dependency = "lesson1#task1#Task.kt#1")
           }
         }

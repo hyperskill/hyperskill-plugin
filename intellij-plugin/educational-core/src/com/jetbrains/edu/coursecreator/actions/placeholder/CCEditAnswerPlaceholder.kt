@@ -32,7 +32,8 @@ open class CCEditAnswerPlaceholder : CCAnswerPlaceholderAction() {
 
     EP_NAME.computeSafeIfAny { yamlActionsHelper ->
       val yamlPsiFile = PsiManager.getInstance(state.project).findFile(configFile) ?: return@computeSafeIfAny
-      val placeholderElement = yamlActionsHelper.findPsiElementCorrespondingToPlaceholder(yamlPsiFile, answerPlaceholder) ?: return@computeSafeIfAny
+      val placeholderElement =
+        yamlActionsHelper.findPsiElementCorrespondingToPlaceholder(yamlPsiFile, answerPlaceholder) ?: return@computeSafeIfAny
       placeholderElement.navigate(true)
     }
   }

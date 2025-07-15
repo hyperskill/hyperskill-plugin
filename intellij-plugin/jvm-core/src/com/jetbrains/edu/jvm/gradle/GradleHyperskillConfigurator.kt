@@ -12,7 +12,8 @@ import com.jetbrains.edu.learning.newproject.EduProjectSettings
 import com.jetbrains.edu.learning.runReadActionInSmartMode
 import com.jetbrains.edu.learning.stepik.hyperskill.HyperskillConfigurator
 
-abstract class GradleHyperskillConfigurator<T : EduProjectSettings>(baseConfigurator: EduConfigurator<T>) : HyperskillConfigurator<T>(baseConfigurator) {
+abstract class GradleHyperskillConfigurator<T : EduProjectSettings>(baseConfigurator: EduConfigurator<T>) :
+  HyperskillConfigurator<T>(baseConfigurator) {
   override fun getCodeTaskFile(project: Project, task: Task): TaskFile? {
     val language = task.course.languageById ?: return super.getCodeTaskFile(project, task)
     return runReadActionInSmartMode(project) {

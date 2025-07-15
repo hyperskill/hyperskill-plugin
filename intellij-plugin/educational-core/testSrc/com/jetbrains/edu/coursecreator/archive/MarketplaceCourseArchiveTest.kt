@@ -75,7 +75,7 @@ class MarketplaceCourseArchiveTest : CourseArchiveTestBase() {
 
   @Test
   fun `test vendor with url`() {
-    val vendor = Vendor().apply { name = "Jetbrains s.r.o"; url = "jetbrains.com"}
+    val vendor = Vendor().apply { name = "Jetbrains s.r.o"; url = "jetbrains.com" }
     val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, language = FakeGradleBasedLanguage, courseVendor = vendor) {
       lesson("lesson1") {
         eduTask("task1") {}
@@ -102,7 +102,7 @@ class MarketplaceCourseArchiveTest : CourseArchiveTestBase() {
 
   @Test
   fun `test plugin version`() {
-    val vendor = Vendor().apply { name = "Jetbrains s.r.o"; email = "academy@jetbrains.com"}
+    val vendor = Vendor().apply { name = "Jetbrains s.r.o"; email = "academy@jetbrains.com" }
     val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, language = FakeGradleBasedLanguage, courseVendor = vendor) {
       lesson("lesson1") {
         eduTask("task1") {}
@@ -349,7 +349,7 @@ class MarketplaceCourseArchiveTest : CourseArchiveTestBase() {
     val item = itemDir.getStudyItem(project) ?: error("Failed to get StudyItem for $itemPath")
 
     val brokenConfigFile = createTextChildFile(project, itemDir, item.remoteConfigFileName, configText)
-      ?: error("failed to create file ${item.remoteConfigFileName}")
+                           ?: error("failed to create file ${item.remoteConfigFileName}")
 
     createCourseArchiveWithError<BrokenRemoteYamlError>(course)
 

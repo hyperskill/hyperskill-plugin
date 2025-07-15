@@ -178,7 +178,7 @@ class NavigateTaskWithSectionsTest : EduTestCase() {
           }
         }
       }
-      lesson(name="lesson4") {
+      lesson(name = "lesson4") {
         eduTask {
           taskFile("taskFile.txt")
         }

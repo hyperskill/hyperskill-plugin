@@ -49,7 +49,10 @@ class DiffConflictResolveStrategy(private val project: Project) : FLConflictReso
     val conflictFiles = mutableListOf<String>()
     val resolvedState = resolvedSimpleConflictsState.toMutableMap()
 
-    computeUnderProgress(project, EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.conflict.resolution.smart.indicator")) { indicator ->
+    computeUnderProgress(
+      project,
+      EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.conflict.resolution.smart.indicator")
+    ) { indicator ->
       for (changedFile in changedFiles) {
         val leftContent = currentState[changedFile]
         val baseContent = baseState[changedFile]

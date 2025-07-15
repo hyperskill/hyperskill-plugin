@@ -13,7 +13,7 @@ import org.cef.handler.CefLoadHandlerAdapter
 abstract class TaskQueryManager<T : Task>(
   protected val task: T,
   protected val taskJBCefBrowser: JBCefBrowserBase
-): Disposable {
+) : Disposable {
   private val jsQuerySetScrollHeight = JBCefJSQuery.create(taskJBCefBrowser)
 
   open val queries: List<JBCefJSQuery> = listOf(jsQuerySetScrollHeight)

@@ -39,8 +39,10 @@ object YamlFormatSynchronizer {
     }
   }
 
-  private suspend fun saveItem(item: StudyItem, courseDir: FileAddress, mapper: ObjectMapper = item.course.mapper,
-                               configName: String = item.configFileName) {
+  private suspend fun saveItem(
+    item: StudyItem, courseDir: FileAddress, mapper: ObjectMapper = item.course.mapper,
+    configName: String = item.configFileName
+  ) {
     item.saveConfigDocument(courseDir, configName, mapper)
   }
 

@@ -24,8 +24,10 @@ import java.nio.charset.StandardCharsets
 fun hasOpenDialogs(platformName: String): Boolean = getInEdt(modalityState = ModalityState.any()) {
   if (ModalityState.current() != ModalityState.nonModal()) {
     requestFocus()
-    Messages.showInfoMessage(EduCoreBundle.message("rest.service.modal.dialogs.message", platformName),
-                             EduCoreBundle.message("rest.service.modal.dialogs.title", platformName))
+    Messages.showInfoMessage(
+      EduCoreBundle.message("rest.service.modal.dialogs.message", platformName),
+      EduCoreBundle.message("rest.service.modal.dialogs.title", platformName)
+    )
     return@getInEdt true
   }
   false
@@ -43,8 +45,14 @@ fun requestFocus() {
 
 fun sendPluginInfoResponse(request: FullHttpRequest, context: ChannelHandlerContext) {
   val appInfo = ApplicationInfoImpl.getShadowInstance()
-  createResponse(ObjectMapper().writeValueAsString(PluginInfo("${appInfo.versionName} ${appInfo.fullVersion}",
-                                                              pluginVersion(EduNames.PLUGIN_ID))))
+  createResponse(
+    ObjectMapper().writeValueAsString(
+      PluginInfo(
+        "${appInfo.versionName} ${appInfo.fullVersion}",
+        pluginVersion(EduNames.PLUGIN_ID)
+      )
+    )
+  )
     .send(context.channel(), request)
 }
 

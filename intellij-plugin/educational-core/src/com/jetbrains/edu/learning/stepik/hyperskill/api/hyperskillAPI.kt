@@ -193,12 +193,12 @@ class ProfilesList {
   lateinit var profiles: List<HyperskillUserInfo>
 }
 
-class StagesList: WithPaginationMetaData() {
+class StagesList : WithPaginationMetaData() {
   @JsonProperty(STAGES)
   lateinit var stages: List<HyperskillStage>
 }
 
-class TopicsList: WithPaginationMetaData() {
+class TopicsList : WithPaginationMetaData() {
   @JsonProperty(TOPICS)
   lateinit var topics: List<HyperskillTopic>
 }
@@ -208,7 +208,7 @@ class ProjectsList {
   lateinit var projects: List<HyperskillProject>
 }
 
-class HyperskillStepsList: WithPaginationMetaData() {
+class HyperskillStepsList : WithPaginationMetaData() {
   @JsonProperty(STEPS)
   lateinit var steps: List<HyperskillStepSource>
 }

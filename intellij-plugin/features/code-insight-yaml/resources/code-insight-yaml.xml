@@ -1,4 +1,4 @@
-<idea-plugin package="com.jetbrains.edu.yaml" xmlns:xi="http://www.w3.org/2001/XInclude">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.yaml">
   <dependencies>
     <!--suppress PluginXmlValidity -->
     <module name="code-insight-core"/>

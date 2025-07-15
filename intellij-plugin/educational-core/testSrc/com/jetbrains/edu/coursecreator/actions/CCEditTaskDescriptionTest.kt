@@ -74,7 +74,8 @@ class CCEditTaskDescriptionTest : EduTestCase() {
   }
 
   private fun getCurrentlyOpenedText() = FileEditorManager.getInstance(project).selectedTextEditor?.document?.text ?: error(
-    "No selected editor")
+    "No selected editor"
+  )
 
   private fun doOpenTaskDescription(shouldBeEnabled: Boolean = true) {
     val virtualFile = findFileInTask(0, 0, "task.txt")

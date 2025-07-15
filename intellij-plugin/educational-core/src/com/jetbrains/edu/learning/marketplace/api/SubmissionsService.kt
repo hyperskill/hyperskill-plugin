@@ -8,8 +8,10 @@ import retrofit2.http.*
 interface SubmissionsService {
 
   @GET("/api/course/{marketplaceId}/submission")
-  fun getAllSubmissionsForCourse(@Path("marketplaceId") marketplaceId: Int,
-                                 @Query("page") page: Int): Call<MarketplaceSubmissionsList>
+  fun getAllSubmissionsForCourse(
+    @Path("marketplaceId") marketplaceId: Int,
+    @Query("page") page: Int
+  ): Call<MarketplaceSubmissionsList>
 
   @GET("/api/course/{marketplaceId}/{updateVersion}/submissions/public")
   fun getAllPublicSubmissionsForCourse(
@@ -35,19 +37,25 @@ interface SubmissionsService {
   ): Call<MarketplaceSubmissionsList>
 
   @POST("/api/course/{marketplaceId}/{courseUpdateVersion}/task/{taskId}/submission")
-  fun postSubmission(@Path("marketplaceId") marketplaceId: Int,
-                     @Path("courseUpdateVersion") courseUpdateVersion: Int,
-                     @Path("taskId") taskId: Int,
-                     @Body submission: MarketplaceSubmission): Call<MarketplaceSubmission>
+  fun postSubmission(
+    @Path("marketplaceId") marketplaceId: Int,
+    @Path("courseUpdateVersion") courseUpdateVersion: Int,
+    @Path("taskId") taskId: Int,
+    @Body submission: MarketplaceSubmission
+  ): Call<MarketplaceSubmission>
 
   @GET("/api/course/{marketplaceId}/state")
-  fun getStateOnClose(@Path("marketplaceId") marketplaceId: Int,
-                      @Query("page") page: Int): Call<MarketplaceStateOnCloseList>
+  fun getStateOnClose(
+    @Path("marketplaceId") marketplaceId: Int,
+    @Query("page") page: Int
+  ): Call<MarketplaceStateOnCloseList>
 
   @POST("/api/course/{marketplaceId}/{courseUpdateVersion}/state")
-  fun postStateOnClose(@Path("marketplaceId") marketplaceId: Int,
-                       @Path("courseUpdateVersion") courseUpdateVersion: Int,
-                       @Body state: List<MarketplaceStateOnClosePost>): Call<Any>
+  fun postStateOnClose(
+    @Path("marketplaceId") marketplaceId: Int,
+    @Path("courseUpdateVersion") courseUpdateVersion: Int,
+    @Body state: List<MarketplaceStateOnClosePost>
+  ): Call<Any>
 
   @GET("/api/solution")
   fun getSolutionDownloadLink(@Query("solutionKey") solutionKey: String): Call<ResponseBody>

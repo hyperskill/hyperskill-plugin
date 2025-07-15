@@ -4,13 +4,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.CourseReopeningTestBase
 import com.jetbrains.edu.learning.assertContentsEqual
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.BinaryContents
-import com.jetbrains.edu.learning.courseFormat.EduFile
-import com.jetbrains.edu.learning.courseFormat.FileContents
-import com.jetbrains.edu.learning.courseFormat.InMemoryBinaryContents
-import com.jetbrains.edu.learning.courseFormat.InMemoryTextualContents
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.TextualContents
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.ext.visitEduFiles
 import com.jetbrains.edu.learning.doWithLearningObjectsStorageType
 import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
@@ -61,7 +55,10 @@ class TestBinaryFilesAreNotStoredInsideTasks : CourseReopeningTestBase<EmptyProj
           }
         }
       }
-      additionalFile("section1/lesson2/additional_file.txt", InMemoryTextualContents("contents of file section1/lesson2/additional_file.txt"))
+      additionalFile(
+        "section1/lesson2/additional_file.txt",
+        InMemoryTextualContents("contents of file section1/lesson2/additional_file.txt")
+      )
       additionalFile("section1/lesson2/additional_file.png", InMemoryBinaryContents(byteArrayOf(10, 20, 30)))
       additionalFile("section1/additional_file.txt", InMemoryTextualContents("contents of file section1/additional_file.txt"))
       additionalFile("section1/additional_file.png", InMemoryBinaryContents(byteArrayOf(10, 20, 30)))

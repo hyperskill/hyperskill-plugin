@@ -10,10 +10,10 @@ import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.intellij.util.Alarm
 import com.jetbrains.edu.learning.ai.terms.TermsInteractionListener
+import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.taskToolWindow.TERM_CLASS
 import com.jetbrains.edu.learning.taskToolWindow.ui.JsEventData
-import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
 import com.jetbrains.edu.learning.taskToolWindow.ui.canShowTerms
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
@@ -37,6 +37,7 @@ class TermsQueryManager private constructor(
   private val jsQueryMouseOutListener = JBCefJSQuery.create(taskJBCefBrowser)
   private val jsQueryScrollListener = JBCefJSQuery.create(taskJBCefBrowser)
   private var gotItTooltip: Balloon? = null
+
   // TODO(use coroutines instead of alarm after moving to ai package)
   private val alarm = Alarm(Alarm.ThreadToUse.POOLED_THREAD, this)
 

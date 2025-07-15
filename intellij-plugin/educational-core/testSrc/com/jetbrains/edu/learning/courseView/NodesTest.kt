@@ -32,7 +32,8 @@ class NodesTest : CourseViewTestBase() {
       }
     }
 
-    assertCourseView("""
+    assertCourseView(
+      """
     |-Project
     | -CourseNode Test Course  0/2
     |  -LessonNode lesson1
@@ -42,7 +43,8 @@ class NodesTest : CourseViewTestBase() {
     |    -DirectoryNode src
     |     file.txt
     |    file1.txt
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -90,7 +92,8 @@ class NodesTest : CourseViewTestBase() {
       }
     }
 
-    assertCourseView("""
+    assertCourseView(
+      """
     |-Project
     | -CourseNode Test Course  0/10
     |  -LessonNode lesson1
@@ -118,7 +121,8 @@ class NodesTest : CourseViewTestBase() {
     |    taskFile1.txt
     |   -TaskNode task2
     |    taskFile2.txt
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -137,7 +141,8 @@ class NodesTest : CourseViewTestBase() {
       }
     }
 
-    assertCourseView("""
+    assertCourseView(
+      """
     |-Project
     | -CourseNode Test Course  0/2
     |  -LessonNode lesson1
@@ -147,13 +152,15 @@ class NodesTest : CourseViewTestBase() {
     |    A.txt
     |   -TaskNode task2
     |    taskFile.txt
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
   fun `test invisible files in student mode`() {
     courseWithInvisibleItems(CourseMode.STUDENT)
-    assertCourseView("""
+    assertCourseView(
+      """
       -Project
        -CourseNode Test Course  0/2
         -LessonNode lesson1
@@ -165,13 +172,15 @@ class NodesTest : CourseViewTestBase() {
           -DirectoryNode folder
            additionalFile3.txt
           additionalFile1.txt
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 
   @Test
   fun `test invisible files in educator mode`() {
     courseWithInvisibleItems(CourseMode.EDUCATOR)
-    assertCourseView("""
+    assertCourseView(
+      """
       -Project
        -CCCourseNode Test Course (Course Creation)
         -CCLessonNode lesson1
@@ -189,7 +198,8 @@ class NodesTest : CourseViewTestBase() {
           additionalFile1.txt
           CCStudentInvisibleFileNode additionalFile2.txt
           CCStudentInvisibleFileNode task.md
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 
   @Test
@@ -199,7 +209,8 @@ class NodesTest : CourseViewTestBase() {
     nonAdditionalFile("lesson1/task1/non_course_file2.txt")
     nonAdditionalFile("lesson1/task2/folder/non_course_file3.txt")
 
-    assertCourseView("""
+    assertCourseView(
+      """
       -Project
        -CCCourseNode Test Course (Course Creation)
         -CCLessonNode lesson1
@@ -220,7 +231,8 @@ class NodesTest : CourseViewTestBase() {
           CCStudentInvisibleFileNode additionalFile2.txt
           CCStudentInvisibleFileNode task.md
         CCStudentInvisibleFileNode non_course_file1.txt (excluded)
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 
   private fun courseWithInvisibleItems(courseMode: CourseMode) {
@@ -271,7 +283,8 @@ class NodesTest : CourseViewTestBase() {
   @Test
   fun `test course with tests inside test dir`() {
     createCourseWithTestsInsideTestDir(CourseMode.EDUCATOR)
-    assertCourseView("""   
+    assertCourseView(
+      """   
       |-Project
       | -CCCourseNode Test Course (Course Creation)
       |  -CCLessonNode lesson1
@@ -288,13 +301,15 @@ class NodesTest : CourseViewTestBase() {
       |    additionalFile1.txt
       |    additionalFile2.txt
       |    CCStudentInvisibleFileNode task.md
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
   fun `test student course with tests inside test dir`() {
     createCourseWithTestsInsideTestDir()
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CourseNode Test Course  0/2
       |  -LessonNode lesson1
@@ -306,7 +321,8 @@ class NodesTest : CourseViewTestBase() {
       |     additionalFile3.txt
       |    additionalFile1.txt
       |    additionalFile2.txt
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
 
@@ -334,7 +350,8 @@ class NodesTest : CourseViewTestBase() {
         }
       }
     }
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CCCourseNode Test Course (Course Creation)
       |  -CCLessonNode lesson1
@@ -353,7 +370,8 @@ class NodesTest : CourseViewTestBase() {
       |    additionalFile1.txt
       |    additionalFile2.txt
       |    CCStudentInvisibleFileNode task.md
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -373,7 +391,8 @@ class NodesTest : CourseViewTestBase() {
     runWriteAction {
       findFile("lesson1").createChildDirectory(NodesTest::class.java, "non-task")
     }
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CCCourseNode Test Course (Course Creation)
       |  -CCLessonNode lesson1
@@ -386,7 +405,8 @@ class NodesTest : CourseViewTestBase() {
       |    file2.txt
       |    CCStudentInvisibleFileNode task.md
       |   CCNode non-task
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -406,7 +426,8 @@ class NodesTest : CourseViewTestBase() {
     runWriteAction {
       LightPlatformTestCase.getSourceRoot().createChildDirectory(NodesTest::class.java, "non-lesson")
     }
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CCCourseNode Test Course (Course Creation)
       |  -CCLessonNode lesson1
@@ -419,7 +440,8 @@ class NodesTest : CourseViewTestBase() {
       |    file2.txt
       |    CCStudentInvisibleFileNode task.md
       |  CCNode non-lesson
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -438,7 +460,8 @@ class NodesTest : CourseViewTestBase() {
     }
     nonAdditionalFile("lesson1/LessonIgnoredFile.txt")
     nonAdditionalFile("IgnoredFile.txt")
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CCCourseNode Test Course (Course Creation)
       |  -CCLessonNode lesson1
@@ -452,7 +475,8 @@ class NodesTest : CourseViewTestBase() {
       |    CCStudentInvisibleFileNode task.md
       |   CCStudentInvisibleFileNode LessonIgnoredFile.txt (excluded)
       |  CCStudentInvisibleFileNode IgnoredFile.txt (excluded)
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -480,7 +504,8 @@ class NodesTest : CourseViewTestBase() {
     nonAdditionalFile("lesson1/task1/dir-inside-task-ignored/b.txt")
     nonAdditionalFile("dir-ignored/a.txt")
     nonAdditionalFile("dir-not-ignored/ignored-file.txt")
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CCCourseNode Test Course (Course Creation)
       |  -CCLessonNode lesson1
@@ -503,7 +528,8 @@ class NodesTest : CourseViewTestBase() {
       |  -CCNode dir-not-ignored
       |   CCStudentInvisibleFileNode a.txt
       |   CCStudentInvisibleFileNode ignored-file.txt (excluded)
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -521,7 +547,8 @@ class NodesTest : CourseViewTestBase() {
     nonAdditionalFile("ignored.txt")
     nonAdditionalFile("subfolder/ignored.txt")
     nonAdditionalFile("lesson1/task1/ignored.txt")
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CCCourseNode Test Course (Course Creation)
       |  -CCLessonNode lesson1
@@ -534,13 +561,14 @@ class NodesTest : CourseViewTestBase() {
       |   CCStudentInvisibleFileNode not-ignored.txt
       |  CCStudentInvisibleFileNode ignored.txt (excluded)
       |  CCStudentInvisibleFileNode not-ignored.txt
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
   fun `test hyperskill course`() {
     courseWithFiles(courseProducer = ::HyperskillCourse) {
-      frameworkLesson  {
+      frameworkLesson {
         eduTask {
           taskFile("file1.txt")
         }
@@ -558,7 +586,8 @@ class NodesTest : CourseViewTestBase() {
 
     findTask(0, 0).status = CheckStatus.Solved
 
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CourseNode Test Course
       |  -FrameworkLessonNode lesson1 1 of 2 stages completed
@@ -566,7 +595,8 @@ class NodesTest : CourseViewTestBase() {
       |  -LessonNode lesson2
       |   -TaskNode task1
       |    task1.txt
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -576,11 +606,13 @@ class NodesTest : CourseViewTestBase() {
       }
     }
 
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CourseNode Test Course
       |  FrameworkLessonNode lesson1
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -590,13 +622,14 @@ class NodesTest : CourseViewTestBase() {
       }
     }
 
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CourseNode Test Course  1/1
       |  FrameworkLessonNode lesson1
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
-
 
 
   @Test
@@ -621,7 +654,8 @@ class NodesTest : CourseViewTestBase() {
         }
       }
     }
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CCCourseNode Test Course (Course Creation)
       |  -CCLessonNode lesson1
@@ -637,7 +671,8 @@ class NodesTest : CourseViewTestBase() {
       |    AtaskFile.txt
       |    CCStudentInvisibleFileNode task.md
       |    XtaskFile.txt
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   @Test
@@ -657,7 +692,8 @@ class NodesTest : CourseViewTestBase() {
     nonAdditionalFile("lesson1/dir/non-additional file.txt")
     nonAdditionalFile("course.SLN") // should not have (excluded) mark. But it should work only for C# courses after EDU-7821
 
-    assertCourseView("""
+    assertCourseView(
+      """
       |-Project
       | -CCCourseNode Test Course (Course Creation)
       |  -CCLessonNode lesson1
@@ -675,7 +711,8 @@ class NodesTest : CourseViewTestBase() {
       |  CCStudentInvisibleFileNode course.SLN
       |  CCStudentInvisibleFileNode course-info.yaml
       |  CCStudentInvisibleFileNode non-additional file.txt (excluded)
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
 

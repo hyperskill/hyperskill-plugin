@@ -110,7 +110,8 @@ class SqlCourseUpdateTest : SqlCourseGenerationTestBase() {
     makeCourseUpdate(course, courseFromServer)
 
     val tree = prepareDatabaseView()
-    checkDatabaseTree(tree, """
+    checkDatabaseTree(
+      tree, """
       -Root Group
        -Group (lesson1) inside Root Group
         -task1: DSN
@@ -120,7 +121,8 @@ class SqlCourseUpdateTest : SqlCourseGenerationTestBase() {
        -Group (lesson2) inside Root Group
         -task1 (1): DSN
          $EMPTY_DATA_SOURCE_PLACEHOLDER   
-    """)
+    """
+    )
   }
 
   private fun makeCourseUpdate(course: EduCourse, courseFromServer: EduCourse) {

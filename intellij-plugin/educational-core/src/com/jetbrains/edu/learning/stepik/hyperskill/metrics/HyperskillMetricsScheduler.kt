@@ -69,6 +69,7 @@ class HyperskillMetricsScheduler : AppLifecycleListener, DynamicPluginListener {
               LOG.debug("Events (${eventsHandlerName})=${eventsChunk.map { it }}")
             }
           }
+
           is Err -> {
             LOG.info("Failed to send events ($eventsHandlerName) with error `${res.error}`")
             remainingEvents.addAll(eventsChunk)
@@ -82,9 +83,11 @@ class HyperskillMetricsScheduler : AppLifecycleListener, DynamicPluginListener {
     }
 
     private fun scheduleEventsSendingJob(sendEvents: Runnable) {
-      val job = JobScheduler.getScheduler().scheduleWithFixedDelay(sendEvents, 0,
-                                                                   Registry.intValue(HYPERSKILL_STATISTICS_INTERVAL_REGISTRY).toLong(),
-                                                                   TimeUnit.MINUTES)
+      val job = JobScheduler.getScheduler().scheduleWithFixedDelay(
+        sendEvents, 0,
+        Registry.intValue(HYPERSKILL_STATISTICS_INTERVAL_REGISTRY).toLong(),
+        TimeUnit.MINUTES
+      )
       Disposer.register(HyperskillMetricsService.getInstance()) { job.cancel(false) }
     }
 

@@ -3,7 +3,9 @@ package com.jetbrains.edu.coursecreator.framework.impl
 import com.jetbrains.edu.coursecreator.framework.CCFrameworkLessonManager
 import com.jetbrains.edu.learning.actions.rename.RenameTestBase
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.CourseMode
+import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import org.junit.Test
 
 class CCFrameworkLessonManagerRenameTest : RenameTestBase() {

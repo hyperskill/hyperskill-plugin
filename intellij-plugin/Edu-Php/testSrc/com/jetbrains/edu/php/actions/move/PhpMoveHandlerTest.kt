@@ -12,11 +12,13 @@ class PhpMoveHandlerTest : MoveHandlerTestBase(PhpLanguage.INSTANCE) {
   fun `test do not forbid move refactoring for functions`() {
     val findTarget: (Course) -> PsiElement = { findPsiFile("lesson1/task1/bar.php") }
     doTest(findTarget) {
-      phpTaskFile("foo.php", """
+      phpTaskFile(
+        "foo.php", """
         <?php
           function functionName<caret>() {}
         ?> 
-      """)
+      """
+      )
       phpTaskFile("bar.php")
     }
   }
@@ -25,11 +27,13 @@ class PhpMoveHandlerTest : MoveHandlerTestBase(PhpLanguage.INSTANCE) {
   fun `test do not forbid move refactoring for classes`() {
     val findTarget: (Course) -> PsiElement = { findPsiFile("lesson1/task1/bar.php") }
     doTest(findTarget) {
-      phpTaskFile("foo.php", """
+      phpTaskFile(
+        "foo.php", """
         <?php
           class Fruit<caret> {}
         ?> 
-      """)
+      """
+      )
       phpTaskFile("bar.php")
     }
   }

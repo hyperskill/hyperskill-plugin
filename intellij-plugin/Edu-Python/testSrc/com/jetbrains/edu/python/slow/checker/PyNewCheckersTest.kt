@@ -16,29 +16,36 @@ class PyNewCheckersTest : PyCheckersTestBase() {
     return course(language = PythonLanguage.INSTANCE, environment = "unittest") {
       lesson {
         eduTask("Edu") {
-          pythonTaskFile("task.py", """
+          pythonTaskFile(
+            "task.py", """
             def sum(a, b):
                 return a + b
-            """)
+            """
+          )
           dir("tests") {
             taskFile("__init__.py")
-            taskFile("tests.py", """
+            taskFile(
+              "tests.py", """
               import unittest
               from task import sum
               class TestCase(unittest.TestCase):
                   def test_add(self):
                       self.assertEqual(sum(1, 2), 3, msg="error")
-              """)
+              """
+            )
           }
         }
         eduTask("EduWithIgnoredTest") {
-          pythonTaskFile("task.py", """
+          pythonTaskFile(
+            "task.py", """
             def sum(a, b):
                 return a + b
-            """)
+            """
+          )
           dir("tests") {
             taskFile("__init__.py")
-            taskFile("tests.py", """
+            taskFile(
+              "tests.py", """
               import unittest
               from task import sum
               class TestCase(unittest.TestCase):
@@ -48,20 +55,24 @@ class PyNewCheckersTest : PyCheckersTestBase() {
                   @unittest.skip   
                   def test_ignored(self):
                       self.assertEqual(sum(1, 2), 4, msg="error")    
-              """)
+              """
+            )
           }
         }
         eduTask("EduWithCustomRunConfiguration") {
-          pythonTaskFile("task.py", """
+          pythonTaskFile(
+            "task.py", """
             import os
             
             
             def hello():
                 return os.getenv("EXAMPLE_ENV")
-            """)
+            """
+          )
           dir("tests") {
             taskFile("__init__.py")
-            taskFile("tests.py", """
+            taskFile(
+              "tests.py", """
               import unittest
               
               from task import hello
@@ -70,10 +81,12 @@ class PyNewCheckersTest : PyCheckersTestBase() {
               class TestCase(unittest.TestCase):
                   def test_hello(self):
                       self.assertEqual(hello(), "Hello!", msg="Message")
-              """)
+              """
+            )
           }
           dir("runConfigurations") {
-            xmlTaskFile("CustomCheck.run.xml", """
+            xmlTaskFile(
+              "CustomCheck.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration name="CustomCheck" type="tests" factoryName="Unittests">
                   <module name="Python Course14" />
@@ -95,7 +108,8 @@ class PyNewCheckersTest : PyCheckersTestBase() {
                   <method v="2" />
                 </configuration>
               </component>            
-            """)
+            """
+            )
           }
         }
         outputTask("Output") {

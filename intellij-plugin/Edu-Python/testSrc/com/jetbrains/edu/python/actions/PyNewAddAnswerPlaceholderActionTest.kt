@@ -9,8 +9,10 @@ class PyNewAddAnswerPlaceholderActionTest : CCAddAnswerPlaceholderActionTestBase
 
   @Test
   fun `test placeholder text`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR, language = PythonLanguage.getInstance(),
-                                 environment = "unittest") {
+    val course = courseWithFiles(
+      courseMode = CourseMode.EDUCATOR, language = PythonLanguage.getInstance(),
+      environment = "unittest"
+    ) {
       lesson("lesson1") {
         eduTask("task1") {
           taskFile("Task.kt", DEFAULT_TASK_TEXT)

@@ -16,10 +16,13 @@ class KtCheckersTest : JdkCheckerTestBase() {
   override fun createCourse(): Course = course(language = KotlinLanguage.INSTANCE) {
     lesson {
       eduTask("EduTask") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo() = 42
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -29,13 +32,17 @@ class KtCheckersTest : JdkCheckerTestBase() {
                   Assert.assertTrue("foo() should return 42", foo() == 42)
               }
           }
-        """)
+        """
+        )
       }
       eduTask("EduTaskWithExclamationMark!") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo() = 42
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
 
@@ -45,13 +52,17 @@ class KtCheckersTest : JdkCheckerTestBase() {
                   Assert.assertTrue("foo() should return 42", foo() == 42)
               }
           }
-        """)
+        """
+        )
       }
       eduTask("EduTaskWithIgnoredTest") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo() = 42
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Ignore          
           import org.junit.Test
@@ -67,14 +78,18 @@ class KtCheckersTest : JdkCheckerTestBase() {
                   Assert.assertTrue("foo() should return 42", foo() == 43)
               }
           }
-        """)
+        """
+        )
       }
       eduTask("EduTaskWithGradleCustomRunConfiguration") {
         @Suppress("RedundantNullableReturnType")
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun foo(): String? = System.getenv("EXAMPLE_ENV")
-        """)
-        kotlinTaskFile("test/Tests.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
           
@@ -89,9 +104,11 @@ class KtCheckersTest : JdkCheckerTestBase() {
                   Assert.assertEquals("Hello!", foo())
               }
           }
-        """)
+        """
+        )
         dir("runConfigurations") {
-          xmlTaskFile("CustomGradleCheck.run.xml", """
+          xmlTaskFile(
+            "CustomGradleCheck.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomGradleCheck" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -122,51 +139,62 @@ class KtCheckersTest : JdkCheckerTestBase() {
                 <method v="2" />
               </configuration>
             </component>
-          """)
+          """
+          )
         }
       }
       outputTask("OutputTask") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun main(args: Array<String>) {
               println("OK")
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("OK\n")
         }
       }
       outputTask("OutputTaskMainInsideTask") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           object Task {
             @JvmStatic
             fun main(args: Array<String>) {
               println("OK")  
             }
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("OK\n")
         }
       }
       outputTask("OutputTaskWithSeveralFiles") {
-        kotlinTaskFile("src/utils.kt", """
+        kotlinTaskFile(
+          "src/utils.kt", """
           fun ok(): String = "OK"
-        """)
-        kotlinTaskFile("src/Task.kt", """
+        """
+        )
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun main(args: Array<String>) {
               println(ok())
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("OK\n")
         }
       }
       outputTask("OutputTask:With;Special&Symbols?()") {
-        kotlinTaskFile("src/Task.kt", """
+        kotlinTaskFile(
+          "src/Task.kt", """
           fun main(args: Array<String>) {
               println("OK")
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("OK\n")
         }

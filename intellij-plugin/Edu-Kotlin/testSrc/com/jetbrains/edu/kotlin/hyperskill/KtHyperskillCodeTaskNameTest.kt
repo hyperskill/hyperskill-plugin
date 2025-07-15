@@ -19,11 +19,13 @@ class KtHyperskillCodeTaskNameTest : EduTestCase() {
       frameworkLesson("lesson1") {
         eduTask("task1", stepId = 1) {
           taskFile("src/Task.kt", "fun foo() {}")
-          taskFile("src/Main.kt", """
+          taskFile(
+            "src/Main.kt", """
             fun main(args: Array<String>) {
               println("Hello World!")
             }
-          """.trimIndent())
+          """.trimIndent()
+          )
           taskFile("test/Tests1.kt")
         }
       }

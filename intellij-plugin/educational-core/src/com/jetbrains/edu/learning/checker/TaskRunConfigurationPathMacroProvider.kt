@@ -16,7 +16,8 @@ class TaskRunConfigurationPathMacroProvider : EduMacroProvider {
     return if (file.isTaskRunConfigurationFile(holder)) {
       val taskRelativePath = taskRelativePath(holder, file)
       EduMacro(TASK_DIR_MACRO_NAME, "\$${PathMacroUtil.PROJECT_DIR_MACRO_NAME}\$/$taskRelativePath")
-    } else {
+    }
+    else {
       null
     }
   }

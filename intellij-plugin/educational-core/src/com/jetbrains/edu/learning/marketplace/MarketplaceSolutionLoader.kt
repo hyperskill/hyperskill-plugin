@@ -79,6 +79,7 @@ class MarketplaceSolutionLoader(project: Project) : SolutionLoaderBase(project) 
 
         is OutputTask,
         is EduTask -> lastSubmission.eduTaskFiles()
+
         else -> {
           LOG.warn("Solutions for task ${task.name} of type ${task::class.simpleName} not loaded")
           emptyMap()
@@ -97,6 +98,7 @@ class MarketplaceSolutionLoader(project: Project) : SolutionLoaderBase(project) 
         // once we make the corresponding data immutable data classes
         DelegateMarketplaceSubmission(lastState, lastSubmission?.status)
       }
+
       else -> lastSubmission
     }
   }
@@ -114,7 +116,8 @@ class MarketplaceSolutionLoader(project: Project) : SolutionLoaderBase(project) 
     private val LOG = Logger.getInstance(MarketplaceSolutionLoader::class.java)
   }
 
-  private class DelegateMarketplaceSubmission(private val delegate: MarketplaceSubmissionBase, status: String?) : MarketplaceSubmissionBase() {
+  private class DelegateMarketplaceSubmission(private val delegate: MarketplaceSubmissionBase, status: String?) :
+    MarketplaceSubmissionBase() {
 
     init {
       this.id = delegate.id

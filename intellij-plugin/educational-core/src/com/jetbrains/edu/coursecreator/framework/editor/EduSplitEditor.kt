@@ -95,7 +95,7 @@ class EduSplitEditor(
     Disposer.dispose(secondaryEditor)
   }
 
-  private class EditorComponent(fileEditor: FileEditor, taskFile: TaskFile): JPanel(BorderLayout()) {
+  private class EditorComponent(fileEditor: FileEditor, taskFile: TaskFile) : JPanel(BorderLayout()) {
 
     val label: JLabel
 

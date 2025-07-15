@@ -20,7 +20,8 @@ class GoCourseBuilderTest : CourseGenerationTestBase<GoProjectSettings>() {
     fileTree {
       dir("lesson1/task1") {
         dir("main") {
-          file("main.go", """
+          file(
+            "main.go", """
             package main
             
             import (
@@ -32,10 +33,12 @@ class GoCourseBuilderTest : CourseGenerationTestBase<GoProjectSettings>() {
             	fmt.Println(task.Sum(2, 3))
             }
 
-            """)
+            """
+          )
         }
         dir("test") {
-          file("task_test.go", """
+          file(
+            "task_test.go", """
             package test
             
             import (
@@ -66,7 +69,8 @@ class GoCourseBuilderTest : CourseGenerationTestBase<GoProjectSettings>() {
             	}
             }
 
-            """)
+            """
+          )
         }
         file("task.go")
         file("task.md")

@@ -15,7 +15,8 @@ class GoTheoryCheckerTest : GoCheckersTestBase() {
     return course(language = GoLanguage.INSTANCE) {
       lesson {
         theoryTask("Theory") {
-          goTaskFile("main.go", """
+          goTaskFile(
+            "main.go", """
             package main
             
             import (
@@ -25,13 +26,17 @@ class GoTheoryCheckerTest : GoCheckersTestBase() {
             func main() {
               fmt.Println("Hello!")
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module theory
-          """)
+          """
+          )
         }
         theoryTask("TheoryWithCustomRunConfiguration") {
-          goTaskFile("main.go", """
+          goTaskFile(
+            "main.go", """
             package main
             
             import (
@@ -42,12 +47,16 @@ class GoTheoryCheckerTest : GoCheckersTestBase() {
             func main() {
               fmt.Println(os.Getenv("EXAMPLE_ENV"))
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module theorywithcustomrunconfiguration
-          """)
+          """
+          )
           dir("runConfigurations") {
-            xmlTaskFile("CustomRun.run.xml", """
+            xmlTaskFile(
+              "CustomRun.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration default="false" name="CustomRun" type="GoApplicationRunConfiguration" factoryName="Go Application">
                   <module name="Go Course" />
@@ -62,13 +71,15 @@ class GoTheoryCheckerTest : GoCheckersTestBase() {
                   <method v="2" />
                 </configuration>
               </component>              
-            """)
+            """
+            )
           }
         }
       }
       frameworkLesson {
         theoryTask("FrameworkTheoryWithCustomRunConfiguration1") {
-          goTaskFile("main.go", """
+          goTaskFile(
+            "main.go", """
             package main
             
             import (
@@ -79,12 +90,16 @@ class GoTheoryCheckerTest : GoCheckersTestBase() {
             func main() {
               fmt.Println(os.Getenv("EXAMPLE_ENV"))
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module task
-          """)
+          """
+          )
           dir("runConfigurations") {
-            xmlTaskFile("CustomRun.run.xml", """
+            xmlTaskFile(
+              "CustomRun.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration default="false" name="CustomRun1" type="GoApplicationRunConfiguration" factoryName="Go Application">
                   <module name="Go Course" />
@@ -99,11 +114,13 @@ class GoTheoryCheckerTest : GoCheckersTestBase() {
                   <method v="2" />
                 </configuration>
               </component>             
-            """)
+            """
+            )
           }
         }
         theoryTask("FrameworkTheoryWithCustomRunConfiguration2") {
-          goTaskFile("main.go", """
+          goTaskFile(
+            "main.go", """
             package main
             
             import (
@@ -114,12 +131,16 @@ class GoTheoryCheckerTest : GoCheckersTestBase() {
             func main() {
               fmt.Println(os.Getenv("EXAMPLE_ENV"))
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module task
-          """)
+          """
+          )
           dir("runConfigurations") {
-            xmlTaskFile("CustomRun.run.xml", """
+            xmlTaskFile(
+              "CustomRun.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration default="false" name="CustomRun2" type="GoApplicationRunConfiguration" factoryName="Go Application">
                   <module name="Go Course" />
@@ -134,7 +155,8 @@ class GoTheoryCheckerTest : GoCheckersTestBase() {
                   <method v="2" />
                 </configuration>
               </component>             
-            """)
+            """
+            )
           }
         }
       }

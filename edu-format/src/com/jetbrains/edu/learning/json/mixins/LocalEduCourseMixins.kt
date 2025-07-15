@@ -19,9 +19,6 @@ import com.fasterxml.jackson.databind.util.StdConverter
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.MARKETPLACE
 import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseFormat.EmtpyFileContentFactory
-import com.jetbrains.edu.learning.courseFormat.FILE_CONTENTS_FACTORY_INJECTABLE_VALUE
-import com.jetbrains.edu.learning.courseFormat.FileContentsFactory
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
@@ -32,6 +29,7 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ADDITIONAL_FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.AUTHORS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CHOICE_OPTIONS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.COURSE_TYPE
+import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CUSTOM_NAME
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DEPENDENCY
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DESCRIPTION_FORMAT
@@ -59,7 +57,6 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MESSAGE_INCORRECT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MIN_VERSION
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.NAME
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.OFFSET
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLACEHOLDER
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLACEHOLDERS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLACEHOLDER_TEXT
@@ -402,6 +399,7 @@ abstract class AnswerPlaceholderDependencyMixin {
 abstract class EduTestInfoMixin {
   @JsonProperty(NAME)
   private lateinit var name: String
+
   @JsonProperty(STATUS)
   private var status: Int = -1
 }
@@ -462,6 +460,7 @@ fun deserializeTask(node: ObjectNode, taskType: String, objectMapper: ObjectCode
     EduTask.EDU_TASK_TYPE, EduTask.PYCHARM_TASK_TYPE -> {
       objectMapper.treeToValue(node, EduTask::class.java)
     }
+
     OutputTask.OUTPUT_TASK_TYPE -> objectMapper.treeToValue(node, OutputTask::class.java)
     MatchingTask.MATCHING_TASK_TYPE -> objectMapper.treeToValue(node, MatchingTask::class.java)
     RemoteEduTask.REMOTE_EDU_TASK_TYPE -> objectMapper.treeToValue(node, RemoteEduTask::class.java)
@@ -488,15 +487,20 @@ private open class EduFileBuilder {
 
   @JsonProperty(IS_VISIBLE)
   var isVisible: Boolean = true
+
   @JsonProperty(TEXT)
   @Encrypt
   var text: String? = null
+
   @JsonProperty(IS_BINARY)
   var isBinary: Boolean? = null
+
   @JsonProperty(IS_EDITABLE)
   var isEditable: Boolean = true
+
   @JsonProperty
   var isPropagatable: Boolean = true
+
   @JsonProperty(HIGHLIGHT_LEVEL)
   var errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.TEMPORARY_SUPPRESSION
 

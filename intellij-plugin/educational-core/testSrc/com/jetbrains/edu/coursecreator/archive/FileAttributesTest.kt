@@ -42,8 +42,8 @@ open class FileAttributesTest(
       excludedFromArchive: Boolean? = null,
       archiveInclusionPolicy: ArchiveInclusionPolicy? = null
     ): ExpectedCourseFileAttributes = ExpectedCourseFileAttributes(
-      excludedFromArchive=excludedFromArchive,
-      archiveInclusionPolicy=archiveInclusionPolicy
+      excludedFromArchive = excludedFromArchive,
+      archiveInclusionPolicy = archiveInclusionPolicy
     )
 
     fun doTest(configurator: EduConfigurator<*>, filePath: String, expectedAttributes: ExpectedCourseFileAttributes) {

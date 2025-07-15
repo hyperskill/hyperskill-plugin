@@ -42,10 +42,14 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
             taskFile("src/Task.kt")
             taskFile("src/Test.kt", visible = false)
           }
-          choiceTask("Choice task", stepId = 3, isMultipleChoice = true,
-                     choiceOptions = mapOf("Correct" to ChoiceOptionStatus.CORRECT,
-                                           "Incorrect" to ChoiceOptionStatus.INCORRECT,
-                                           "Unknown" to ChoiceOptionStatus.UNKNOWN)) {
+          choiceTask(
+            "Choice task", stepId = 3, isMultipleChoice = true,
+            choiceOptions = mapOf(
+              "Correct" to ChoiceOptionStatus.CORRECT,
+              "Incorrect" to ChoiceOptionStatus.INCORRECT,
+              "Unknown" to ChoiceOptionStatus.UNKNOWN
+            )
+          ) {
             taskFile("Task.txt", "")
           }
         }
@@ -61,7 +65,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     val feedback = CONGRATULATIONS
     val submission = createEduTaskSubmission(eduTask, attempt, solutionFiles, feedback)
 
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 123
       |reply:
       |  version: $JSON_FORMAT_VERSION
@@ -74,7 +79,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
       |  - name: src/Test.kt
       |    is_visible: false
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -85,7 +91,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     val feedback = "failed"
     val submission = createEduTaskSubmission(eduTask, attempt, solutionFiles, feedback)
 
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 1234
       |reply:
       |  version: $JSON_FORMAT_VERSION
@@ -98,7 +105,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
       |  - name: src/Test.kt
       |    is_visible: false
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -109,7 +117,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     val solutionFiles = getSolutionFiles(project, remoteEduTask)
     val submission = createRemoteEduTaskSubmission(remoteEduTask, attempt, solutionFiles)
 
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 12345
       |reply:
       |  version: $JSON_FORMAT_VERSION
@@ -131,14 +140,16 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     val language = "language"
     val submission = createCodeTaskSubmission(attempt, answer, language)
 
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 123
       |reply:
       |  version: $JSON_FORMAT_VERSION
       |  language: $language
       |  code: $answer
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -154,7 +165,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     }
 
     val submission = createChoiceTaskSubmission(task, attempt)
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 123
       |reply:
       |  version: $JSON_FORMAT_VERSION
@@ -163,7 +175,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
       |  - false
       |  - false
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -172,13 +185,15 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     val answer = "answer"
 
     val submission = createStringTaskSubmission(attempt, answer)
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 123
       |reply:
       |  version: $JSON_FORMAT_VERSION
       |  text: $answer
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -187,13 +202,15 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     val answer = 123.toString()
 
     val submission = createNumberTaskSubmission(attempt, answer)
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 123
       |reply:
       |  version: $JSON_FORMAT_VERSION
       |  number: $answer
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -202,13 +219,15 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     val answer = "answer"
 
     val submission = createDataTaskSubmission(dataTaskAttempt, answer)
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 123
       |reply:
       |  version: $JSON_FORMAT_VERSION
       |  file: $answer
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -218,7 +237,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     val ordering = intArrayOf(2, 0, 1)
 
     val submission = createSortingBasedTaskSubmission(attempt, ordering)
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 123
       |reply:
       |  version: $JSON_FORMAT_VERSION
@@ -227,7 +247,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
       |  - 0
       |  - 1
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -246,7 +267,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
     task.choose(1, 2)
 
     val submission = createTableTaskSubmission(attempt, task)
-    doTest(submission, """
+    doTest(
+      submission, """
       |attempt: 123
       |reply:
       |  version: $JSON_FORMAT_VERSION
@@ -268,7 +290,8 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
       |    - name: 3
       |      answer: true
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   private fun doTest(submission: StepikBasedSubmission, expected: String) {

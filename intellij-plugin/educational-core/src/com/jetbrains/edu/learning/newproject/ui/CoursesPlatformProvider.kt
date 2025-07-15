@@ -31,7 +31,12 @@ abstract class CoursesPlatformProvider {
 
   abstract fun createPanel(scope: CoroutineScope, disposable: Disposable): CoursesPanel
 
-  open fun joinAction(courseInfo: CourseCreationInfo, courseMode: CourseMode, coursePanel: CoursePanel, openCourseParams: Map<String, String> = emptyMap()) {
+  open fun joinAction(
+    courseInfo: CourseCreationInfo,
+    courseMode: CourseMode,
+    coursePanel: CoursePanel,
+    openCourseParams: Map<String, String> = emptyMap()
+  ) {
     joinCourse(courseInfo, courseMode, coursePanel, openCourseParams) { coursePanel.setError(it) }
   }
 
@@ -58,6 +63,7 @@ abstract class CoursesPlatformProvider {
             is CourseCompatibility.Compatible,
             is CourseCompatibility.IncompatibleVersion,
             is CourseCompatibility.PluginsRequired -> true
+
             else -> false
           }
         }

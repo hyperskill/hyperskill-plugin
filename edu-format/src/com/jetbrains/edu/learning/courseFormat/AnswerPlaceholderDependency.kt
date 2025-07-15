@@ -17,13 +17,15 @@ class AnswerPlaceholderDependency() {
   @Transient
   lateinit var answerPlaceholder: AnswerPlaceholder
 
-  constructor(answerPlaceholder: AnswerPlaceholder,
-              sectionName: String?,
-              lessonName: String,
-              taskName: String,
-              fileName: String,
-              placeholderIndex: Int,
-              isVisible: Boolean) : this() {
+  constructor(
+    answerPlaceholder: AnswerPlaceholder,
+    sectionName: String?,
+    lessonName: String,
+    taskName: String,
+    fileName: String,
+    placeholderIndex: Int,
+    isVisible: Boolean
+  ) : this() {
     this.sectionName = sectionName
     this.lessonName = lessonName
     this.taskName = taskName

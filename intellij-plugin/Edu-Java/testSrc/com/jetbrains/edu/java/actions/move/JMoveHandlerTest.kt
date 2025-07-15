@@ -14,11 +14,13 @@ class JMoveHandlerTest : MoveHandlerTestBase(JavaLanguage.INSTANCE) {
   fun `test do not forbid move refactoring for functions`() {
     val findTarget: (Course) -> PsiElement = { findPsiClassInFile("lesson1/task1/Bar.java") }
     doTest(findTarget) {
-      javaTaskFile("Foo.java", """
+      javaTaskFile(
+        "Foo.java", """
         public class Foo {
           public void foo<caret>() {}
         }
-      """)
+      """
+      )
       javaTaskFile("Bar.java", "public class Bar {}")
     }
   }
@@ -27,10 +29,12 @@ class JMoveHandlerTest : MoveHandlerTestBase(JavaLanguage.INSTANCE) {
   fun `test do not forbid move refactoring for classes`() {
     val findTarget: (Course) -> PsiElement = { findPsiFile("lesson1/task1/Bar.java") }
     doTest(findTarget) {
-      javaTaskFile("Foo.java", """
+      javaTaskFile(
+        "Foo.java", """
         public class Foo {}
         private class FooInner<caret> {}
-      """)
+      """
+      )
       javaTaskFile("Bar.java", "public class Bar {}")
     }
   }

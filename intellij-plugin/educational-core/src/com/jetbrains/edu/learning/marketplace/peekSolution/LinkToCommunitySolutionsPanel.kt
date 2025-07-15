@@ -15,7 +15,7 @@ import javax.swing.JPanel
  *
  * @see [com.jetbrains.edu.learning.taskToolWindow.ui.check.CheckDetailsPanel]
  */
-class LinkToCommunitySolutionsPanel(project: Project, task: Task): JPanel(BorderLayout()) {
+class LinkToCommunitySolutionsPanel(project: Project, task: Task) : JPanel(BorderLayout()) {
   init {
     val panel = panel {
       row(EduCoreBundle.message("submissions.got.stuck")) {

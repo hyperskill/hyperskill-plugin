@@ -35,7 +35,8 @@ class PostHyperskillProjectToGithub : AnAction() {
     generateGitignore(projectName, currentTask, courseDir)
 
     PostToGithubActionProvider.first()?.postToGitHub(project, courseDir) ?: error(
-      "PostToGithubActionProvider not found for course ${course.name}")
+      "PostToGithubActionProvider not found for course ${course.name}"
+    )
   }
 
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
@@ -55,8 +56,10 @@ class PostHyperskillProjectToGithub : AnAction() {
       "solutionDirs" to gitIgnoreString
     )
 
-    GeneratorUtils.createFileFromTemplate(CourseInfoHolder.fromCourse(currentTask.course, courseDir), GITIGNORE_FILE_PATH,
-                                          GITIGNORE_TEMPLATE_NAME, templateVariables)
+    GeneratorUtils.createFileFromTemplate(
+      CourseInfoHolder.fromCourse(currentTask.course, courseDir), GITIGNORE_FILE_PATH,
+      GITIGNORE_TEMPLATE_NAME, templateVariables
+    )
   }
 
   private fun generateReadme(project: Project, course: HyperskillCourse, projectName: String) {
@@ -75,8 +78,10 @@ class PostHyperskillProjectToGithub : AnAction() {
       "profileLink" to account.profileUrl
     )
 
-    GeneratorUtils.createFileFromTemplate(CourseInfoHolder.fromCourse(course, courseDir), README_FILE_PATH, README_TEMPLATE_NAME,
-                                          templateVariables)
+    GeneratorUtils.createFileFromTemplate(
+      CourseInfoHolder.fromCourse(course, courseDir), README_FILE_PATH, README_TEMPLATE_NAME,
+      templateVariables
+    )
   }
 
   override fun update(e: AnActionEvent) {

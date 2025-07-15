@@ -65,5 +65,6 @@ internal fun createImportCourseAction(pluginScope: PluginScope): Action {
     identifier = "import-local-course",
     requirements = setOf(FleetDataKeys.Window),
     triggers = setOf(EduTriggers.Import),
-    defaultPresentation = ActionPresentation("Import Course"))
+    defaultPresentation = ActionPresentation("Import Course")
+  )
 }

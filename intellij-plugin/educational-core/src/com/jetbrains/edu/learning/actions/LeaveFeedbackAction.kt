@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NonNls
 
 class LeaveFeedbackAction :
   DumbAwareAction(EduCoreBundle.lazyMessage("action.leave.comment.text"), EduCoreBundle.lazyMessage("action.leave.comment.text")),
-  RightAlignedToolbarAction
-{
+  RightAlignedToolbarAction {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return

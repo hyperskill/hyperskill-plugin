@@ -42,6 +42,7 @@ class StudyItemNotFoundInspection : UnresolvedFileReferenceInspection() {
         val course = element.project.course ?: return
         if (course.hasSections) SECTION_TYPE else LESSON_TYPE
       }
+
       SECTION_TYPE -> LESSON_TYPE
       LESSON_TYPE -> TASK_TYPE
       else -> return
@@ -66,6 +67,7 @@ class StudyItemNotFoundInspection : UnresolvedFileReferenceInspection() {
 
     override fun getFamilyName(): String = EduYAMLBundle.message("create.study.item.quick.fix.family.name")
     override fun getText(): String = itemType.createItemMessage
+
     // We show dialog in `invoke` so quick have to be launched not in write action
     // otherwise, this dialog will block all codeinsight in whole IDE
     override fun startInWriteAction(): Boolean = false

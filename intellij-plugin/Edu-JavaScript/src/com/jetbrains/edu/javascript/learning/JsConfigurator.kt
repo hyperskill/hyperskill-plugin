@@ -8,9 +8,9 @@ import com.jetbrains.edu.javascript.learning.checker.JsTaskCheckerProvider
 import com.jetbrains.edu.learning.EduCourseBuilder
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
-import com.jetbrains.edu.learning.configuration.attributesEvaluator.AttributesEvaluator
-import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
+import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.attributesEvaluator.AttributesEvaluator
 import com.jetbrains.edu.learning.courseFormat.Course
 import javax.swing.Icon
 

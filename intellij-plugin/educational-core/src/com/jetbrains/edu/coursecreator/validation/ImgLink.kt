@@ -54,10 +54,12 @@ class ImgLink private constructor(link: String, private val task: Task) : TaskDe
   private data class HttpSrc(val url: String) : ImageSrc() {
     val delegate: HttpLink = HttpLink(url)
   }
+
   private data class LocalSrc(val path: String, val task: Task) : ImageSrc() {
     val delegate: FileLink = object : FileLink(path) {
       override fun rootDir(project: Project): VirtualFile? = task.getDir(project.courseDir)
     }
   }
+
   private data class AbsoluteSrc(val url: String) : ImageSrc()
 }

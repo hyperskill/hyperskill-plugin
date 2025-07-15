@@ -9,6 +9,7 @@ import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.checker.CodeExecutor
 import com.jetbrains.edu.learning.checker.TaskChecker
 import com.jetbrains.edu.learning.checker.TaskCheckerProvider
+import com.jetbrains.edu.learning.configuration.PlainTextTaskCheckerProvider.Companion.CHECK_RESULT_FILE
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.ext.getDir

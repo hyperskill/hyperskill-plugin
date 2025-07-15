@@ -4,7 +4,10 @@ import com.intellij.ui.components.panels.NonOpaquePanel
 import com.intellij.util.ui.GraphicsUtil
 import com.intellij.util.ui.JBInsets
 import com.intellij.util.ui.UIUtil
-import java.awt.*
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Rectangle
+import java.awt.Shape
 import java.awt.geom.RoundRectangle2D
 import javax.swing.JComponent
 

@@ -64,10 +64,12 @@ class MarketplaceUpdateCheckerTest : CourseUpdateCheckerTestBase() {
     testNoCheck(MarketplaceUpdateChecker.getInstance(project))
   }
 
-  private fun doTestCheckScheduled(expectedInvocationNumber: Int,
-                                   isCourseUpToDate: Boolean,
-                                   courseVersion: Int = 3,
-                                   isNewlyCreated: Boolean = false) {
+  private fun doTestCheckScheduled(
+    expectedInvocationNumber: Int,
+    isCourseUpToDate: Boolean,
+    courseVersion: Int = 3,
+    isNewlyCreated: Boolean = false
+  ) {
     val course = createCourse(isNewlyCreated, courseVersion)
     doTest(MarketplaceUpdateChecker.getInstance(project), isCourseUpToDate, 0, expectedInvocationNumber, checkInterval = 1) {
       assertEquals(isCourseUpToDate, course.isUpToDate)

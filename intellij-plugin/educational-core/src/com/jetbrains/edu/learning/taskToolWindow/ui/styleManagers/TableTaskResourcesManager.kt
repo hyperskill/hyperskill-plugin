@@ -10,11 +10,11 @@ import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.ui.asCssColor
 import com.jetbrains.edu.learning.stepik.hyperskill.stepLink
-import com.jetbrains.edu.learning.taskToolWindow.ui.*
+import com.jetbrains.edu.learning.taskToolWindow.ui.getRadioButtonCSS
 import kotlinx.css.*
-import kotlinx.css.properties.*
+import kotlinx.css.properties.lh
 
-class TableTaskResourcesManager: TaskResourcesManager<TableTask> {
+class TableTaskResourcesManager : TaskResourcesManager<TableTask> {
   private val templateName = "tableTask.html"
 
   override fun getText(task: TableTask): String {
@@ -30,7 +30,7 @@ class TableTaskResourcesManager: TaskResourcesManager<TableTask> {
     return mapOf(
       "rows" to Gson().toJson(task.rows),
       "columns" to Gson().toJson(task.columns),
-      "selected" to task.selected.map { it.toList()} .toList(),
+      "selected" to task.selected.map { it.toList() }.toList(),
       "is_checkbox" to task.isMultipleChoice,
       "table_task_style" to stylesheet
     )

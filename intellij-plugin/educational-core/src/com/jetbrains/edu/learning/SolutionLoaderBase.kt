@@ -84,7 +84,8 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
   private fun <T> runWithProgress(progressIndicator: ProgressIndicator?, doLoad: () -> T): T {
     return if (progressIndicator != null) {
       ApplicationUtil.runWithCheckCanceled(doLoad, progressIndicator)
-    } else {
+    }
+    else {
       doLoad()
     }
   }
@@ -157,7 +158,7 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
     val needToShowNotification = needToShowUpdateNotification(futures.values)
     runInEdt {
       if (project.isDisposed) return@runInEdt
-      if (needToShowNotification && !RemoteEnvHelper.isRemoteDevServer() ) {
+      if (needToShowNotification && !RemoteEnvHelper.isRemoteDevServer()) {
         // Suppression is needed here because DialogTitleCapitalization is demanded by the superclass constructor,
         // but the plugin naming with the capital letters used in the notification title
         @Suppress("DialogTitleCapitalization")
@@ -243,7 +244,8 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
     cancelUnfinishedTasks()
   }
 
-  protected open fun loadSubmissions(tasks: List<Task>): List<Submission> = SubmissionsManager.getInstance(project).getOrLoadSubmissions(tasks)
+  protected open fun loadSubmissions(tasks: List<Task>): List<Submission> =
+    SubmissionsManager.getInstance(project).getOrLoadSubmissions(tasks)
 
   protected abstract fun loadSolution(task: Task, submissions: List<Submission>): TaskSolutions
 

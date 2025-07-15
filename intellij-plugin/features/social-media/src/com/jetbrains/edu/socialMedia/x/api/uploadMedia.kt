@@ -26,10 +26,14 @@ data class XProcessingInfo(
 )
 
 enum class PendingState {
-  @JsonProperty("pending") PENDING,
-  @JsonProperty("in_progress") IN_PROGRESS,
-  @JsonProperty("succeeded") SUCCEEDED,
-  @JsonProperty("failed") FAILED;
+  @JsonProperty("pending")
+  PENDING,
+  @JsonProperty("in_progress")
+  IN_PROGRESS,
+  @JsonProperty("succeeded")
+  SUCCEEDED,
+  @JsonProperty("failed")
+  FAILED;
 }
 
 data class XMediaUploadAppendResponse(

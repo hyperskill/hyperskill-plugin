@@ -29,11 +29,13 @@ import com.jetbrains.edu.learning.yaml.YamlLoader.deserializeChildrenIfNeeded
 
 class CCVirtualFileListener(project: Project, parentDisposable: Disposable) : EduVirtualFileListener(project) {
 
-  private val projectRefreshRequestsQueue = MergingUpdateQueue(COURSE_REFRESH_REQUEST,
-                                                               300,
-                                                               true,
-                                                               null,
-                                                               parentDisposable).apply { setRestartTimerOnAdd(true) }
+  private val projectRefreshRequestsQueue = MergingUpdateQueue(
+    COURSE_REFRESH_REQUEST,
+    300,
+    true,
+    null,
+    parentDisposable
+  ).apply { setRestartTimerOnAdd(true) }
 
   override fun taskFileCreated(taskFile: TaskFile, file: VirtualFile) {
     super.taskFileCreated(taskFile, file)
@@ -60,10 +62,12 @@ class CCVirtualFileListener(project: Project, parentDisposable: Disposable) : Ed
       oldParentInfo is FileInfo.FileOutsideTasks && newParentInfo is FileInfo.FileOutsideTasks -> {
         moveAdditionalFiles(oldParentInfo.appendPath(movedFile.name), movedFile)
       }
+
       oldParentInfo is FileInfo.FileOutsideTasks -> {
         val fileInfo = oldParentInfo.appendPath(movedFile.name)
         deleteAdditionalFile(fileInfo)
       }
+
       newParentInfo is FileInfo.FileOutsideTasks -> {
         addFileIfAdditionalRecursively(movedFile)
       }
@@ -139,12 +143,14 @@ class CCVirtualFileListener(project: Project, parentDisposable: Disposable) : Ed
   private fun additionalFileCreated(course: Course, file: VirtualFile) {
     val name = VfsUtil.getRelativePath(file, project.courseDir) ?: return
     if (course.additionalFiles.any { it.name == name }) return
-    course.additionalFiles += EduFile(name, if (file.isToEncodeContent) {
-      BinaryContents.EMPTY
-    }
-    else {
-      TextualContents.EMPTY
-    })
+    course.additionalFiles += EduFile(
+      name, if (file.isToEncodeContent) {
+        BinaryContents.EMPTY
+      }
+      else {
+        TextualContents.EMPTY
+      }
+    )
     YamlFormatSynchronizer.saveItem(course)
   }
 

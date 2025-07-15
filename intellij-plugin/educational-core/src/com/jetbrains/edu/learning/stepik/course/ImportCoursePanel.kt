@@ -32,15 +32,19 @@ abstract class ImportCoursePanel(private val courseConnector: CourseConnector, v
     layout.setHorizontalGroup(
       layout.createSequentialGroup()
         .addComponent(courseLink)
-        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(courseLinkTextField)
-                    .addComponent(helpLabel))
+        .addGroup(
+          layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(courseLinkTextField)
+            .addComponent(helpLabel)
+        )
     )
     layout.setVerticalGroup(
       layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(courseLink)
-                    .addComponent(courseLinkTextField))
+        .addGroup(
+          layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(courseLink)
+            .addComponent(courseLinkTextField)
+        )
         .addComponent(helpLabel)
     )
     panel.add(nestedPanel, BorderLayout.NORTH)

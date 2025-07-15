@@ -51,8 +51,10 @@ class KtHyperskillCourseGenerationTest : EduTestCase() {
       language = KotlinLanguage.INSTANCE
     ) {}
     val actualBuildGradleContent = findFile(DEFAULT_SCRIPT_NAME).document.text
-    val expectedBuildGradleContent = GeneratorUtils.getInternalTemplateText(KOTLIN_HYPERSKILL_BUILD_GRADLE_TEMPLATE_NAME,
-                                                                            getKotlinTemplateVariables())
+    val expectedBuildGradleContent = GeneratorUtils.getInternalTemplateText(
+      KOTLIN_HYPERSKILL_BUILD_GRADLE_TEMPLATE_NAME,
+      getKotlinTemplateVariables()
+    )
 
     assertEquals(expectedBuildGradleContent, actualBuildGradleContent)
   }

@@ -50,6 +50,7 @@ class MockRenameDialog(
       factory.isRenameInvoked = true
       delegate.performRename(newName)
     }
-    catch (e: ConfigurationException) {}
+    catch (e: ConfigurationException) {
+    }
   }
 }

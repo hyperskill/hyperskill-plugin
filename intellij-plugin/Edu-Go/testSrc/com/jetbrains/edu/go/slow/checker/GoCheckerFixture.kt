@@ -24,7 +24,8 @@ class GoCheckerFixture : EduCheckerFixture<GoProjectSettings>() {
   override fun getSkipTestReason(): String? {
     return if (sdkLocation == null) {
       "Go SDK location is not found. Use `$GO_SDK` environment variable to provide sdk location"
-    } else {
+    }
+    else {
       super.getSkipTestReason()
     }
   }

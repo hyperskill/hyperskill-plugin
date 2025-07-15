@@ -14,10 +14,12 @@ class CourseIgnoreTest : EduTestCase() {
     val course = courseWithFiles {
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p>print(1)</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
         }
       }
       additionalFiles {
@@ -35,19 +37,23 @@ class CourseIgnoreTest : EduTestCase() {
     val course = courseWithFiles {
       lesson {
         eduTask {
-          taskFile("Task.kt", """
+          taskFile(
+            "Task.kt", """
           |def f():
           |  <p>print(1)</p>
-        """.trimMargin("|"))
+        """.trimMargin("|")
+          )
           taskFile("NotIgnored.txt")
         }
       }
       additionalFiles {
-        eduFile(".courseignore",
-                """
+        eduFile(
+          ".courseignore",
+          """
                   |tmp/ignored.txt
                   |lesson1/task1/NotIgnored.txt
-                """.trimMargin())
+                """.trimMargin()
+        )
         eduFile("not-ignored.txt")
         eduFile("tmp/ignored.txt")
         eduFile("tmp/not-ignored.txt")

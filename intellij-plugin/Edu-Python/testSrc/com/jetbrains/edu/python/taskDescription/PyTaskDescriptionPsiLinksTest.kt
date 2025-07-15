@@ -11,62 +11,80 @@ class PyTaskDescriptionPsiLinksTest : TaskDescriptionPsiLinksTestBase() {
   override val fileType: FileType = PythonFileType.INSTANCE
 
   @Test
-  fun `test navigate to class`() = doTest("psi_element://bar.Bar", """
+  fun `test navigate to class`() = doTest(
+    "psi_element://bar.Bar", """
       class <caret>Bar:
           def bar(self):
               pass
-  """) {
-    python("foo.py", """
+  """
+  ) {
+    python(
+      "foo.py", """
         class Foo:
             def foo(self):
                 pass
-    """)
-    python("bar.py", """
+    """
+    )
+    python(
+      "bar.py", """
         class Bar:
             def bar(self):
                 pass
-    """)
+    """
+    )
   }
 
   @Test
-  fun `test navigate to method`() = doTest("psi_element://foo.Foo.foo", """
+  fun `test navigate to method`() = doTest(
+    "psi_element://foo.Foo.foo", """
       class Foo:
           def <caret>foo(self):
               pass
-  """) {
-    python("foo.py", """
+  """
+  ) {
+    python(
+      "foo.py", """
         class Foo:
             def foo(self):
                 pass
-    """)
-    python("bar.py", """
+    """
+    )
+    python(
+      "bar.py", """
         class Bar:
             def bar(self):
                 pass
-    """)
+    """
+    )
   }
 
   @Test
-  fun `test navigate to function`() = doTest("psi_element://bar.baz", """
+  fun `test navigate to function`() = doTest(
+    "psi_element://bar.baz", """
       class Bar:
           def bar(self):
               pass
 
       def <caret>baz():
           pass
-  """) {
-    python("foo.py", """
+  """
+  ) {
+    python(
+      "foo.py", """
         class Foo:
             def foo(self):
                 pass
-    """)
-    python("bar.py", """
+    """
+    )
+    python(
+      "bar.py", """
         class Bar:
             def bar(self):
                 pass
 
         def baz():
             pass
-    """)
+    """
+    )
   }
 }

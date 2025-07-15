@@ -20,7 +20,7 @@ abstract class TaskToolWindowCardTextTab(project: Project, tabType: TabType) : T
 
   init {
     this.add(headerPanel, BorderLayout.NORTH)
-    repeat(2)  {
+    repeat(2) {
       val swingTextPanel = SwingTextPanel(project)
       cardLayoutPanel.add(swingTextPanel)
       Disposer.register(this, swingTextPanel)

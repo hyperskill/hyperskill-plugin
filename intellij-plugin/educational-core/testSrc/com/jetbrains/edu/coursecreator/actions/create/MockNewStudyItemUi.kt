@@ -12,7 +12,7 @@ open class MockNewStudyItemUi(
   private val name: String? = null,
   private val index: Int? = null,
   private val itemType: String? = null
-): NewStudyItemUi {
+) : NewStudyItemUi {
 
   var errorMessage: String? = null
 
@@ -23,7 +23,8 @@ open class MockNewStudyItemUi(
     callback: NewStudyItemInfoCallback
   ) {
     val itemVariant = if (itemType != null) {
-      model.studyItemVariants.find { it.type == itemType } ?: error("Can't find `$itemType` in `${model.studyItemVariants.map { it.type }}`")
+      model.studyItemVariants.find { it.type == itemType }
+      ?: error("Can't find `$itemType` in `${model.studyItemVariants.map { it.type }}`")
     }
     else {
       model.studyItemVariants.first()

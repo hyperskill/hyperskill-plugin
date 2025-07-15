@@ -14,22 +14,22 @@ class PsiElementLink(link: String) : TaskDescriptionLink<NavigatablePsiElement, 
 
   override fun resolve(project: Project): NavigatablePsiElement? {
     val qualifiedName = linkPath
-      val dumbService = DumbService.getInstance(project)
-      if (dumbService.isDumb) {
-        val message = ActionUtil.getUnavailableMessage(EduCoreBundle.message("label.navigation"), false)
-        dumbService.showDumbModeNotification(message)
-        return null
-      }
+    val dumbService = DumbService.getInstance(project)
+    if (dumbService.isDumb) {
+      val message = ActionUtil.getUnavailableMessage(EduCoreBundle.message("label.navigation"), false)
+      dumbService.showDumbModeNotification(message)
+      return null
+    }
 
-      for (provider in QualifiedNameProvider.EP_NAME.extensionList) {
-        val element = provider.qualifiedNameToElement(qualifiedName, project)
-        if (element is NavigatablePsiElement) {
-          if (element.canNavigate()) {
-            return element
-          }
+    for (provider in QualifiedNameProvider.EP_NAME.extensionList) {
+      val element = provider.qualifiedNameToElement(qualifiedName, project)
+      if (element is NavigatablePsiElement) {
+        if (element.canNavigate()) {
+          return element
         }
       }
-      return null
+    }
+    return null
   }
 
   override fun open(project: Project, element: NavigatablePsiElement) {

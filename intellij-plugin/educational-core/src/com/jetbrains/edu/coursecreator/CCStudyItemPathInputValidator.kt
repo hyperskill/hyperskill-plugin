@@ -25,6 +25,7 @@ class CCStudyItemPathInputValidator(
       !PathUtil.isValidFileName(inputString) -> EduCoreBundle.message("course.creator.error.invalid.name")
       parentDir.findChild(inputString) != null && inputString != name ->
         EduCoreBundle.message("course.creator.error.duplicated.name", parentDir.name, inputString)
+
       studyItemType != null -> course.configurator?.courseBuilder?.validateItemName(project, inputString, studyItemType)
       else -> null
     }

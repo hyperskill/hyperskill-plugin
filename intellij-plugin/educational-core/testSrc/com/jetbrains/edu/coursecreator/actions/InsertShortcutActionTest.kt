@@ -27,7 +27,7 @@ class InsertShortcutActionTest : EduActionTestCase() {
 
     val task = findTask(0, 0)
     val taskDescriptionFile = task.getDir(project.courseDir)
-      ?.findChild(DescriptionFormat.MD.fileName) ?: error("No task description file")
+                                ?.findChild(DescriptionFormat.MD.fileName) ?: error("No task description file")
 
     myFixture.openFileInEditor(taskDescriptionFile)
 
@@ -78,7 +78,7 @@ class InsertShortcutActionTest : EduActionTestCase() {
 
     val task = findTask(0, 0)
     val taskDescriptionFile = task.getDir(project.courseDir)
-      ?.findChild(DescriptionFormat.MD.fileName) ?: error("No task description file")
+                                ?.findChild(DescriptionFormat.MD.fileName) ?: error("No task description file")
 
     checkActionNotAvailable(taskDescriptionFile)
   }

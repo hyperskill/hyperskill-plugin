@@ -86,8 +86,10 @@ class StudyItemCopySerializer : JsonSerializer<StudyItem>() {
     val javaType = provider.constructType(value::class.java)
     val beanDesc: BeanDescription = provider.config.introspect(javaType)
     val serializer: JsonSerializer<Any> =
-      BeanSerializerFactory.instance.findBeanOrAddOnSerializer(provider, javaType, beanDesc,
-                                                               provider.isEnabled(MapperFeature.USE_STATIC_TYPING))
+      BeanSerializerFactory.instance.findBeanOrAddOnSerializer(
+        provider, javaType, beanDesc,
+        provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
+      )
     serializer.unwrappingSerializer(null).serialize(value, jgen, provider)
     if (value !is Course) {
       addItemType(value, jgen)

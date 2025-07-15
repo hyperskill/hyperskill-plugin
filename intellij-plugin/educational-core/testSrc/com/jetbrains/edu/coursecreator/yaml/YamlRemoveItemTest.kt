@@ -19,7 +19,8 @@ class YamlRemoveItemTest : YamlTestCase() {
       lesson { }
     }
 
-    loadItemFromConfig(getCourse(), """
+    loadItemFromConfig(
+      getCourse(), """
       |title: Test Course
       |language: English
       |programming_language: Plain text
@@ -27,7 +28,8 @@ class YamlRemoveItemTest : YamlTestCase() {
       |content:
       |- lesson1
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
 
     assertEquals(1, getCourse().items.size)
     assertEquals("lesson1", findLesson(0).name)
@@ -44,7 +46,8 @@ class YamlRemoveItemTest : YamlTestCase() {
       }
     }
 
-    loadItemFromConfig(getCourse(), """
+    loadItemFromConfig(
+      getCourse(), """
       |title: Test Course
       |language: English
       |programming_language: Plain text
@@ -52,7 +55,8 @@ class YamlRemoveItemTest : YamlTestCase() {
       |content:
       |- section2
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
 
     assertEquals(1, getCourse().items.size)
     assertEquals("section2", getCourse().items[0].name)
@@ -69,12 +73,14 @@ class YamlRemoveItemTest : YamlTestCase() {
     }
 
     val lesson = findLesson(0)
-    loadItemFromConfig(lesson, """
+    loadItemFromConfig(
+      lesson, """
       |content:
       |- task1
       |- task3
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
 
     assertEquals(2, lesson.taskList.size)
     assertEquals("task1", lesson.taskList[0].name)
@@ -93,12 +99,14 @@ class YamlRemoveItemTest : YamlTestCase() {
     }
 
     val task = findTask(0, 0)
-    loadItemFromConfig(task, """
+    loadItemFromConfig(
+      task, """
         |type: edu
         |files:
         |- name: task1.txt
         |  visible: true
-    """.trimMargin())
+    """.trimMargin()
+    )
 
     assertEquals(1, task.taskFiles.size)
     assertEquals("task1.txt", task.taskFiles.keys.single())

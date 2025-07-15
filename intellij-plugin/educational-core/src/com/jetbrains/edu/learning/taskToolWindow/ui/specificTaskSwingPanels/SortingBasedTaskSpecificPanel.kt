@@ -98,7 +98,8 @@ class SortingBasedTaskSpecificPanel(task: SortingBasedTask) : Wrapper() {
     if (!isFocusOwner) {
       addBorder(RoundedLineBorder(MatchingTaskUI.Value.borderColor(), arcSize, roundedBorderSize))
       addBorder(RoundedLineBorder(JBColor.background(), arcSize, focusedRoundedBorderSize - roundedBorderSize))
-    } else {
+    }
+    else {
       addBorder(RoundedLineBorder(UIUtil.getFocusedBorderColor(), arcSize, focusedRoundedBorderSize))
     }
   }
@@ -215,6 +216,7 @@ class SortingBasedTaskSpecificPanel(task: SortingBasedTask) : Wrapper() {
             }
             transferFocus()
           }
+
           (e.keyCode == KeyEvent.VK_UP) -> {
             if (index <= 0) return
             if (e.isShiftDown) {

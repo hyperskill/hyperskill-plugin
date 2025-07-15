@@ -3,7 +3,7 @@ package com.jetbrains.edu.learning.courseFormat.tasks
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.logger
 import org.jetbrains.annotations.NonNls
-import java.util.Date
+import java.util.*
 import java.util.logging.Logger
 
 class TableTask : Task {

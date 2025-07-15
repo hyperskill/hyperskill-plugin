@@ -116,7 +116,8 @@ class CopyStudyItemTest : EduTestCase() {
         solutionHidden != taskCopy.solutionHidden ||
         descriptionFormat != taskCopy.descriptionFormat ||
         descriptionText != taskCopy.descriptionText ||
-        itemType != taskCopy.itemType) return false
+        itemType != taskCopy.itemType
+    ) return false
     return true
   }
 

@@ -11,7 +11,10 @@ import org.jetbrains.annotations.TestOnly
  */
 interface EduTestAware {
   @TestOnly
-  fun restoreState() {}
+  fun restoreState() {
+  }
+
   @TestOnly
-  fun cleanUpState() {}
+  fun cleanUpState() {
+  }
 }

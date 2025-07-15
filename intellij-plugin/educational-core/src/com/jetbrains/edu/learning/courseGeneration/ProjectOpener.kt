@@ -13,7 +13,7 @@ import com.jetbrains.edu.learning.stepik.builtInServer.EduBuiltInServerUtils
 
 abstract class ProjectOpener {
 
-  fun <T: OpenInIdeRequest>open(requestHandler: OpenInIdeRequestHandler<T>, request: T): Result<Boolean, CourseValidationResult> {
+  fun <T : OpenInIdeRequest> open(requestHandler: OpenInIdeRequestHandler<T>, request: T): Result<Boolean, CourseValidationResult> {
     runInEdt {
       // We might perform heavy operations (including network access)
       // So we want to request focus and show progress bar so as it won't seem that IDE doesn't respond
@@ -32,13 +32,13 @@ abstract class ProjectOpener {
     }
   }
 
-  private fun <T: OpenInIdeRequest> OpenInIdeRequestHandler<T>.openInOpenedProject(request: T): Project? =
+  private fun <T : OpenInIdeRequest> OpenInIdeRequestHandler<T>.openInOpenedProject(request: T): Project? =
     openInExistingProject(request, ::focusOpenProject)
 
-  private fun <T: OpenInIdeRequest> OpenInIdeRequestHandler<T>.openInRecentProject(request: T): Project? =
+  private fun <T : OpenInIdeRequest> OpenInIdeRequestHandler<T>.openInRecentProject(request: T): Project? =
     openInExistingProject(request, EduBuiltInServerUtils::openRecentProject)
 
-  fun <T: OpenInIdeRequest> OpenInIdeRequestHandler<T>.openInNewProject(request: T): Result<Boolean, CourseValidationResult> {
+  fun <T : OpenInIdeRequest> OpenInIdeRequestHandler<T>.openInNewProject(request: T): Result<Boolean, CourseValidationResult> {
     return computeUnderProgress(title = courseLoadingProcessTitle) { indicator ->
       getCourse(request, indicator)
     }.map { course ->

@@ -8,7 +8,6 @@ import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.python.learning.PyConfigurator
 import com.jetbrains.edu.python.learning.PyNewConfigurator
 import org.junit.runners.Parameterized.Parameters
-import kotlin.collections.plus
 
 private fun pyData(): Collection<Array<Any>> {
   val expectedAttributes = expected(

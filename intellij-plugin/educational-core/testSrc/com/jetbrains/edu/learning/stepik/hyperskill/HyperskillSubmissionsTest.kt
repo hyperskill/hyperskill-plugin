@@ -149,6 +149,7 @@ class HyperskillSubmissionsTest : SubmissionsTestBase() {
             webSocket.confirmConnection()
             state = MockWebSocketState.CONNECTION_CONFIRMED
           }
+
           MockWebSocketState.CONNECTION_CONFIRMED -> {
             webSocket.confirmSubscription()
             webSocket.send(submissionResult)

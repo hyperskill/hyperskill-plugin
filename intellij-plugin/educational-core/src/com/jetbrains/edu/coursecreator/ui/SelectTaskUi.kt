@@ -23,7 +23,8 @@ private var MOCK: SelectTaskUi? = null
 fun showSelectTaskDialog(project: Project, course: EduCourse): Task? {
   val ui = if (isUnitTestMode) {
     MOCK ?: error("You should set mock ui via `withMockSelectTaskUi`")
-  } else {
+  }
+  else {
     SelectTaskDialogUI()
   }
   return ui.selectTask(project, course)
@@ -34,7 +35,8 @@ fun withMockSelectTaskUi(ui: SelectTaskUi, action: () -> Unit) {
   MOCK = ui
   try {
     action()
-  } finally {
+  }
+  finally {
     MOCK = null
   }
 }
@@ -92,14 +94,15 @@ private class SelectTaskDialog(project: Project, private val course: EduCourse) 
   }
 }
 
-private val Task.fullName: String get() {
-  val lesson = lesson
-  val section = lesson.section
-  return buildString {
-    if (section != null) {
-      append("${section.name}.")
+private val Task.fullName: String
+  get() {
+    val lesson = lesson
+    val section = lesson.section
+    return buildString {
+      if (section != null) {
+        append("${section.name}.")
+      }
+      append("${lesson.name}.")
+      append(name)
     }
-    append("${lesson.name}.")
-    append(name)
   }
-}

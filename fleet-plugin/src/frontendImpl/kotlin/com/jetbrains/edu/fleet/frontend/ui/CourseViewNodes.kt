@@ -13,11 +13,12 @@ import noria.ui.text.uiText
 
 
 fun courseNode(course: Course): TreeItem<Any> =
-  TreeItem(key = course,
-           item = course,
-           expandable = true,
-           autoExpand = true,
-           children = { studyItems(course) }) { path, opts ->
+  TreeItem(
+    key = course,
+    item = course,
+    expandable = true,
+    autoExpand = true,
+    children = { studyItems(course) }) { path, opts ->
     treeCellRenderer(path, opts, ::toolItemCellColors) { _, _, _ ->
       hbox(align = Align.Center) {
         icon(IconKeys.Folder)
@@ -43,10 +44,12 @@ fun taskItems(task: Task): List<TreeItem<TaskFile>> {
   }
 }
 
-private fun taskFileItem(it: TaskFile) = TreeItem(key = it,
-                                                  item = it,
-                                                  expandable = false,
-                                                  autoExpand = false) { path, opts ->
+private fun taskFileItem(it: TaskFile) = TreeItem(
+  key = it,
+  item = it,
+  expandable = false,
+  autoExpand = false
+) { path, opts ->
   treeCellRenderer(path, opts, ::toolItemCellColors) { _, _, _ ->
     hbox(align = Align.Center) {
       gap(width = 1)
@@ -55,10 +58,12 @@ private fun taskFileItem(it: TaskFile) = TreeItem(key = it,
   }
 }
 
-private fun eduItem(item: StudyItem) = TreeItem(key = item,
-                                                item = item,
-                                                expandable = true,
-                                                autoExpand = false) { path, opts ->
+private fun eduItem(item: StudyItem) = TreeItem(
+  key = item,
+  item = item,
+  expandable = true,
+  autoExpand = false
+) { path, opts ->
   treeCellRenderer(path, opts, ::toolItemCellColors) { _, _, _ ->
     hbox(align = Align.Center) {
       gap(width = 1)
@@ -68,11 +73,12 @@ private fun eduItem(item: StudyItem) = TreeItem(key = item,
 }
 
 fun taskNode(item: Task): TreeItem<Any> =
-  TreeItem(key = item,
-           item = item,
-           expandable = true,
-           autoExpand = false,
-           children = { taskItems(item) }) { path, opts ->
+  TreeItem(
+    key = item,
+    item = item,
+    expandable = true,
+    autoExpand = false,
+    children = { taskItems(item) }) { path, opts ->
     treeCellRenderer(path, opts, ::toolItemCellColors) { _, _, _ ->
       hbox(align = Align.Center) {
         icon(IconKeys.Folder)
@@ -83,11 +89,12 @@ fun taskNode(item: Task): TreeItem<Any> =
   }
 
 fun containerNode(item: ItemContainer): TreeItem<Any> =
-  TreeItem(key = item,
-           item = item,
-           expandable = true,
-           autoExpand = false,
-           children = { studyItems(item) }) { path, opts ->
+  TreeItem(
+    key = item,
+    item = item,
+    expandable = true,
+    autoExpand = false,
+    children = { studyItems(item) }) { path, opts ->
     treeCellRenderer(path, opts, ::toolItemCellColors) { _, _, _ ->
       hbox(align = Align.Center) {
         icon(IconKeys.Folder)

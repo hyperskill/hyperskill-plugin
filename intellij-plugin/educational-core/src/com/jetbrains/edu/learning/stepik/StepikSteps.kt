@@ -85,10 +85,14 @@ class Step {
   @JsonProperty(FEEDBACK_WRONG)
   var feedbackWrong: String = ""
 
-  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "name",
-                defaultImpl = PyCharmStepOptions::class)
-  @JsonSubTypes(JsonSubTypes.Type(PyCharmStepOptions::class, name = PYCHARM),
-                JsonSubTypes.Type(ChoiceStepOptions::class, name = CHOICE))
+  @JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "name",
+    defaultImpl = PyCharmStepOptions::class
+  )
+  @JsonSubTypes(
+    JsonSubTypes.Type(PyCharmStepOptions::class, name = PYCHARM),
+    JsonSubTypes.Type(ChoiceStepOptions::class, name = CHOICE)
+  )
   // this property is named differently in get and post queries, so we need to define different
   // names for getter (POST queries as data is serialized for query payload)
   // and setter (GET queries as data is deserialized from response)

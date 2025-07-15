@@ -34,12 +34,16 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val fileTree = fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizz.kt", """
+          file(
+            "fizz.kt", """
             fun fizz() = 123
-          """)
-          file("buzz.kt", """
+          """
+          )
+          file(
+            "buzz.kt", """
             fun buzz() = TODO()
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -164,9 +168,11 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val fileTree = fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizzBuzz.kt", """
+          file(
+            "fizzBuzz.kt", """
             fun fizzBuzz() = 123 + 456
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -201,9 +207,11 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val fileTree = fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizz.kt", """
+          file(
+            "fizz.kt", """
             fun fizz() = 123
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -224,16 +232,20 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val course = courseWithFiles {
       frameworkLesson {
         eduTask {
-          taskFile("fizz.kt", """
+          taskFile(
+            "fizz.kt", """
           fun fizzz() = <p>TODO()</p>
           fun buzz() = <p>TODO()</p>
-        """)
+        """
+          )
         }
         eduTask {
-          taskFile("fizz.kt", """
+          taskFile(
+            "fizz.kt", """
           fun fizzz() = <p>TODO()</p>
           fun buzz() = <p>TODO()</p>
-        """) {
+        """
+          ) {
             placeholder(0, dependency = "lesson1#task1#fizz.kt#1")
             placeholder(1, dependency = "lesson1#task1#fizz.kt#2")
           }
@@ -257,10 +269,12 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val fileTree = fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizz.kt", """
+          file(
+            "fizz.kt", """
             fun fizzz() = 12345678
             fun buzz() = 90
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -308,9 +322,11 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizzBuzz.kt", """
+          file(
+            "fizzBuzz.kt", """
             fun fizzBuzz() = TODO() + TODO()
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -331,9 +347,11 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizz.kt", """
+          file(
+            "fizz.kt", """
             fun fizz() = TODO()
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -380,10 +398,12 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val fileTree = fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizz.kt", """
+          file(
+            "fizz.kt", """
             fun foo() {}
             fun fizz() = 123
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -423,13 +443,17 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val fileTree = fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizz.kt", """
+          file(
+            "fizz.kt", """
             fun fizz() = 123
-          """)
-          file("buzz.kt", """
+          """
+          )
+          file(
+            "buzz.kt", """
             fun bar() {}
             fun buzz() = 456
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -463,12 +487,16 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val fileTree = fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizz.kt", """
+          file(
+            "fizz.kt", """
             fun fizz() = TODO()
-          """)
-          file("foo.kt", """
+          """
+          )
+          file(
+            "foo.kt", """
             fun foo() {}
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -498,12 +526,16 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val fileTree = fileTree {
       dir("lesson1") {
         dir("task") {
-          file("fizz.kt", """
+          file(
+            "fizz.kt", """
             fun fizz() = TODO()
-          """)
-          file("buzz.kt", """
+          """
+          )
+          file(
+            "buzz.kt", """
             fun buzz() = TODO()
-          """)
+          """
+          )
         }
         dir("task1") {
           file("task.md")
@@ -661,24 +693,32 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
   private fun createFrameworkCourse(courseMode: CourseMode = CourseMode.STUDENT): Course = courseWithFiles(courseMode = courseMode) {
     frameworkLesson {
       eduTask {
-        taskFile("fizz.kt", """
+        taskFile(
+          "fizz.kt", """
           fun fizz() = <p>TODO()</p>
-        """)
+        """
+        )
       }
       eduTask {
-        taskFile("fizz.kt", """
+        taskFile(
+          "fizz.kt", """
           fun fizz() = <p>TODO()</p>
-        """) {
+        """
+        ) {
           placeholder(0, dependency = "lesson1#task1#fizz.kt#1", isVisible = false)
         }
-        taskFile("buzz.kt", """
+        taskFile(
+          "buzz.kt", """
           fun buzz() = <p>TODO()</p>
-        """)
+        """
+        )
       }
       eduTask {
-        taskFile("fizzBuzz.kt", """
+        taskFile(
+          "fizzBuzz.kt", """
           fun fizzBuzz() = <p>TODO()</p> + <p>TODO()</p>
-        """) {
+        """
+        ) {
           placeholder(0, dependency = "lesson1#task2#fizz.kt#1")
           placeholder(1, dependency = "lesson1#task2#buzz.kt#1")
         }

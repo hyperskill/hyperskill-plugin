@@ -7,7 +7,10 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.EduSettings
+import com.jetbrains.edu.learning.EduUtilsKt
+import com.jetbrains.edu.learning.Err
+import com.jetbrains.edu.learning.Result
 import com.jetbrains.edu.learning.api.EduOAuthCodeFlowConnector
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.CODE_ARGUMENT
 import com.jetbrains.edu.learning.courseFormat.Lesson

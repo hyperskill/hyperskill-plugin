@@ -9,7 +9,7 @@
   </dependencies>
 
   <extensions defaultExtensionNs="org.jetbrains.kotlin">
-    <supportsKotlinPluginMode supportsK2="true" />
+    <supportsKotlinPluginMode supportsK2="true"/>
   </extensions>
 
   <extensions defaultExtensionNs="Educational">
@@ -17,6 +17,7 @@
     <mainFileProvider language="kotlin" implementationClass="com.jetbrains.edu.kotlin.KtMainFileProvider"/>
 
     <!-- Hyperskill -->
-    <configurator implementationClass="com.jetbrains.edu.kotlin.hyperskill.KtHyperskillConfigurator" language="kotlin" courseType="Hyperskill"/>
+    <configurator implementationClass="com.jetbrains.edu.kotlin.hyperskill.KtHyperskillConfigurator" language="kotlin"
+                  courseType="Hyperskill"/>
   </extensions>
 </idea-plugin>

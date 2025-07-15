@@ -12,18 +12,23 @@ class GoCheckerTest : GoCheckersTestBase() {
     return course(language = GoLanguage.INSTANCE) {
       lesson {
         eduTask("Edu") {
-          goTaskFile("task.go", """
+          goTaskFile(
+            "task.go", """
             package task
 
             // todo: replace this with an actual task
             func Sum(a, b int) int {
               return a + b
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module task1
-          """)
-          goTaskFile("test/task_test.go", """
+          """
+          )
+          goTaskFile(
+            "test/task_test.go", """
             package test
 
             import (
@@ -54,21 +59,27 @@ class GoCheckerTest : GoCheckersTestBase() {
             	}
             }
 
-          """)
+          """
+          )
         }
         eduTask("EduWithIgnoredTest") {
-          goTaskFile("task.go", """
+          goTaskFile(
+            "task.go", """
             package task
 
             // todo: replace this with an actual task
             func Sum(a, b int) int {
               return a + b
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module eduwithignoredtest
-          """)
-          goTaskFile("test/task_test.go", """
+          """
+          )
+          goTaskFile(
+            "test/task_test.go", """
             package test
 
             import (
@@ -102,10 +113,12 @@ class GoCheckerTest : GoCheckersTestBase() {
                 })
               }
             }
-          """)
+          """
+          )
         }
         eduTask("EduWithCustomRunConfiguration") {
-          goTaskFile("task.go", """
+          goTaskFile(
+            "task.go", """
             package task
 
             import "os"
@@ -113,11 +126,15 @@ class GoCheckerTest : GoCheckersTestBase() {
             func Hello() string {
               return os.Getenv("EXAMPLE_ENV")
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module eduwithcustomrunconfiguration
-          """)
-          goTaskFile("test/task_test.go", """
+          """
+          )
+          goTaskFile(
+            "test/task_test.go", """
             package test
 
             import (
@@ -144,8 +161,10 @@ class GoCheckerTest : GoCheckersTestBase() {
                 })
               }
             }
-          """)
-          xmlTaskFile("runConfigurations/CustomCheck.run.xml", """
+          """
+          )
+          xmlTaskFile(
+            "runConfigurations/CustomCheck.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomCheck" type="GoTestRunConfiguration" factoryName="Go Test">
                 <module name="Go Course3" />
@@ -163,10 +182,12 @@ class GoCheckerTest : GoCheckersTestBase() {
                 <method v="2" />
               </configuration>
             </component>
-          """)
+          """
+          )
         }
         outputTask("Output") {
-          goTaskFile("main.go", """
+          goTaskFile(
+            "main.go", """
               package main
               import (
               "fmt"
@@ -178,12 +199,15 @@ class GoCheckerTest : GoCheckersTestBase() {
                 fmt.Fscan(os.Stdin, &name)
                 fmt.Println(name)
               }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module task2
-          """)
-          taskFile("output.txt","input text")
-          taskFile("input.txt","input text")
+          """
+          )
+          taskFile("output.txt", "input text")
+          taskFile("input.txt", "input text")
         }
       }
     }

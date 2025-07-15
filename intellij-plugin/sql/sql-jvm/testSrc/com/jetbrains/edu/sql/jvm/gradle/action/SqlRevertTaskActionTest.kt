@@ -21,13 +21,17 @@ class SqlRevertTaskActionTest : SqlCourseGenerationTestBase() {
     val course = sqlCourse {
       lesson("lesson1") {
         eduTask("task1") {
-          sqlTaskFile(INIT_SQL, """
+          sqlTaskFile(
+            INIT_SQL, """
             create table if not exists Students1;
-          """)
-          sqlTaskFile("src/task.sql", """
+          """
+          )
+          sqlTaskFile(
+            "src/task.sql", """
             drop table Students1;
             create table if not exists Students2;
-          """)
+          """
+          )
         }
       }
     }
@@ -45,7 +49,7 @@ class SqlRevertTaskActionTest : SqlCourseGenerationTestBase() {
     SqlDialectMappings.getInstance(project).setMapping(sqlFile, H2Dialect.INSTANCE)
 
     val configuration = task.createDatabaseScriptConfiguration(project, sqlFile)
-      ?: error("Failed to create database script configuration for `${sqlFile}` file")
+                        ?: error("Failed to create database script configuration for `${sqlFile}` file")
     computeUnderProgress(project, "") {
       CheckUtils.executeRunConfigurations(project, listOf(configuration), it)
     }

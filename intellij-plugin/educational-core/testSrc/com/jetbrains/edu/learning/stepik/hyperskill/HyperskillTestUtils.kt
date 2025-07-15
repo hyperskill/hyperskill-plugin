@@ -7,11 +7,11 @@ import com.jetbrains.edu.learning.authUtils.TokenInfo
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillAccount
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
+import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillAccount
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillUserInfo
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.stepik.hyperskill.settings.HyperskillSettings
 
 const val TEST_HYPERSKILL_PROJECT_NAME = "Test Hyperskill Project"
@@ -39,8 +39,10 @@ fun EduTestCase.hyperskillCourseWithFiles(
   completeStages: Boolean = false,
   buildCourse: CourseBuilder.() -> Unit
 ): HyperskillCourse {
-  val course = courseWithFiles(name = name, courseProducer = ::HyperskillCourse, courseMode = courseMode, language = language,
-                               buildCourse = buildCourse) as HyperskillCourse
+  val course = courseWithFiles(
+    name = name, courseProducer = ::HyperskillCourse, courseMode = courseMode, language = language,
+    buildCourse = buildCourse
+  ) as HyperskillCourse
   course.init(projectId, completeStages)
   return course
 }
@@ -52,10 +54,12 @@ fun EduTestCase.hyperskillCourse(
   completeStages: Boolean = false,
   buildCourse: CourseBuilder.() -> Unit
 ): HyperskillCourse {
-  val course = course(name = TEST_HYPERSKILL_PROJECT_NAME,
-                      courseProducer = ::HyperskillCourse,
-                      language = language,
-                      buildCourse = buildCourse) as HyperskillCourse
+  val course = course(
+    name = TEST_HYPERSKILL_PROJECT_NAME,
+    courseProducer = ::HyperskillCourse,
+    language = language,
+    buildCourse = buildCourse
+  ) as HyperskillCourse
   course.init(projectId, completeStages)
   return course
 }

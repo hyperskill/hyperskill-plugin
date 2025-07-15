@@ -4,10 +4,10 @@ import com.intellij.psi.PsiDirectory
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.Section
+import com.jetbrains.edu.learning.projectView.ContentHolderNode
 import com.jetbrains.edu.learning.projectView.IntermediateDirectoryNode
 import com.jetbrains.edu.learning.projectView.LessonNode
 import com.jetbrains.edu.learning.projectView.SectionNode
-import com.jetbrains.edu.learning.projectView.ContentHolderNode
 
 interface CCContentHolderNode : ContentHolderNode {
   override fun createLessonNode(directory: PsiDirectory, lesson: Lesson): LessonNode {

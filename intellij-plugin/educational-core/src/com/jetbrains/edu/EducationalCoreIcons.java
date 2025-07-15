@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public final class EducationalCoreIcons {
+  public static final Icon DOT = load("/icons/com/jetbrains/edu/learning/dot.svg"); // 3x3
+
   /**
    * Loads an icon using the default method.
    * This is currently the default way to load icons based on their path in the `resources` directory.
@@ -127,6 +129,8 @@ public final class EducationalCoreIcons {
    * <p>All child icons are 16x16</p>
    */
   public static final class Platform {
+    public static final Icon JetBrainsAcademy = load("/icons/com/jetbrains/edu/learning/JB_academy.svg");
+
     /**
      * Class that provides tab icons for different platforms
      *
@@ -138,8 +142,6 @@ public final class EducationalCoreIcons {
       public static final Icon JetBrainsAcademyTab = load("/icons/com/jetbrains/edu/learning/JB_academy_course_tab.svg");
       public static final Icon MarketplaceTab = load("/icons/com/jetbrains/edu/learning/marketplace_courses_tab.svg");
     }
-
-    public static final Icon JetBrainsAcademy = load("/icons/com/jetbrains/edu/learning/JB_academy.svg");
   }
 
   /**
@@ -164,6 +166,4 @@ public final class EducationalCoreIcons {
     public static final Icon MoveUp = load("/icons/com/jetbrains/edu/learning/moveUp.svg");
     public static final Icon NavigationMapTheoryTask = load("/icons/com/jetbrains/edu/eduNavigationMapTheoryTask.svg");
   }
-
-  public static final Icon DOT = load("/icons/com/jetbrains/edu/learning/dot.svg"); // 3x3
 }

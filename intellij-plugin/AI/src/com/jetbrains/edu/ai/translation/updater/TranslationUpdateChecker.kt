@@ -9,13 +9,13 @@ import com.jetbrains.edu.ai.messages.EduAIBundle
 import com.jetbrains.edu.ai.translation.TRANSLATION_NOTIFICATION_ID
 import com.jetbrains.edu.ai.translation.TranslationLoader
 import com.jetbrains.edu.ai.translation.connector.TranslationServiceConnector
-import com.jetbrains.edu.learning.taskToolWindow.ui.notification.TaskToolWindowNotification.ActionLabel
 import com.jetbrains.edu.learning.ai.TranslationProjectSettings
 import com.jetbrains.edu.learning.ai.TranslationProperties
 import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.onError
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import com.jetbrains.edu.learning.taskToolWindow.ui.notification.TaskToolWindowNotification.ActionLabel
 
 @Service(Service.Level.PROJECT)
 class TranslationUpdateChecker(private val project: Project) {

@@ -14,7 +14,10 @@ import org.jetbrains.yaml.psi.YAMLSequence
 
 class YamlActionsHelperImpl : YamlActionsHelper {
 
-  override fun findPsiElementCorrespondingToPlaceholder(taskInfoYamlPsiFile: PsiFile, placeholder: AnswerPlaceholder): NavigatablePsiElement? {
+  override fun findPsiElementCorrespondingToPlaceholder(
+    taskInfoYamlPsiFile: PsiFile,
+    placeholder: AnswerPlaceholder
+  ): NavigatablePsiElement? {
     val yamlDocument = taskInfoYamlPsiFile.childrenOfType<YAMLDocument>().firstOrNull() ?: return null
 
     val topLevelObject = yamlDocument.firstChild as? YAMLMapping ?: return null

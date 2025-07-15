@@ -1,8 +1,8 @@
 package com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.steps
 
-import com.jetbrains.edu.learning.taskToolWindow.replaceMediaForTheme
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformer
 import com.jetbrains.edu.learning.taskToolWindow.htmlTransformers.HtmlTransformerContext
+import com.jetbrains.edu.learning.taskToolWindow.replaceMediaForTheme
 import org.jsoup.nodes.Document
 
 object MediaThemesTransformer : HtmlTransformer {

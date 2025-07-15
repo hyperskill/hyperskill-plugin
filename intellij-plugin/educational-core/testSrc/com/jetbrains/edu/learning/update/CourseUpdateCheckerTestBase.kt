@@ -39,9 +39,11 @@ abstract class CourseUpdateCheckerTestBase : CourseGenerationTestBase<EmptyProje
     }
   }
 
-  open fun checkNotification(notificationListener: NotificationListener,
-                             isCourseUpToDate: Boolean,
-                             notificationText: String = EduCoreBundle.message("update.content.request")) {
+  open fun checkNotification(
+    notificationListener: NotificationListener,
+    isCourseUpToDate: Boolean,
+    notificationText: String = EduCoreBundle.message("update.content.request")
+  ) {
     assertEquals(notificationListener.notificationShown, !isCourseUpToDate)
     if (!isCourseUpToDate) {
       assertEquals(notificationText, notificationListener.notificationText)

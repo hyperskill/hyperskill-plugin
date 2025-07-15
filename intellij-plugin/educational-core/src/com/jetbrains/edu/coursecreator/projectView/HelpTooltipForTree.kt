@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JTree
 import javax.swing.tree.TreeNode
 
-class HelpTooltipForTree: SyncChangesHelpTooltip() {
+class HelpTooltipForTree : SyncChangesHelpTooltip() {
   private val isTooltipEnabled = AtomicBoolean(false)
   private var currentHoveredNode: TreeNode? = null
 
@@ -22,7 +22,7 @@ class HelpTooltipForTree: SyncChangesHelpTooltip() {
     parentDisposable: Disposable,
     tree: JTree,
     callback: SyncChangesHelpTooltip.(node: TreeNode) -> Boolean
-  ) : SyncChangesHelpTooltip {
+  ): SyncChangesHelpTooltip {
     val mouseListener = object : MouseAdapter() {
       override fun mouseEntered(e: MouseEvent) = processMouse(e, tree, callback)
       override fun mouseExited(e: MouseEvent) = processMouse(e, tree, callback)
@@ -41,7 +41,8 @@ class HelpTooltipForTree: SyncChangesHelpTooltip() {
     val row = tree.getRowForLocation(e.x, e.y)
     val node = if (row >= 0 && tree.getRowBounds(row).contains(e.point)) {
       tree.getPathForRow(row).lastPathComponent as? TreeNode
-    } else {
+    }
+    else {
       null
     }
 

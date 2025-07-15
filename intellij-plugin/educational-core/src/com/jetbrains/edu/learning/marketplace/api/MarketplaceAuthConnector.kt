@@ -102,7 +102,7 @@ abstract class MarketplaceAuthConnector : EduLoginConnector<MarketplaceAccount, 
   }
 
   fun invokeJBALogin(jbAuthService: JBAccountInfoService, postLoginActions: List<Runnable>) {
-    jbAuthService.invokeJBALogin({postLoginActions.forEach { it.run() }}, {
+    jbAuthService.invokeJBALogin({ postLoginActions.forEach { it.run() } }, {
       EduNotificationManager.showErrorNotification(
         title = EduCoreBundle.message("error.login.failed"),
         content = EduCoreBundle.message("error.failed.login.to.subsystem", JET_BRAINS_ACCOUNT)
@@ -143,16 +143,19 @@ abstract class MarketplaceAuthConnector : EduLoginConnector<MarketplaceAccount, 
     }
   }
 
-  fun invokeJBALoginAction(jbAuthService: JBAccountInfoService, vararg postLoginActions: Runnable) = object : AnAction(EduCoreBundle.message("action.relogin.to.jba")) {
-    override fun actionPerformed(e: AnActionEvent) {
-      LOG.warn("Invoking login to JB account")
-      invokeJBALogin(jbAuthService, setPostLoginActions(*postLoginActions))
+  fun invokeJBALoginAction(jbAuthService: JBAccountInfoService, vararg postLoginActions: Runnable) =
+    object : AnAction(EduCoreBundle.message("action.relogin.to.jba")) {
+      override fun actionPerformed(e: AnActionEvent) {
+        LOG.warn("Invoking login to JB account")
+        invokeJBALogin(jbAuthService, setPostLoginActions(*postLoginActions))
+      }
     }
-  }
 
   private fun retrieveHubToken(jbaAccessToken: String): TokenInfo {
-    val response = extensionGrantsEndpoint.exchangeTokens(JBA_TOKEN_EXCHANGE, jbaAccessToken,
-                                                          MARKETPLACE_CLIENT_ID).executeHandlingExceptions()
+    val response = extensionGrantsEndpoint.exchangeTokens(
+      JBA_TOKEN_EXCHANGE, jbaAccessToken,
+      MARKETPLACE_CLIENT_ID
+    ).executeHandlingExceptions()
     return response?.body() ?: error("Failed to obtain hub token via extension grants. JetBrains account access token is null")
   }
 
@@ -163,7 +166,8 @@ abstract class MarketplaceAuthConnector : EduLoginConnector<MarketplaceAccount, 
     val retrofit = createRetrofitBuilder(
       HUB_AUTH_URL, connectionPool,
       accessToken = Base64.getEncoder().encodeToString("$clientId:$clientSecret".toByteArray()),
-      authHeaderValue = AUTH_TYPE_BASIC)
+      authHeaderValue = AUTH_TYPE_BASIC
+    )
       .addConverterFactory(converterFactory)
       .build()
 

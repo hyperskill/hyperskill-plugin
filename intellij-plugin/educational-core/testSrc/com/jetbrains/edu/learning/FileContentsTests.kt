@@ -1,10 +1,6 @@
 package com.jetbrains.edu.learning
 
-import com.jetbrains.edu.learning.courseFormat.FileContents
-import com.jetbrains.edu.learning.courseFormat.InMemoryBinaryContents
-import com.jetbrains.edu.learning.courseFormat.InMemoryTextualContents
-import com.jetbrains.edu.learning.courseFormat.InMemoryUndeterminedContents
-import com.jetbrains.edu.learning.courseFormat.TextualContents
+import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.storage.debugString
 import com.jetbrains.edu.learning.storage.wrapWithDiagnostics
 import junit.framework.TestCase.assertEquals

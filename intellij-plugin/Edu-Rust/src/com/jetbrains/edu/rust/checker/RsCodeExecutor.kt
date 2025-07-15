@@ -27,7 +27,8 @@ class RsCodeExecutor : CodeExecutor {
   override fun execute(project: Project, task: Task, indicator: ProgressIndicator, input: String?): Result<String, CheckResult> {
     val taskDir = task.getDir(project.courseDir) ?: return resultUnchecked(EduRustBundle.message("error.no.task.dir"))
     val mainVFile = task.findSourceDir(taskDir)?.findChild(MAIN_RS_FILE) ?: return resultUnchecked(
-      EduRustBundle.message("error.failed.find.0", MAIN_RS_FILE))
+      EduRustBundle.message("error.failed.find.0", MAIN_RS_FILE)
+    )
     val target = runReadAction { PsiManager.getInstance(project).findFile(mainVFile)?.rustFile?.containingCargoTarget }
                  ?: return resultUnchecked(EduRustBundle.message("error.failed.find.target.for.0", MAIN_RS_FILE))
     val cargo = project.rustSettings.toolchain?.cargo() ?: return resultUnchecked(EduRustBundle.message("error.no.toolchain"))

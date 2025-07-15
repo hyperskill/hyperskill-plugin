@@ -1,8 +1,8 @@
 package com.jetbrains.edu.learning.compatibility
 
 import com.intellij.util.ui.EmptyIcon
-import com.jetbrains.edu.learning.newproject.ui.CoursesPanel
 import com.jetbrains.edu.learning.courseFormat.PluginInfo
+import com.jetbrains.edu.learning.newproject.ui.CoursesPanel
 import javax.swing.Icon
 
 /**

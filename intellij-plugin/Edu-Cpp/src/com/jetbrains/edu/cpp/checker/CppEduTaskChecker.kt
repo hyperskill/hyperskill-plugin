@@ -18,7 +18,8 @@ import com.jetbrains.edu.learning.checker.EnvironmentChecker
 import com.jetbrains.edu.learning.courseFormat.ext.getAllTestFiles
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 
-open class CppEduTaskChecker(task: EduTask, envChecker: EnvironmentChecker, project: Project) : EduTaskCheckerBase(task, envChecker, project) {
+open class CppEduTaskChecker(task: EduTask, envChecker: EnvironmentChecker, project: Project) :
+  EduTaskCheckerBase(task, envChecker, project) {
   override fun createDefaultTestConfigurations(): List<RunnerAndConfigurationSettings> {
     val configurationFromContext = createTestConfigurationsForTestFiles()
     return configurationFromContext.ifEmpty {
@@ -56,7 +57,8 @@ open class CppEduTaskChecker(task: EduTask, envChecker: EnvironmentChecker, proj
   protected open fun getFactory(): ConfigurationFactory? = null
 }
 
-class CppCatchEduTaskChecker(task: EduTask, envChecker: EnvironmentChecker, project: Project) : CppEduTaskChecker(task, envChecker, project) {
+class CppCatchEduTaskChecker(task: EduTask, envChecker: EnvironmentChecker, project: Project) :
+  CppEduTaskChecker(task, envChecker, project) {
   override fun getFactory(): ConfigurationFactory = CMakeCatchTestRunConfigurationType.getInstance().factory
 }
 

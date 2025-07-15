@@ -14,7 +14,8 @@ class KtExecutedTestsInfoTest : JdkCheckerTestBase() {
     lesson {
       eduTask("testFailed") {
         kotlinTaskFile("src/Task.kt")
-        kotlinTaskFile("test/Tests.kt", """
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
           
@@ -34,7 +35,8 @@ class KtExecutedTestsInfoTest : JdkCheckerTestBase() {
       }
       eduTask("testIgnored") {
         kotlinTaskFile("src/Task.kt")
-        kotlinTaskFile("test/Tests.kt", """
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Ignore
           import org.junit.Test
@@ -57,7 +59,8 @@ class KtExecutedTestsInfoTest : JdkCheckerTestBase() {
       }
       eduTask("testPassed") {
         kotlinTaskFile("src/Task.kt")
-        kotlinTaskFile("test/Tests.kt", """
+        kotlinTaskFile(
+          "test/Tests.kt", """
           import org.junit.Assert
           import org.junit.Test
           

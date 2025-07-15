@@ -8,6 +8,8 @@ import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.FRAMEWORK
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.stepik.BLOCK
 import com.jetbrains.edu.learning.stepik.PYCHARM
@@ -15,8 +17,6 @@ import com.jetbrains.edu.learning.stepik.SOURCE
 import com.jetbrains.edu.learning.stepik.Step
 import com.jetbrains.edu.learning.stepik.api.MockStepikBasedConnector
 import com.jetbrains.edu.learning.stepik.api.OPTIONS
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
@@ -71,9 +71,15 @@ class MockHyperskillConnector : HyperskillConnector(), MockStepikBasedConnector 
       val path = request.pathWithoutPrams
       MockResponseFactory.fromString(
         when {
-          path == "/api/projects/$projectId" -> objectMapper.writeValueAsString(ProjectsList().also { it.projects = listOf(hyperskillProject) })
+          path == "/api/projects/$projectId" -> objectMapper.writeValueAsString(ProjectsList().also {
+            it.projects = listOf(hyperskillProject)
+          })
+
           path == "/api/stages" && request.hasParams("project" to projectId.toString()) -> getStagesList(course.stages)
-          path ==  "/api/steps" && request.hasParams("ids" to course.stages.map { it.stepId }.joinToString(separator = ","))-> stepSources(course.allTasks)
+          path == "/api/steps" && request.hasParams("ids" to course.stages.map { it.stepId }.joinToString(separator = ",")) -> stepSources(
+            course.allTasks
+          )
+
           else -> return@withResponseHandler null
         }
       )

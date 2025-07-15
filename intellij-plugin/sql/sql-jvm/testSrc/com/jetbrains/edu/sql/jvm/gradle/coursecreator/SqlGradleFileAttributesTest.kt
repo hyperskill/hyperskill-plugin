@@ -7,7 +7,6 @@ import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.sql.jvm.gradle.SqlGradleConfigurator
 import org.junit.runners.Parameterized.Parameters
-import kotlin.collections.plus
 
 class SqlGradleFileAttributesTest(
   filePath: String,
@@ -23,7 +22,7 @@ class SqlGradleFileAttributesTest(
       val expectedAttributes = expected(
         excludedFromArchive = true,
         archiveInclusionPolicy = ArchiveInclusionPolicy.MUST_EXCLUDE
-        )
+      )
 
       return GradleFileAttributesTest.data() + listOf(
         arrayOf("file.db", expectedAttributes),

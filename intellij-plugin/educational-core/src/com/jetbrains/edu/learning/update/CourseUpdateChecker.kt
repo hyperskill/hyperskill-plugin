@@ -50,8 +50,10 @@ abstract class CourseUpdateChecker(protected val project: Project) : Disposable,
 
   @VisibleForTesting
   fun cancelCheckRequests() {
-    LOG.info("Is course up to date check requests for ${course?.name} canceled, " +
-             "queue contained ${checkForAlarm.activeRequestCount} request(s)")
+    LOG.info(
+      "Is course up to date check requests for ${course?.name} canceled, " +
+      "queue contained ${checkForAlarm.activeRequestCount} request(s)"
+    )
     checkForAlarm.cancelAllRequests()
   }
 

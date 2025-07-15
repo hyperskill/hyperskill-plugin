@@ -134,7 +134,8 @@ fun JPanel.addBorder(newBorder: Border?): JPanel {
 fun Row.createButton(isCheckbox: Boolean): Cell<JToggleButton> {
   return if (isCheckbox) {
     checkBox("")
-  } else {
+  }
+  else {
     radioButton("")
   }
 }

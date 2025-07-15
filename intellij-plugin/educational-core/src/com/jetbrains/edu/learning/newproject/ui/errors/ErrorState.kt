@@ -38,30 +38,38 @@ sealed class ErrorState(
   object None : ErrorState(OK, null, Color.BLACK, true)
   object Pending : ErrorState(LANGUAGE_SETTINGS_PENDING, null, Color.BLACK, false)
 
-  object NotLoggedIn : ErrorState(LOGIN_RECOMMENDED,
-                                  ValidationMessage(EduCoreBundle.message("validation.stepik.log.in.needed"), type = WARNING),
-                                  warningTextForeground,
-                                  true)
+  object NotLoggedIn : ErrorState(
+    LOGIN_RECOMMENDED,
+    ValidationMessage(EduCoreBundle.message("validation.stepik.log.in.needed"), type = WARNING),
+    warningTextForeground,
+    true
+  )
 
-  object HyperskillLoginNeeded : ErrorState(LOGIN_ERROR,
-                                                  ValidationMessage(EduCoreBundle.message("validation.hyperskill.login.needed")),
-                                                  errorTextForeground,
-                                                  false)
+  object HyperskillLoginNeeded : ErrorState(
+    LOGIN_ERROR,
+    ValidationMessage(EduCoreBundle.message("validation.hyperskill.login.needed")),
+    errorTextForeground,
+    false
+  )
 
-  abstract class LocationError(messageText: String) : ErrorState(LOCATION_ERROR,
-                                                                 ValidationMessage(messageText, type = ERROR),
-                                                                 errorTextForeground,
-                                                                 false)
+  abstract class LocationError(messageText: String) : ErrorState(
+    LOCATION_ERROR,
+    ValidationMessage(messageText, type = ERROR),
+    errorTextForeground,
+    false
+  )
 
   object EmptyLocation : LocationError(EduCoreBundle.message("validation.empty.location"))
   object InvalidLocation : LocationError(EduCoreBundle.message("validation.cannot.create.course.at.location"))
 
   abstract class LoginRequired(
     platformName: String
-  ) : ErrorState(LOGIN_ERROR,
-                 ValidationMessage(EduCoreBundle.message("validation.log.in.to.start.course", platformName)),
-                 errorTextForeground,
-                 false)
+  ) : ErrorState(
+    LOGIN_ERROR,
+    ValidationMessage(EduCoreBundle.message("validation.log.in.to.start.course", platformName)),
+    errorTextForeground,
+    false
+  )
 
   object StepikLoginRequired : LoginRequired(StepikNames.STEPIK)
 
@@ -72,23 +80,34 @@ sealed class ErrorState(
 
   class LanguageSettingsError(message: ValidationMessage) : ErrorState(LANGUAGE_SETTINGS_ERROR, message, errorTextForeground, false)
 
-  object JCEFRequired : ErrorState(NO_JCEF, ValidationMessage(
-    EduCoreBundle.message("validation.no.jcef")), errorTextForeground, false)
+  object JCEFRequired : ErrorState(
+    NO_JCEF, ValidationMessage(
+      EduCoreBundle.message("validation.no.jcef")
+    ), errorTextForeground, false
+  )
 
-  object IncompatibleVersion : ErrorState(PLUGIN_UPDATE_REQUIRED, ValidationMessage(EduCoreBundle.message("validation.plugins.required")),
-                                          errorTextForeground, false)
+  object IncompatibleVersion : ErrorState(
+    PLUGIN_UPDATE_REQUIRED, ValidationMessage(EduCoreBundle.message("validation.plugins.required")),
+    errorTextForeground, false
+  )
 
-  data class RequirePlugins(val pluginIds: List<PluginInfo>) : ErrorState(PLUGIN_UPDATE_REQUIRED, errorMessageForRequiredPlugins(pluginIds),
-                                                                          errorTextForeground, false)
+  data class RequirePlugins(val pluginIds: List<PluginInfo>) : ErrorState(
+    PLUGIN_UPDATE_REQUIRED, errorMessageForRequiredPlugins(pluginIds),
+    errorTextForeground, false
+  )
 
-  object RestartNeeded : ErrorState(PLUGIN_UPDATE_REQUIRED,
-                                    ValidationMessage(EduCoreBundle.message("validation.plugins.restart.to.activate.plugin")),
-                                    errorTextForeground,
-                                    false)
+  object RestartNeeded : ErrorState(
+    PLUGIN_UPDATE_REQUIRED,
+    ValidationMessage(EduCoreBundle.message("validation.plugins.restart.to.activate.plugin")),
+    errorTextForeground,
+    false
+  )
 
-  class UnsupportedCourse(@Nls(capitalization = Nls.Capitalization.Sentence) message: String) : ErrorState(UNSUPPORTED_COURSE,
-                                                                                                           ValidationMessage(message),
-                                                                                                           errorTextForeground, false)
+  class UnsupportedCourse(@Nls(capitalization = Nls.Capitalization.Sentence) message: String) : ErrorState(
+    UNSUPPORTED_COURSE,
+    ValidationMessage(message),
+    errorTextForeground, false
+  )
 
   fun merge(other: ErrorState): ErrorState = if (severity < other.severity) other else this
 
@@ -108,6 +127,7 @@ sealed class ErrorState(
           is CourseCompatibility.PluginsRequired -> {
             if (compatibility.toInstallOrEnable.isEmpty()) RestartNeeded else RequirePlugins(compatibility.toInstallOrEnable)
           }
+
           else -> None
         }
       }

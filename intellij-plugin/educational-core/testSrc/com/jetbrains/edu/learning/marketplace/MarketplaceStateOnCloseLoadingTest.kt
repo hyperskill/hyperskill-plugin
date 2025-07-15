@@ -144,7 +144,9 @@ class MarketplaceStateOnCloseLoadingTest : SolutionLoadingTestBase() {
     private const val SECOND_TASK_STATE_ON_CLOSE_AWS_KEY = "23"
   }
 
-    @Language("JSON") private val statesList = listOf("""
+  @Language("JSON")
+  private val statesList = listOf(
+    """
       {
         "has_next" : false,
         "states_on_close" : [
@@ -166,7 +168,8 @@ class MarketplaceStateOnCloseLoadingTest : SolutionLoadingTestBase() {
             }
           ]
       }
-  """)
+  """
+  )
 
   @Language("JSON")
   private val stateOnCloseTask1 = """

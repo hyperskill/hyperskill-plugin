@@ -1,11 +1,11 @@
 package com.jetbrains.edu.coursecreator.actions.taskFile
 
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.learning.`in`
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.findTask
+import com.jetbrains.edu.learning.`in`
 import org.junit.Test
 
 class CCIncludeIntoTaskTest : CCChangeFileOwnerTestBase(CCIncludeIntoTask.ACTION_ID) {
@@ -141,12 +141,16 @@ class CCIncludeIntoTaskTest : CCChangeFileOwnerTestBase(CCIncludeIntoTask.ACTION
 
   @Test
   fun `test do not include existing task file`() = doUnavailableTest("lesson1/task1/src/taskFile.txt")
+
   @Test
   fun `test do not include existing test file`() = doUnavailableTest("lesson1/task1/test/testFile.txt")
+
   @Test
   fun `test do not include existing additional file`() = doUnavailableTest("lesson1/task1/additionalFile.txt")
+
   @Test
   fun `test do not include file outside of task dir`() = doUnavailableTest("excluded_folder4/excluded_file7.txt")
+
   @Test
   fun `test do not include folder outside of task dir`() = doUnavailableTest("excluded_folder4")
 

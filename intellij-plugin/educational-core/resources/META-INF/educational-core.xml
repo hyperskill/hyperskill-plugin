@@ -280,8 +280,8 @@
             icon="com.jetbrains.edu.EducationalCoreIcons.Actions.ApplyCode">
       <add-to-group group-id="Diff.ViewerToolbar"/>
       <keyboard-shortcut
-        keymap="$default"
-        first-keystroke="control alt shift A"
+          keymap="$default"
+          first-keystroke="control alt shift A"
       />
     </action>
     <action id="Educational.Educator.OpenEducatorHelp"
@@ -291,7 +291,7 @@
               class="com.jetbrains.edu.learning.projectView.CourseViewPane$HideSolvedLessonsAction"/>
     </group>
 
-   <!-- Actions located in the right corner of the Course View header -->
+    <!-- Actions located in the right corner of the Course View header -->
     <group id="Educational.CourseView.Header.Right">
       <reference ref="Educational.Educator.CreateCoursePreview"/>
       <reference ref="Educational.Educator.OpenEducatorHelp"/>
@@ -438,7 +438,8 @@
     <fileEditorProvider implementation="com.jetbrains.edu.coursecreator.framework.editor.EduSplitFileEditorProvider" order="first"/>
 
     <!-- Rename -->
-    <renamePsiElementProcessor implementation="com.jetbrains.edu.coursecreator.handlers.rename.CCDescriptionFileRenameProcessor" order="first"/>
+    <renamePsiElementProcessor implementation="com.jetbrains.edu.coursecreator.handlers.rename.CCDescriptionFileRenameProcessor"
+                               order="first"/>
 
     <!-- Move -->
     <refactoring.moveHandler implementation="com.jetbrains.edu.coursecreator.handlers.move.CCSectionMoveHandlerDelegate"

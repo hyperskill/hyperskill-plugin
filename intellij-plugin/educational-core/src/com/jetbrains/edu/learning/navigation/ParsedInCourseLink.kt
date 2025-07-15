@@ -50,12 +50,14 @@ sealed class ParsedInCourseLink<T : StudyItem>(val file: VirtualFile, val item: 
           val file = taskFile.getVirtualFile(project) ?: return null
           FileInTask(file, container)
         }
+
         is ItemContainer -> {
           val segments = remainingPath.split("/", limit = 2)
           val childItemName = segments[0]
           val childItem = container.getItem(childItemName) ?: return null
           parseNextItem(project, childItem, segments.getOrNull(1))
         }
+
         else -> null
       }
     }

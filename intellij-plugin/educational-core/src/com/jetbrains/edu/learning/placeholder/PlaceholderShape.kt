@@ -28,8 +28,12 @@ sealed class PlaceholderShape {
   // Empty placeholder
   class Line(editor: Editor, point1: Point, point2: Point) : PlaceholderShape() {
     init {
-      points.addAll(listOf(visiblePoint(editor, point1),
-                           visiblePoint(editor, point2.bottom(editor))))
+      points.addAll(
+        listOf(
+          visiblePoint(editor, point1),
+          visiblePoint(editor, point2.bottom(editor))
+        )
+      )
     }
   }
 
@@ -41,10 +45,14 @@ sealed class PlaceholderShape {
     init {
       val point2 = Point(point3.x, point1.y)
       val point4 = Point(point1.x, point3.y)
-      points.addAll(listOf(visiblePoint(editor, point1),
-                           visiblePoint(editor, point2),
-                           visiblePoint(editor, point3.bottom(editor)),
-                           visiblePoint(editor, point4.bottom(editor))))
+      points.addAll(
+        listOf(
+          visiblePoint(editor, point1),
+          visiblePoint(editor, point2),
+          visiblePoint(editor, point3.bottom(editor)),
+          visiblePoint(editor, point4.bottom(editor))
+        )
+      )
     }
   }
 
@@ -58,13 +66,16 @@ sealed class PlaceholderShape {
       val point2 = Point(point3.x, point1.y)
       val point4 = Point(point5.x, point3.y)
       val point6 = Point(point1.x, point5.y)
-      points.addAll(listOf(visiblePoint(editor, point1),
-                           visiblePoint(editor, point2),
-                           visiblePoint(editor, point3),
-                           visiblePoint(editor, point4),
-                           visiblePoint(editor, point5.bottom(editor)),
-                           visiblePoint(editor, point6.bottom(editor))
-      ))
+      points.addAll(
+        listOf(
+          visiblePoint(editor, point1),
+          visiblePoint(editor, point2),
+          visiblePoint(editor, point3),
+          visiblePoint(editor, point4),
+          visiblePoint(editor, point5.bottom(editor)),
+          visiblePoint(editor, point6.bottom(editor))
+        )
+      )
     }
   }
 
@@ -78,13 +89,16 @@ sealed class PlaceholderShape {
       val point2 = Point(point3.x, point1.y)
       val point4 = Point(point5.x, point3.y)
       val point6 = Point(point1.x, point5.y)
-      points.addAll(listOf(visiblePoint(editor, point1),
-                           visiblePoint(editor, point2),
-                           visiblePoint(editor, point3.bottom(editor)),
-                           visiblePoint(editor, point4.bottom(editor)),
-                           visiblePoint(editor, point5),
-                           visiblePoint(editor, point6)
-      ))
+      points.addAll(
+        listOf(
+          visiblePoint(editor, point1),
+          visiblePoint(editor, point2),
+          visiblePoint(editor, point3.bottom(editor)),
+          visiblePoint(editor, point4.bottom(editor)),
+          visiblePoint(editor, point5),
+          visiblePoint(editor, point6)
+        )
+      )
     }
   }
 
@@ -101,15 +115,18 @@ sealed class PlaceholderShape {
       val point6 = Point(point7.x, point5.y)
       val point8 = Point(point1.x, point7.y)
 
-      points.addAll(listOf(visiblePoint(editor, point1),
-                           visiblePoint(editor, point2),
-                           visiblePoint(editor, point3),
-                           visiblePoint(editor, point4),
-                           visiblePoint(editor, point5.bottom(editor)),
-                           visiblePoint(editor, point6.bottom(editor)),
-                           visiblePoint(editor, point7),
-                           visiblePoint(editor, point8)
-      ))
+      points.addAll(
+        listOf(
+          visiblePoint(editor, point1),
+          visiblePoint(editor, point2),
+          visiblePoint(editor, point3),
+          visiblePoint(editor, point4),
+          visiblePoint(editor, point5.bottom(editor)),
+          visiblePoint(editor, point6.bottom(editor)),
+          visiblePoint(editor, point7),
+          visiblePoint(editor, point8)
+        )
+      )
     }
   }
 

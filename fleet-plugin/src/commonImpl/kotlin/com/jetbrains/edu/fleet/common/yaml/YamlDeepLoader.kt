@@ -37,6 +37,7 @@ object YamlDeepLoader {
             it.items = it.deserializeContent(courseDir, it.taskList, mapper)
           }
         }
+
         is Lesson -> {
           // set parent to correctly obtain dirs in deserializeContent method
           deserializedItem.parent = deserializedCourse
@@ -47,14 +48,16 @@ object YamlDeepLoader {
 
     // we init course before setting description and remote info, as we have to set parent item
     // to obtain description/remote config file to set info from
-    deserializedCourse.init( false)
+    deserializedCourse.init(false)
 
     return deserializedCourse
   }
 
-  private suspend inline fun <reified T : StudyItem> StudyItem.deserializeContent(courseDir: FileAddress,
-                                                                                  contentList: List<T>,
-                                                                                  mapper: ObjectMapper = YamlMapper.MAPPER): List<T> {
+  private suspend inline fun <reified T : StudyItem> StudyItem.deserializeContent(
+    courseDir: FileAddress,
+    contentList: List<T>,
+    mapper: ObjectMapper = YamlMapper.MAPPER
+  ): List<T> {
     val fsApi = requireNotNull(fsService(courseDir)) { "There must be fs service for file $courseDir" }
     val content = mutableListOf<T>()
     for (titledItem in contentList) {

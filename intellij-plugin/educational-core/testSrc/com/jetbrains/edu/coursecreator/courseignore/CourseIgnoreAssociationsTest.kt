@@ -26,9 +26,10 @@ class CourseIgnoreAssociationsTest : CourseGenerationTestBase<EduProjectSettings
   }
 
   @Test
-  fun `test _courseignore file works even if associated with a wrong file type`() = doTestCourseignoreWorksEvenWithWrongFileTypeAssociation {
-    FileTypeManager.getInstance().associate(HtmlFileType.INSTANCE, ExactFileNameMatcher(COURSE_IGNORE))
-  }
+  fun `test _courseignore file works even if associated with a wrong file type`() =
+    doTestCourseignoreWorksEvenWithWrongFileTypeAssociation {
+      FileTypeManager.getInstance().associate(HtmlFileType.INSTANCE, ExactFileNameMatcher(COURSE_IGNORE))
+    }
 
   @Test
   fun `test _courseignore association after project reopening with no association`() = doTestCorrectAssociationAfterProjectOpening {

@@ -119,13 +119,15 @@ abstract class FilterDropdown(
 }
 
 private class OptionNameCellRenderer : CheckboxTree.CheckboxTreeCellRenderer() {
-  override fun customizeRenderer(tree: JTree,
-                                 value: Any,
-                                 selected: Boolean,
-                                 expanded: Boolean,
-                                 leaf: Boolean,
-                                 row: Int,
-                                 hasFocus: Boolean) {
+  override fun customizeRenderer(
+    tree: JTree,
+    value: Any,
+    selected: Boolean,
+    expanded: Boolean,
+    leaf: Boolean,
+    row: Int,
+    hasFocus: Boolean
+  ) {
     if (value is DefaultMutableTreeNode) {
       val userObject = value.userObject
       if (userObject is String) {

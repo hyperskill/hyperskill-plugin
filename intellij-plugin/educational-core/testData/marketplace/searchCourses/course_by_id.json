@@ -5,21 +5,21 @@
       "plugins" : [
         {
           "id" : "1",
-          "lastUpdateDate": 1619697473000,
-          "cdate": 1623321716000,
+          "lastUpdateDate" : 1619697473000,
+          "cdate" : 1623321716000,
           "name" : "Introduction to Python",
           "description" : "Introduction course to Python",
           "downloads" : 2,
           "rating" : 5.0,
-          "authors": [
+          "authors" : [
             {
-              "name": "FirstName LastName"
+              "name" : "FirstName LastName"
             }
           ],
           "fields" : {
             "programmingLanguageId" : "Python",
             "language" : "en",
-            "isPrivate": false
+            "isPrivate" : false
           },
           "link" : "courseLink",
           "license" : "https://licenses/"

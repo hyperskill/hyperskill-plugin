@@ -25,10 +25,12 @@ class TestsOutputParserTest {
   fun `test multiline failure message with success in the middle`() {
     val failedLine1 = "123"
     val failedLine2 = "456"
-    val checkResult = getCheckResult("$STUDY_PREFIX $TEST_FAILED $failedLine1",
-                                            "$STUDY_PREFIX $failedLine2",
-                                            "$STUDY_PREFIX $TEST_OK",
-                                            "$STUDY_PREFIX $TEST_FAILED $failedLine1")
+    val checkResult = getCheckResult(
+      "$STUDY_PREFIX $TEST_FAILED $failedLine1",
+      "$STUDY_PREFIX $failedLine2",
+      "$STUDY_PREFIX $TEST_OK",
+      "$STUDY_PREFIX $TEST_FAILED $failedLine1"
+    )
     assertEquals(CheckStatus.Failed, checkResult.status)
     assertEquals("$failedLine1\n$failedLine2", checkResult.message.trim())
   }
@@ -37,10 +39,12 @@ class TestsOutputParserTest {
   fun `test multiline failure message with congrats in the middle`() {
     val failedLine1 = "123"
     val failedLine2 = "456"
-    val checkResult = getCheckResult("$STUDY_PREFIX $TEST_FAILED $failedLine1",
-                                            "$STUDY_PREFIX $failedLine2",
-                                            "$STUDY_PREFIX $CONGRATS_MESSAGE",
-                                            "$STUDY_PREFIX $TEST_FAILED $failedLine1")
+    val checkResult = getCheckResult(
+      "$STUDY_PREFIX $TEST_FAILED $failedLine1",
+      "$STUDY_PREFIX $failedLine2",
+      "$STUDY_PREFIX $CONGRATS_MESSAGE",
+      "$STUDY_PREFIX $TEST_FAILED $failedLine1"
+    )
     assertEquals(CheckStatus.Failed, checkResult.status)
     assertEquals("$failedLine1\n$failedLine2", checkResult.message.trim())
   }
@@ -49,8 +53,10 @@ class TestsOutputParserTest {
   fun `test multiline failure`() {
     val failedLine1 = "123"
     val failedLine2 = "456"
-    val checkResult = getCheckResult("$STUDY_PREFIX $TEST_FAILED $failedLine1",
-                                            "$STUDY_PREFIX $failedLine2")
+    val checkResult = getCheckResult(
+      "$STUDY_PREFIX $TEST_FAILED $failedLine1",
+      "$STUDY_PREFIX $failedLine2"
+    )
     assertEquals(CheckStatus.Failed, checkResult.status)
     assertEquals("$failedLine1\n$failedLine2", checkResult.message.trim())
   }
@@ -59,8 +65,10 @@ class TestsOutputParserTest {
   fun `test multiline failure with new line symbols at the end`() {
     val failedLine1 = "123"
     val failedLine2 = "456"
-    val checkResult = getCheckResult("$STUDY_PREFIX $TEST_FAILED $failedLine1\n",
-                                     "$STUDY_PREFIX $failedLine2\n")
+    val checkResult = getCheckResult(
+      "$STUDY_PREFIX $TEST_FAILED $failedLine1\n",
+      "$STUDY_PREFIX $failedLine2\n"
+    )
     assertEquals(CheckStatus.Failed, checkResult.status)
     assertEquals("$failedLine1\n$failedLine2", checkResult.message.trim())
   }

@@ -210,13 +210,15 @@ class MarketplaceSubmissionsTest : SubmissionsTestBase() {
   }
 
   private fun checkCommunitySolutionsPresented(taskId: Int, solutionsIds: List<Int>) {
-    val solutionsIdsFromMemory = SubmissionsManager.getInstance(project).getCommunitySubmissionsFromMemory(taskId)?.mapNotNull { it.id }?.toSet()
+    val solutionsIdsFromMemory =
+      SubmissionsManager.getInstance(project).getCommunitySubmissionsFromMemory(taskId)?.mapNotNull { it.id }?.toSet()
     checkNotNull(solutionsIdsFromMemory)
     assertTrue(solutionsIds.all { solutionsIdsFromMemory.contains(it) })
   }
 
   private fun checkCommunitySolutionNotPresented(taskId: Int, solutionId: Int) {
-    val solutionsIdsFromMemory = SubmissionsManager.getInstance(project).getCommunitySubmissionsFromMemory(taskId)?.mapNotNull { it.id }?.toSet()
+    val solutionsIdsFromMemory =
+      SubmissionsManager.getInstance(project).getCommunitySubmissionsFromMemory(taskId)?.mapNotNull { it.id }?.toSet()
     checkNotNull(solutionsIdsFromMemory)
     assertTrue(solutionId !in solutionsIdsFromMemory)
   }
@@ -288,14 +290,16 @@ class MarketplaceSubmissionsTest : SubmissionsTestBase() {
       for (i in submissionsLists.indices) {
         val getAllSubmissionsPageableCall = mockk<Call<MarketplaceSubmissionsList>>()
         every { service.getAllSubmissionsForCourse(any(), i + 1) } returns getAllSubmissionsPageableCall
-        val getAllSubmissionsPageableResponse = mapper.treeToValue(mapper.readTree(submissionsLists[i]), MarketplaceSubmissionsList::class.java)
+        val getAllSubmissionsPageableResponse =
+          mapper.treeToValue(mapper.readTree(submissionsLists[i]), MarketplaceSubmissionsList::class.java)
         every { getAllSubmissionsPageableCall.execute() } returns Response.success(getAllSubmissionsPageableResponse)
       }
 
       for (i in statesOnCloseList.indices) {
         val getAllStatesPageableCall = mockk<Call<MarketplaceStateOnCloseList>>()
         every { service.getStateOnClose(any(), i + 1) } returns getAllStatesPageableCall
-        val getAllStatesPageableResponse = mapper.treeToValue(mapper.readTree(statesOnCloseList[i]), MarketplaceStateOnCloseList::class.java)
+        val getAllStatesPageableResponse =
+          mapper.treeToValue(mapper.readTree(statesOnCloseList[i]), MarketplaceStateOnCloseList::class.java)
         every { getAllStatesPageableCall.execute() } returns Response.success(getAllStatesPageableResponse)
       }
 

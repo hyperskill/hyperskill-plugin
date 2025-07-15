@@ -7,10 +7,11 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.coursecreator.framework.CCFrameworkLessonManager
-import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.getStudyItem
+import com.jetbrains.edu.learning.getTaskFile
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import org.jetbrains.annotations.NonNls
 
@@ -29,6 +30,7 @@ class CCSyncChangesWithNextTasks : DumbAwareAction() {
         val task = context.lesson.taskList.firstOrNull() ?: return
         propagateChanges(project, task)
       }
+
       is TaskFilesContext -> propagateChanges(project, context.task, context.files)
       null -> error("SyncChangesWithNextTasks action was performed from invalid place")
     }
@@ -48,9 +50,11 @@ class CCSyncChangesWithNextTasks : DumbAwareAction() {
       context is LessonContext -> {
         EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.Lesson.text") to EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.Lesson.description")
       }
+
       context is TaskFilesContext && context.files.size == 1 -> {
         EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.SingleFile.text") to EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.SingleFile.description")
       }
+
       else -> {
         EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.SeveralFiles.text") to EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.SeveralFiles.description")
       }
@@ -82,6 +86,7 @@ class CCSyncChangesWithNextTasks : DumbAwareAction() {
           else -> null
         }
       }
+
       otherFiles.isNotEmpty() -> {
         val taskFiles = otherFiles.mapNotNull { it.getTaskFile(project) }
 
@@ -92,6 +97,7 @@ class CCSyncChangesWithNextTasks : DumbAwareAction() {
 
         TaskFilesContext(task, taskFiles)
       }
+
       else -> null
     }
   }

@@ -201,9 +201,11 @@ abstract class EduCourseUpdater(val project: Project, val course: EduCourse) {
     }
   }
 
-  private fun processFrameworkLessonModified(lessonFromServer: FrameworkLesson,
-                                             currentLesson: FrameworkLesson,
-                                             remoteParent: LessonContainer) {
+  private fun processFrameworkLessonModified(
+    lessonFromServer: FrameworkLesson,
+    currentLesson: FrameworkLesson,
+    remoteParent: LessonContainer
+  ) {
     if (currentLesson.shouldBeUpdated(lessonFromServer)) {
       invokeAndWaitIfNeeded {
         lessonFromServer.currentTaskIndex = currentLesson.currentTaskIndex
@@ -277,10 +279,12 @@ abstract class EduCourseUpdater(val project: Project, val course: EduCourse) {
     }
   }
 
-  private fun updateTasks(taskIdsToUpdate: List<Int>,
-                          lessonFromServer: Lesson,
-                          currentLesson: Lesson,
-                          lessonDir: VirtualFile) {
+  private fun updateTasks(
+    taskIdsToUpdate: List<Int>,
+    lessonFromServer: Lesson,
+    currentLesson: Lesson,
+    lessonDir: VirtualFile
+  ) {
     val serverTasksById = lessonFromServer.taskList.associateBy({ it.id }, { it })
     val tasksById = currentLesson.taskList.associateBy { it.id }
     for (taskId in taskIdsToUpdate) {

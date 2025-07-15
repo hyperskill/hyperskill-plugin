@@ -30,7 +30,8 @@ class StudentYamlSerializationTest : EduTestCase() {
   fun `test student course`() {
     val course = course {}
 
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -38,7 +39,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       |mode: Study
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -52,7 +54,8 @@ class StudentYamlSerializationTest : EduTestCase() {
 
     course.hyperskillProject = hyperskillProject
 
-    doTest(course, """
+    doTest(
+      course, """
       |type: hyperskill
       |title: Test Course
       |language: English
@@ -61,7 +64,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       |mode: Study
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -71,14 +75,16 @@ class StudentYamlSerializationTest : EduTestCase() {
     frameworkLesson.addTask(EduTask("task2"))
     frameworkLesson.currentTaskIndex = 1
 
-    doTest(frameworkLesson, """
+    doTest(
+      frameworkLesson, """
       |type: framework
       |content:
       |- task1
       |- task2
       |current_task: 1
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -91,11 +97,13 @@ class StudentYamlSerializationTest : EduTestCase() {
     task.status = CheckStatus.Solved
     task.record = 1
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |status: Solved
     |record: 1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -111,7 +119,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     }.findTask("lesson1", "task1") as ChoiceTask
     task.record = 1
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: choice
     |is_multiple_choice: false
     |options:
@@ -124,7 +133,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |selected_options:
     |- 1
     |local_check: true
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -145,7 +155,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     }.findTask("lesson1", "task1") as ChoiceTask
     task.record = 1
     task.canCheckLocally = false
-    doTest(task, """
+    doTest(
+      task, """
     |type: choice
     |is_multiple_choice: true
     |options:
@@ -161,7 +172,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |selected_options:
     |- 1
     |local_check: false
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -178,7 +190,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     }.findTask("lesson1", "task1") as SortingTask
     task.record = 1
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: sorting
     |options:
     |- first
@@ -188,7 +201,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |ordering:
     |- 1
     |- 0
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -206,7 +220,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     }.findTask("lesson1", "task1") as MatchingTask
     task.record = 1
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: matching
     |captions:
     |- dog
@@ -219,7 +234,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |ordering:
     |- 1
     |- 0
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -240,7 +256,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     }.findTask("lesson1", "task1") as TableTask
     task.record = 1
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: table
     |status: Solved
     |record: 1
@@ -258,7 +275,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |- - false
     |  - false
     |  - true
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -271,11 +289,13 @@ class StudentYamlSerializationTest : EduTestCase() {
     task.status = CheckStatus.Solved
     task.record = 1
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: dataset
     |status: Solved
     |record: 1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -293,7 +313,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     task.feedback = CheckFeedback(time, CheckResult(task.status, message, diff = CheckResultDiff(expected, actual)))
     task.record = 1
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |status: Failed
     |feedback:
@@ -302,7 +323,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  expected: $expected
     |  actual: $actual
     |record: 1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -317,13 +339,15 @@ class StudentYamlSerializationTest : EduTestCase() {
     task.feedback = CheckFeedback(time, CheckResult(task.status, ""))
     task.record = 1
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |status: Failed
     |feedback:
     |  time: "Thu, 01 Jan 1970 00:00:00 UTC"
     |record: 1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -336,7 +360,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -344,7 +369,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
 
     assertContentsEqual(task, "task.txt", "text")
   }
@@ -361,7 +387,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -379,7 +406,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
 
     assertContentsEqual(task, "task.txt", "42 is the answer")
   }
@@ -396,7 +424,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     val taskFile = task.taskFiles.values.first()
     taskFile.isLearnerCreated = true
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -404,7 +433,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  learner_created: true
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
 
     assertContentsEqual(taskFile.pathInStorage, taskFile.contents, InMemoryTextualContents("text"))
   }
@@ -419,7 +449,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.png
@@ -427,7 +458,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -440,7 +472,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -448,7 +481,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
 
     assertContentsEqual(task, "task.txt", "task text")
   }
@@ -463,7 +497,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -472,7 +507,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
 
     assertContentsEqual(task, "task.txt", "task text")
   }
@@ -492,7 +528,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -504,7 +541,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
 
     assertContentsEqual(task, "task.txt", "task text")
     assertContentsEqual(task, gitObjectFilePath, gitObjectContents)
@@ -521,7 +559,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: a.txt
@@ -533,7 +572,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
 
     assertContentsEqual(task, "a.txt", "a.txt")
   }
@@ -558,7 +598,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: task.txt
@@ -570,7 +611,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
 
     assertContentsEqual(task, "task.txt", "task text")
   }
@@ -584,6 +626,7 @@ class StudentYamlSerializationTest : EduTestCase() {
   fun `test code task with c++`() {
     testCodeTaskProgrammingLanguage("c++")
   }
+
   @Test
   fun `test code task with python3_10`() {
     testCodeTaskProgrammingLanguage("python3.10")
@@ -599,7 +642,8 @@ class StudentYamlSerializationTest : EduTestCase() {
     val course = course {}
     course.disabledFeatures = listOf("ai-hints")
 
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -609,7 +653,8 @@ class StudentYamlSerializationTest : EduTestCase() {
       |- ai-hints
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   private fun testCodeTaskProgrammingLanguage(programmingLanguage: String) {

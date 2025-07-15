@@ -59,13 +59,17 @@ class MyCourseCardComponent(course: Course) : CourseCardComponent(course) {
         val location = courseMetaInfo.location
 
         // We want to set default option to make dialog work correctly on windows
-        val result = Messages.showDialog(this@MyCourseCardComponent,
-                                         EduCoreBundle.message("course.dialog.my.courses.remove.course.text", courseMetaInfo.name),
-                                         EduCoreBundle.message("course.dialog.my.courses.remove.course.title"),
-                                         arrayOf(Messages.getCancelButton(),
-                                                 EduCoreBundle.message("course.dialog.my.courses.remove.course")),
-                                         Messages.OK,
-                                         Messages.getErrorIcon())
+        val result = Messages.showDialog(
+          this@MyCourseCardComponent,
+          EduCoreBundle.message("course.dialog.my.courses.remove.course.text", courseMetaInfo.name),
+          EduCoreBundle.message("course.dialog.my.courses.remove.course.title"),
+          arrayOf(
+            Messages.getCancelButton(),
+            EduCoreBundle.message("course.dialog.my.courses.remove.course")
+          ),
+          Messages.OK,
+          Messages.getErrorIcon()
+        )
 
         if (result == Messages.NO) {
           CoursesStorage.getInstance().removeCourseByLocation(location)

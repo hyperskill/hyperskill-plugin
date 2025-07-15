@@ -25,7 +25,8 @@ class CCCheckAllTasksAction : AnAction(EduCoreBundle.lazyMessage("action.check.t
   ) : Task.Backgroundable(
     project,
     EduCoreBundle.message("progress.title.checking.tasks"),
-    true) {
+    true
+  ) {
     override fun run(indicator: ProgressIndicator) {
       val failedTasks = checkAllStudyItems(project, course, studyItems, indicator) ?: return
       if (failedTasks.isEmpty()) {

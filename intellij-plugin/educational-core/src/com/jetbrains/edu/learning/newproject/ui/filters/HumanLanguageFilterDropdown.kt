@@ -23,7 +23,8 @@ class HumanLanguageFilterDropdown(filterCourses: () -> Unit) : FilterDropdown(em
     selectedItems = selectedItems.union(items)
     if (allItems.size == selectedItems.size) {
       text = allSelectedTitle()
-    } else {
+    }
+    else {
       text = defaultTitle
     }
   }

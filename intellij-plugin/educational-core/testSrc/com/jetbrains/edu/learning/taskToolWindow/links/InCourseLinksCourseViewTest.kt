@@ -9,22 +9,26 @@ import org.junit.Test
 class InCourseLinksCourseViewTest : CourseViewHeavyTestBase() {
 
   @Test
-  fun `test section link`() = doTest("course://section1", """
+  fun `test section link`() = doTest(
+    "course://section1", """
     -Project
      -CourseNode Test Course  0/2
       +LessonNode lesson1
       -[SectionNode section1]
        +LessonNode lesson2
-  """)
+  """
+  )
 
   @Test
-  fun `test lesson link`() = doTest("course://lesson1", """
+  fun `test lesson link`() = doTest(
+    "course://lesson1", """
     -Project
      -CourseNode Test Course  0/2
       -[LessonNode lesson1]
        +TaskNode task1
       +SectionNode section1     
-  """)
+  """
+  )
 
   private fun doTest(url: String, expectedTree: String) {
     val course = course {

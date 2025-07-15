@@ -18,7 +18,7 @@ abstract class EduSettingsServiceTestBase : EduTestCase() {
     checkState<T>(expected)
   }
 
-  protected inline fun <reified T : Any> PersistentStateComponent<T>.checkState(@Language("XML")  expected: String) {
+  protected inline fun <reified T : Any> PersistentStateComponent<T>.checkState(@Language("XML") expected: String) {
     val currentState = state ?: error("Can't take state of `${javaClass.simpleName}`")
     val actual = JDOMUtil.writeElement(currentState.serialize())
     assertEquals(expected.trimIndent(), actual)

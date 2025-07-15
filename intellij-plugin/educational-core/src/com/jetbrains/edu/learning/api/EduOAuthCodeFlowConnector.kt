@@ -29,7 +29,8 @@ import kotlin.text.Charsets.US_ASCII
 /**
  * Base class for OAuthConnectors using [Authorization Code Flow with Proof Key for Code Exchange (PKCE)](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce)
  */
-abstract class EduOAuthCodeFlowConnector<Account : OAuthAccount<*>, SpecificUserInfo : UserInfo> : EduLoginConnector<Account, SpecificUserInfo>() {
+abstract class EduOAuthCodeFlowConnector<Account : OAuthAccount<*>, SpecificUserInfo : UserInfo> :
+  EduLoginConnector<Account, SpecificUserInfo>() {
   protected open val redirectHost = "localhost"
 
   protected open val baseOAuthTokenUrl: String = "oauth2/token/"

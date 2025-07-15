@@ -23,13 +23,13 @@ class StudentInIdeFeedbackDialog(
   }
 
   override fun showJbAcademyFeedbackSystemInfoDialog(project: Project?, systemInfoData: JbAcademyStudentFeedbackSystemInfoData) {
-      showSystemInfoDialog(project, systemInfoData) {
-        row(EduCoreBundle.message("ui.feedback.dialog.system.info.course.id")) {
-          label(systemInfoData.courseFeedbackInfoData.courseId.toString())
-        }
-        row(EduCoreBundle.message("ui.feedback.dialog.system.info.task")) {
-          label(systemInfoData.taskPath)
-        }
+    showSystemInfoDialog(project, systemInfoData) {
+      row(EduCoreBundle.message("ui.feedback.dialog.system.info.course.id")) {
+        label(systemInfoData.courseFeedbackInfoData.courseId.toString())
+      }
+      row(EduCoreBundle.message("ui.feedback.dialog.system.info.task")) {
+        label(systemInfoData.taskPath)
       }
     }
+  }
 }

@@ -14,7 +14,7 @@ class InjectableValueKey<T>(val name: String)
  *  - with a [JacksonInject] annotation for a builder, that deserialized a value from YAML.
  *    Normally, a builder has access only to data written in YAML, but it can also use values injected into an [ObjectMapper].
  */
-private class EduInjectableValues(val values: MutableMap<String, Any?>): InjectableValues.Std(values)
+private class EduInjectableValues(val values: MutableMap<String, Any?>) : InjectableValues.Std(values)
 
 @Suppress("UNCHECKED_CAST")
 fun <T> ObjectMapper.getEduValue(key: InjectableValueKey<T>): T? {

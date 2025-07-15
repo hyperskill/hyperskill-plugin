@@ -27,8 +27,8 @@ class TermsGotItTooltipService(private val project: Project) {
   fun showTermsGotItTooltip(task: Task) {
     removeExistingTooltip()
 
-  	// some tasks may not have terms, so we don't want to show tooltips for them
-  	// because of that we should validate that a task has terms
+    // some tasks may not have terms, so we don't want to show tooltips for them
+    // because of that we should validate that a task has terms
     if (!canShowTerms(project, task)) return
     if (TermsProjectSettings.getInstance(project).getTaskTerms(task) == null) return
 

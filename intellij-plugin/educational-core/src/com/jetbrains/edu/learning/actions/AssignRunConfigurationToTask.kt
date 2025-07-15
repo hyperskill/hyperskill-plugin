@@ -84,7 +84,8 @@ class AssignRunConfigurationToTask : AnAction(), DumbAware {
     return RunManager.getInstance(project).selectedConfiguration
   }
 
-  private fun forceSaveRunConfigurationInFile(project: Project, selectedConfiguration: RunnerAndConfigurationSettings
+  private fun forceSaveRunConfigurationInFile(
+    project: Project, selectedConfiguration: RunnerAndConfigurationSettings
   ) {
     /**
      * Although the configuration is already tracked by the RunManager,

@@ -14,7 +14,8 @@ class YoutubeVideoLinkTest : EduTestCase() {
 
   @Test
   fun `test get video id watch v=${videoId}&feature`() = doTestGetYoutubeVideoId(
-    "http://www.youtube.com/watch?v=${videoId}&feature=feedrec_grec_index")
+    "http://www.youtube.com/watch?v=${videoId}&feature=feedrec_grec_index"
+  )
 
   @Test
   fun `test get video id youtu_be${videoId}`() = doTestGetYoutubeVideoId("https://youtu.be/${videoId}")

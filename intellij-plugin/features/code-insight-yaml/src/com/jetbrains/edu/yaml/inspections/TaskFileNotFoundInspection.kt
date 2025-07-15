@@ -31,8 +31,10 @@ class TaskFileNotFoundInspection : UnresolvedFileReferenceInspection() {
   override fun registerProblem(holder: ProblemsHolder, element: YAMLScalar) {
     val path = element.textValue
     if (isValidFilePath(path)) {
-      holder.registerProblem(element, EduYAMLBundle.message("cannot.find.file", path),
-                             ProblemHighlightType.LIKE_UNKNOWN_SYMBOL, *listOfNotNull(CreateTaskFileFix(element)).toTypedArray())
+      holder.registerProblem(
+        element, EduYAMLBundle.message("cannot.find.file", path),
+        ProblemHighlightType.LIKE_UNKNOWN_SYMBOL, *listOfNotNull(CreateTaskFileFix(element)).toTypedArray()
+      )
     }
     else {
       holder.registerProblem(element, EduYAMLBundle.message("file.invalid.path", path), ProblemHighlightType.ERROR)
@@ -69,8 +71,10 @@ class TaskFileNotFoundInspection : UnresolvedFileReferenceInspection() {
       catch (e: IOException) {
         LOG.warn(e)
         ApplicationManager.getApplication().invokeLater {
-          Messages.showErrorDialog(EduYAMLBundle.message("failed.create.file.message", path),
-                                   EduYAMLBundle.message("failed.create.file.title"))
+          Messages.showErrorDialog(
+            EduYAMLBundle.message("failed.create.file.message", path),
+            EduYAMLBundle.message("failed.create.file.title")
+          )
         }
       }
       finally {

@@ -29,7 +29,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: Test.java
@@ -40,7 +41,8 @@ class YamlSerializationTest : YamlTestCase() {
     |    placeholder_text: |-
     |      type here
     |      and here
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -52,7 +54,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: remote_edu
     |files:
     |- name: Test.java
@@ -60,7 +63,8 @@ class YamlSerializationTest : YamlTestCase() {
     |  learner_created: false
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -73,7 +77,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: remote_edu
     |files:
     |- name: Main.go
@@ -82,7 +87,8 @@ class YamlSerializationTest : YamlTestCase() {
     |check_profile: $checkProfile
     |status: Unchecked
     |record: -1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -97,7 +103,8 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }.findTask("lesson1", "task1")
     task.contentTags = listOf("kotlin", "cycles")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: Test.java
@@ -111,7 +118,8 @@ class YamlSerializationTest : YamlTestCase() {
     |tags:
     |- kotlin
     |- cycles
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -125,7 +133,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: Test.java
@@ -134,7 +143,8 @@ class YamlSerializationTest : YamlTestCase() {
     |  - offset: 0
     |    length: 16
     |    placeholder_text: ""
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -148,7 +158,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: Test.java
@@ -157,7 +168,8 @@ class YamlSerializationTest : YamlTestCase() {
     |  - offset: 0
     |    length: 16
     |    placeholder_text: '   type here'
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -171,7 +183,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: Test.java
@@ -180,7 +193,8 @@ class YamlSerializationTest : YamlTestCase() {
     |  - offset: 0
     |    length: 16
     |    placeholder_text: 'type here   '
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -195,7 +209,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: Task.java
@@ -208,7 +223,8 @@ class YamlSerializationTest : YamlTestCase() {
     |      and here
     |- name: Test.java
     |  visible: false
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -223,7 +239,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: Test.java
@@ -236,7 +253,8 @@ class YamlSerializationTest : YamlTestCase() {
     |      and here
     |- name: Additional.java
     |  visible: false
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -257,7 +275,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson2", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: Test.java
@@ -271,7 +290,8 @@ class YamlSerializationTest : YamlTestCase() {
     |      task: task1
     |      file: Test.java
     |      placeholder: 1
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -292,7 +312,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |files:
     |- name: A.java
@@ -304,7 +325,8 @@ class YamlSerializationTest : YamlTestCase() {
     |  visible: true
     |- name: D.java
     |  visible: true
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -316,12 +338,14 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
     |type: output
     |files:
     |- name: Test.java
     |  visible: true
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -333,7 +357,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
       |type: choice
       |is_multiple_choice: false
       |options:
@@ -345,7 +370,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- name: Test.java
       |  visible: true
       |local_check: true
-      |""".trimMargin())
+      |""".trimMargin()
+    )
   }
 
   @Test
@@ -357,7 +383,8 @@ class YamlSerializationTest : YamlTestCase() {
         }
       }
     }.findTask("lesson1", "task1")
-    doTest(task, """
+    doTest(
+      task, """
       |type: choice
       |is_multiple_choice: false
       |options:
@@ -367,7 +394,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- name: Test.java
       |  visible: true
       |local_check: true
-      |""".trimMargin())
+      |""".trimMargin()
+    )
   }
 
   @Test
@@ -377,7 +405,8 @@ class YamlSerializationTest : YamlTestCase() {
       lesson("the second lesson")
     }
     course.languageCode = "ru"
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: Russian
       |summary: |-
@@ -389,7 +418,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- the second lesson
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -400,12 +430,14 @@ class YamlSerializationTest : YamlTestCase() {
         eduTask("Advanced Task")
       }
     }.items[0]
-    doTest(lesson, """
+    doTest(
+      lesson, """
       |content:
       |- Introduction Task
       |- Advanced Task
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -416,13 +448,15 @@ class YamlSerializationTest : YamlTestCase() {
         eduTask("Advanced Task")
       }
     }.items[0]
-    doTest(lesson, """
+    doTest(
+      lesson, """
       |custom_name: ${lesson.customPresentableName}
       |content:
       |- Introduction Task
       |- Advanced Task
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -435,7 +469,8 @@ class YamlSerializationTest : YamlTestCase() {
     }.items[0]
     lesson.contentTags = listOf("kotlin", "cycles")
     @Suppress("DEPRECATION") // using `customPresentableName` here is ok
-    doTest(lesson, """
+    doTest(
+      lesson, """
       |content:
       |- Introduction Task
       |- Advanced Task
@@ -443,7 +478,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- kotlin
       |- cycles
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -459,11 +495,13 @@ class YamlSerializationTest : YamlTestCase() {
     val section = course.sections.first()
     val lesson = section.lessons.first()
 
-    doTest(section, """
+    doTest(
+      section, """
       |content:
       |- ${lesson.name}
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -474,13 +512,15 @@ class YamlSerializationTest : YamlTestCase() {
         eduTask("Advanced Task")
       }
     }.items[0]
-    doTest(lesson, """
+    doTest(
+      lesson, """
       |type: framework
       |content:
       |- Introduction Task
       |- Advanced Task
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -492,7 +532,8 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }.items[0]
     lesson.contentTags = listOf("kotlin", "cycles")
-    doTest(lesson, """
+    doTest(
+      lesson, """
       |type: framework
       |content:
       |- Introduction Task
@@ -501,7 +542,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- kotlin
       |- cycles
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -510,11 +552,13 @@ class YamlSerializationTest : YamlTestCase() {
       frameworkLesson("lesson", isTemplateBased = false)
     }
 
-    doTest(course.getItem("lesson")!!, """
+    doTest(
+      course.getItem("lesson")!!, """
       |type: framework
       |is_template_based: false
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -525,11 +569,13 @@ class YamlSerializationTest : YamlTestCase() {
 
     val lesson = course.getItem("lesson")!!
 
-    doTest(lesson, """
+    doTest(
+      lesson, """
       |type: framework
       |custom_name: my new lesson
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -541,12 +587,14 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }.items[0]
 
-    doTest(section, """
+    doTest(
+      section, """
       |content:
       |- Introduction Lesson
       |- Advanced Lesson
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -558,13 +606,15 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }.items[0]
 
-    doTest(section, """
+    doTest(
+      section, """
       |custom_name: custom section name
       |content:
       |- Introduction Lesson
       |- Advanced Lesson
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -577,7 +627,8 @@ class YamlSerializationTest : YamlTestCase() {
     }.items[0]
 
     section.contentTags = listOf("kotlin", "cycles")
-    doTest(section, """
+    doTest(
+      section, """
       |content:
       |- Introduction Lesson
       |- Advanced Lesson
@@ -585,7 +636,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- kotlin
       |- cycles
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -596,10 +648,12 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }.findTask("lesson1", "task1")
     task.feedbackLink = "example.com"
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |feedback_link: example.com
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -611,10 +665,12 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |custom_name: $taskCustomName
-    |""".trimMargin())
+    |""".trimMargin()
+    )
   }
 
   @Test
@@ -624,7 +680,8 @@ class YamlSerializationTest : YamlTestCase() {
         eduTask { }
       }
     }
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -634,7 +691,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- lesson1
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -645,7 +703,8 @@ class YamlSerializationTest : YamlTestCase() {
         eduTask { }
       }
     }.apply { feedbackLink = courseLink }
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -655,7 +714,8 @@ class YamlSerializationTest : YamlTestCase() {
       |feedback_link: $courseLink
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -665,7 +725,8 @@ class YamlSerializationTest : YamlTestCase() {
       languageCode = "en"
     }
 
-    doTest(course, """
+    doTest(
+      course, """
       |type: hyperskill
       |title: Test Course
       |language: English
@@ -674,7 +735,8 @@ class YamlSerializationTest : YamlTestCase() {
       |mode: Study
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -684,7 +746,8 @@ class YamlSerializationTest : YamlTestCase() {
       languageCode = "en"
     }
 
-    doTest(course, """
+    doTest(
+      course, """
       |type: stepik
       |title: Test Course
       |language: English
@@ -693,7 +756,8 @@ class YamlSerializationTest : YamlTestCase() {
       |mode: Study
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -704,7 +768,8 @@ class YamlSerializationTest : YamlTestCase() {
         eduTask { }
       }
     }.apply { feedbackLink = courseLink }
-    doTest(course, """
+    doTest(
+      course, """
       |type: coursera
       |title: Test Course
       |language: English
@@ -715,14 +780,16 @@ class YamlSerializationTest : YamlTestCase() {
       |mode: Study
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
   fun `test course with hidden solutions`() {
     val course = course(courseMode = CourseMode.EDUCATOR) {}
     course.solutionsHidden = true
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -730,7 +797,8 @@ class YamlSerializationTest : YamlTestCase() {
       |solutions_hidden: true
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -743,11 +811,13 @@ class YamlSerializationTest : YamlTestCase() {
     }.findTask("lesson1", "task1")
 
     task.solutionHidden = true
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |custom_name: $taskCustomName
     |solution_hidden: true
-    |""".trimMargin("|"))
+    |""".trimMargin("|")
+    )
   }
 
   @Test
@@ -760,11 +830,13 @@ class YamlSerializationTest : YamlTestCase() {
     }.findTask("lesson1", "task1")
 
     task.solutionHidden = false
-    doTest(task, """
+    doTest(
+      task, """
     |type: edu
     |custom_name: $taskCustomName
     |solution_hidden: false
-    |""".trimMargin("|"))
+    |""".trimMargin("|")
+    )
   }
 
   @Test
@@ -774,10 +846,12 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }.items.first()
 
-    doTest(lesson, """
+    doTest(
+      lesson, """
       |{}
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -787,24 +861,28 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }.items.first()
 
-    doTest(section, """
+    doTest(
+      section, """
       |{}
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
   fun `test empty course`() {
     val course = course(courseMode = CourseMode.EDUCATOR) {}
 
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
       |programming_language: Plain text
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -814,7 +892,8 @@ class YamlSerializationTest : YamlTestCase() {
     course.description = "sum"
     course.languageId = PlainTextLanguage.INSTANCE.id
     course.languageVersion = "1.42"
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: Russian
       |summary: sum
@@ -822,14 +901,16 @@ class YamlSerializationTest : YamlTestCase() {
       |programming_language_version: 1.42
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
   fun `test course with content tags`() {
     val course = course(courseMode = CourseMode.EDUCATOR) {}
     course.contentTags = listOf("kotlin", "cycles")
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -839,7 +920,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- cycles
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -849,7 +931,8 @@ class YamlSerializationTest : YamlTestCase() {
     course.description = "sum"
     course.languageId = PlainTextLanguage.INSTANCE.id
     course.languageVersion = "1.42"
-    doTest(course, """
+    doTest(
+      course, """
       |type: coursera
       |title: Test Course
       |language: Russian
@@ -858,7 +941,8 @@ class YamlSerializationTest : YamlTestCase() {
       |programming_language_version: 1.42
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -869,7 +953,8 @@ class YamlSerializationTest : YamlTestCase() {
     course.submitManually = true
     course.languageId = PlainTextLanguage.INSTANCE.id
     course.languageVersion = "1.42"
-    doTest(course, """
+    doTest(
+      course, """
       |type: coursera
       |title: Test Course
       |language: Russian
@@ -879,7 +964,8 @@ class YamlSerializationTest : YamlTestCase() {
       |submit_manually: true
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -892,7 +978,8 @@ class YamlSerializationTest : YamlTestCase() {
       lesson("the second lesson")
     }
     course.languageCode = "ru"
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: Russian
       |summary: |-
@@ -904,7 +991,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- the second lesson
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
 
     Locale.setDefault(defaultLocale)
   }
@@ -943,7 +1031,8 @@ class YamlSerializationTest : YamlTestCase() {
     }
     course.languageCode = "ru"
     course.vendor = vendor
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: Russian
       |summary: |-
@@ -959,7 +1048,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- the second lesson
       |yaml_version: $CURRENT_YAML_VERSION
       |
-    """.trimMargin())
+    """.trimMargin()
+    )
   }
 
   @Test
@@ -979,7 +1069,8 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }.findTask("lesson1", "task1")
 
-    doTest(task, """
+    doTest(
+      task, """
       |type: choice
       |is_multiple_choice: true
       |options:
@@ -994,7 +1085,8 @@ class YamlSerializationTest : YamlTestCase() {
       |- name: task.txt
       |  visible: true
       |local_check: true
-      |""".trimMargin())
+      |""".trimMargin()
+    )
   }
 
   @Test
@@ -1005,7 +1097,8 @@ class YamlSerializationTest : YamlTestCase() {
       }
     }
     course.environmentSettings += "foo" to "bar"
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -1016,14 +1109,16 @@ class YamlSerializationTest : YamlTestCase() {
       |environment_settings:
       |  foo: bar
       |yaml_version: $CURRENT_YAML_VERSION
-      |""".trimMargin())
+      |""".trimMargin()
+    )
   }
 
   @Test
   fun `test disabled features`() {
     val course = course(courseMode = CourseMode.EDUCATOR) {}
     course.disabledFeatures = listOf("ai-hints")
-    doTest(course, """
+    doTest(
+      course, """
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -1031,7 +1126,8 @@ class YamlSerializationTest : YamlTestCase() {
       |disabled_features:
       |- ai-hints
       |yaml_version: $CURRENT_YAML_VERSION
-      |""".trimMargin())
+      |""".trimMargin()
+    )
   }
 
   private fun doTest(item: StudyItem, expected: String) {

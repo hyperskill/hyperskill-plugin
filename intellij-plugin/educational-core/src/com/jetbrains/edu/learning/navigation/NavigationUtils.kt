@@ -103,7 +103,7 @@ object NavigationUtils {
     return null
   }
 
-  private fun nextLesson(siblings : List<StudyItem>, nextIndex : Int) : Lesson? {
+  private fun nextLesson(siblings: List<StudyItem>, nextIndex: Int): Lesson? {
     if (nextIndex >= siblings.size) {
       return null
     }
@@ -135,7 +135,7 @@ object NavigationUtils {
     return null
   }
 
-  private fun previousLesson(siblings : List<StudyItem>, prevIndex : Int) : Lesson? {
+  private fun previousLesson(siblings: List<StudyItem>, prevIndex: Int): Lesson? {
     if (prevIndex < 0) {
       return null
     }
@@ -254,7 +254,7 @@ object NavigationUtils {
     PlaceholderDependencyManager.updateDependentPlaceholders(project, task)
 
     @Suppress("NAME_SHADOWING")
-    var fileToActivate : VirtualFile? = fileToActivate
+    var fileToActivate: VirtualFile? = fileToActivate
 
     for ((_, taskFile) in taskFiles) {
       if (taskFile.answerPlaceholders.isEmpty()) continue
@@ -346,6 +346,7 @@ object NavigationUtils {
     setReadOnlyFlagToNonEditableFiles(project, currentTask, false)
 
     val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
+
     @Suppress("NAME_SHADOWING")
     var currentTask = currentTask
     while (currentTask.index != targetTask.index) {
@@ -383,7 +384,8 @@ object NavigationUtils {
           val path = toCollapse[i]
           if (treePath.isDescendant(path)) {
             toCollapse[i] = treePath
-          } else {
+          }
+          else {
             if (!path.isDescendant(treePath)) {
               toCollapse.add(treePath)
             }
@@ -403,7 +405,8 @@ object NavigationUtils {
         val virtualTaskFile = taskFile.getVirtualFile(project) ?: error("Cannot get a virtual file")
         if (readOnlyFlag) {
           GeneratorUtils.addNonEditableFileToCourse(task.course, virtualTaskFile)
-        } else {
+        }
+        else {
           GeneratorUtils.removeNonEditableFileFromCourse(task.course, virtualTaskFile)
         }
       }

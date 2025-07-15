@@ -18,6 +18,7 @@ class TestServiceMessageConsumer : ServiceMessageConsumer {
       is TestSuiteStarted -> {
         currentTestSuites += TestSuite(parsedMessage.suiteName)
       }
+
       is TestSuiteFinished -> {
         val currentTestSuite = currentTestSuites.lastOrNull()
         if (currentTestSuite == null) error("`${parsedMessage.suiteName}` test suite didn't start")
@@ -28,23 +29,27 @@ class TestServiceMessageConsumer : ServiceMessageConsumer {
         val parentChildren = currentTestSuites.lastOrNull()?.children ?: roots
         parentChildren += currentTestSuite
       }
+
       is TestStarted -> {
         val currentTestCase = currentTestCase
         if (currentTestCase != null) error("`${currentTestCase.name}` test case is not finished yet")
         this.currentTestCase = TestCase(parsedMessage.testName)
       }
+
       is TestIgnored -> {
         val currentTestCase = currentTestCase
         if (currentTestCase == null) error("`${parsedMessage.testName}` test case didn't start")
         assertEquals(currentTestCase.name, parsedMessage.testName)
         this.currentTestCase = TestCase(parsedMessage.testName, TestStatus.IGNORED)
       }
+
       is TestFailed -> {
         val currentTestCase = currentTestCase
         if (currentTestCase == null) error("`${parsedMessage.testName}` test case didn't start")
         assertEquals(currentTestCase.name, parsedMessage.testName)
         this.currentTestCase = TestCase(parsedMessage.testName, TestStatus.FAILED)
       }
+
       is TestFinished -> {
         val currentTestCase = currentTestCase
         if (currentTestCase == null) error("`${parsedMessage.testName}` test case didn't start")
@@ -53,6 +58,7 @@ class TestServiceMessageConsumer : ServiceMessageConsumer {
         parentChildren += currentTestCase
         this.currentTestCase = null
       }
+
       else -> error("Unexpected test event: ")
     }
   }
@@ -70,6 +76,7 @@ class TestServiceMessageConsumer : ServiceMessageConsumer {
           out.append("  ".repeat(level))
           out.appendLine("- ${node.name}: ${node.status}")
         }
+
         is TestSuite -> {
           out.append("  ".repeat(level))
           out.appendLine("- ${node.name}:")

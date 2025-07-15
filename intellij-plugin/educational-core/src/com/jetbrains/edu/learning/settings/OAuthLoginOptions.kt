@@ -8,7 +8,7 @@ import com.jetbrains.edu.learning.authUtils.OAuthAccount
 import com.jetbrains.edu.learning.courseFormat.UserInfo
 import javax.swing.event.HyperlinkEvent
 
-abstract class OAuthLoginOptions <T : OAuthAccount<out UserInfo>> : LoginOptions<T>() {
+abstract class OAuthLoginOptions<T : OAuthAccount<out UserInfo>> : LoginOptions<T>() {
   protected abstract val connector: EduLoginConnector<T, *>
 
   override fun getCurrentAccount(): T? = connector.account

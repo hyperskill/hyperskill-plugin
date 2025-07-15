@@ -11,7 +11,7 @@ import java.io.IOException
 import kotlin.reflect.KClass
 import kotlin.test.assertFails
 
-class HyperskillReplyDeserializationTest: EduTestCase() {
+class HyperskillReplyDeserializationTest : EduTestCase() {
   private val objectMapper = ObjectMapper()
 
   init {

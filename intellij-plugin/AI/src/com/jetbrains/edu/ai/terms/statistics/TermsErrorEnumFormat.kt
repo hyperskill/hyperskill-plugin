@@ -17,11 +17,13 @@ enum class TermsErrorEnumFormat {
         CommonAIServiceError.CONNECTION_ERROR -> CONNECTION_ERROR
         CommonAIServiceError.SERVICE_UNAVAILABLE -> SERVICE_UNAVAILABLE
       }
+
       is TermsError -> when (error) {
         TermsError.NO_TERMS -> NO_TERMS
         TermsError.TERMS_UNAVAILABLE_FOR_LEGAL_REASON -> TERMS_UNAVAILABLE_FOR_LEGAL_REASONS
         TermsError.LANGUAGE_NOT_SUPPORTED -> LANGUAGE_NOT_SUPPORTED
       }
+
       else -> error("Unexpected error type for theory lookup: $error")
     }
   }

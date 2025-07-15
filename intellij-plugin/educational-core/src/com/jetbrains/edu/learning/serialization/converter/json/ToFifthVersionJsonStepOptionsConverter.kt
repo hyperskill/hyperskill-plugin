@@ -44,6 +44,7 @@ class ToFifthVersionJsonStepOptionsConverter : JsonStepOptionsConverter {
           LOG.warn("Can't find subtask info object")
           return
         }
+
         1 -> subtaskInfos.firstValue
         else -> {
           LOG.warn(String.format("Placeholder contains %d subtask info objects. Expected: 1", subtaskInfos.size))
@@ -74,16 +75,18 @@ class ToFifthVersionJsonStepOptionsConverter : JsonStepOptionsConverter {
       stepOptions.remove(TEXTS)
     }
 
-    private val JsonNode.size: Int get() = when {
-      isArray -> (this as ArrayNode).size()
-      isObject -> (this as ObjectNode).size()
-      else -> error("Unsupported json element type")
-    }
+    private val JsonNode.size: Int
+      get() = when {
+        isArray -> (this as ArrayNode).size()
+        isObject -> (this as ObjectNode).size()
+        else -> error("Unsupported json element type")
+      }
 
-    private val JsonNode.firstValue: JsonNode get() = when {
-      isArray -> get(0)
-      isObject -> (this as ObjectNode).elements().next()
-      else -> error("Unsupported json element type")
-    }
+    private val JsonNode.firstValue: JsonNode
+      get() = when {
+        isArray -> get(0)
+        isObject -> (this as ObjectNode).elements().next()
+        else -> error("Unsupported json element type")
+      }
   }
 }

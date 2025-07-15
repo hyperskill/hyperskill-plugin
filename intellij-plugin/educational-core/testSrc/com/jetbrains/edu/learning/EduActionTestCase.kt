@@ -27,7 +27,7 @@ abstract class EduActionTestCase : EduTestCase() {
     val psiManager = PsiManager.getInstance(project)
     val psiFile = psiManager.findDirectory(file) ?: psiManager.findFile(file)
     val studyItem = file.getStudyItem(project)
-    
+
     val builder = SimpleDataContext.builder()
       .add(CommonDataKeys.PROJECT, project)
       .add(LangDataKeys.MODULE, myFixture.module)

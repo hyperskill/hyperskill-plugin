@@ -20,7 +20,8 @@ class StudyItemNotFoundInspectionTest : YamlInspectionsTestBase(StudyItemNotFoun
 
     val lesson = course.getLesson("lesson1")!!
     val expectedItems = listOf("task1", "task2")
-    doTest(lesson, "Create task", """
+    doTest(
+      lesson, "Create task", """
       |content:
       |- task1
       |- <error descr="Cannot find `task2` task">task2<caret></error>
@@ -28,7 +29,8 @@ class StudyItemNotFoundInspectionTest : YamlInspectionsTestBase(StudyItemNotFoun
       |content:
       |- task1
       |- task2
-    """.trimMargin("|"), expectedItems)
+    """.trimMargin("|"), expectedItems
+    )
   }
 
   @Test
@@ -41,7 +43,8 @@ class StudyItemNotFoundInspectionTest : YamlInspectionsTestBase(StudyItemNotFoun
 
     val section = course.getSection("section1")!!
     val expectedItems = listOf("lesson0", "lesson1")
-    doTest(section, "Create lesson", """
+    doTest(
+      section, "Create lesson", """
       |content:
       |- <error descr="Cannot find `lesson0` lesson">lesson0<caret></error>
       |- lesson1
@@ -49,7 +52,8 @@ class StudyItemNotFoundInspectionTest : YamlInspectionsTestBase(StudyItemNotFoun
       |content:
       |- lesson0
       |- lesson1
-    """.trimMargin("|"), expectedItems)
+    """.trimMargin("|"), expectedItems
+    )
   }
 
   @Test
@@ -59,7 +63,8 @@ class StudyItemNotFoundInspectionTest : YamlInspectionsTestBase(StudyItemNotFoun
     }
 
     val expectedItems = listOf("lesson1", "lesson2")
-    doTest(course, "Create lesson", """
+    doTest(
+      course, "Create lesson", """
       |title: Test Course
       |summary: sum
       |programming_language: Plain text
@@ -73,7 +78,8 @@ class StudyItemNotFoundInspectionTest : YamlInspectionsTestBase(StudyItemNotFoun
       |content:
       |- lesson1
       |- lesson2
-    """.trimMargin("|"), expectedItems)
+    """.trimMargin("|"), expectedItems
+    )
   }
 
   @Test
@@ -83,7 +89,8 @@ class StudyItemNotFoundInspectionTest : YamlInspectionsTestBase(StudyItemNotFoun
     }
 
     val expectedItems = listOf("section0", "section1")
-    doTest(course, "Create section", """
+    doTest(
+      course, "Create section", """
       |title: Test Course
       |summary: sum
       |programming_language: Plain text
@@ -97,7 +104,8 @@ class StudyItemNotFoundInspectionTest : YamlInspectionsTestBase(StudyItemNotFoun
       |content:
       |- section0
       |- section1
-    """.trimMargin("|"), expectedItems)
+    """.trimMargin("|"), expectedItems
+    )
   }
 
   @Test
@@ -107,10 +115,12 @@ class StudyItemNotFoundInspectionTest : YamlInspectionsTestBase(StudyItemNotFoun
     }
 
     val section = course.getSection("section1")!!
-    testQuickFixIsUnavailable(section, "Create lesson", """
+    testQuickFixIsUnavailable(
+      section, "Create lesson", """
       |content:
       |- <error descr="Cannot find `les\son1` lesson">les\son1<caret></error>
-    """.trimMargin("|"))
+    """.trimMargin("|")
+    )
   }
 
   private fun doTest(itemContainer: ItemContainer, quickFixName: String, before: String, after: String, expectedItems: List<String>) {

@@ -132,7 +132,7 @@ class MarketplaceLessonUpdateTest : LessonUpdateTestBase<EduCourse>() {
       file("settings.gradle")
     }
     expectedStructure.assertEquals(rootDir)
-    
+
   }
 
   @Test
@@ -228,7 +228,7 @@ class MarketplaceLessonUpdateTest : LessonUpdateTestBase<EduCourse>() {
     SectionBuilder(remoteCourse, remoteCourse.sections[0]).lesson("lesson3", id = 3, index = 2) {
       eduTask("task3", stepId = 3)
     }
-    remoteCourse.apply { 
+    remoteCourse.apply {
       sections[0].lessons[1].index = 3
       sortItems()
     }

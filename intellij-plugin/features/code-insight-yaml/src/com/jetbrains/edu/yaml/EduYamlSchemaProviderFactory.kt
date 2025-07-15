@@ -75,8 +75,7 @@ class EduYamlSchemaProviderFactory : JsonSchemaProviderFactory {
 
   }
 
-  class TaskSpecificConfigSchemaProvider(project: Project, private val taskType: String)
-    : StudyItemConfigSchemaProvider(project) {
+  class TaskSpecificConfigSchemaProvider(project: Project, private val taskType: String) : StudyItemConfigSchemaProvider(project) {
 
     override val itemKind: String = TASK
 

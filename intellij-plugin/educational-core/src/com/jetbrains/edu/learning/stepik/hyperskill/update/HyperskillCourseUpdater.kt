@@ -152,18 +152,23 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
       first is ChoiceTask && second is ChoiceTask -> {
         first.choiceOptions != second.choiceOptions
       }
+
       first is SortingTask && second is SortingTask -> {
         first.options != second.options
       }
+
       first is MatchingTask && second is MatchingTask -> {
         (first.options != second.options) || (first.captions != second.captions)
       }
+
       first is TableTask && second is TableTask -> {
         (first.rows != second.rows) || (first.columns != second.columns) || (first.isMultipleChoice != second.isMultipleChoice)
       }
+
       first is RemoteEduTask && second is RemoteEduTask -> {
         first.checkProfile != second.checkProfile
       }
+
       else -> false
     }
   }

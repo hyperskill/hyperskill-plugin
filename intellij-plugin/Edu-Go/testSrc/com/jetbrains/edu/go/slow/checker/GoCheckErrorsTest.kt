@@ -18,18 +18,23 @@ class GoCheckErrorsTest : GoCheckersTestBase() {
     return course(language = GoLanguage.INSTANCE) {
       lesson {
         eduTask("EduTestFailed") {
-          goTaskFile("task.go", """
+          goTaskFile(
+            "task.go", """
             package task
 
             // todo: replace this with an actual task
             func Sum(a, b int) int {
               return a + b + 1
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module task1
-          """)
-          goTaskFile("test/task_test.go", """
+          """
+          )
+          goTaskFile(
+            "test/task_test.go", """
             package test
             
             import (
@@ -60,21 +65,27 @@ class GoCheckErrorsTest : GoCheckersTestBase() {
             	}
             }
 
-          """)
+          """
+          )
         }
         eduTask("EduCompilationFailed") {
-          goTaskFile("task.go", """
+          goTaskFile(
+            "task.go", """
             package task
 
             // todo: replace this with an actual task
             func Sum(a, b int) int {
               return a + b +
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module task1
-          """)
-          goTaskFile("test/task_test.go", """
+          """
+          )
+          goTaskFile(
+            "test/task_test.go", """
             package test
             
             import (
@@ -105,10 +116,12 @@ class GoCheckErrorsTest : GoCheckersTestBase() {
             	}
             }
 
-          """)
+          """
+          )
         }
         eduTask("EduWithCustomRunConfigurationTestFailed") {
-          goTaskFile("task.go", """
+          goTaskFile(
+            "task.go", """
             package task
             
             import "os"
@@ -116,11 +129,15 @@ class GoCheckErrorsTest : GoCheckersTestBase() {
             func Hello() string {
               return os.Getenv("EXAMPLE_ENV")
             }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module eduwithcustomrunconfigurationtestfailed
-          """)
-          goTaskFile("test/task_test.go", """
+          """
+          )
+          goTaskFile(
+            "test/task_test.go", """
             package test
             
             import (
@@ -147,8 +164,10 @@ class GoCheckErrorsTest : GoCheckersTestBase() {
                 })
               }
             }
-          """)
-          xmlTaskFile("runConfigurations/CustomCheck.run.xml", """
+          """
+          )
+          xmlTaskFile(
+            "runConfigurations/CustomCheck.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomCheck" type="GoTestRunConfiguration" factoryName="Go Test">
                 <module name="Go Course3" />
@@ -166,34 +185,43 @@ class GoCheckErrorsTest : GoCheckersTestBase() {
                 <method v="2" />
               </configuration>
             </component>        
-          """)
+          """
+          )
         }
         outputTask("OutputTestFailed") {
-          goTaskFile("main.go", """
+          goTaskFile(
+            "main.go", """
               package main
               import "fmt"
 
               func main() {
 	              fmt.Print("No")
               }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module task2
-          """)
+          """
+          )
           taskFile("output.txt", "Yes")
         }
         outputTask("OutputMultilineTestFailed") {
-          goTaskFile("main.go", """
+          goTaskFile(
+            "main.go", """
               package main
               import "fmt"
 
               func main() {
 	              fmt.Println("1\n2")
               }
-          """)
-          taskFile("go.mod", """
+          """
+          )
+          taskFile(
+            "go.mod", """
             module task3
-          """)
+          """
+          )
           taskFile("output.txt") {
             withText("1\n\n2\n\n")
           }
@@ -213,8 +241,10 @@ class GoCheckErrorsTest : GoCheckersTestBase() {
         "EduWithCustomRunConfigurationTestFailed" -> equalTo(incorrect) to nullValue()
         "OutputTestFailed" -> equalTo(incorrect) to
           CheckResultDiffMatcher.diff(CheckResultDiff(expected = "Yes", actual = "No"))
+
         "OutputMultilineTestFailed" -> equalTo(incorrect) to
           CheckResultDiffMatcher.diff(CheckResultDiff(expected = "1\n\n2\n\n", actual = "1\n2\n"))
+
         else -> error("Unexpected task name: ${task.name}")
       }
       assertThat("Checker output for ${task.name} doesn't match", checkResult.message, messageMatcher)

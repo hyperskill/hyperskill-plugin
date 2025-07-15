@@ -16,7 +16,8 @@ class GeneratedRemoteInfoNotificationProvider(val project: Project) : EditorNoti
   override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?>? {
     return if (isRemoteConfigFile(file)) {
       Function { EditorNotificationPanel().text(EduCoreBundle.message("yaml.remote.config.notification")) }
-    } else {
+    }
+    else {
       null
     }
   }

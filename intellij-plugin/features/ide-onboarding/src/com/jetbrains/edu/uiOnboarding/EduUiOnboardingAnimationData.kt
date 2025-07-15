@@ -1,9 +1,9 @@
 package com.jetbrains.edu.uiOnboarding
 
-import com.intellij.util.ImageLoader
-import java.awt.Image
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.util.ImageLoader
 import java.awt.Dimension
+import java.awt.Image
 import kotlin.math.roundToInt
 
 class EduUiOnboardingAnimationData private constructor(

@@ -17,12 +17,15 @@ class ScalaGradleCheckerTest : JdkCheckerTestBase() {
       section {
         lesson {
           eduTask("EduTask in section") {
-            scalaTaskFile("src/Task.scala", """
+            scalaTaskFile(
+              "src/Task.scala", """
               class Task {
                 def foo(): Int = 42
               }
-            """)
-            scalaTaskFile("test/TestSpec.scala", """
+            """
+            )
+            scalaTaskFile(
+              "test/TestSpec.scala", """
               import org.scalatest.FunSuite
   
               class TestSpec extends FunSuite {
@@ -30,18 +33,22 @@ class ScalaGradleCheckerTest : JdkCheckerTestBase() {
                   assertResult(42) { new Task().foo() }
                 }
               }
-            """)
+            """
+            )
           }
         }
       }
       lesson {
         eduTask("EduTask") {
-          scalaTaskFile("src/Task.scala", """
+          scalaTaskFile(
+            "src/Task.scala", """
             class Task {
               def foo(): Int = 42
             }
-          """)
-          scalaTaskFile("test/TestSpec.scala", """
+          """
+          )
+          scalaTaskFile(
+            "test/TestSpec.scala", """
             import org.scalatest.FunSuite
 
             class TestSpec extends FunSuite {
@@ -49,18 +56,22 @@ class ScalaGradleCheckerTest : JdkCheckerTestBase() {
                 assertResult(42) { new Task().foo() }
               }
             }
-          """)
+          """
+          )
         }
 
         eduTask("EduTaskWithGradleCustomRunConfiguration") {
-          scalaTaskFile("src/Task.scala", """
+          scalaTaskFile(
+            "src/Task.scala", """
             class Task {
               def foo(): String = {
                 System.getenv("EXAMPLE_ENV")
               }
             }
-          """)
-          scalaTaskFile("test/Test.scala", """
+          """
+          )
+          scalaTaskFile(
+            "test/Test.scala", """
             import org.junit.runner.RunWith
             import org.scalatest.junit.JUnitRunner
             import org.scalatest.FunSuite
@@ -71,9 +82,11 @@ class ScalaGradleCheckerTest : JdkCheckerTestBase() {
                 assertResult("Hello!") { new Task().foo() }
               }
             }
-        """)
+        """
+          )
           dir("runConfigurations") {
-            xmlTaskFile("CustomGradleCheck.run.xml", """
+            xmlTaskFile(
+              "CustomGradleCheck.run.xml", """
               <component name="ProjectRunConfigurationManager">
                 <configuration name="CustomGradleCheck" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
                   <ExternalSystemSettings>
@@ -104,36 +117,42 @@ class ScalaGradleCheckerTest : JdkCheckerTestBase() {
                   <method v="2" />
                 </configuration>
               </component>              
-            """)
+            """
+            )
           }
         }
 
         outputTask("OutputTask with main method") {
-          scalaTaskFile("src/Main.scala", """
+          scalaTaskFile(
+            "src/Main.scala", """
             object Main {
               def main(args: Array[String]): Unit = {
                 println("OK")
               }
             }
-          """)
+          """
+          )
           taskFile("test/output.txt") {
             withText("OK\n")
           }
         }
 
         outputTask("OutputTask with App") {
-          scalaTaskFile("src/Main.scala", """
+          scalaTaskFile(
+            "src/Main.scala", """
             object Main extends App {
               println("OK")
             }
-          """)
+          """
+          )
           taskFile("test/output.txt") {
             withText("OK\n")
           }
         }
 
         outputTask("OutputTask with defined companion class") {
-          scalaTaskFile("src/Main.scala", """
+          scalaTaskFile(
+            "src/Main.scala", """
             class Main
 
             object Main {
@@ -141,21 +160,24 @@ class ScalaGradleCheckerTest : JdkCheckerTestBase() {
                 println("OK")
               }
             }
-          """)
+          """
+          )
           taskFile("test/output.txt") {
             withText("OK\n")
           }
         }
 
         outputTask("OutputTask with input.txt") {
-          scalaTaskFile("src/Main.scala", """
+          scalaTaskFile(
+            "src/Main.scala", """
             object Main {
                 def main(args: Array[String]): Unit = {
                     val text = scala.io.StdIn.readLine()
                     println(text + ", World!")
                 }
             }
-          """)
+          """
+          )
           taskFile("test/output.txt") {
             withText("Hello, World!")
           }
@@ -166,12 +188,15 @@ class ScalaGradleCheckerTest : JdkCheckerTestBase() {
       }
       frameworkLesson {
         eduTask("EduTask in framework lesson") {
-          scalaTaskFile("src/Task.scala", """
+          scalaTaskFile(
+            "src/Task.scala", """
             class Task {
               def foo(): Int = 42
             }
-          """)
-          scalaTaskFile("test/TestSpec.scala", """
+          """
+          )
+          scalaTaskFile(
+            "test/TestSpec.scala", """
             import org.scalatest.FunSuite
 
             class TestSpec extends FunSuite {
@@ -179,7 +204,8 @@ class ScalaGradleCheckerTest : JdkCheckerTestBase() {
                 assertResult(42) { new Task().foo() }
               }
             }
-          """)
+          """
+          )
         }
       }
     }

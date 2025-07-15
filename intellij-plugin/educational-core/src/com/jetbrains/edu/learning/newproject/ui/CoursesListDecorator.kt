@@ -15,9 +15,11 @@ private const val TOOLBAR_TOP_OFFSET = 10
 private const val TOOLBAR_BOTTOM_OFFSET = 8
 private const val TOOLBAR_LEFT_OFFSET = 13
 
-class CoursesListDecorator(private val mainPanel: CoursesListPanel,
-                           tabDescription: String?,
-                           toolbarAction: ToolbarActionWrapper?) : NonOpaquePanel() {
+class CoursesListDecorator(
+  private val mainPanel: CoursesListPanel,
+  tabDescription: String?,
+  toolbarAction: ToolbarActionWrapper?
+) : NonOpaquePanel() {
   private var myTabDescriptionPanel: TabDescriptionPanel? = null
 
   init {
@@ -30,9 +32,11 @@ class CoursesListDecorator(private val mainPanel: CoursesListPanel,
       }
     }
 
-    val scrollPane = JBScrollPane(listWithTabInfo,
-                                  ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                  ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER)
+    val scrollPane = JBScrollPane(
+      listWithTabInfo,
+      ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+      ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+    )
     scrollPane.apply {
       border = JBUI.Borders.empty()
       background = SelectCourseBackgroundColor

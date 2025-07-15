@@ -17,7 +17,8 @@ data class FileCheck(
         "`$path` should be in `${task.name}` task"
       }
       additionalCheck?.invoke(taskFile) // !! is safe because of `check` call
-    } else {
+    }
+    else {
       check(taskFile == null) {
         "`$path` shouldn't be in `${task.name}` task"
       }

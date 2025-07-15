@@ -15,11 +15,13 @@ class CoursesSearchComponent(
   val getCoursesGroups: () -> List<CoursesGroup>,
   val updateModel: (List<CoursesGroup>) -> Unit
 ) : JPanel(BorderLayout()) {
-  private val coursesSearchComponent: CoursesFilterComponent = CoursesFilterComponent(emptySearchText,
-                                                                                      { getCoursesGroups() },
-                                                                                      { groups -> updateModel(groups) })
+  private val coursesSearchComponent: CoursesFilterComponent = CoursesFilterComponent(
+    emptySearchText,
+    { getCoursesGroups() },
+    { groups -> updateModel(groups) })
   private var programmingLanguagesFilterDropdown: ProgrammingLanguageFilterDropdown = ProgrammingLanguageFilterDropdown(
-    programmingLanguages(emptyList())) {
+    programmingLanguages(emptyList())
+  ) {
     updateModel(getCoursesGroups())
   }
   private var humanLanguagesFilterDropdown: HumanLanguageFilterDropdown = HumanLanguageFilterDropdown {

@@ -16,14 +16,17 @@ class JCheckersTest : JdkCheckerTestBase() {
   override fun createCourse(): Course = course(language = JavaLanguage.INSTANCE) {
     lesson {
       eduTask("EduTask") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
             public static int foo() {
               return 42;
             }
           }
-        """)
-        javaTaskFile("test/Test.java", """
+        """
+        )
+        javaTaskFile(
+          "test/Test.java", """
           import org.junit.Assert;
 
           public class Test {
@@ -32,17 +35,21 @@ class JCheckersTest : JdkCheckerTestBase() {
               Assert.assertTrue("Task.foo() should return 42", Task.foo() == 42);
             }
           }
-        """)
+        """
+        )
       }
       eduTask("EduTaskWithIgnoredTest") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
             public static int foo() {
               return 42;
             }
           }
-        """)
-        javaTaskFile("test/Tests.java", """
+        """
+        )
+        javaTaskFile(
+          "test/Tests.java", """
           import org.junit.Assert;
           import org.junit.Ignore;
           import org.junit.Test;
@@ -58,17 +65,21 @@ class JCheckersTest : JdkCheckerTestBase() {
               Assert.assertTrue("Task.foo() should return 42", Task.foo() == 43);
             }
           }
-        """)
+        """
+        )
       }
       eduTask("EduTaskWithGradleCustomRunConfiguration") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
               public static String foo() {
                   return System.getenv("EXAMPLE_ENV");
               }
           }
-        """)
-        javaTaskFile("test/Tests.java", """
+        """
+        )
+        javaTaskFile(
+          "test/Tests.java", """
           import org.junit.Assert;
           import org.junit.Test;
 
@@ -84,9 +95,11 @@ class JCheckersTest : JdkCheckerTestBase() {
               Assert.assertEquals("Hello!", Task.foo());
             }
           }
-        """)
+        """
+        )
         dir("runConfigurations") {
-          xmlTaskFile("CustomGradleCheck.run.xml", """
+          xmlTaskFile(
+            "CustomGradleCheck.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomGradleCheck" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -117,60 +130,71 @@ class JCheckersTest : JdkCheckerTestBase() {
                 <method v="2" />
               </configuration>
             </component>
-          """)
+          """
+          )
         }
       }
       outputTask("OutputTask") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
             public static void main(String[] args) {
               System.out.println("OK");
             }
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("OK\n")
         }
       }
       outputTask("OutputTaskWithWindowsLineSeparators") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
             public static void main(String[] args) {
               System.out.println("OK");
             }
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("OK\r\n")
         }
       }
       outputTask("OutputTaskWithSeveralFiles") {
-        javaTaskFile("src/Utils.java", """
+        javaTaskFile(
+          "src/Utils.java", """
           public class Utils {
             public static String ok() {
               return "OK";
             }
           }
-        """)
-        javaTaskFile("src/Task.java", """
+        """
+        )
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
             public static void main(String[] args) {
               System.out.println(Utils.ok());
             }
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("OK\n")
         }
       }
       outputTask("CheckEncoding") {
-        javaTaskFile("src/Task.java", """
+        javaTaskFile(
+          "src/Task.java", """
           public class Task {
             public static void main(String[] args) {
               System.out.print('\u25A1');
             }
           }
-        """)
+        """
+        )
         taskFile("test/output.txt") {
           withText("□")
         }

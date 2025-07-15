@@ -84,8 +84,11 @@ class CourseraTaskChecker : RemoteTaskChecker {
 
   private fun createCheckResult(statusCode: Int, task: Task): CheckResult {
     return when (statusCode) {
-      HttpStatus.SC_CREATED -> CheckResult(CheckStatus.Unchecked,
-                                           EduCoreBundle.message("coursera.successful.submission", getLinkToSubmission(task)))
+      HttpStatus.SC_CREATED -> CheckResult(
+        CheckStatus.Unchecked,
+        EduCoreBundle.message("coursera.successful.submission", getLinkToSubmission(task))
+      )
+
       HttpStatus.SC_UNAUTHORIZED -> CheckResult(CheckStatus.Unchecked, EduCoreBundle.message("coursera.error.invalid.credentials"))
       HttpStatus.SC_BAD_REQUEST -> CheckResult(CheckStatus.Unchecked, EduCoreBundle.message("coursera.error.invalid.token"))
       else -> CheckResult(CheckStatus.Unchecked, EduCoreBundle.message("coursera.error.failed.creating.submission", statusCode))
@@ -111,8 +114,10 @@ class CourseraTaskChecker : RemoteTaskChecker {
       val file = it.value.getVirtualFile(project) ?: error("VirtualFile for ${it.key} not found")
       file.loadEncodedContent(isToEncodeContent = true)
     }
-    val submission = Submission(assignmentKey, courseraSettings.email, token,
-                                mapOf(Pair(partId, Part(ObjectMapper().writeValueAsString(output)))))
+    val submission = Submission(
+      assignmentKey, courseraSettings.email, token,
+      mapOf(Pair(partId, Part(ObjectMapper().writeValueAsString(output))))
+    )
     return ObjectMapper().writeValueAsString(submission)
   }
 

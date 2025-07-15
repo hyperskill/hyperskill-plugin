@@ -131,7 +131,8 @@ private class TaskProcessorImpl(val task: Task) : TaskProcessor {
   private fun getStringsIfFileUnchanged(file: TaskFile, project: Project): List<String>? = if (isFileUnchanged(
       file,
       project
-    ) && file.usedStringsSnapshotHash == file.snapshotFileHash) file.usedStrings
+    ) && file.usedStringsSnapshotHash == file.snapshotFileHash
+  ) file.usedStrings
   else null.also { file.usedStringsSnapshotHash = file.snapshotFileHash }
 
   override fun getStringsFromTask(): List<String> {
@@ -143,7 +144,8 @@ private class TaskProcessorImpl(val task: Task) : TaskProcessor {
         val virtualFile = file.getVirtualFile(project) ?: return@flatMap emptyList()
         runReadAction {
           val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return@runReadAction emptyList()
-          val functionsToStringsMap = myEduAIHintsProcessor?.getStringsExtractor()?.getFunctionsToStringsMap(psiFile) ?: return@runReadAction emptyList()
+          val functionsToStringsMap =
+            myEduAIHintsProcessor?.getStringsExtractor()?.getFunctionsToStringsMap(psiFile) ?: return@runReadAction emptyList()
           functionsToStringsMap.value.values.flatten()
         }.also {
           file.usedStrings = it
@@ -187,14 +189,14 @@ private class TaskProcessorImpl(val task: Task) : TaskProcessor {
     val codeHintPsiFile = PsiFileFactory.getInstance(project).createFileFromText(CODE_HINT_PSI_FILE_NAME, language, codeHint)
     val codePsiFile = PsiFileFactory.getInstance(project).createFileFromText(CODE_PSI_FILE_NAME, language, codeStr)
     val functionName = myEduAIHintsProcessor
-      ?.getFilesDiffer()
-      ?.findChangedMethods(codePsiFile, codeHintPsiFile, true)
-      ?.firstOrNull() ?: error("The code prompt didn't make any difference")
+                         ?.getFilesDiffer()
+                         ?.findChangedMethods(codePsiFile, codeHintPsiFile, true)
+                         ?.firstOrNull() ?: error("The code prompt didn't make any difference")
     val selectedTaskFile = project.selectedTaskFile
     val taskName = task.taskFilesWithChangedFunctions
-      ?.filter { (_, functions) -> functionName in functions }
-      ?.firstOrNull()
-      ?.key ?: selectedTaskFile ?: error("Can't get task name")
+                     ?.filter { (_, functions) -> functionName in functions }
+                     ?.firstOrNull()
+                     ?.key ?: selectedTaskFile ?: error("Can't get task name")
     currentTaskFile = task.taskFiles[taskName] ?: selectedTaskFile ?: error("Can't get task file")
     functionName
   }
@@ -222,7 +224,8 @@ private class TaskProcessorImpl(val task: Task) : TaskProcessor {
       )
     }
     var isFileModified = false
-    val codeHintPsiFile = runReadAction { PsiFileFactory.getInstance(project).createFileFromText(CODE_HINT_PSI_FILE_NAME, language, codeHint) }
+    val codeHintPsiFile =
+      runReadAction { PsiFileFactory.getInstance(project).createFileFromText(CODE_HINT_PSI_FILE_NAME, language, codeHint) }
     val functionSignaturesFromCodeHint = runReadAction {
       myEduAIHintsProcessor?.getFunctionSignatureManager()?.getFunctionSignatures(
         codeHintPsiFile, SignatureSource.GENERATED_SOLUTION
@@ -230,9 +233,12 @@ private class TaskProcessorImpl(val task: Task) : TaskProcessor {
     }
 
     for (newFunction in functionSignaturesFromCodeHint) {
-      runReadAction { myEduAIHintsProcessor?.getFunctionSignatureManager()?.getFunctionBySignature(codeHintPsiFile, newFunction.name) }?.let { psiNewFunction ->
+      runReadAction {
+        myEduAIHintsProcessor?.getFunctionSignatureManager()?.getFunctionBySignature(codeHintPsiFile, newFunction.name)
+      }?.let { psiNewFunction ->
         WriteCommandAction.runWriteCommandAction(project, null, null, {
-          myEduAIHintsProcessor?.getFunctionSignatureManager()?.getFunctionBySignature(psiFileCopy, newFunction.name)?.replace(psiNewFunction)?.let {
+          myEduAIHintsProcessor?.getFunctionSignatureManager()?.getFunctionBySignature(psiFileCopy, newFunction.name)
+            ?.replace(psiNewFunction)?.let {
             isFileModified = true
           } ?: run {
             psiFileCopy.add(psiNewFunction)

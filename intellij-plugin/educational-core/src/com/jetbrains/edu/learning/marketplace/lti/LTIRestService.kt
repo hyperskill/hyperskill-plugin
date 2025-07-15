@@ -35,12 +35,16 @@ class LTIRestService : BaseMarketplaceRestService(LTI) {
 
     val courseraCourse = getStringParameter(COURSERA_COURSE, urlDecoder)
 
-    return Ok(MarketplaceOpenCourseRequest(courseId, studyItemId, LTISettingsDTO(
-      launchId,
-      lmsDescription,
-      onlineService,
-      courseraCourse?.courseraCourseNameToLink()
-    )))
+    return Ok(
+      MarketplaceOpenCourseRequest(
+        courseId, studyItemId, LTISettingsDTO(
+          launchId,
+          lmsDescription,
+          onlineService,
+          courseraCourse?.courseraCourseNameToLink()
+        )
+      )
+    )
   }
 
   override fun getServiceName(): String = "edu/lti"

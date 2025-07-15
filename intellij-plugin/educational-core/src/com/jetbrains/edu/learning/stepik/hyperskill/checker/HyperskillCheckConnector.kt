@@ -51,6 +51,7 @@ object HyperskillCheckConnector {
     is ChoiceTask -> !task.canCheckLocally
     is CodeTask, is DataTask, is NumberTask, is RemoteEduTask, is StringTask,
     is UnsupportedTask, is SortingTask, is MatchingTask, is TableTask -> true
+
     else -> false
   }
 
@@ -121,9 +122,11 @@ object HyperskillCheckConnector {
 
     val initialState = InitialState(project, task, webSocketConfiguration.token)
     // TODO: remove `cf_protocol_version=v2` after full transfer to the cf protocol version 2 (~Summer 2023).
-    val finalState = connector.connectToWebSocketWithTimeout(CODE_TASK_CHECK_TIMEOUT,
-                                                             "wss://${getWebsocketHostName()}/ws/connection/websocket?cf_protocol_version=v2",
-                                                             initialState)
+    val finalState = connector.connectToWebSocketWithTimeout(
+      CODE_TASK_CHECK_TIMEOUT,
+      "wss://${getWebsocketHostName()}/ws/connection/websocket?cf_protocol_version=v2",
+      initialState
+    )
 
     return finalState.getResult()
   }
@@ -181,6 +184,7 @@ object HyperskillCheckConnector {
         is SubmissionError.NoSubmission -> HyperskillSubmitConnector.submitCodeTask(project, task).onError { error ->
           return failedToSubmit(project, task, error)
         }
+
         is SubmissionError.WithSubmission -> submissionError.submission
       }
 
@@ -343,7 +347,8 @@ object HyperskillCheckConnector {
 
   private fun String.toCheckResult(): CheckResult {
     return if (this == EduFormatBundle.message("error.access.denied")) {
-      CheckResult(CheckStatus.Unchecked,
+      CheckResult(
+        CheckStatus.Unchecked,
         EduCoreBundle.message("error.access.denied.with.link"),
         hyperlinkAction = { loginListener.doLogin() }
       )

@@ -41,6 +41,7 @@ class StartEduUiOnboardingAction : DumbAwareAction() {
         val toadEmoji = EduUiOnboardingBundle.message("toad.emoji")
         "$actionTitle $toadEmoji"
       }
+
       else -> actionTitle
     }
   }

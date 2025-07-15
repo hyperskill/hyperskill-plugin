@@ -18,14 +18,15 @@ class JdkCheckerFixture : EduCheckerFixture<JdkProjectSettings>() {
 
   private var sdks: Set<Sdk>? = null
 
-  override val projectSettings: JdkProjectSettings get() {
-    val jdk = ProjectJdkTable.getInstance().findJdk(MY_TEST_JDK_NAME) ?: error("Gradle JDK should be configured in setUp()")
+  override val projectSettings: JdkProjectSettings
+    get() {
+      val jdk = ProjectJdkTable.getInstance().findJdk(MY_TEST_JDK_NAME) ?: error("Gradle JDK should be configured in setUp()")
 
-    val sdksModel = ProjectSdksModel()
-    sdksModel.addSdk(jdk)
+      val sdksModel = ProjectSdksModel()
+      sdksModel.addSdk(jdk)
 
-    return JdkProjectSettings(sdksModel, jdk)
-  }
+      return JdkProjectSettings(sdksModel, jdk)
+    }
 
   override fun getSkipTestReason(): String? {
     // We temporarily disable checkers tests on teamcity linux agents

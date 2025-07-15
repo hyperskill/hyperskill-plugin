@@ -59,8 +59,10 @@ class HyperskillMetricsTest : EduTestCase() {
   fun `test frontend events deserialization from xml`() {
     val stateFromFile = deserializeFromFile("hyperskill_events.xml")
 
-    val expectedFrontendEvents = listOf(createHyperskillFrontendEvent("/projects/41/stages/214/implement", Date(111)),
-                                        createHyperskillFrontendEvent("/learn/step/123", Date(222)))
+    val expectedFrontendEvents = listOf(
+      createHyperskillFrontendEvent("/projects/41/stages/214/implement", Date(111)),
+      createHyperskillFrontendEvent("/learn/step/123", Date(222))
+    )
 
     compareFrontendEvents(expectedFrontendEvents, stateFromFile.events)
   }
@@ -93,7 +95,7 @@ class HyperskillMetricsTest : EduTestCase() {
     metricsService.taskStarted(task1)
     metricsService.taskStopped()
 
-    assertNull(metricsService.allTimeSpentEvents (reset = false).find { it.step == task1.id })
+    assertNull(metricsService.allTimeSpentEvents(reset = false).find { it.step == task1.id })
   }
 
   @Test
@@ -218,6 +220,7 @@ class HyperskillMetricsTest : EduTestCase() {
             chunksCount++
             """{"${FRONTEND_EVENTS}":[]}"""
           }
+
           else -> return@withResponseHandler null
         }
       )
@@ -309,9 +312,11 @@ class HyperskillMetricsTest : EduTestCase() {
     return metricsService.allFrontendEvents(emptyQueue = false)
   }
 
-  private fun createHyperskillFrontendEvent(eventRoute: String,
-                                            eventTime: Date,
-                                            eventAction: HyperskillFrontendEventType = HyperskillFrontendEventType.VIEW): HyperskillFrontendEvent {
+  private fun createHyperskillFrontendEvent(
+    eventRoute: String,
+    eventTime: Date,
+    eventAction: HyperskillFrontendEventType = HyperskillFrontendEventType.VIEW
+  ): HyperskillFrontendEvent {
     return HyperskillFrontendEvent().apply {
       route = eventRoute
       action = eventAction

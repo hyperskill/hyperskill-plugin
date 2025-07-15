@@ -7,7 +7,7 @@ import com.jetbrains.edu.learning.newproject.EduProjectSettings
 import icons.DatabaseIcons
 import javax.swing.Icon
 
-interface SqlConfiguratorBase<Settings : EduProjectSettings>: EduConfigurator<Settings> {
+interface SqlConfiguratorBase<Settings : EduProjectSettings> : EduConfigurator<Settings> {
   override val logo: Icon
     get() = DatabaseIcons.Sql
 

@@ -21,15 +21,18 @@ class JCreateCourseArchiveTest : CourseArchiveTestBase() {
     ) {
       lesson("lesson1") {
         theoryTask("TheoryWithCustomRunConfiguration") {
-          javaTaskFile("src/Main.java", """
+          javaTaskFile(
+            "src/Main.java", """
             public class Main {
               public static void main(String[] args) {
                 System.out.println(System.getenv("EXAMPLE_ENV"));
               }
             }
-          """)
+          """
+          )
           // Need to verify that the plugin doesn't touch non-related run configuration files
-          xmlTaskFile("CustomGradleRun.run.xml", """
+          xmlTaskFile(
+            "CustomGradleRun.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomCustomGradleRun" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -58,9 +61,11 @@ class JCreateCourseArchiveTest : CourseArchiveTestBase() {
                 <method v="2" />
               </configuration>
             </component>            
-          """)
+          """
+          )
           dir("runConfigurations") {
-            xmlTaskFile("CustomGradleRun.run.xml", """
+            xmlTaskFile(
+              "CustomGradleRun.run.xml", """
             <component name="ProjectRunConfigurationManager">
               <configuration default="false" name="CustomGradleRun" type="GradleRunConfiguration" factoryName="Gradle">
                 <ExternalSystemSettings>
@@ -89,7 +94,8 @@ class JCreateCourseArchiveTest : CourseArchiveTestBase() {
                 <method v="2" />
               </configuration>
             </component>            
-          """)
+          """
+            )
           }
         }
       }
@@ -108,13 +114,15 @@ class JCreateCourseArchiveTest : CourseArchiveTestBase() {
     ) {
       lesson("lesson1") {
         theoryTask("task1") {
-          javaTaskFile("src/Main.java", """
+          javaTaskFile(
+            "src/Main.java", """
             public class Main {
               public static void main(String[] args) {
                 System.out.println("Hello, World!");
               }
             }
-          """)
+          """
+          )
         }
       }
     }

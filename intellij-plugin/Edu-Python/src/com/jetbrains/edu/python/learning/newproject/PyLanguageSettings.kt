@@ -20,15 +20,10 @@ import com.jetbrains.edu.learning.newproject.ui.errors.ValidationMessage
 import com.jetbrains.edu.learning.newproject.ui.errors.ready
 import com.jetbrains.edu.python.learning.messages.EduPythonBundle
 import com.jetbrains.python.psi.LanguageLevel
-import com.jetbrains.python.sdk.PyDetectedSdk
-import com.jetbrains.python.sdk.PySdkUtil
+import com.jetbrains.python.sdk.*
 import com.jetbrains.python.sdk.add.PySdkPathChoosingComboBox
 import com.jetbrains.python.sdk.add.addInterpretersAsync
-import com.jetbrains.python.sdk.findBaseSdks
 import com.jetbrains.python.sdk.flavors.PythonSdkFlavor
-import com.jetbrains.python.sdk.getSdksToInstall
-import com.jetbrains.python.sdk.sdkFlavor
-import com.jetbrains.python.sdk.sdkSeemsValid
 import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
 import java.awt.event.ItemEvent
@@ -73,13 +68,13 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
     val fakeSdk = listOfNotNull(createFakeSdk(course, context))
 
     return (fakeSdk + findBaseSdks(emptyList(), null, context))
-      // It's important to check validity here, in background thread,
-      // because it caches a result of checking if python binary is executable.
-      // If the first (uncached) invocation is invoked in EDT, it may throw exception and break UI rendering.
-      // See https://youtrack.jetbrains.com/issue/EDU-6371
-      .filter { it.sdkSeemsValid }
-      .takeIf { it.isNotEmpty() }
-      ?: getSdksToInstall()
+             // It's important to check validity here, in background thread,
+             // because it caches a result of checking if python binary is executable.
+             // If the first (uncached) invocation is invoked in EDT, it may throw exception and break UI rendering.
+             // See https://youtrack.jetbrains.com/issue/EDU-6371
+             .filter { it.sdkSeemsValid }
+             .takeIf { it.isNotEmpty() }
+           ?: getSdksToInstall()
   }
 
   override fun getSettings(): PyProjectSettings = projectSettings
@@ -87,8 +82,10 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
   override fun validate(course: Course?, courseLocation: String?): SettingsValidationResult {
     course ?: return SettingsValidationResult.OK
     val sdk = projectSettings.sdk ?: return if (isSettingsInitialized) {
-      ValidationMessage(EduPythonBundle.message("error.no.python.interpreter", ENVIRONMENT_CONFIGURATION_LINK_PYTHON),
-                        ENVIRONMENT_CONFIGURATION_LINK_PYTHON).ready()
+      ValidationMessage(
+        EduPythonBundle.message("error.no.python.interpreter", ENVIRONMENT_CONFIGURATION_LINK_PYTHON),
+        ENVIRONMENT_CONFIGURATION_LINK_PYTHON
+      ).ready()
     }
     else {
       SettingsValidationResult.Pending
@@ -106,7 +103,7 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
 
   private val Sdk.languageLevel: LanguageLevel
     get() {
-      return when(this) {
+      return when (this) {
         is PySdkToCreateVirtualEnv -> {
           val pythonVersion = versionString
           if (pythonVersion == null) {
@@ -116,12 +113,14 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
             LanguageLevel.fromPythonVersion(pythonVersion) ?: LanguageLevel.getDefault()
           }
         }
+
         is PyDetectedSdk -> {
           // PyDetectedSdk has empty `sdk.versionString`, so we should manually get language level from homePath if it exists
           homePath?.let {
             sdkFlavor.getLanguageLevel(it)
           } ?: LanguageLevel.getDefault()
         }
+
         else -> {
           PySdkUtil.getLanguageLevelForSdk(this)
         }
@@ -160,14 +159,23 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
       return baseSdks.filter { isSdkApplicable(course, it.languageLevel) == OK }.maxByOrNull { it.languageLevel }
     }
 
-    private class NoApplicablePythonError(requiredVersion: Int,
-                                          errorMessage: @Nls String = EduPythonBundle.message("error.incorrect.python",
-                                                                                              requiredVersion)) : Err<String>(errorMessage)
+    private class NoApplicablePythonError(
+      requiredVersion: Int,
+      errorMessage: @Nls String = EduPythonBundle.message(
+        "error.incorrect.python",
+        requiredVersion
+      )
+    ) : Err<String>(errorMessage)
 
-    private class SpecificPythonRequiredError(requiredVersion: String,
-                                              errorMessage: @Nls String = EduPythonBundle.message("error.old.python",
-                                                                                                  requiredVersion)) : Err<String>(
-      errorMessage)
+    private class SpecificPythonRequiredError(
+      requiredVersion: String,
+      errorMessage: @Nls String = EduPythonBundle.message(
+        "error.old.python",
+        requiredVersion
+      )
+    ) : Err<String>(
+      errorMessage
+    )
 
     @RequiresBackgroundThread
     private fun createFakeSdk(course: Course, context: UserDataHolder): Sdk? {

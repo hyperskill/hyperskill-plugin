@@ -2,7 +2,6 @@ package com.jetbrains.edu.learning.yaml.format.student
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import com.jetbrains.edu.learning.yaml.format.tasks.ChoiceTaskYamlMixin
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.FEEDBACK
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.FEEDBACK_CORRECT
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.FEEDBACK_INCORRECT
@@ -16,10 +15,13 @@ import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.SELECTED_OPTIONS
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.STATUS
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.TAGS
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.TYPE
+import com.jetbrains.edu.learning.yaml.format.tasks.ChoiceTaskYamlMixin
 
 @Suppress("unused") // used for yaml serialization
-@JsonPropertyOrder(TYPE, IS_MULTIPLE_CHOICE, OPTIONS, FEEDBACK_CORRECT, FEEDBACK_INCORRECT, QUIZ_HEADER, FILES,
-                   FEEDBACK_LINK, OPTIONS, STATUS, FEEDBACK, RECORD, SELECTED_OPTIONS, TAGS)
+@JsonPropertyOrder(
+  TYPE, IS_MULTIPLE_CHOICE, OPTIONS, FEEDBACK_CORRECT, FEEDBACK_INCORRECT, QUIZ_HEADER, FILES,
+  FEEDBACK_LINK, OPTIONS, STATUS, FEEDBACK, RECORD, SELECTED_OPTIONS, TAGS
+)
 abstract class StudentChoiceTaskYamlMixin : ChoiceTaskYamlMixin() {
   @JsonProperty(SELECTED_OPTIONS)
   private var selectedVariants = mutableListOf<Int>()

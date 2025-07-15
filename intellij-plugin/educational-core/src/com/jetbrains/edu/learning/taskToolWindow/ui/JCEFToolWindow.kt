@@ -41,8 +41,9 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     Disposer.register(this, taskSpecificJBCefBrowser)
 
     ApplicationManager.getApplication().messageBus.connect(this)
-      .subscribe(LafManagerListener.TOPIC,
-                 LafManagerListener { TaskToolWindowView.updateAllTabs(project) })
+      .subscribe(
+        LafManagerListener.TOPIC,
+        LafManagerListener { TaskToolWindowView.updateAllTabs(project) })
   }
 
   override val taskInfoPanel: JComponent
@@ -101,6 +102,7 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
   companion object {
     // maximum number of created qs queries in termsQueryManager
     private const val TASK_INFO_PANEL_JS_QUERY_POOL_SIZE = 3
+
     // maximum number of created qs queries in taskSpecificQueryManager
     private const val TASK_SPECIFIC_PANEL_JS_QUERY_POOL_SIZE = 2
 

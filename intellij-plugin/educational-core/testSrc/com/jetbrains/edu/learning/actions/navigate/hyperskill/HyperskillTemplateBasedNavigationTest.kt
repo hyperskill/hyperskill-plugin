@@ -5,11 +5,11 @@ import com.jetbrains.edu.learning.actions.PreviousTaskAction
 import com.jetbrains.edu.learning.actions.navigate.NavigationTestBase
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.learning.findTask
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
+import com.jetbrains.edu.learning.fileTree
+import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.edu.learning.testAction
 import org.junit.Test
@@ -31,15 +31,19 @@ class HyperskillTemplateBasedNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foobar() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -75,16 +79,20 @@ class HyperskillTemplateBasedNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun bar() {}
               fun foo() {}
-            """)
+            """
+            )
             file("Bar.kt", "fun bar() {}")
           }
           dir("test") {
-            file("Tests1.kt", """
+            file(
+              "Tests1.kt", """
               fun tests1() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -126,19 +134,25 @@ class HyperskillTemplateBasedNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun baz() {}
               fun foobar() {}
-            """)
-            file("Baz.kt", """
+            """
+            )
+            file(
+              "Baz.kt", """
               fun qqq() {}
               fun baz() {}
-            """)
+            """
+            )
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -170,15 +184,19 @@ class HyperskillTemplateBasedNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foobar() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -219,9 +237,11 @@ class HyperskillTemplateBasedNavigationTest : NavigationTestBase() {
             file("NewFile.kt", "fun qwe() {}")
           }
           dir("test") {
-            file("Tests1.kt", """
+            file(
+              "Tests1.kt", """
               fun tests1() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -252,15 +272,19 @@ class HyperskillTemplateBasedNavigationTest : NavigationTestBase() {
       dir("lesson1") {
         dir("task") {
           dir("src") {
-            file("Task.kt", """
+            file(
+              "Task.kt", """
               fun foobar() {}
-            """)
+            """
+            )
             file("Baz.kt", "fun baz() {}")
           }
           dir("test") {
-            file("Tests2.kt", """
+            file(
+              "Tests2.kt", """
               fun tests2() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
@@ -298,9 +322,11 @@ class HyperskillTemplateBasedNavigationTest : NavigationTestBase() {
             file("Bar.kt", "fun bar() {}")
           }
           dir("test") {
-            file("Tests1.kt", """
+            file(
+              "Tests1.kt", """
               fun tests1() {}
-            """)
+            """
+            )
           }
         }
         dir("task1") {
