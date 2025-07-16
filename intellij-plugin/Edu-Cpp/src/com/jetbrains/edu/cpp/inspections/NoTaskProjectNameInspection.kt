@@ -22,15 +22,7 @@ class NoTaskProjectNameInspection : LocalInspectionTool() {
   override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
     object : CMakeVisitor() {
       override fun visitFile(file: PsiFile) {
-        if (!CCUtils.isCourseCreator(file.project)) {
-          return
-        }
-
-        val taskFile = file.virtualFile.getTaskFile(file.project) ?: return
-
-        if (file.findCMakeCommand("project") == null) {
-          holder.registerProblem(file, EduCppBundle.message("project.name.not.set.warning"), AddDefaultProjectNameFix(file, taskFile))
-        }
+        return
       }
     }
 

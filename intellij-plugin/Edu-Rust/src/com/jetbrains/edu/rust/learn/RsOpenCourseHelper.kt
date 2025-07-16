@@ -9,7 +9,6 @@ import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.jetbrains.edu.learning.configuration.CourseCantBeStartedException
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector
 import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
 import com.jetbrains.edu.learning.newproject.ui.courseSettings.CourseSettingsPanel
 import com.jetbrains.edu.learning.notification.EduNotificationManager
@@ -43,21 +42,11 @@ object RsOpenCourseHelper {
       }
     }
     else {
-      val course = MarketplaceConnector.getInstance().searchCourse(courseId)
-      if (course == null) {
-        LOG.warn("Failed to load https://plugins.jetbrains.com/plugin/$courseId course")
-        EduNotificationManager.showErrorNotification(
-          title = EduRustBundle.message("course.creation.failed.notification.title"),
-          content = EduRustBundle.message("course.creation.no.course.found.notification.content")
-        )
-      }
-      else {
-        withContext(Dispatchers.EDT) {
-          blockingContext {
-            course.createProject(toolchain, projectLocation)
-          }
-        }
-      }
+      LOG.warn("Failed to load https://plugins.jetbrains.com/plugin/$courseId course")
+      EduNotificationManager.showErrorNotification(
+        title = EduRustBundle.message("course.creation.failed.notification.title"),
+        content = EduRustBundle.message("course.creation.no.course.found.notification.content")
+      )
     }
   }
 

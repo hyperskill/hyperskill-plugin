@@ -35,10 +35,6 @@ class CSharpCourseBuilder : EduCourseBuilder<CSharpProjectSettings> {
     super.initNewTask(course, task, info, withSources)
   }
 
-  override fun shouldCopyTaskFile(path: String): Boolean {
-    return !path.endsWith(CsprojFileType.defaultExtension)
-  }
-
   override fun beforeStudyItemDeletion(project: Project, item: StudyItem) {
     super.beforeStudyItemDeletion(project, item)
     when (item) {

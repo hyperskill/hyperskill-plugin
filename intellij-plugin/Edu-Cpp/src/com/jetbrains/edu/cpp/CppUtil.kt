@@ -13,7 +13,6 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.getDefaultName
 
 /**
  * Create CMake for the task and add it as taskFile.
@@ -36,7 +35,7 @@ fun Task.addCMakeList(projectName: String, cppStandard: String = ""): TaskFile {
 }
 
 fun getCMakeProjectName(task: Task): String {
-  val nameExtractor = if (task.course is StepikCourse) ::getDefaultName else StudyItem::name
+  val nameExtractor = StudyItem::name
 
   val lesson = task.lesson
   val section = lesson.section
