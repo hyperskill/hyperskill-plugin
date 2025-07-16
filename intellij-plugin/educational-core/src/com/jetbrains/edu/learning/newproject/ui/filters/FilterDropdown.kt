@@ -25,13 +25,13 @@ import javax.swing.tree.DefaultMutableTreeNode
 abstract class FilterDropdown(
   var allItems: Set<String>,
   private val filterCourses: () -> Unit
-) : JBLabel(AllIcons.General.LinkDropTriangle, SwingConstants.LEFT) {
+) : JBLabel(AllIcons.General.LinkDropTriangle, LEFT) {
   abstract val popupSize: Dimension
   abstract var selectedItems: Set<String>
   abstract val defaultTitle: String
 
   init {
-    horizontalTextPosition = SwingConstants.LEFT
+    horizontalTextPosition = LEFT
     iconTextGap = 2
     border = JBUI.Borders.empty(0, 15)
 

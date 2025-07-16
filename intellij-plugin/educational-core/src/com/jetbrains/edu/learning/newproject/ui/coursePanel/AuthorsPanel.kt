@@ -9,8 +9,8 @@ import javax.swing.ScrollPaneConstants
 private const val INFO_PANEL_TOP_OFFSET = 7
 
 class AuthorsPanel : JBScrollPane(
-  ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
-  ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+  VERTICAL_SCROLLBAR_NEVER,
+  HORIZONTAL_SCROLLBAR_NEVER
 ), CourseSelectionListener {
   private var authorsLabel: GrayTextHtmlPanel = GrayTextHtmlPanel("text").apply {
     border = JBUI.Borders.empty(INFO_PANEL_TOP_OFFSET, HORIZONTAL_MARGIN, 0, 0)

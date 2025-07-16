@@ -15,7 +15,7 @@ class ClickableLabel(
 ) : JBLabel(initialText) {
 
   init {
-    alignmentX = Component.LEFT_ALIGNMENT
+    alignmentX = LEFT_ALIGNMENT
     border = JBUI.Borders.emptyLeft(5)
     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
 

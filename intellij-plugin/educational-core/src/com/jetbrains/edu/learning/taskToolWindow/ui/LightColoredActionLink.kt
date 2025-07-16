@@ -19,7 +19,7 @@ class LightColoredActionLink(
     if (isExternal) {
       icon = AllIcons.Ide.External_link_arrow
       iconTextGap = 0
-      horizontalTextPosition = SwingConstants.LEFT
+      horizontalTextPosition = LEFT
     }
     else {
       icon = actionIcon
