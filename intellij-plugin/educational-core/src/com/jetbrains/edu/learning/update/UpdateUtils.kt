@@ -102,7 +102,7 @@ object UpdateUtils {
 
     if (lesson.currentTaskIndex != task.index - 1) {
       updateTaskFiles(task, remoteTask.nonPropagatableFiles, false)
-      flm.updateUserChanges(task, task.taskFiles.mapValues { (_, taskFile) -> taskFile.text })
+      flm.updateUserChanges(task, task.taskFiles.mapValues { (_, taskFile) -> taskFile.contents.textualRepresentation })
     }
     else {
       if (updatePropagatableFiles && !task.hasChangedFiles(project)) {

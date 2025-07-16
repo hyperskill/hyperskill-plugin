@@ -340,7 +340,7 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
               LOG.warn("Failed to load text of `${remoteFile.name}` additional file", e)
               return@runWriteAction true
             }
-            text != remoteFile.text
+            text != remoteFile.contents.textualRepresentation
           }
         }
         if (needToUpdate) return true

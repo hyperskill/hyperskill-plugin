@@ -10,7 +10,6 @@ import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.coursera.CourseraPlatformProvider
 import com.jetbrains.edu.learning.newproject.ui.BrowseCoursesDialog
 import com.jetbrains.edu.learning.newproject.ui.CoursesPlatformProvider
 import com.jetbrains.edu.learning.newproject.ui.myCourses.MyCoursesProvider
@@ -87,9 +86,7 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
   }
 
   private enum class CourseSelectionViewTab {
-    MARKETPLACE,
     JBA,
-    COURSERA,
     MY_COURSES,
     UNKNOWN;
 
@@ -97,7 +94,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
       fun fromProvider(provider: CoursesPlatformProvider): CourseSelectionViewTab {
         return when (provider) {
           is HyperskillPlatformProvider -> JBA
-          is CourseraPlatformProvider -> COURSERA
           is MyCoursesProvider -> MY_COURSES
           else -> UNKNOWN
         }

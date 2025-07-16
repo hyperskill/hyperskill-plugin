@@ -1,10 +1,5 @@
 package com.jetbrains.edu.learning
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.intellij.ide.SaveAndSyncHandler
 import com.intellij.ide.lightEdit.LightEdit
 import com.intellij.openapi.actionSystem.DataContext
@@ -15,7 +10,6 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.InputValidatorEx
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.text.StringUtil
@@ -29,16 +23,11 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames.COURSE_META_FILE
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.zip.FileContentsFromZipFactory
-import com.jetbrains.edu.learning.json.configureCourseMapper
-import com.jetbrains.edu.learning.json.getCourseMapper
-import com.jetbrains.edu.learning.json.migrate
-import com.jetbrains.edu.learning.json.mixins.LocalEduCourseMixin
 import com.jetbrains.edu.learning.json.readCourseJson
 import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
 import com.jetbrains.edu.learning.projectView.ProgressUtil.updateCourseProgress
 import com.jetbrains.edu.learning.taskToolWindow.ui.EduBrowserHyperlinkListener
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames
 import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.markdown.flavours.gfm.GFMFlavourDescriptor
 import org.intellij.markdown.flavours.gfm.GFMTokenTypes
@@ -102,10 +91,6 @@ object EduUtilsKt {
   fun isTestsFile(task: Task, path: String): Boolean {
     val configurator = task.course.configurator ?: return false
     return configurator.isTestFile(task, path)
-  }
-
-  fun getCourseraCourse(zipFilePath: String): Course? {
-    return getLocalCourse(zipFilePath, ::readCourseraCourseJson)
   }
 
   fun getLocalCourse(
@@ -183,51 +168,6 @@ object EduUtilsKt {
   }
 
   private val LOG = logger<EduUtilsKt>()
-}
-
-private fun readCourseraCourseJson(reader: () -> Reader, fileContentsFactory: FileContentsFactory): Course? {
-  return try {
-    val courseMapper = getCourseMapper(fileContentsFactory)
-    courseMapper.addMixIn(CourseraCourse::class.java, CourseraCourseMixin::class.java)
-    courseMapper.configureCourseMapper(false)
-    var courseNode = reader().use { currentReader ->
-      courseMapper.readTree(currentReader) as ObjectNode
-    }
-    courseNode = migrate(courseNode)
-    courseMapper.treeToValue<CourseraCourse?>(courseNode)
-  }
-  catch (e: IOException) {
-    null
-  }
-}
-
-@JsonAutoDetect(setterVisibility = JsonAutoDetect.Visibility.NONE)
-abstract class CourseraCourseMixin : LocalEduCourseMixin() {
-  @Suppress("unused")
-  @JsonProperty(YamlMixinNames.SUBMIT_MANUALLY)
-  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-  var submitManually = false
-}
-
-class NumericInputValidator(private val emptyInputMessage: String, private val notNumericMessage: String) : InputValidatorEx {
-  override fun getErrorText(inputString: String): String? {
-    val input = inputString.trim()
-    return when {
-      input.isEmpty() -> emptyInputMessage
-      !isNumeric(input) -> notNumericMessage
-      else -> null
-    }
-  }
-
-  override fun checkInput(inputString: String): Boolean {
-    return getErrorText(inputString) == null
-  }
-
-  override fun canClose(inputString: String): Boolean = true
-
-  private fun isNumeric(string: String): Boolean {
-    return string.all { StringUtil.isDecimalDigit(it) }
-  }
 }
 
 object Executor {

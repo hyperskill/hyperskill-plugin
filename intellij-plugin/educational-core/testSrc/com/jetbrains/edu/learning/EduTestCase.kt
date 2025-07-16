@@ -32,7 +32,6 @@ import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.configurators.FakeGradleConfigurator
 import com.jetbrains.edu.learning.configurators.FakeGradleHyperskillConfigurator
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.COURSERA
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.STEPIK
 import com.jetbrains.edu.learning.courseFormat.ext.customContentPath
@@ -76,7 +75,6 @@ abstract class EduTestCase : BasePlatformTestCase() {
     registerConfigurator<PlainTextConfigurator>(PlainTextLanguage.INSTANCE, courseType = HYPERSKILL)
     registerConfigurator<PlainTextConfigurator>(PlainTextLanguage.INSTANCE, courseType = STEPIK)
     registerConfigurator<PlainTextConfigurator>(PlainTextLanguage.INSTANCE, environment = EduNames.ANDROID)
-    registerConfigurator<PlainTextConfigurator>(PlainTextLanguage.INSTANCE, courseType = COURSERA)
     registerConfigurator<FakeGradleConfigurator>(FakeGradleBasedLanguage)
     registerConfigurator<FakeGradleHyperskillConfigurator>(FakeGradleBasedLanguage, courseType = HYPERSKILL)
 

@@ -50,9 +50,7 @@
               "logoShell.svg" : "icons/com/jetbrains/edu/learning/ShellLogo.svg"
             },
             "platform" : {
-              "coursera@24x24.svg" : "icons/com/jetbrains/edu/learning/coursera.svg",
               "jetBrainsAcademy@24x24.svg" : "icons/com/jetbrains/edu/learning/JB_academy_course_tab.svg",
-              "marketplaceCourses@24x24.svg" : "icons/com/jetbrains/edu/learning/marketplace_courses_tab.svg",
               "hyperskill.svg" : "icons/com/jetbrains/edu/learning/JB_academy.svg"
             },
             "taskToolWindow" : {

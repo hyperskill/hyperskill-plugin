@@ -21,7 +21,6 @@ import com.jetbrains.edu.learning.checker.details.CheckDetailsView
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckResultDiff
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.CourseraCourse
 import com.jetbrains.edu.learning.courseFormat.ext.canShowSolution
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -99,7 +98,7 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
       }
     }
 
-    if (course !is CourseraCourse && task.showAnswerHints) {
+    if (task.showAnswerHints) {
       val answerHintsPanel = createAnswerHintsPanel(project, task, checkResult)
       if (answerHintsPanel != null) {
         linksPanel.add(answerHintsPanel, BorderLayout.SOUTH)

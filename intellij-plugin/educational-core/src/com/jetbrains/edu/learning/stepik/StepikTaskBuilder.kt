@@ -395,7 +395,7 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
     val langAndVersionRegex = Regex("^([a-zA-Z+#]+)\\s?([.|0-9]+)\$")
 
     private fun addPlaceholdersTexts(file: TaskFile) {
-      val fileText = file.text
+      val fileText = file.contents.textualRepresentation
       for (placeholder in file.answerPlaceholders) {
         val offset = placeholder.offset
         val length = placeholder.length

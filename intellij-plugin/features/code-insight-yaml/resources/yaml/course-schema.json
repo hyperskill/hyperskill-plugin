@@ -12,9 +12,7 @@
       "description" : "Course type",
       "type" : "string",
       "enum" : [
-        "edu",
-        "coursera",
-        "marketplace"
+        "edu"
       ]
     },
     "title" : {

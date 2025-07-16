@@ -13,7 +13,6 @@ import com.jetbrains.edu.learning.yaml.format.CourseBuilder
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ADDITIONAL_FILES
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.EDU_YAML_TYPE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ENVIRONMENT
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.MARKETPLACE_YAML_TYPE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.PROGRAMMING_LANGUAGE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.TYPE
 import com.jetbrains.edu.learning.yaml.getEduValue
@@ -72,7 +71,7 @@ object ToVersion2StepAddAdditionalFiles : YamlMigrationStep {
    */
   private fun decodeCourseType(rawType: String?): String =
     when (rawType) {
-      EDU_YAML_TYPE, MARKETPLACE_YAML_TYPE, null -> PYCHARM
+      EDU_YAML_TYPE, null -> PYCHARM
       else -> rawType.replaceFirstChar { it.uppercaseChar() }
     }
 

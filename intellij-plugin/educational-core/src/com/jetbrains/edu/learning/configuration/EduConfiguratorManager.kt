@@ -1,22 +1,16 @@
 package com.jetbrains.edu.learning.configuration
 
 import com.intellij.lang.Language
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.COURSERA
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.PYCHARM
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.STEPIK
-import com.jetbrains.edu.learning.marketplace.MARKETPLACE
 
 object EduConfiguratorManager {
 
   /**
    * Returns any enabled [EduConfigurator] for given language, courseType and environment
    */
-  fun findConfigurator(courseType: String, environment: String, language: Language): EduConfigurator<*>? = if (courseType == MARKETPLACE) {
-    findExtension(PYCHARM, environment, language)?.instance
-  }
-  else {
+  fun findConfigurator(courseType: String, environment: String, language: Language): EduConfigurator<*>? =
     findExtension(courseType, environment, language)?.instance
-  }
 
   fun findExtension(courseType: String, environment: String, language: Language): EducationalExtensionPoint<EduConfigurator<*>>? {
     var configurator =
@@ -49,7 +43,7 @@ object EduConfiguratorManager {
       return allExtensions().filter { it.courseType == PYCHARM }.map { it.language }
     }
 
-  private val compatibleCourseTypes: List<String> = listOf(COURSERA, STEPIK, MARKETPLACE)
+  private val compatibleCourseTypes: List<String> = listOf(STEPIK)
 
   private fun compatibleCourseType(extension: EducationalExtensionPoint<EduConfigurator<*>>, courseType: String): Boolean {
     return extension.courseType == PYCHARM && courseType in compatibleCourseTypes

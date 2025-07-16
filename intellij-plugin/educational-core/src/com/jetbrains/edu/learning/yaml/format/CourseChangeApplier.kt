@@ -2,7 +2,6 @@ package com.jetbrains.edu.learning.yaml.format
 
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseraCourse
 
 class CourseChangeApplier(project: Project) : ItemContainerChangeApplier<Course>(project) {
   override fun applyChanges(existingItem: Course, deserializedItem: Course) {
@@ -20,8 +19,5 @@ class CourseChangeApplier(project: Project) : ItemContainerChangeApplier<Course>
     existingItem.additionalFiles = deserializedItem.additionalFiles
     existingItem.customContentPath = deserializedItem.customContentPath
     existingItem.disabledFeatures = deserializedItem.disabledFeatures
-    if (deserializedItem is CourseraCourse && existingItem is CourseraCourse) {
-      existingItem.submitManually = deserializedItem.submitManually
-    }
   }
 }

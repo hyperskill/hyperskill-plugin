@@ -93,9 +93,9 @@ class FrameworkLessonTaskFileHistory private constructor(private val remoteHisto
         // First, the user sees it and then either modifies or not
         // It could be a file.text for non-propagatable files, or the text propagated from the previous step.
         val unmodifiedText = when {
-          !propagateFilesOnNavigation -> taskFile?.text
+          !propagateFilesOnNavigation -> taskFile?.contents?.textualRepresentation
           previousIsPropagatable == true -> previousText
-          else -> taskFile?.text
+          else -> taskFile?.contents?.textualRepresentation
         }
 
         val userChanges = getUserChanges(index, task, unmodifiedText)

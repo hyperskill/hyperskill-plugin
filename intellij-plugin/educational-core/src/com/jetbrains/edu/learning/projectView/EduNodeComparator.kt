@@ -22,7 +22,7 @@ object EduNodeComparator : Comparator<NodeDescriptor<*>> {
     if (o1 is PsiDirectoryNode && o2 !is PsiDirectoryNode) return -1
     if (o1 !is PsiDirectoryNode && o2 is PsiDirectoryNode) return 1
 
-    return AlphaComparator.INSTANCE.compare(o1, o2)
+    return AlphaComparator.getInstance().compare(o1, o2)
   }
 
   private fun NodeDescriptor<*>.getTaskFile(): TaskFile? {

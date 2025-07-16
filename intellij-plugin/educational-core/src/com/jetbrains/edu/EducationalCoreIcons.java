@@ -138,9 +138,7 @@ public final class EducationalCoreIcons {
      * {@code com.jetbrains.edu.learning.newproject.ui.CoursesPlatformProviderFactory}</p>
      */
     public static final class Tab {
-      public static final Icon CourseraTab = load("/icons/com/jetbrains/edu/learning/coursera.svg");
       public static final Icon JetBrainsAcademyTab = load("/icons/com/jetbrains/edu/learning/JB_academy_course_tab.svg");
-      public static final Icon MarketplaceTab = load("/icons/com/jetbrains/edu/learning/marketplace_courses_tab.svg");
     }
   }
 

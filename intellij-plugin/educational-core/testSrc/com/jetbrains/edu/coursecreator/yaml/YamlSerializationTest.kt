@@ -761,30 +761,6 @@ class YamlSerializationTest : YamlTestCase() {
   }
 
   @Test
-  fun `test coursera course feedback link not serialized`() {
-    val courseLink = "https://course_link.com"
-    val course = course(courseProducer = ::CourseraCourse) {
-      lesson {
-        eduTask { }
-      }
-    }.apply { feedbackLink = courseLink }
-    doTest(
-      course, """
-      |type: coursera
-      |title: Test Course
-      |language: English
-      |summary: Test Course Description
-      |programming_language: Plain text
-      |content:
-      |- lesson1
-      |mode: Study
-      |yaml_version: $CURRENT_YAML_VERSION
-      |
-    """.trimMargin()
-    )
-  }
-
-  @Test
   fun `test course with hidden solutions`() {
     val course = course(courseMode = CourseMode.EDUCATOR) {}
     course.solutionsHidden = true
@@ -918,50 +894,6 @@ class YamlSerializationTest : YamlTestCase() {
       |tags:
       |- kotlin
       |- cycles
-      |yaml_version: $CURRENT_YAML_VERSION
-      |
-    """.trimMargin()
-    )
-  }
-
-  @Test
-  fun `test coursera course`() {
-    val course = course(courseMode = CourseMode.EDUCATOR, courseProducer = ::CourseraCourse) {}
-    course.languageCode = "ru"
-    course.description = "sum"
-    course.languageId = PlainTextLanguage.INSTANCE.id
-    course.languageVersion = "1.42"
-    doTest(
-      course, """
-      |type: coursera
-      |title: Test Course
-      |language: Russian
-      |summary: sum
-      |programming_language: Plain text
-      |programming_language_version: 1.42
-      |yaml_version: $CURRENT_YAML_VERSION
-      |
-    """.trimMargin()
-    )
-  }
-
-  @Test
-  fun `test coursera course manual submit`() {
-    val course = course(courseMode = CourseMode.EDUCATOR, courseProducer = ::CourseraCourse) {} as CourseraCourse
-    course.languageCode = "ru"
-    course.description = "sum"
-    course.submitManually = true
-    course.languageId = PlainTextLanguage.INSTANCE.id
-    course.languageVersion = "1.42"
-    doTest(
-      course, """
-      |type: coursera
-      |title: Test Course
-      |language: Russian
-      |summary: sum
-      |programming_language: Plain text
-      |programming_language_version: 1.42
-      |submit_manually: true
       |yaml_version: $CURRENT_YAML_VERSION
       |
     """.trimMargin()

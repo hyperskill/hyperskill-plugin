@@ -407,7 +407,6 @@
     <statistics.applicationUsagesCollector implementation="com.jetbrains.edu.learning.statistics.EduStateUsagesCollector"/>
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.edu.learning.statistics.EduCounterUsageCollector"/>
     <applicationService serviceImplementation="com.jetbrains.edu.learning.EduSettings"/>
-    <applicationService serviceImplementation="com.jetbrains.edu.learning.coursera.CourseraSettings"/>
     <httpRequestHandler implementation="com.jetbrains.edu.learning.stepik.builtInServer.StepikRestService"/>
     <httpRequestHandler implementation="com.jetbrains.edu.learning.taskToolWindow.ui.EduToolsResourcesRequestHandler"/>
 
@@ -491,16 +490,10 @@
                   implementationClass="com.jetbrains.edu.learning.stepik.hyperskill.PlainTextHyperskillConfigurator"/>
 
     <optionsProvider instance="com.jetbrains.edu.learning.stepik.StepikOptions"/>
-    <optionsProvider instance="com.jetbrains.edu.learning.coursera.CourseraOptions"/>
     <checkListener implementation="com.jetbrains.edu.learning.statistics.PostFeedbackCheckListener"/>
     <checkListener implementation="com.jetbrains.edu.coursecreator.validation.ValidationCheckListener"/>
     <coursesPlatformProviderFactory id="JetBrainsAcademy" order="first"
                                     implementation="com.jetbrains.edu.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProviderFactory"/>
-    <coursesPlatformProviderFactory id="Coursera" order="after JetBrainsAcademy"
-                                    implementation="com.jetbrains.edu.learning.coursera.CourseraPlatformProviderFactory"/>
-
-
-    <remoteTaskChecker implementation="com.jetbrains.edu.learning.coursera.CourseraTaskChecker"/>
 
     <!-- Course compatibility providers   -->
     <compatibilityProvider language="JAVA"

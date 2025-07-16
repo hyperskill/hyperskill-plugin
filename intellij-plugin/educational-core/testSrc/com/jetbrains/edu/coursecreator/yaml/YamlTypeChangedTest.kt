@@ -1,6 +1,9 @@
 package com.jetbrains.edu.coursecreator.yaml
 
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.CourseMode
+import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
+import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
@@ -71,11 +74,6 @@ class YamlTypeChangedTest : YamlTestCase() {
   @Test
   fun `test framework to lesson`() {
     testLessonTypeChanged("lesson", Lesson::class.java)
-  }
-
-  @Test
-  fun `test edu to coursera course`() {
-    testCourseTypeChanged(YamlMixinNames.COURSE_TYPE_YAML, CourseraCourse::class.java)
   }
 
   @Test

@@ -23,7 +23,6 @@ import com.jetbrains.edu.learning.yaml.YamlDeserializer.getCourseMode
 import com.jetbrains.edu.learning.yaml.YamlMapper.basicMapper
 import com.jetbrains.edu.learning.yaml.YamlMapper.studentMapper
 import com.jetbrains.edu.learning.yaml.YamlTestCase
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
 import org.junit.Test
 import java.util.*
@@ -96,35 +95,6 @@ class YamlDeserializationTest : YamlTestCase() {
       |""".trimMargin()
     val course = deserializeNotNull(yamlContent)
     assertEquals(environment, course.environment)
-  }
-
-  @Test
-  fun `test coursera course`() {
-    val name = "Test Course"
-    val language = "Russian"
-    val programmingLanguage = "Plain text"
-    val firstLesson = "the first lesson"
-    val secondLesson = "the second lesson"
-    val yamlContent = """
-      |type: ${YamlMixinNames.COURSE_TYPE_YAML}
-      |title: $name
-      |language: $language
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: $programmingLanguage
-      |content:
-      |- $firstLesson
-      |- $secondLesson
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent) as CourseraCourse
-    assertEquals(name, course.name)
-    assertEquals(language, course.humanLanguage)
-    assertEquals(programmingLanguage, course.languageById!!.displayName)
-    assertFalse(course.submitManually)
-    assertNotNull(course.description)
-    assertEquals(listOf(firstLesson, secondLesson), course.items.map { it.name })
-    assertFalse(course.isMarketplace)
   }
 
   @Test
@@ -981,30 +951,6 @@ class YamlDeserializationTest : YamlTestCase() {
     |""".trimMargin()
     val section = basicMapper().deserializeSection(yamlContent)
     assertEmpty(section.lessons)
-  }
-
-  @Test
-  fun `test coursera manual submit`() {
-    val name = "Test Course"
-    val language = "Russian"
-    val programmingLanguage = "Plain text"
-    val firstLesson = "the first lesson"
-    val secondLesson = "the second lesson"
-    val yamlContent = """
-      |type: ${YamlMixinNames.COURSE_TYPE_YAML}
-      |submit_manually: true
-      |title: $name
-      |language: $language
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: $programmingLanguage
-      |content:
-      |- $firstLesson
-      |- $secondLesson
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent) as CourseraCourse
-    assertTrue(course.submitManually)
   }
 
   @Test

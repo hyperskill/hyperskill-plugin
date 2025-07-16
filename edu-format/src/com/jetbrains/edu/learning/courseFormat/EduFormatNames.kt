@@ -72,9 +72,6 @@ object EduFormatNames {
   const val HYPERSKILL_PROJECTS_URL = "https://hyperskill.org/projects"
   const val HYPERSKILL = "Hyperskill"
 
-  // coursera
-  const val COURSERA = "Coursera"
-
   // stepik
   const val STEPIK = "Stepik"
   const val ATTEMPT = "attempt"

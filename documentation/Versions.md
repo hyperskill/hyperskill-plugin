@@ -200,55 +200,6 @@
       <!-- other fields -->
     </EduTask>
     ```
-
-12. Extract Coursera course, Unify local and remote courses
-
-    Before:
-    ```xml
-    <RemoteCourse>
-      <option name="courseType" value="Coursera" />
-      <!-- other fields -->
-    </RemoteCourse>
-    ```
-
-    After:
-    ```xml
-    <CourseraCourse>
-      <option name="courseType" value="Coursera" />
-      <!-- other fields -->
-    </CourseraCourse>
-
-    ```
-    and
-
-    Before:
-    ```xml
-    <Course>
-      <!-- other fields -->
-    </Course>
-    ```
-
-    After:
-    ```xml
-    <EduCourse>
-      <!-- other fields -->
-    </EduCourse>
-
-    and
-
-    Before:
-    ```xml
-    <RemoteCourse>
-      <!-- other fields -->
-    </RemoteCourse>
-    ```
-
-    After:
-    ```xml
-    <EduCourse>
-      <!-- other fields -->
-    </EduCourse>
-
 13. Merge task, test and additional files into one map
 
     Before:
@@ -352,6 +303,7 @@
     - Renamed choiceVariants to choiceOptions to match Stepik naming and added status (Correct/Incorrect/Unknown) to format
 
 Before:
+
   ```xml
   <ChoiceTask>
     <option name="choiceVariants">
@@ -365,6 +317,7 @@ Before:
   ```
 
 After:
+
  ```xml
  <ChoiceTask>
    <option name="choiceOptions">

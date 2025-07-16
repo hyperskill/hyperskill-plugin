@@ -61,7 +61,7 @@ abstract class TaskUpdaterBase<T : Lesson>(project: Project, protected val lesso
   }
 
   private fun isTaskFileChanged(taskFile: TaskFile, newTaskFile: TaskFile): Boolean {
-    if (taskFile.text != newTaskFile.text) return true
+    if (taskFile.contents.textualRepresentation != newTaskFile.contents.textualRepresentation) return true
     val taskFilePlaceholders = taskFile.answerPlaceholders
     val newTaskFilePlaceholders = newTaskFile.answerPlaceholders
     if (taskFilePlaceholders.size != newTaskFilePlaceholders.size) return true

@@ -100,7 +100,7 @@ class CCShowPreview : DumbAwareAction() {
 
     private fun showPreviewDialog(project: Project, taskFile: TaskFile) {
       val showPreviewFrame = FrameWrapper(project)
-      val userFile = LightVirtualFile(PathUtil.getFileName(taskFile.name), taskFile.text)
+      val userFile = LightVirtualFile(PathUtil.getFileName(taskFile.name), taskFile.contents.textualRepresentation)
       showPreviewFrame.title = userFile.name
       userFile.putUserData(TASK_FILE, taskFile)
       val labeledEditor = LabeledEditor(null)

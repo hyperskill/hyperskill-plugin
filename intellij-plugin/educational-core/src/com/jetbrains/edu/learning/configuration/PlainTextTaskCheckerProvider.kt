@@ -61,7 +61,7 @@ class PlainTextTaskCheckerProvider : TaskCheckerProvider {
         for (testFile in testFiles) {
           val vTestFile = taskDir.findFileByRelativePath(testFile.name) ?: error("No virtual test file found")
           invokeAndWaitIfNeeded {
-            if (testFile.text != vTestFile.document.text) {
+            if (testFile.contents.textualRepresentation != vTestFile.document.text) {
               error("Saved text for the test file doesn't match actual text")
             }
           }

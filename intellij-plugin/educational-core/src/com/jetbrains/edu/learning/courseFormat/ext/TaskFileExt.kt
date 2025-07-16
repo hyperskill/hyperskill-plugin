@@ -85,7 +85,7 @@ private fun TaskFile.resetDocument(project: Project): Boolean {
   }
 
   isTrackChanges = false
-  document.setText(text)
+  document.setText(contents.textualRepresentation)
   isTrackChanges = true
   return true
 }

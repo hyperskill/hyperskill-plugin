@@ -27,11 +27,6 @@ object YamlMixinNames {
 
   const val YAML_VERSION = "yaml_version"
 
-  // coursera course
-  const val TOP_LEVEL_LESSONS_SECTION = "default_section"
-  const val SUBMIT_MANUALLY = "submit_manually"
-  const val COURSE_TYPE_YAML = "coursera"
-
   //hyperskill course
   const val HYPERSKILL_PROJECT = "hyperskill_project"
   const val STAGES = "stages"
@@ -39,13 +34,6 @@ object YamlMixinNames {
   const val HYPERSKILL_TYPE_YAML = "hyperskill"
   const val STEPIK_TYPE_YAML = "stepik"
   const val END_DATE_TIME = "end_date_time"
-
-  // marketplace course
-  const val MARKETPLACE_YAML_TYPE = "marketplace"
-  const val VENDOR = JsonMixinNames.VENDOR
-  const val IS_PRIVATE = JsonMixinNames.IS_PRIVATE
-  const val MARKETPLACE_COURSE_VERSION = JsonMixinNames.MARKETPLACE_COURSE_VERSION
-  const val GENERATED_EDU_ID = JsonMixinNames.GENERATED_EDU_ID
 
   // lesson
   const val UNIT = "unit"

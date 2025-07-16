@@ -353,7 +353,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   private val Task.allFiles: FLTaskState
-    get() = taskFiles.mapValues { it.value.text }
+    get() = taskFiles.mapValues { it.value.contents.textualRepresentation }
 
   private fun FLTaskState.splitByKey(predicate: (String) -> Boolean): Pair<FLTaskState, FLTaskState> {
     val positive = HashMap<String, String>()

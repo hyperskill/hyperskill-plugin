@@ -164,7 +164,7 @@ object CCUtils {
       if (taskFile.contents is BinaryContents) continue
 
       invokeAndWaitIfNeeded {
-        val file = LightVirtualFile(PathUtil.getFileName(path), PlainTextFileType.INSTANCE, taskFile.text)
+        val file = LightVirtualFile(PathUtil.getFileName(path), PlainTextFileType.INSTANCE, taskFile.contents.textualRepresentation)
         EduDocumentListener.runWithListener(holder, taskFile, file) { document ->
           initializeTaskFilePlaceholders(taskFile, document)
         }

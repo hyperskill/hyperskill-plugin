@@ -51,7 +51,7 @@ class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
 
   override fun applyTaskFileChanges(existingTaskFile: TaskFile, deserializedTaskFile: TaskFile) {
     super.applyTaskFileChanges(existingTaskFile, deserializedTaskFile)
-    existingTaskFile.text = deserializedTaskFile.text
+    existingTaskFile.text = deserializedTaskFile.contents.textualRepresentation
   }
 
   override fun changeType(project: Project, existingItem: StudyItem, deserializedItem: Task) {

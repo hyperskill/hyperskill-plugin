@@ -7,14 +7,11 @@ import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.CourseraCourse
 import com.jetbrains.edu.learning.courseFormat.EduCourse
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.COURSERA
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.STEPIK
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
-import com.jetbrains.edu.learning.marketplace.MARKETPLACE
 import com.jetbrains.edu.learning.newproject.ui.logo
 import javax.swing.Icon
 
@@ -96,10 +93,9 @@ class JBACourseFromStorage() : CourseInfo() {
 
   fun toCourse(): Course {
     val eduCourse = when (itemType) {
-      COURSERA -> CourseraCourse()
       HYPERSKILL -> HyperskillCourse()
       STEPIK -> StepikCourse()
-      EduNames.EDU, MARKETPLACE -> EduCourse()
+      EduNames.EDU -> EduCourse()
       else -> EduCourse()
     }
 

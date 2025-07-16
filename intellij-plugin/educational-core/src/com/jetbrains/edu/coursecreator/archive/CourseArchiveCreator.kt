@@ -316,12 +316,7 @@ class CourseArchiveCreator(
     private const val TEST_PLUGIN_VERSION = "yyyy.2-yyyy.1-TEST"
 
     fun JsonMapper.Builder.commonMapperSetup(course: Course): JsonMapper.Builder {
-      if (course is CourseraCourse) {
-        addMixIn(AnswerPlaceholder::class.java, AnswerPlaceholderMixin::class.java)
-      }
-      else {
-        addMixIn(AnswerPlaceholder::class.java, AnswerPlaceholderWithAnswerMixin::class.java)
-      }
+      addMixIn(AnswerPlaceholder::class.java, AnswerPlaceholderWithAnswerMixin::class.java)
       addMixIn(PluginInfo::class.java, PluginInfoMixin::class.java)
       addMixIn(EduFile::class.java, EduFileMixin::class.java)
       addMixIn(TaskFile::class.java, TaskFileMixin::class.java)

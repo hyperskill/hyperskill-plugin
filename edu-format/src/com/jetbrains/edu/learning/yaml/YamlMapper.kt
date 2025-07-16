@@ -28,10 +28,8 @@ import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
 import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.json.encrypt.EncryptionModule
 import com.jetbrains.edu.learning.yaml.format.*
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.COURSE_TYPE_YAML
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.STEPIK_TYPE_YAML
-import com.jetbrains.edu.learning.yaml.format.coursera.CourseraCourseYamlMixin
 import com.jetbrains.edu.learning.yaml.format.hyperskill.*
 import com.jetbrains.edu.learning.yaml.format.remote.*
 import com.jetbrains.edu.learning.yaml.format.student.*
@@ -113,7 +111,6 @@ object YamlMapper {
   }
 
   private fun ObjectMapper.addMixIns() {
-    addMixIn(CourseraCourse::class.java, CourseraCourseYamlMixin::class.java)
     addMixIn(HyperskillCourse::class.java, RemoteCourseYamlMixin::class.java)
     addMixIn(StepikCourse::class.java, RemoteCourseYamlMixin::class.java)
     addMixIn(Course::class.java, CourseYamlMixin::class.java)
@@ -130,13 +127,11 @@ object YamlMapper {
     addMixIn(AnswerPlaceholder::class.java, AnswerPlaceholderYamlMixin::class.java)
     addMixIn(AnswerPlaceholderDependency::class.java, AnswerPlaceholderDependencyYamlMixin::class.java)
 
-    registerSubtypes(NamedType(CourseraCourse::class.java, COURSE_TYPE_YAML))
     registerSubtypes(NamedType(HyperskillCourse::class.java, HYPERSKILL_TYPE_YAML))
     registerSubtypes(NamedType(StepikCourse::class.java, STEPIK_TYPE_YAML))
   }
 
   private fun addRemoteMixIns(mapper: ObjectMapper) {
-    mapper.addMixIn(EduCourse::class.java, EduCourseRemoteInfoYamlMixin::class.java)
     mapper.addMixIn(Lesson::class.java, RemoteStudyItemYamlMixin::class.java)
     mapper.addMixIn(StepikLesson::class.java, StepikLessonRemoteYamlMixin::class.java)
     mapper.addMixIn(Section::class.java, RemoteStudyItemYamlMixin::class.java)

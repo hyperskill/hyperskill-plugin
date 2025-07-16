@@ -20,7 +20,7 @@ class CCAddAnswerPlaceholderPanel(@NonNls placeholder: AnswerPlaceholder) : JPan
   private val textArea: JTextArea = JTextArea(placeholder.placeholderText, 0, 0)
   private val visibilityCheckBox: JBCheckBox = JBCheckBox(
     EduCoreBundle.message("label.visible"),
-    placeholder.isVisible
+    placeholder.shouldBeVisible
   )
 
   init {
