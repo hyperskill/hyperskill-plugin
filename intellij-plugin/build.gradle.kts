@@ -56,7 +56,6 @@ dependencies {
 
     pluginModule(implementation(project("educational-core")))
     pluginModule(implementation(project("jvm-core")))
-    pluginModule(implementation(project("AI")))
     pluginModule(implementation(project("Edu-Java")))
     pluginModule(implementation(project("Edu-Kotlin")))
     pluginModule(implementation(project("Edu-Python")))
@@ -78,11 +77,6 @@ dependencies {
     pluginModule(implementation(project("features:code-insight-yaml")))
     pluginModule(implementation(project("features:command-line")))
     pluginModule(implementation(project("features:github")))
-    pluginModule(implementation(project("features:ai-error-explanation")))
-    pluginModule(implementation(project("features:ai-hints-core")))
-    pluginModule(implementation(project("features:ai-hints-kotlin")))
-    pluginModule(implementation(project("features:ai-hints-python")))
-    pluginModule(implementation(project("features:ai-test-generation")))
     pluginModule(implementation(project("features:ide-onboarding")))
     if (!isAtLeast252) { // BACKCOMPAT: Temporarily exclude for 2025.2 as it doesn't compile
       pluginModule(implementation(project("features:remote-env")))

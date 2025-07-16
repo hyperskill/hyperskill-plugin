@@ -15,7 +15,6 @@
 
   <content>
     <module name="jvm-core"/>
-    <module name="AI"/>
     <module name="Edu-Java"/>
     <module name="Edu-Kotlin"/>
     <module name="Edu-Scala"/>
@@ -39,11 +38,6 @@
     <module name="code-insight-yaml"/>
     <module name="command-line"/>
     <module name="github"/>
-    <module name="ai-error-explanation"/>
-    <module name="ai-hints-core"/>
-    <module name="ai-hints-kotlin"/>
-    <module name="ai-hints-python"/>
-    <module name="ai-test-generation"/>
     <module name="ide-onboarding"/>
     <module name="social-media"/>
   </content>
