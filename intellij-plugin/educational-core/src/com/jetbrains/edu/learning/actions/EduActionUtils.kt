@@ -21,7 +21,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.getContainingTask
 import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.selectedTaskFile
-import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
@@ -62,14 +61,6 @@ object EduActionUtils {
     val project = e.project ?: return
     project.selectedTaskFile ?: return
     e.presentation.isEnabledAndVisible = true
-  }
-
-  fun runUndoableAction(
-    project: Project,
-    @Nls(capitalization = Nls.Capitalization.Title) name: String?,
-    action: UndoableAction
-  ) {
-    runUndoableAction(project, name, action, UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION)
   }
 
   fun runUndoableAction(

@@ -9,22 +9,9 @@ import com.intellij.openapi.util.NlsContexts.NotificationContent
 import com.intellij.openapi.util.NlsContexts.NotificationTitle
 import com.intellij.util.PlatformUtils
 import com.jetbrains.edu.learning.EduBrowser
-import com.jetbrains.edu.learning.capitalize
-import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import javax.swing.event.HyperlinkEvent
-
-fun showCCPostFeedbackNotification(course: Course, project: Project) {
-  val language = course.languageId.lowercase().capitalize()
-  val feedbackUrl = getFeedbackUrl(course.name, "Educator")
-  showPostFeedbackNotification(
-    project,
-    EduCoreBundle.message("check.correct.solution.title"),
-    EduCoreBundle.message("feedback.template.creator", feedbackUrl, language),
-    feedbackUrl
-  )
-}
 
 fun showStudentPostFeedbackNotification(courseName: String, project: Project) {
   val feedbackUrl = getFeedbackUrl(courseName, "Learner")

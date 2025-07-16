@@ -12,31 +12,21 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.PlainTextFileType
-import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ModuleRootModificationUtil
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.util.Function
 import com.intellij.util.PathUtil
-import com.jetbrains.edu.coursecreator.framework.CCFrameworkLessonManager
-import com.jetbrains.edu.coursecreator.handlers.StudyItemRefactoringHandler
 import com.jetbrains.edu.learning.CourseInfoHolder
 import com.jetbrains.edu.learning.EduDocumentListener
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
-import org.jetbrains.annotations.NonNls
 import java.io.IOException
-import java.util.*
 
 object CCUtils {
   private val LOG = Logger.getInstance(CCUtils::class.java)
@@ -76,30 +66,6 @@ object CCUtils {
     for (item in itemsToUpdate) {
       val newIndex = item.index + delta
       item.index = newIndex
-    }
-  }
-
-  fun getGeneratedFilesFolder(project: Project): VirtualFile? {
-    // TODO: come up with a way not to use `Project#getBaseDir`.
-    //  Currently, it's supposed that created file path is path in local file system
-    //  because it's used for zip archive creation where API uses IO Files instead of virtual files
-    @Suppress("DEPRECATION")
-    val baseDir = project.baseDir
-    val folder = baseDir.findChild(GENERATED_FILES_FOLDER)
-    if (folder != null) return folder
-    return runWriteAction {
-      try {
-        val generatedRoot = baseDir.createChildDirectory(this, GENERATED_FILES_FOLDER)
-        val contentRootForFile = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(generatedRoot)
-                                 ?: return@runWriteAction generatedRoot
-        val module = ModuleUtilCore.findModuleForFile(baseDir, project) ?: return@runWriteAction generatedRoot
-        ModuleRootModificationUtil.updateExcludedFolders(module, contentRootForFile, emptyList(), listOf(generatedRoot.url))
-        generatedRoot
-      }
-      catch (e: IOException) {
-        LOG.info("Failed to create folder for generated files", e)
-        null
-      }
     }
   }
 
@@ -176,45 +142,6 @@ object CCUtils {
       document.replaceString(offset, offset + placeholder.length, placeholder.possibleAnswer)
       FileDocumentManager.getInstance().saveDocumentAsIs(document)
     }
-  }
-
-  fun wrapIntoSection(project: Project, course: Course, lessonsToWrap: List<Lesson>, @NonNls sectionName: String): Section? {
-    Collections.sort(lessonsToWrap, INDEX_COMPARATOR)
-    val minIndex = lessonsToWrap[0].index
-    val maxIndex = lessonsToWrap[lessonsToWrap.size - 1].index
-
-    val sectionDir = runWriteAction {
-      try {
-        VfsUtil.createDirectoryIfMissing(project.courseDir, sectionName)
-      }
-      catch (e: IOException) {
-        LOG.error("Failed to create directory for section $sectionName", e)
-        null
-      }
-    } ?: return null
-
-    val section = createSection(lessonsToWrap, sectionName, minIndex)
-    section.parent = course
-
-    for (i in lessonsToWrap.indices) {
-      val lesson = lessonsToWrap[i]
-      val lessonDir = lesson.getDir(project.courseDir)
-      if (lessonDir != null) {
-        StudyItemRefactoringHandler.processBeforeLessonMovement(project, lesson, sectionDir)
-        CCFrameworkLessonManager.getInstance(project).migrateRecords(lesson, sectionDir)
-        moveLesson(lessonDir, sectionDir)
-        lesson.index = i + 1
-        lesson.parent = section
-      }
-      course.removeLesson(lesson)
-    }
-
-    val delta = -lessonsToWrap.size + 1
-
-    updateHigherElements(project.courseDir.children, { file -> course.getItem(file.name) }, maxIndex, delta)
-    course.addItem(section.index - 1, section)
-    synchronizeChanges(project, course, section)
-    return section
   }
 
   private fun synchronizeChanges(project: Project, course: Course, section: Section) {

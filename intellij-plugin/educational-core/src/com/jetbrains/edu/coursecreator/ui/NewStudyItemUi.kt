@@ -90,7 +90,7 @@ class NewStudyItemPopupUi : NewStudyItemUi {
     val popup = NewItemPopupUtil.createNewItemPopup(title, contentPanel, nameField)
     contentPanel.setApplyAction { event ->
       val variant = contentPanel.getSelectedItem() ?: return@setApplyAction
-      val info = NewStudyItemInfo(nameField.text, model.baseIndex + CCItemPositionPanel.AFTER_DELTA, variant.producer)
+      val info = NewStudyItemInfo(nameField.text, model.baseIndex + CCItemPositionPanel.AFTER_DELTA)
       callback(info) { errorMessage ->
         if (errorMessage == null) {
           popup.closeOk(event)

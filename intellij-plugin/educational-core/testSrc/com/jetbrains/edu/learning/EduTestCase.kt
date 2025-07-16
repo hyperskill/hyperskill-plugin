@@ -2,7 +2,6 @@ package com.jetbrains.edu.learning
 
 import com.google.common.collect.Lists
 import com.intellij.lang.Language
-import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.ComponentManagerEx
 import com.intellij.openapi.editor.Document
@@ -13,7 +12,6 @@ import com.intellij.openapi.fileEditor.impl.PsiAwareFileEditorManagerImpl
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
@@ -52,7 +50,6 @@ import org.apache.http.HttpStatus
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.io.File
 import java.io.IOException
 import java.util.regex.Pattern
 import kotlin.reflect.KMutableProperty0
@@ -267,15 +264,6 @@ abstract class EduTestCase : BasePlatformTestCase() {
     myFixture.openFileInEditor(file)
   }
 
-  protected fun Task.removeTaskFile(taskFilePath: String) {
-    require(getTaskFile(taskFilePath) != null) {
-      "Can't find `$taskFilePath` task file in $name task"
-    }
-    val taskDir = getDir(project.courseDir) ?: error("Can't find task dir")
-    val file = taskDir.findFileByRelativePath(taskFilePath) ?: error("Can't find `$taskFilePath` in `$taskDir`")
-    runWriteAction { file.delete(this) }
-  }
-
   protected inline fun withVirtualFileListener(course: Course, action: () -> Unit) {
     withVirtualFileListener(project, course, testRootDisposable, action)
   }
@@ -323,9 +311,6 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
   protected fun mockResponse(fileName: String, responseCode: Int = HttpStatus.SC_OK): MockResponse =
     MockResponseFactory.fromFile(getTestFile(fileName), responseCode)
-
-  @Throws(IOException::class)
-  protected fun loadText(fileName: String): String = FileUtil.loadFile(File(testDataPath, fileName))
 
   protected fun checkFileTree(block: FileTreeBuilder.() -> Unit) {
     fileTree(block).assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)

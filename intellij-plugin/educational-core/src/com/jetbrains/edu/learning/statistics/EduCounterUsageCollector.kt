@@ -13,11 +13,9 @@ import com.jetbrains.edu.learning.newproject.ui.BrowseCoursesDialog
 import com.jetbrains.edu.learning.newproject.ui.CoursesPlatformProvider
 import com.jetbrains.edu.learning.newproject.ui.myCourses.MyCoursesProvider
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector.AuthorizationEvent.*
-import com.jetbrains.edu.learning.statistics.EduFields.COURSE_ID_FIELD
 import com.jetbrains.edu.learning.statistics.EduFields.COURSE_MODE_FIELD
 import com.jetbrains.edu.learning.statistics.EduFields.ITEM_TYPE_FIELD
 import com.jetbrains.edu.learning.statistics.EduFields.LANGUAGE_FIELD
-import com.jetbrains.edu.learning.statistics.EduFields.PLATFORM_FIELD
 import com.jetbrains.edu.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProvider
 
 /**
@@ -30,14 +28,13 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
   override fun getGroup(): EventLogGroup = GROUP
 
   enum class TaskNavigationPlace {
-    CHECK_ALL_NOTIFICATION,
     TASK_DESCRIPTION_TOOLBAR,
     CHECK_PANEL,
     UNRESOLVED_DEPENDENCY_NOTIFICATION
   }
 
   enum class LinkType {
-    IN_COURSE, STEPIK, EXTERNAL, PSI, JBA, FILE
+    IN_COURSE, EXTERNAL, PSI, JBA, FILE
   }
 
   /**
@@ -64,7 +61,7 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
   }
 
   enum class SynchronizeCoursePlace {
-    WIDGET, PROJECT_GENERATION, PROJECT_REOPEN
+    WIDGET,
   }
 
   @Suppress("unused") //enum values are not mentioned explicitly
@@ -137,20 +134,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
       "The event is recorded in case a user opens an already existing course.",
       COURSE_MODE_FIELD,
       ITEM_TYPE_FIELD
-    )
-    private val CC_STUDY_ITEM_CREATED_EVENT = GROUP.registerEvent(
-      "study.item.created",
-      "The event is recorded in case a new study item (different types of lessons and tasks) is created.",
-      ITEM_TYPE_FIELD,
-      COURSE_ID_FIELD,
-      PLATFORM_FIELD
-    )
-    private val CC_TASK_CREATED_EVENT = GROUP.registerEvent(
-      "task.created",
-      "Event is logged whenever a new task is created within a lesson, indicating the type of the lesson.",
-      ITEM_TYPE_FIELD,
-      COURSE_ID_FIELD,
-      PLATFORM_FIELD
     )
     private val LICK_CLICKED_EVENT = GROUP.registerEvent(
       "link.clicked",
@@ -361,15 +344,11 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
 
     fun logOutSucceed(platform: String, place: AuthorizationPlace) = AUTHORIZATION_EVENT.log(LOG_OUT_SUCCEED, platform, place)
 
-    fun obtainJBAToken(success: Boolean) = OBTAIN_JBA_TOKEN_EVENT.log(success)
-
     fun fullOutputShown() = SHOW_FULL_OUTPUT_EVENT.log()
 
     fun solutionPeeked() = PEEK_SOLUTION_EVENT.log()
 
     fun leaveFeedback() = LEAVE_FEEDBACK_EVENT.log()
-
-    fun rateMarketplaceCourse() = RATE_MARKETPLACE_COURSE.log()
 
     fun revertTask() = REVERT_TASK_EVENT.log()
 
@@ -381,19 +360,9 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
 
     fun hintCollapsed() = HINT_CLICKED_EVENT.log(HintEvent.COLLAPSED)
 
-    fun createCoursePreview() = CREATE_COURSE_PREVIEW_EVENT.log()
-
-    fun previewTaskFile() = PREVIEW_TASK_FILE_EVENT.log()
-
-    fun createCourseArchive() = CREATE_COURSE_ARCHIVE_EVENT.log()
-
     fun updateCourse() = POST_COURSE_EVENT.log(PostCourseEvent.UPDATE)
 
-    fun uploadCourse() = POST_COURSE_EVENT.log(PostCourseEvent.UPLOAD)
-
     fun synchronizeCourse(course: Course, place: SynchronizeCoursePlace) = SYNCHRONIZE_COURSE_EVENT.log(course.itemType, place)
-
-    fun importCourseArchive() = IMPORT_COURSE_EVENT.log()
 
     fun xDialogShown(course: Course) = X_DIALOG_SHOWN_EVENT.log(course.itemType, course.languageId)
 
@@ -407,30 +376,12 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
       COURSE_SELECTION_TAB_SELECTED_EVENT.log(CourseSelectionViewTab.fromProvider(provider))
     }
 
-    fun createNewCourseClicked(actionPlace: String) {
-      CREATE_NEW_COURSE_CLICK_EVENT.log(CourseActionSource.fromActionPlace(actionPlace))
-    }
-
     fun createNewFileInNonTemplateBasedFrameworkLessonByLearner() = CREATE_NEW_FILE_IN_NON_TEMPLATE_BASED_FRAMEWORK_LESSON_BY_LEARNER.log()
 
     fun viewEvent(task: Task?) {
       val course = task?.course ?: return
       VIEW_EVENT.log(course.courseMode, course.itemType)
     }
-
-    fun solutionSharingPromptShown() = SOLUTION_SHARING_PROMPT_EVENT.log()
-
-    fun communitySolutionDiffOpened() = COMMUNITY_SOLUTION_DIFF_OPENED.log()
-
-    fun submissionSuccess(result: Boolean) = SUBMISSION_SUCCESS.log(result)
-
-    fun solutionSharingInviteAction(action: Boolean) = AGREE_TO_ENABLE_INVITE_ACTION.log(action)
-
-    fun solutionSharingState(state: Boolean) = AGREE_TO_ENABLE_SOLUTION_SHARE_STATE.log(state)
-
-    fun openCommunityTab() = OPEN_COMMUNITY_TAB.log()
-
-    fun communityTabOpenedByLink(success: Boolean) = COMMUNITY_TAB_OPENED_BY_LINK.log(success)
 
     fun uiOnboardingStarted() = UI_ONBOARDING_STARTED.log()
 

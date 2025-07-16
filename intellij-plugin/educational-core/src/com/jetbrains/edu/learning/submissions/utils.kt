@@ -15,7 +15,6 @@ import com.jetbrains.edu.EducationalCoreIcons.Submission.*
 import com.jetbrains.edu.learning.RemoteEnvHelper
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.CORRECT
-import com.jetbrains.edu.learning.courseFormat.JSON_FORMAT_VERSION
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.findTaskFileInDir
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
@@ -70,15 +69,6 @@ fun List<SolutionFile>.checkNotEmpty(): List<SolutionFile> {
     error("No files were collected to post solution")
   }
   else return this
-}
-
-fun isVersionCompatible(submissionFormatVersion: Int): Boolean {
-  if (submissionFormatVersion > JSON_FORMAT_VERSION) {
-    // TODO: show notification with suggestion to update plugin
-    LOG.warn("The plugin supports versions of submission reply not greater than $JSON_FORMAT_VERSION. The current version is `$submissionFormatVersion`")
-    return false
-  }
-  return true
 }
 
 internal fun Date.isSignificantlyAfter(otherDate: Date): Boolean {

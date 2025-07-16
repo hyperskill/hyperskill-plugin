@@ -7,6 +7,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
+import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.util.Disposer
@@ -18,7 +19,6 @@ import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.sql.core.EduSqlBundle
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.TestOnly
 
 class SqlGradleStartupActivity : StartupActivity.DumbAware {
@@ -60,7 +60,7 @@ class SqlGradleStartupActivity : StartupActivity.DumbAware {
       return
     }
 
-    runBlocking {
+    runBlockingCancellable {
       withBackgroundProgress(project, EduSqlBundle.message("edu.sql.downloading.driver.files.progress.title"), false) {
         driver.loadArtifacts(project)
       }

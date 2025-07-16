@@ -24,14 +24,6 @@ open class CoursesStorageBase : SimplePersistentStateComponent<UserCoursesState>
 
   fun hasCourse(course: Course): Boolean = getCoursePath(course) != null
 
-  fun getCourseMetaInfoForAnyLanguage(course: Course): JBACourseFromStorage? {
-    return state.courses.find {
-      it.name == course.name
-      && it.id == course.id
-      && it.courseMode == course.courseMode
-    }
-  }
-
   protected fun doRemoveCourseByLocation(location: String): Boolean {
     val deletedCourse = state.removeCourseByLocation(location) ?: return false
     ApplicationManager.getApplication().messageBus.syncPublisher(COURSE_DELETED).courseDeleted(deletedCourse)

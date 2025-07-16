@@ -65,8 +65,6 @@ interface EduCourseBuilder<Settings : EduProjectSettings> {
     return null
   }
 
-  fun shouldCopyTaskFile(path: String): Boolean = true
-
   /**
    * Returns list of templates to create files in new task that supposed to be checked by tests launch.
    *

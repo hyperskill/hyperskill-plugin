@@ -20,9 +20,5 @@ interface MainFileProvider {
       return EP_NAME.forLanguage(language)?.findMainClassName(project, file)
     }
 
-    fun getMainClass(project: Project, file: VirtualFile, language: Language): PsiElement? {
-      ApplicationManager.getApplication().assertReadAccessAllowed()
-      return EP_NAME.forLanguage(language)?.findMainPsi(project, file)
-    }
   }
 }

@@ -10,7 +10,6 @@ import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.CORRECT
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.createTopic
 import com.jetbrains.edu.learning.invokeLater
@@ -66,20 +65,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
       submissions.putAll(submissionsById)
       notifySubmissionsChanged()
       submissionsById.values.flatten()
-    }
-  }
-
-  @Synchronized
-  fun getCourseStateOnClose(): Map<Int, Submission> {
-    val cachedStates = courseStateOnClose
-    @Suppress("ReplaceIsEmptyWithIfEmpty")
-    return if (cachedStates.isEmpty()) {
-      val loadedStates = loadStateOnClose()
-      courseStateOnClose = loadedStates
-      loadedStates
-    }
-    else {
-      cachedStates
     }
   }
 
@@ -233,11 +218,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
     }
   }
 
-  fun deleteCourseSubmissionsLocally() {
-    course?.allTasks?.forEach { submissions.remove(it.id) }
-    notifySubmissionsChanged()
-  }
-
   fun isLoggedIn(): Boolean = course?.getSubmissionsProvider()?.isLoggedIn() ?: false
 
   private fun getPlatformName(): String = course?.getSubmissionsProvider()?.getPlatformName() ?: error("Failed to get platform Name")
@@ -258,10 +238,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
 
   private fun Course.getSubmissionsProvider(): SubmissionsProvider? {
     return SubmissionsProvider.getSubmissionsProviderForCourse(this)
-  }
-
-  fun hasMoreCommunitySubmissions(taskId: Int): Boolean {
-    return communitySubmissions[taskId]?.hasMore ?: false
   }
 
   fun getLastSubmission(): Submission? {

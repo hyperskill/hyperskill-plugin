@@ -18,18 +18,6 @@ object EduColors {
   val navigationMapDisabledIconBackground: JBColor = JBColor.namedColor("NavigationMap.disabledIconBackground", 0xEBECF0, 0x4E5157)
   val navigationMapDisabledIconForeground: JBColor = JBColor.namedColor("NavigationMap.disabledIconForeground", 0xA8ADBD, 0x868A91)
 
-  // lesson card for new course dialog colors
-  val lessonCardBackground: JBColor = JBColor.namedColor("LessonCard.Background", 0xFFFFFF, 0x2B2D30)
-  val lessonCardBorderColor: JBColor = JBColor.namedColor("LessonCard.BorderColor", 0xEBECF0, 0x393B40)
-  val lessonCardFocusedBorderColor: JBColor = JBColor.namedColor("LessonCard.focusedBorderColor", 0x3574F0, 0x357F0)
-  val lessonCardForeground: JBColor = JBColor.namedColor("LessonCard.foreground", 0x000000, 0xDFE1E5)
-  val lessonCardSecondaryForeground: JBColor = JBColor.namedColor("LessonCard.secondaryForeground", 0x6C707E, 0x868A91)
-  val lessonCardSelectedBackground: JBColor = JBColor.namedColor("LessonCard.selectedBackground", 0xF5F8FE, 0x25324D)
-  val lessonCardSelectedBorderColor: JBColor = JBColor.namedColor("LessonCard.selectedBorderColor", 0xC2D6FC, 0x35538F)
-
-  val aiGetHintHighlighterColor: JBColor = JBColor.namedColor("AIGetHint.highlighterColor", 0xEFE5FF, 0x433358)
-  val aiGetHintInlineBannersBackgroundColor: JBColor = JBColor.namedColor("AIGetHint.inlineBannersBackgroundColor", 0xFAF5FF, 0x2F2936)
-  val aiGetHintInlineBannersBorderColor: JBColor = JBColor.namedColor("AIGetHint.inlineBannersBorderColor", 0xDCCBFB, 0x8150BE)
   val taskToolWindowLessonLabel: JBColor = JBColor.namedColor("TaskToolWindow.lessonNameForeground", 0x6C707E, 0x6F737A)
 
   val wrongLabelForeground: Color = UIUtil.getErrorForeground()

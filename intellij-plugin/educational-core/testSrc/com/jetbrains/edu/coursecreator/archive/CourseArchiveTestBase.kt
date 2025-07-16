@@ -5,7 +5,6 @@ import com.jetbrains.edu.learning.cipher.Cipher
 import com.jetbrains.edu.learning.cipher.NoOpCipher
 import com.jetbrains.edu.learning.courseFormat.Course
 import java.io.File
-import kotlin.test.assertIs
 
 abstract class CourseArchiveTestBase : EduActionTestCase() {
   override fun getTestDataPath(): String {
@@ -29,32 +28,6 @@ abstract class CourseArchiveTestBase : EduActionTestCase() {
     val expectedCourseArchiveContent = collectExpectedCourseArchiveContent()
 
     courseArchiveContent.assertEquals(expectedCourseArchiveContent, getExpectedDataDirectory(), generateExtraFiles)
-  }
-
-  protected fun createCourseArchive(course: Course, cipher: Cipher = NoOpCipher()): Result<CourseArchiveContent, CourseArchiveError> {
-    val outputProducer = TestCourseArchiveOutputProducer()
-
-    val creator = CourseArchiveCreator(myFixture.project, outputProducer, cipher)
-    val errorMessage = creator.createArchive(course)
-
-    return if (errorMessage != null) {
-      Err(errorMessage)
-    }
-    else {
-      Ok(CourseArchiveContent.fromBytes(outputProducer.data()))
-    }
-  }
-
-  protected fun createCourseArchiveAndCheck(course: Course, cipher: Cipher = NoOpCipher()): CourseArchiveContent {
-    return createCourseArchive(course, cipher).onError { error ->
-      kotlin.test.fail("Course creation failed with error: (${error.javaClass}) ${error.message}")
-    }
-  }
-
-  protected inline fun <reified T : CourseArchiveError> createCourseArchiveWithError(course: Course): T {
-    val result = createCourseArchive(course)
-    assertIs<Err<*>>(result, "Course creation must generate an error with type ${T::class.simpleName}")
-    return assertIs<T>(result.error, "Error must be of type ${T::class.simpleName}")
   }
 
   private fun collectExpectedCourseArchiveContent(): CourseArchiveContent {

@@ -10,7 +10,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
-import com.intellij.ui.ColorUtil
 import com.jetbrains.edu.learning.actions.ApplyCodeAction
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.ext.isTestFile
@@ -18,9 +17,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.submissions.*
 import com.jetbrains.edu.learning.submissions.ui.SubmissionsTab.Companion.SUBMISSION_PROTOCOL
-import com.jetbrains.edu.learning.submissions.ui.SubmissionsTab.Companion.textStyleHeader
 import com.jetbrains.edu.learning.taskToolWindow.links.SwingToolWindowLinkHandler
-import com.jetbrains.edu.learning.ui.EduColors
 
 class SubmissionsDifferenceLinkHandler(
   project: Project,
@@ -111,9 +108,5 @@ class SubmissionsDifferenceLinkHandler(
 
     fun getSubmissionDiffLink(submissionId: Int?): String = "$SUBMISSION_DIFF_URL$submissionId"
 
-    fun showMoreLink(): String =
-      "<div style=\"padding-top:8px; padding-bottom:8px; padding-right:33px; text-align: center\">" +
-      "<a $textStyleHeader;color:#${ColorUtil.toHex(EduColors.hyperlinkColor)} href=$SHOW_MORE_SOLUTIONS>" +
-      EduCoreBundle.message("submissions.tab.show.more.link") + "</a>" + "</div>"
   }
 }

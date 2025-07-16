@@ -17,6 +17,7 @@ import com.intellij.openapi.fileTypes.impl.DetectedByContentFileType
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
+import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectEx
@@ -37,7 +38,7 @@ import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.isBinary
 import com.jetbrains.edu.learning.courseFormat.mimeFileType
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.util.*
@@ -203,8 +204,10 @@ fun <T> withRegistryKeyOff(key: String, action: () -> T): T {
 }
 
 fun <V> getInEdt(modalityState: ModalityState = ModalityState.defaultModalityState(), compute: () -> V): V {
-  return runBlocking(AppUIExecutor.onUiThread(modalityState).coroutineDispatchingContext()) {
-    compute()
+  return runBlockingCancellable {
+    withContext(AppUIExecutor.onUiThread(modalityState).coroutineDispatchingContext()) {
+      compute()
+    }
   }
 }
 

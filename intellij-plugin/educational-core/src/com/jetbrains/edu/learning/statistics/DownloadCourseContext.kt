@@ -11,11 +11,6 @@ enum class DownloadCourseContext {
   IDE_UI,
 
   /**
-   * A course is downloaded to make content update for an already opened course project
-   */
-  UPDATE,
-
-  /**
    * A course was opened with a button in the browser, like `Open in <IDE>` button on Marketplace course page.
    *
    * Similar with [TOOLBOX] but the corresponding course open workflow doesn't involve Toolbox App,

@@ -4,7 +4,6 @@ import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.jetbrains.edu.learning.courseFormat.Course
@@ -95,7 +94,6 @@ class StudyItemIdGenerator(private val project: Project) {
   }
 
   companion object {
-    private val LOG = logger<StudyItemIdGenerator>()
 
     fun getInstance(project: Project): StudyItemIdGenerator = project.service()
 

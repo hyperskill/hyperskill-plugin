@@ -34,15 +34,6 @@ val StudyItemType.presentableTitleName: String
     TASK_TYPE -> message("item.task.title")
   }
 
-val StudyItemType.createItemMessage: String
-  @Nls(capitalization = Nls.Capitalization.Sentence)
-  get() = when (this) {
-    COURSE_TYPE -> message("item.create.course")
-    SECTION_TYPE -> message("item.create.section")
-    LESSON_TYPE -> message("item.create.lesson")
-    TASK_TYPE -> message("item.create.task")
-  }
-
 val StudyItemType.newItemTitleMessage: String
   @Nls(capitalization = Nls.Capitalization.Title)
   get() = when (this) {

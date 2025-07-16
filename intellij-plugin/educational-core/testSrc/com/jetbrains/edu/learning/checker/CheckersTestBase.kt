@@ -157,6 +157,9 @@ abstract class CheckersTestBase<Settings : EduProjectSettings> : EduHeavyTestCas
     try {
       checkerFixture.tearDown()
     }
+    catch (e: Throwable) {
+      addSuppressedException(e)
+    }
     finally {
       super.tearDown()
     }

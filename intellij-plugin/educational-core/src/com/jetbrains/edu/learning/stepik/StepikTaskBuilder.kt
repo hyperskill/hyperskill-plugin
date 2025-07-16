@@ -39,7 +39,6 @@ import org.jetbrains.annotations.VisibleForTesting
 
 open class StepikTaskBuilder(private val course: Course, stepSource: StepSource) {
   private val courseType: String = course.itemType
-  private val courseMode: CourseMode = course.courseMode
   private val courseEnvironment: String = course.environment
   private val language: Language = course.languageById ?: Language.ANY
   private val languageVersion: String = course.languageVersion ?: ""
@@ -167,10 +166,6 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
 
     initTaskFiles(task)
     return task
-  }
-
-  private fun ChoiceTask.fillForCourseCreatorMode() {
-    initTaskFiles(this)
   }
 
   private fun sortingTask(name: String): SortingTask {

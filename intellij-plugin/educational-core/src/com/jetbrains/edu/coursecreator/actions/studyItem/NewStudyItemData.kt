@@ -10,8 +10,7 @@ import javax.swing.Icon
 
 class NewStudyItemInfo(
   @NonNls val name: String,
-  val index: Int,
-  val producer: () -> StudyItem
+  val index: Int
 ) : UserDataHolderBase()
 
 /**

@@ -5,7 +5,6 @@ import com.intellij.notification.Notifications
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.testFramework.PlatformTestUtil
 import com.jetbrains.edu.learning.MockResponseFactory
@@ -15,8 +14,6 @@ import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
 import okhttp3.mockwebserver.MockResponse
 import org.apache.http.HttpStatus
-import java.io.File
-import java.io.IOException
 
 abstract class CourseUpdateCheckerTestBase : CourseGenerationTestBase<EmptyProjectSettings>() {
   override val defaultSettings: EmptyProjectSettings get() = EmptyProjectSettings
@@ -86,9 +83,6 @@ abstract class CourseUpdateCheckerTestBase : CourseGenerationTestBase<EmptyProje
 
   protected fun mockResponse(fileName: String, responseCode: Int = HttpStatus.SC_OK): MockResponse =
     MockResponseFactory.fromFile(getTestFile(fileName), responseCode)
-
-  @Throws(IOException::class)
-  protected fun loadText(fileName: String): String = FileUtil.loadFile(File(getTestDataPath(), fileName))
 
   protected fun getTestFile(fileName: String) = getTestDataPath() + fileName
 

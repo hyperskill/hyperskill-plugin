@@ -7,7 +7,5 @@ sealed class SegmentedButtonItem(@PropertyKey(resourceBundle = BUNDLE) protected
 
   var isEnabled: Boolean = true
 
-  var toolTipText: String? = null
-
   abstract val text: String
 }

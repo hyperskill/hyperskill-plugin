@@ -39,7 +39,6 @@ object SerializationUtils {
     const val DEPENDENCY_FILE = "file"
     const val TEST_FILES = "test_files"
     const val VERSION = "version"
-    const val COURSE_TYPE = "course_type"
     const val EDU_TASK = "edu_task"
     const val TASK = "task"
   }

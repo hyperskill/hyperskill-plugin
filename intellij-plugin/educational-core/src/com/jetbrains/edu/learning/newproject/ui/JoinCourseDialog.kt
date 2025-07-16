@@ -9,14 +9,11 @@ import com.jetbrains.edu.learning.newproject.ui.coursePanel.CourseBindData
 import com.jetbrains.edu.learning.newproject.ui.coursePanel.CourseDisplaySettings
 import com.jetbrains.edu.learning.newproject.ui.coursePanel.CoursePanel
 import com.jetbrains.edu.learning.newproject.ui.errors.ErrorState
-import com.jetbrains.edu.learning.statistics.DownloadCourseContext
-import com.jetbrains.edu.learning.statistics.DownloadCourseContext.IDE_UI
 import javax.swing.JComponent
 
 open class JoinCourseDialog(
   protected val course: Course,
   protected val settings: CourseDisplaySettings = CourseDisplaySettings(),
-  private val downloadCourseContext: DownloadCourseContext = IDE_UI,
   private val params: Map<String, String> = emptyMap()
 ) : OpenCourseDialogBase() {
 

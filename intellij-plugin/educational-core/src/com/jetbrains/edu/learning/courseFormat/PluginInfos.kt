@@ -11,7 +11,6 @@ object PluginInfos {
 
   val ANDROID: PluginInfo = PluginInfo("org.jetbrains.android", "Android")
 
-  val PYTHON_PRO: PluginInfo = PluginInfo("Pythonid", "Python")
   val PYTHON_COMMUNITY: PluginInfo = PluginInfo("PythonCore", "Python")
 
   val JAVA_SCRIPT: PluginInfo = PluginInfo("JavaScript", "JavaScript")
@@ -20,9 +19,6 @@ object PluginInfos {
 
   val RUST: PluginInfo = PluginInfo("com.jetbrains.rust", "Rust")
   val TOML: PluginInfo = PluginInfo("org.toml.lang", "Toml")
-
-  val CATCH: PluginInfo = PluginInfo("org.jetbrains.plugins.clion.test.catch", "Catch")
-  val GOOGLE_TEST: PluginInfo = PluginInfo("org.jetbrains.plugins.clion.test.google", "Google Test")
 
   val GO: PluginInfo = PluginInfo("org.jetbrains.plugins.go", "Go")
 

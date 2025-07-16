@@ -74,8 +74,4 @@ abstract class CoursesListPanel : JPanel(BorderLayout()) {
     groupsComponent.setSelectionListener(processSelectionChanged)
   }
 
-  fun removeSelection() {
-    groupsComponent.removeSelection()
-  }
-
 }

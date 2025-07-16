@@ -5,19 +5,11 @@ import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.panels.HorizontalLayout
 import com.intellij.util.ui.JBUI
-import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.TypographyManager
 import java.awt.Font
 import javax.swing.JPanel
-
-class EduCourseCard(course: Course) : CourseCardComponent(course) {
-
-  override fun createBottomComponent(): JPanel {
-    return EduCourseInfoComponent(course as EduCourse)
-  }
-}
 
 private class EduCourseInfoComponent(course: EduCourse) : JPanel(HorizontalLayout(0)) {
 

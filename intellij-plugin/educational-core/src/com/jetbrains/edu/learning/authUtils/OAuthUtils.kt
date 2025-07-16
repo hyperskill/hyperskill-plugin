@@ -104,7 +104,6 @@ object OAuthUtils {
   object GrantType {
     const val AUTHORIZATION_CODE = "authorization_code"
     const val REFRESH_TOKEN = "refresh_token"
-    const val JBA_TOKEN_EXCHANGE = "jba"
   }
 }
 

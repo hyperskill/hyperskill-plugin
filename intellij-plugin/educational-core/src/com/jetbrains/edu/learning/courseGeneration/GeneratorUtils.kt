@@ -3,8 +3,6 @@ package com.jetbrains.edu.learning.courseGeneration
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runInEdt
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
@@ -13,18 +11,12 @@ import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiManager
-import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.io.ReadOnlyAttributeUtil
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.LESSON
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.SECTION
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
 import com.jetbrains.edu.learning.courseFormat.ext.dirName
 import com.jetbrains.edu.learning.courseFormat.ext.getPathToChildren
-import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.ext.shouldBeEmpty
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ALL_EXCEPT_IDEA_DIRECTORY
@@ -453,25 +445,6 @@ object GeneratorUtils {
     }
   }
 
-  /**
-   * Reformat the code so that learners do not see tons of IDE highlighting.
-   * Should be used for third-party sources of courses when language style guide is systematically ignored.
-   * */
-  @RequiresBlockingContext
-  fun reformatCodeInAllTaskFiles(project: Project, course: Course) {
-    course.visitTasks {
-      for ((_, file) in it.taskFiles) {
-        val virtualFile = file.getVirtualFile(project) ?: continue
-        val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: continue
-        runInEdt {
-          WriteCommandAction.runWriteCommandAction(project) {
-            CodeStyleManager.getInstance(project).reformat(psiFile)
-          }
-        }
-      }
-    }
-  }
-
   private val GRADLE_INVALID_SYMBOLS = "[ /\\\\:<>\"?*|()]".toRegex()
   private val LEADING_AND_TRAILING_DOTS = "(^[.]+)|([.]+$)".toRegex()
 
@@ -482,11 +455,4 @@ object GeneratorUtils {
    */
   fun gradleSanitizeName(name: String): String = name.replace(GRADLE_INVALID_SYMBOLS, "_").replace(LEADING_AND_TRAILING_DOTS, "")
 
-  fun getDefaultName(item: StudyItem) = when (item) {
-    is Section -> "$SECTION${item.index}"
-    is FrameworkLesson -> "${EduNames.FRAMEWORK_LESSON}${item.index}"
-    is Lesson -> "$LESSON${item.index}"
-    is Task -> "$TASK${item.index}"
-    else -> "NonCommonStudyItem${item.index}"
-  }
 }

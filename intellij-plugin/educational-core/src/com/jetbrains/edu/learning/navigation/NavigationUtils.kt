@@ -292,20 +292,6 @@ object NavigationUtils {
     }
   }
 
-  @RequiresEdt
-  private fun openCCTaskFiles(project: Project, task: Task) {
-    val taskDir = task.getDir(project.courseDir) ?: return
-    val descriptionFile = task.getDescriptionFile(project)
-    descriptionFile?.let { FileEditorManager.getInstance(project).openFile(it, false) }
-
-    task.getAllTestVFiles(project).forEach { testFile ->
-      FileEditorManager.getInstance(project).openFile(testFile, false)
-    }
-    val firstTaskFile = getFirstTaskFile(taskDir, task)
-    ProjectView.getInstance(project).refresh()
-    firstTaskFile?.let { updateProjectView(project, it) }
-  }
-
   private fun selectFirstAnswerPlaceholder(project: Project) {
     val eduState = project.eduState ?: return
     val (_, _, editor, taskFile, _, _) = eduState

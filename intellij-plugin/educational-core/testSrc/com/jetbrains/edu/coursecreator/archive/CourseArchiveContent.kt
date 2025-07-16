@@ -14,8 +14,6 @@ import java.util.zip.ZipInputStream
 data class CourseArchiveContent(
   val files: Map<String, ByteArray>
 ) {
-  val courseJson: String
-    get() = files[COURSE_META_FILE]?.toString(Charsets.UTF_8) ?: error("No `$COURSE_META_FILE` in archive")
 
   fun assertEquals(
     expected: CourseArchiveContent,

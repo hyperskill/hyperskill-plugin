@@ -26,18 +26,6 @@ object PlaceholderHighlightingManager {
     }
   }
 
-  fun showPlaceholder(project: Project, placeholder: AnswerPlaceholder) {
-    if (useNewRendering()) {
-      val file = placeholder.findPsiFile(project)
-      if (file != null) {
-        DaemonCodeAnalyzer.getInstance(project).restart(file)
-      }
-    }
-    if (useOldRendering()) {
-      PlaceholderPainter.showPlaceholder(project, placeholder)
-    }
-  }
-
   fun hidePlaceholders(project: Project, placeholders: List<AnswerPlaceholder>) {
     if (useNewRendering()) {
       val file = placeholders.firstOrNull()?.findPsiFile(project)
@@ -47,18 +35,6 @@ object PlaceholderHighlightingManager {
     }
     if (useOldRendering()) {
       PlaceholderPainter.hidePlaceholders(placeholders)
-    }
-  }
-
-  fun hidePlaceholder(project: Project, placeholder: AnswerPlaceholder) {
-    if (useNewRendering()) {
-      val file = placeholder.findPsiFile(project)
-      if (file != null) {
-        DaemonCodeAnalyzer.getInstance(project).restart(file)
-      }
-    }
-    if (useOldRendering()) {
-      PlaceholderPainter.hidePlaceholder(placeholder)
     }
   }
 

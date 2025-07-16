@@ -48,8 +48,6 @@ const val JAVA_OPTS = "JAVA_OPTS"
 
 const val CHECKER_VERSION = "#educational_plugin_checker_version "
 
-const val TEST_TASK_NAME = "test"
-
 fun getGradleProjectName(task: Task) =
   if (task.lesson.section != null)
     "${gradleSanitizeName(task.lesson.section!!.name)}-${gradleSanitizeName(task.lesson.name)}-${gradleSanitizeName(task.dirName)}"

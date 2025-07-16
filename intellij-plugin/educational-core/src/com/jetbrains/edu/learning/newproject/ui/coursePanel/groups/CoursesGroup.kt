@@ -10,7 +10,5 @@ data class CoursesGroup(
     fun fromCourses(courses: List<Course>): List<CoursesGroup> =
       listOf(CoursesGroup(courses = courses))
 
-    fun fromCourses(vararg courses: Course): List<CoursesGroup> =
-      listOf(CoursesGroup(courses = courses.toList()))
   }
 }

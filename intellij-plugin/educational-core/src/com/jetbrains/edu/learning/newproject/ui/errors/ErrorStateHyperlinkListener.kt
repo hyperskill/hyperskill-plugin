@@ -29,8 +29,8 @@ class ErrorStateHyperlinkListener(private val parentDisposable: Disposable) : Hy
   override fun hyperlinkUpdate(e: HyperlinkEvent?) {
     if (e?.eventType != HyperlinkEvent.EventType.ACTIVATED) return
 
-    val coursePanel = UIUtil.getParentOfType(CoursePanel::class.java, e?.source as? JTextPane) ?: return
-    val coursesPanel = UIUtil.getParentOfType(CoursesPanel::class.java, e?.source as? JTextPane)
+    val coursePanel = UIUtil.getParentOfType(CoursePanel::class.java, e.source as? JTextPane) ?: return
+    val coursesPanel = UIUtil.getParentOfType(CoursesPanel::class.java, e.source as? JTextPane)
     val postLoginActions = arrayOf(
       Runnable { coursePanel.hideErrorPanel() },
       Runnable { doValidation(coursePanel) },
