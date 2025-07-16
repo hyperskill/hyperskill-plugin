@@ -18,7 +18,6 @@ import com.jetbrains.edu.coursecreator.actions.CCCreateCourseArchiveAction
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.EduUtilsKt.isZip
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.marketplace.addVendor
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import java.io.File
 import javax.swing.JComponent
@@ -94,9 +93,6 @@ class CCCreateCourseArchiveDialog(project: Project, courseName: String) : Dialog
     private fun getAuthorInitialValue(project: Project): String {
       val course = project.course
       if (course != null) {
-        if (course.vendor == null) {
-          course.addVendor()
-        }
         val vendor = course.vendor
         if (vendor != null) {
           return vendor.name

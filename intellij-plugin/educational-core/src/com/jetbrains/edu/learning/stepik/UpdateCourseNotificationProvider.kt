@@ -11,13 +11,10 @@ import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.getTaskFile
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.Function
 import javax.swing.JComponent
 
 class UpdateCourseNotificationProvider : EditorNotificationProvider, DumbAware {
-
-  private var isUpdateRunning: AtomicBoolean = AtomicBoolean(false)
 
   override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?>? {
     if (!project.isStudentProject()) {

@@ -7,7 +7,6 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.panel
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import javax.swing.JComponent
 
@@ -46,13 +45,6 @@ internal class AdvancedSubmissionsDeleteDialog(private val project: Project) : D
     const val COURSE: Int = 0
     const val ALL: Int = 1
     const val CANCEL: Int = 2
-
-    fun showConfirmationDialog(project: Project): Int = if (isUnitTestMode) {
-      testDialog?.showWithResult() ?: error("No test dialog specified")
-    }
-    else {
-      AdvancedSubmissionsDeleteDialog(project).showWithResult()
-    }
 
     var testDialog: SubmissionsDeleteDialog? = null
   }
