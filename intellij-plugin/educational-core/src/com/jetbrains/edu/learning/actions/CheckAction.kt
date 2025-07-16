@@ -6,7 +6,6 @@ import com.intellij.notification.impl.NotificationSettings
 import com.intellij.notification.impl.NotificationsConfigurationImpl
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
@@ -17,7 +16,6 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.DumbAware
@@ -28,7 +26,6 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.writeBytes
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import com.jetbrains.edu.coursecreator.CCUtils.isCourseCreator
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.EduUtilsKt.showPopup
 import com.jetbrains.edu.learning.actions.EduActionUtils.showFakeProgress
@@ -109,16 +106,6 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
     if (e.presentation.isEnabled) {
       e.presentation.isEnabled = !CheckActionState.getInstance(project).isLocked
       return
-    }
-    if (!isCourseCreator(project)) {
-      return
-    }
-    val virtualFile = CommonDataKeys.VIRTUAL_FILE.getData(e.dataContext)
-    if (virtualFile == null || FileEditorManager.getInstance(project).selectedTextEditor == null) {
-      return
-    }
-    if (virtualFile.isTestsFile(project)) {
-      e.presentation.isEnabledAndVisible = true
     }
   }
 

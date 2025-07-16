@@ -15,7 +15,6 @@ import com.jetbrains.edu.learning.checker.CheckUtils.getCustomRunConfigurationFo
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -195,8 +194,7 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
   private fun JPanel.addNextTaskButton(task: Task) {
     if (!(task.status == CheckStatus.Solved
           || task is TheoryTask
-          || task.course is HyperskillCourse
-          || task.course.courseMode == CourseMode.EDUCATOR)
+          || task.course is HyperskillCourse)
     ) {
       return
     }

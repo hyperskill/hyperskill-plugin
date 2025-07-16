@@ -54,7 +54,6 @@
       <reference ref="Educational.Educator.IncludeIntoTask"/>
       <reference ref="Educational.Educator.ExcludeFromTask"/>
       <separator/>
-      <reference ref="Educational.Educator.CreateCoursePreview"/>
       <reference ref="Educational.Educator.ChangeCourseInfo"/>
       <reference ref="Educational.Educator.CheckAllTasks"/>
       <reference ref="Educational.Educator.PackCourse"/>

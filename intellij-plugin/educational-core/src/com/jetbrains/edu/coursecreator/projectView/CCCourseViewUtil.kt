@@ -9,7 +9,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import com.intellij.util.ui.tree.TreeUtil
-import com.jetbrains.edu.coursecreator.actions.taskFile.CCIgnoreFileInSyncChanges
 import com.jetbrains.edu.coursecreator.framework.CCFrameworkLessonManager
 import com.jetbrains.edu.coursecreator.framework.SyncChangesStateManager
 import com.jetbrains.edu.coursecreator.framework.SyncChangesTaskFileState
@@ -81,9 +80,6 @@ fun SyncChangesHelpTooltip.tryInstallNewTooltip(project: Project, treeNode: Tree
   setDescription(description)
   addLink(actionText) {
     CCFrameworkLessonManager.getInstance(project).propagateChanges(taskFile.task, listOf(taskFile))
-  }
-  addLink(secondaryActionText) {
-    CCIgnoreFileInSyncChanges.runWithTaskFile(project, taskFile)
   }
   setLocation(SyncChangesHelpTooltip.Alignment.EXACT_CURSOR)
   return true

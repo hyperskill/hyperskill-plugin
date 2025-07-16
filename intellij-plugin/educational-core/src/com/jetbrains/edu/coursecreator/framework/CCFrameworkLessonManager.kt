@@ -9,7 +9,6 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.xmlb.annotations.XCollection
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.coursecreator.framework.diff.applyChangesWithMergeDialog
 import com.jetbrains.edu.coursecreator.framework.diff.equalsTrimTrailingWhitespacesAndTrailingBlankLines
 import com.jetbrains.edu.coursecreator.framework.diff.resolveConflicts
@@ -59,7 +58,7 @@ class CCFrameworkLessonManager(
    * [baseFiles] - Files that will be propagated through, if null then all files will be propagated
    */
   fun propagateChanges(task: Task, baseFiles: List<TaskFile>?) {
-    require(CCUtils.isCourseCreator(project)) {
+    require(false) {
       "`propagateChanges` should be called only if course is in CC mode"
     }
     require(task.parent is FrameworkLesson) {
@@ -98,7 +97,7 @@ class CCFrameworkLessonManager(
    * Returns a list of task files that have been changed from the saved state for a given task.
    */
   fun getChangedFiles(task: Task): List<TaskFile> {
-    require(CCUtils.isCourseCreator(project)) {
+    require(false) {
       "`getChangedFiles` should be called only if course is in CC mode"
     }
     require(task.lesson is FrameworkLesson) {

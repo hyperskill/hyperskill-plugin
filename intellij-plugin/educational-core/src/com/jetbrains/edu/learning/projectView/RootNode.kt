@@ -7,8 +7,6 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiManager
-import com.jetbrains.edu.coursecreator.CCUtils.isCourseCreator
-import com.jetbrains.edu.coursecreator.projectView.CCCourseNode
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.Course
@@ -35,11 +33,6 @@ class RootNode(project: Project, viewSettings: ViewSettings?) : ProjectViewProje
 
   private fun addCourseNode(course: Course, nodes: MutableList<AbstractTreeNode<*>>, psiDirectory: PsiDirectory?) {
     if (psiDirectory == null) return
-    nodes += if (isCourseCreator(myProject)) {
-      CCCourseNode(myProject, psiDirectory, settings, course)
-    }
-    else {
-      CourseNode(myProject, psiDirectory, settings, course)
-    }
+    nodes += CourseNode(myProject, psiDirectory, settings, course)
   }
 }

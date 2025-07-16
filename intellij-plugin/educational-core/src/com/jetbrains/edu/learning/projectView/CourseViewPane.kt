@@ -32,7 +32,6 @@ import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
-import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
@@ -40,9 +39,8 @@ import com.intellij.util.ArrayUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.EducationalCoreIcons.CourseView.CourseTree
-import com.jetbrains.edu.coursecreator.CCStudyItemDeleteProvider
-import com.jetbrains.edu.coursecreator.CCUtils
-import com.jetbrains.edu.coursecreator.projectView.*
+import com.jetbrains.edu.coursecreator.projectView.HelpTooltipForTree
+import com.jetbrains.edu.coursecreator.projectView.tryInstallNewTooltip
 import com.jetbrains.edu.learning.CourseSetListener
 import com.jetbrains.edu.learning.EduUtilsKt.isEduProject
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
@@ -58,13 +56,10 @@ import javax.swing.Icon
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JProgressBar
-import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeCellRenderer
 
 class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport(project) {
-
-  private val myStudyItemDeleteProvider = CCStudyItemDeleteProvider()
 
   private lateinit var progressBar: JProgressBar
 
@@ -76,9 +71,6 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
 
       override fun createCellRenderer(): TreeCellRenderer {
         val projectViewRenderer = super.createCellRenderer()
-        if (CCUtils.isCourseCreator(myProject)) {
-          return CCCellRenderer(projectViewRenderer as ColoredTreeCellRenderer)
-        }
         return projectViewRenderer
       }
     }
@@ -99,7 +91,6 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
       val toolbar = createHeaderRightToolbar()
       val panel = panel {
         row {
-          cell(EducatorActionsPanel())
           cell(toolbar.component).align(AlignX.RIGHT)
         }
       }.apply {
@@ -215,21 +206,6 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
 
   override fun getData(dataId: String): Any? {
     if (myProject.isDisposed) return null
-
-    if (CCUtils.isCourseCreator(myProject)) {
-      val studyItem = when (val userObject = (selectedPath?.lastPathComponent as? DefaultMutableTreeNode)?.userObject) {
-        is CCTaskNode -> userObject.item
-        is CCLessonNode -> userObject.item
-        is CCSectionNode -> userObject.item
-        else -> null
-      }
-      if (studyItem != null) {
-        when {
-          PlatformDataKeys.DELETE_ELEMENT_PROVIDER.`is`(dataId) -> return myStudyItemDeleteProvider
-          STUDY_ITEM.`is`(dataId) -> return studyItem
-        }
-      }
-    }
     return super.getData(dataId)
   }
 

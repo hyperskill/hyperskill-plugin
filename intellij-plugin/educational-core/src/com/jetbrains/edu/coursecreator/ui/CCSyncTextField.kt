@@ -29,8 +29,6 @@ abstract class CCSyncTextField : JBTextField() {
     })
   }
 
-  val isChangedByUser: Boolean get() = myIsChangedByUser
-
   override fun setDocument(doc: Document?) {
     document?.removeDocumentListener(documentListener)
     super.setDocument(doc)

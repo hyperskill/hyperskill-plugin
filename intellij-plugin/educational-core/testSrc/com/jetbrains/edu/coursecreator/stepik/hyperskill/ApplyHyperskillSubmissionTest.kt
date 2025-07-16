@@ -1,7 +1,6 @@
 package com.jetbrains.edu.coursecreator.stepik.hyperskill
 
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.jetbrains.edu.coursecreator.actions.stepik.hyperskill.ApplyHyperskillSubmission
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.CourseMode

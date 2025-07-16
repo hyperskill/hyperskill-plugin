@@ -5,7 +5,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vcs.merge.MergeSession
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.coursecreator.actions.CCSyncChangesWithNextTasks
 import com.jetbrains.edu.coursecreator.framework.SyncChangesStateManager
 import com.jetbrains.edu.coursecreator.framework.SyncChangesTaskFileState
 import com.jetbrains.edu.coursecreator.framework.diff.withFLMultipleFileMergeUI

@@ -158,10 +158,6 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
     task.descriptionText = step.text
     task.descriptionFormat = DescriptionFormat.HTML
 
-    if (course is EduCourse && courseMode == CourseMode.EDUCATOR && stepId > 0) {
-      return task.apply { fillForCourseCreatorMode() }
-    }
-
     if (!isUnitTestMode) {
       when (val result = course.getStepikBasedConnector().getActiveAttemptOrPostNew(task)) {
         is Ok -> fillChoiceTask(result.value, task)

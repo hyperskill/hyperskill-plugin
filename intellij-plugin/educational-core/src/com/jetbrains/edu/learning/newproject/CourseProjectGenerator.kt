@@ -193,7 +193,7 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
 
     baseDir.putUserData(COURSE_MODE_TO_CREATE, course.courseMode)
 
-    if (isCourseTrusted(course, isNewCourseCreatorCourse)) {
+    if (isCourseTrusted(course, false)) {
       @Suppress("UnstableApiUsage")
       TrustedPaths.getInstance().setProjectPathTrusted(location.toPath(), true)
     }
@@ -259,22 +259,9 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
   @VisibleForTesting
   open suspend fun createCourseStructure(holder: CourseInfoHolder<Course>, initialLessonProducer: () -> Lesson = ::Lesson) {
     holder.course.init(false)
-    val isNewCourseCreatorCourse = isNewCourseCreatorCourse
-
     withRawProgressReporter {
       blockingContext {
         blockingContextToIndicator {
-          if (isNewCourseCreatorCourse) {
-            // `courseBuilder.createInitialLesson` is under blocking context with progress indicator as a temporary solution
-            // to avoid deadlock during C++ course creation.
-            // Otherwise, it may try to run a background process under modal progress during `CMAKE_MINIMUM_REQUIRED_LINE_VALUE` initialization.
-            // See https://youtrack.jetbrains.com/issue/EDU-6702
-            val lesson = courseBuilder.createInitialLesson(holder, initialLessonProducer)
-            if (lesson != null) {
-              course.addLesson(lesson)
-            }
-          }
-
           try {
             generateCourseContent(holder, ProgressManager.getInstance().progressIndicator)
           }
@@ -358,9 +345,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
   open fun autoCreatedAdditionalFiles(holder: CourseInfoHolder<Course>): List<EduFile> = emptyList()
 
   class BeforeInitHandler(val callback: (project: Project) -> Unit = { })
-
-  private val isNewCourseCreatorCourse: Boolean
-    get() = course.courseMode == CourseMode.EDUCATOR && course.items.isEmpty()
 
   companion object {
     private val LOG: Logger = Logger.getInstance(CourseProjectGenerator::class.java)

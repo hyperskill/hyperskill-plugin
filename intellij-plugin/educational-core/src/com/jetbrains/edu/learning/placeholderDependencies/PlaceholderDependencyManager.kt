@@ -5,7 +5,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.ui.EditorNotifications
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholderDependency
@@ -19,10 +18,6 @@ object PlaceholderDependencyManager {
   private val LOG = Logger.getInstance(PlaceholderDependencyManager::class.java)
 
   fun updateDependentPlaceholders(project: Project, task: Task) {
-    if (CCUtils.isCourseCreator(project)) {
-      return
-    }
-
     for (taskFile in task.taskFiles.values) {
       val virtualFile = taskFile.findTaskFileInDir(task.getDir(project.courseDir) ?: break) ?: continue
       EditorNotifications.getInstance(project).updateNotifications(virtualFile)

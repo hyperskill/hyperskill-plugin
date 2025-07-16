@@ -1,6 +1,5 @@
 package com.jetbrains.edu.coursecreator
 
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -9,10 +8,8 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileVisitor
 import com.jetbrains.edu.coursecreator.actions.BinaryContentsFromDisk
-import com.jetbrains.edu.coursecreator.actions.CCCreateCourseArchiveAction
 import com.jetbrains.edu.coursecreator.actions.TextualContentsFromDisk
 import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreRules
-import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.configuration.courseFileAttributes
@@ -88,9 +85,7 @@ object AdditionalFilesUtils {
     }
 
     return courseIgnoreRules.isIgnored(file) ||
-           excludedByConfigurator ||
-           file.path == PropertiesComponent.getInstance(project)
-             .getValue(CCCreateCourseArchiveAction.LAST_ARCHIVE_LOCATION)
+           excludedByConfigurator
   }
 
   @Suppress("DEPRECATION") // https://youtrack.jetbrains.com/issue/EDU-4930
@@ -106,10 +101,6 @@ object AdditionalFilesUtils {
       listOf()
     }
     return LessonAdditionalInfo(lesson.customPresentableName, taskInfo, courseFiles)
-  }
-
-  fun getChangeNotesVirtualFile(project: Project): VirtualFile? {
-    return project.courseDir.findChild(EduNames.CHANGE_NOTES)
   }
 
   private fun additionalFilesVisitor(project: Project, courseConfigurator: EduConfigurator<*>, detectTaskFoldersByContents: Boolean) =

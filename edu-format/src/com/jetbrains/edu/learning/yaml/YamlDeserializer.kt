@@ -81,9 +81,8 @@ object YamlDeserializer {
       treeNode = YamlMigrator(this).migrateCourse(treeNode)
     }
 
-    val courseMode = asText(treeNode.get("mode"))
     val course = treeToValue(treeNode, Course::class.java)
-    course.courseMode = if (courseMode != null) CourseMode.STUDENT else CourseMode.EDUCATOR
+    course.courseMode = CourseMode.STUDENT
     return course
   }
 

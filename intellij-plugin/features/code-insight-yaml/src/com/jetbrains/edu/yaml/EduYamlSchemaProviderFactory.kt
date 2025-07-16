@@ -4,12 +4,10 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.FRAMEWORK
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.getContainingTask
-import com.jetbrains.edu.learning.yaml.YamlConfigSettings
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.LESSON
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.SECTION
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.TASK
@@ -41,8 +39,7 @@ class EduYamlSchemaProviderFactory : JsonSchemaProviderFactory {
 
     abstract val itemKind: String
 
-    override fun isAvailable(file: VirtualFile): Boolean = CCUtils.isCourseCreator(project)
-                                                           && YamlConfigSettings.getLocalConfigFileName(itemKind) == file.name
+    override fun isAvailable(file: VirtualFile): Boolean = false
 
     override fun getSchemaFile(): VirtualFile? {
       return JsonSchemaProviderFactory.getResourceFile(EduYamlSchemaProviderFactory::class.java, getSchemaResourcePath())

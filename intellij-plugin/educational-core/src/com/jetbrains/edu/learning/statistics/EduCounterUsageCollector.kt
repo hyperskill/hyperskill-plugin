@@ -7,7 +7,6 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.jetbrains.edu.learning.authUtils.AuthorizationPlace
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.newproject.ui.BrowseCoursesDialog
@@ -348,13 +347,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
     fun eduProjectOpened(course: Course) = EDU_PROJECT_OPENED_EVENT.log(course.courseMode, course.itemType)
 
     fun studyItemCreatedCC(item: StudyItem) {
-      val course = item.course
-      if (CourseMode.EDUCATOR == course.courseMode) {
-        CC_STUDY_ITEM_CREATED_EVENT.log(item.itemType, course.id, course.itemType)
-        if (item is Task) {
-          CC_TASK_CREATED_EVENT.log(item.lesson.itemType, course.id, course.itemType)
-        }
-      }
     }
 
     fun linkClicked(linkType: LinkType) = LICK_CLICKED_EVENT.log(linkType)

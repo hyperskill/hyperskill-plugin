@@ -10,7 +10,6 @@ import com.intellij.psi.*
 import com.intellij.ui.LayeredIcon
 import com.jetbrains.edu.EducationalCoreIcons.CourseView
 import com.jetbrains.edu.EducationalCoreIcons.CourseView.*
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.coursecreator.framework.SyncChangesStateManager
 import com.jetbrains.edu.coursecreator.framework.SyncChangesTaskFileState
 import com.jetbrains.edu.learning.EduNames
@@ -84,7 +83,7 @@ object CourseViewUtils {
 
   fun findTaskDirectory(project: Project, baseDir: PsiDirectory, task: Task): PsiDirectory? {
     val sourceDirName = task.sourceDir
-    if (sourceDirName.isNullOrEmpty() || CCUtils.isCourseCreator(project)) {
+    if (sourceDirName.isNullOrEmpty()) {
       return baseDir
     }
     val vFile = baseDir.virtualFile

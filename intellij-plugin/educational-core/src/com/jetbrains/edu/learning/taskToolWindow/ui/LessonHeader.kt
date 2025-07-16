@@ -7,7 +7,6 @@ import com.intellij.ui.components.AnActionLink
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.JBFont
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -47,7 +46,7 @@ class LessonHeader : JPanel() {
 
   fun updateTopPanelForProblems(project: Project, course: HyperskillCourse, task: Task) {
     topPanelForProblems.removeAll()
-    if (CCUtils.isCourseCreator(project) || course.getProjectLesson() == null) return
+    if (course.getProjectLesson() == null) return
 
     val linkText =
       if (course.isTaskInProject(task)) EduCoreBundle.message("hyperskill.back.to.learning") else EduCoreBundle.message("hyperskill.work.on.project")

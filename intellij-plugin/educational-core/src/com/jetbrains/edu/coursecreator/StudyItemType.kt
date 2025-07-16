@@ -3,7 +3,6 @@ package com.jetbrains.edu.coursecreator
 import com.intellij.openapi.keymap.KeymapUtil
 import com.jetbrains.edu.coursecreator.StudyItemType.*
 import com.jetbrains.edu.learning.messages.EduCoreBundle.message
-import com.jetbrains.edu.learning.stepik.StepikNames.STEPIK
 import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import java.awt.event.KeyEvent
@@ -44,15 +43,6 @@ val StudyItemType.createItemMessage: String
     TASK_TYPE -> message("item.create.task")
   }
 
-val StudyItemType.createItemTitleMessage: String
-  @Nls(capitalization = Nls.Capitalization.Title)
-  get() = when (this) {
-    COURSE_TYPE -> message("item.create.course.title")
-    SECTION_TYPE -> message("item.create.section.title")
-    LESSON_TYPE -> message("item.create.lesson.title")
-    TASK_TYPE -> message("item.create.task.title")
-  }
-
 val StudyItemType.newItemTitleMessage: String
   @Nls(capitalization = Nls.Capitalization.Title)
   get() = when (this) {
@@ -81,33 +71,6 @@ val StudyItemType.pressEnterToCreateItemMessage: String
       LESSON_TYPE -> message("item.hint.press.enter.to.create.lesson", enter)
       TASK_TYPE -> message("item.hint.press.enter.to.create.task", enter)
     }
-  }
-
-val StudyItemType.updateOnStepikMessage: String
-  @Nls(capitalization = Nls.Capitalization.Sentence)
-  get() = when (this) {
-    COURSE_TYPE -> message("item.update.on.0.course", STEPIK)
-    SECTION_TYPE -> message("item.update.on.0.section", STEPIK)
-    LESSON_TYPE -> message("item.update.on.0.lesson", STEPIK)
-    TASK_TYPE -> message("item.update.on.0.task", STEPIK)
-  }
-
-val StudyItemType.updateOnStepikTitleMessage: String
-  @Nls(capitalization = Nls.Capitalization.Title)
-  get() = when (this) {
-    COURSE_TYPE -> message("item.update.on.0.course.title", STEPIK)
-    SECTION_TYPE -> message("item.update.on.0.section.title", STEPIK)
-    LESSON_TYPE -> message("item.update.on.0.lesson.title", STEPIK)
-    TASK_TYPE -> message("item.update.on.0.task.title", STEPIK)
-  }
-
-val StudyItemType.uploadToStepikTitleMessage: String
-  @Nls(capitalization = Nls.Capitalization.Title)
-  get() = when (this) {
-    COURSE_TYPE -> message("item.upload.to.0.course.title", STEPIK)
-    SECTION_TYPE -> message("item.upload.to.0.section.title", STEPIK)
-    LESSON_TYPE -> message("item.upload.to.0.lesson.title", STEPIK)
-    TASK_TYPE -> message("item.upload.to.0.task.title", STEPIK)
   }
 
 val StudyItemType.moveItemMessage: String

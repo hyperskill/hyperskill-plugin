@@ -8,7 +8,6 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.refactoring.move.MoveHandlerDelegate
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.coursecreator.StudyItemType
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 
@@ -37,8 +36,7 @@ abstract class CCStudyItemMoveHandlerDelegate(private val itemType: StudyItemTyp
     reference: PsiReference?,
     editor: Editor?
   ): Boolean {
-    val directory = element as? PsiDirectory ?: return false
-    return if (isAvailable(directory)) CCUtils.isCourseCreator(project) else false
+    return false
   }
 
   protected abstract fun isAvailable(directory: PsiDirectory): Boolean

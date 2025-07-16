@@ -90,7 +90,7 @@ private class MyCourseInfoComponent(courseMetaInfo: JBACourseFromStorage) : JPan
     val tasksSolved = courseMetaInfo.tasksSolved
     val tasksTotal = courseMetaInfo.tasksTotal
 
-    if (courseMetaInfo.courseMode != CourseMode.EDUCATOR && (tasksSolved != 0 && tasksSolved != tasksTotal)) {
+    if ((tasksSolved != 0 && tasksSolved != tasksTotal)) {
       val progressBar = ProgressUtil.createProgressBar().apply {
         border = JBUI.Borders.emptyRight(H_GAP)
         maximum = tasksTotal

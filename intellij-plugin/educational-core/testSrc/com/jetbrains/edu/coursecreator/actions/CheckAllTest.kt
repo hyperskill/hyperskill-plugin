@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.util.messages.MessageBusConnection
-import com.jetbrains.edu.coursecreator.actions.checkAllTasks.CCCheckAllTasksAction
 import com.jetbrains.edu.learning.EduActionTestCase
 import com.jetbrains.edu.learning.LessonBuilder
 import com.jetbrains.edu.learning.SectionBuilder

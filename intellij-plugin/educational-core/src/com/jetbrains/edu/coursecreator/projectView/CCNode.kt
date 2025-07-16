@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.jetbrains.edu.coursecreator.CCUtils.isCourseCreator
 import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
@@ -43,11 +42,6 @@ class CCNode(
       }
       if (!virtualFile.isTestsFile(myProject)) {
         return CCStudentInvisibleFileNode(myProject, psiFile, settings)
-      }
-      else {
-        if (isCourseCreator(myProject)) {
-          return CCStudentInvisibleFileNode(myProject, psiFile, settings)
-        }
       }
     }
     return null

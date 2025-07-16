@@ -7,14 +7,10 @@ import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.jetbrains.edu.coursecreator.StudyItemType
 import com.jetbrains.edu.coursecreator.actions.TemplateFileInfo
-import com.jetbrains.edu.coursecreator.actions.studyItem.CCCreateLesson
-import com.jetbrains.edu.coursecreator.actions.studyItem.CCCreateTask
 import com.jetbrains.edu.coursecreator.actions.studyItem.NewStudyItemInfo
 import com.jetbrains.edu.coursecreator.actions.studyItem.NewStudyItemUiModel
 import com.jetbrains.edu.coursecreator.ui.showNewStudyItemDialog
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.LESSON
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.findTaskFileInDir
 import com.jetbrains.edu.learning.courseFormat.ext.testDirs
@@ -66,12 +62,7 @@ interface EduCourseBuilder<Settings : EduProjectSettings> {
   }
 
   fun createInitialLesson(holder: CourseInfoHolder<Course>, lessonProducer: () -> Lesson): Lesson? {
-    val lessonInfo = NewStudyItemInfo(LESSON + 1, 1, lessonProducer)
-    val lesson = CCCreateLesson().createAndInitItem(holder, holder.course, lessonInfo)
-    val taskInfo = NewStudyItemInfo(TASK + 1, 1, ::EduTask)
-    val task = CCCreateTask().createAndInitItem(holder, lesson, taskInfo)
-    lesson.addTask(task)
-    return lesson
+    return null
   }
 
   fun shouldCopyTaskFile(path: String): Boolean = true

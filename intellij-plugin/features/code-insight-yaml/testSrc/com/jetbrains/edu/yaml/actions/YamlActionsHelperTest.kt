@@ -2,7 +2,6 @@ package com.jetbrains.edu.yaml.actions
 
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.vfs.VirtualFile
-import com.jetbrains.edu.coursecreator.actions.placeholder.CCEditAnswerPlaceholder
 import com.jetbrains.edu.coursecreator.yaml.createConfigFiles
 import com.jetbrains.edu.learning.EduActionTestCase
 import com.jetbrains.edu.learning.courseFormat.CourseMode

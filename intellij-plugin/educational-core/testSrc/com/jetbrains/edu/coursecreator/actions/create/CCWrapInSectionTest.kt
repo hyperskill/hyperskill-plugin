@@ -1,6 +1,5 @@
 package com.jetbrains.edu.coursecreator.actions.create
 
-import com.jetbrains.edu.coursecreator.actions.studyItem.CCWrapWithSection
 import com.jetbrains.edu.coursecreator.framework.CCFrameworkLessonManager
 import com.jetbrains.edu.learning.EduActionTestCase
 import com.jetbrains.edu.learning.EduTestInputDialog

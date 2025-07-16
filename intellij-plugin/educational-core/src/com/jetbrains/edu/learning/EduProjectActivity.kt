@@ -7,7 +7,6 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.ExactFileNameMatcher
 import com.intellij.openapi.fileTypes.FileTypeManager
@@ -22,8 +21,6 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.platform.backend.observation.trackActivity
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
-import com.jetbrains.edu.coursecreator.CCUtils
-import com.jetbrains.edu.coursecreator.SynchronizeTaskDescription
 import com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreFileType
 import com.jetbrains.edu.coursecreator.framework.SyncChangesStateManager
 import com.jetbrains.edu.coursecreator.handlers.CCVirtualFileListener
@@ -32,13 +29,10 @@ import com.jetbrains.edu.learning.EduUtilsKt.isEduProject
 import com.jetbrains.edu.learning.EduUtilsKt.isNewlyCreated
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
-import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.isPreview
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.handlers.UserCreatedFileListener
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -63,10 +57,6 @@ class EduProjectActivity : ProjectActivity {
       val vfsListener = if (project.isStudentProject()) UserCreatedFileListener(project) else CCVirtualFileListener(project, manager)
       connection.subscribe(VirtualFileManager.VFS_CHANGES, vfsListener)
 
-      if (CCUtils.isCourseCreator(project)) {
-        EditorFactory.getInstance().eventMulticaster.addDocumentListener(SynchronizeTaskDescription(project), manager)
-        EditorFactory.getInstance().eventMulticaster.addDocumentListener(CourseIgnoreDocumentListener(project), manager)
-      }
       EduDocumentListener.setGlobalListener(project, manager)
     }
 
@@ -116,7 +106,6 @@ class EduProjectActivity : ProjectActivity {
   @VisibleForTesting
   @RequiresBlockingContext
   fun migrateYaml(project: Project, course: Course) {
-    migratePropagatableYamlFields(project, course)
     migrateCanCheckLocallyYaml(project, course)
     YamlFormatSynchronizer.saveAll(project)
   }
@@ -131,34 +120,6 @@ class EduProjectActivity : ProjectActivity {
       if (it is ChoiceTask) {
         it.canCheckLocally = false
       }
-    }
-  }
-
-  private fun migratePropagatableYamlFields(project: Project, course: Course) {
-    if (!CCUtils.isCourseCreator(project)) return
-    val propertiesComponent = PropertiesComponent.getInstance(project)
-    if (propertiesComponent.getBoolean(YAML_MIGRATED_PROPAGATABLE)) return
-    propertiesComponent.setValue(YAML_MIGRATED_PROPAGATABLE, true)
-
-    var hasPropagatableFlag = false
-    val nonPropagatableFiles = mutableListOf<TaskFile>()
-    course.visitTasks { task: Task ->
-      if (task.lesson is FrameworkLesson) {
-        for (taskFile in task.taskFiles.values) {
-          if (!taskFile.isPropagatable) {
-            hasPropagatableFlag = true
-            return@visitTasks
-          }
-          if (!taskFile.isVisible || !taskFile.isEditable) {
-            nonPropagatableFiles += taskFile
-          }
-        }
-      }
-    }
-    if (hasPropagatableFlag) return
-
-    for (taskFile in nonPropagatableFiles) {
-      taskFile.isPropagatable = false
     }
   }
 

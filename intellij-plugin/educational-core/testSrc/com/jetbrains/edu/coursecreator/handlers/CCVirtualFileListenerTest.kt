@@ -3,7 +3,6 @@ package com.jetbrains.edu.coursecreator.handlers
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.coursecreator.actions.CCCreateCourseArchiveAction
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.configurators.FakeGradleConfigurator
 import com.jetbrains.edu.learning.courseFormat.CourseMode

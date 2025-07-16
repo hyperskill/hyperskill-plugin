@@ -13,7 +13,6 @@ import com.intellij.openapi.vfs.VirtualFileVisitor
 import com.intellij.ui.EditorNotifications
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.learning.FileInfo
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -231,7 +230,7 @@ class SyncChangesStateManager(private val project: Project) : Disposable.Default
   }
 
   private fun isCCFrameworkLesson(lesson: Lesson): Boolean {
-    return CCUtils.isCourseCreator(project) && lesson is FrameworkLesson
+    return false
   }
 
   // Process a batch of taskFiles in a certain task at once to minimize the number of accesses to the storage

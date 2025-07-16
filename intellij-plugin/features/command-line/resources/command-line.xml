@@ -2,7 +2,6 @@
   <extensions defaultExtensionNs="com.intellij">
     <appStarter id="createCourse" implementation="com.jetbrains.edu.commandLine.EduCourseCreatorAppStarter"/>
     <appStarter id="installCoursePlugins" implementation="com.jetbrains.edu.commandLine.EduCoursePluginInstallerAppStarter"/>
-    <appStarter id="validateCourse" implementation="com.jetbrains.edu.commandLine.validation.EduCourseValidatorAppStarter"/>
     <appStarter id="openCourse" implementation="com.jetbrains.edu.commandLine.EduOpenCourseAppStarter"/>
   </extensions>
 </idea-plugin>

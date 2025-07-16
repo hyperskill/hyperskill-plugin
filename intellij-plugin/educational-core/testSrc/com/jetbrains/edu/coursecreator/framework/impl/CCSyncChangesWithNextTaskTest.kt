@@ -4,7 +4,6 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.vcs.merge.MergeSession.Resolution
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.coursecreator.actions.CCSyncChangesWithNextTasks
 import com.jetbrains.edu.coursecreator.framework.diff.withFLMultipleFileMergeUI
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage

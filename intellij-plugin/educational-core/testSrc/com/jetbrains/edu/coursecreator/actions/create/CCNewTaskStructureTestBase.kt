@@ -1,7 +1,6 @@
 package com.jetbrains.edu.coursecreator.actions.create
 
 import com.intellij.lang.Language
-import com.jetbrains.edu.coursecreator.actions.studyItem.CCCreateTask
 import com.jetbrains.edu.coursecreator.settings.CCSettings
 import com.jetbrains.edu.coursecreator.ui.withMockCreateStudyItemUi
 import com.jetbrains.edu.learning.*

@@ -18,7 +18,6 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.tree.TreeUtil
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.ext.*
@@ -226,10 +225,6 @@ object NavigationUtils {
       for (file in FileEditorManager.getInstance(project).openFiles) {
         FileEditorManager.getInstance(project).closeFile(file)
       }
-    }
-    if (CCUtils.isCourseCreator(project)) {
-      openCCTaskFiles(project, task)
-      return
     }
     val taskFiles = task.taskFiles
 

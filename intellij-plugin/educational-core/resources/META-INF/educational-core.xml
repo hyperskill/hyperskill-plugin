@@ -152,92 +152,8 @@
             class="com.jetbrains.edu.learning.actions.ToggleRestServicesAction"
             internal="true"/>
 
-    <!--educator actions-->
-    <action id="Educational.Educator.InsertShortcut" class="com.jetbrains.edu.coursecreator.actions.InsertShortcutAction">
-      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-    </action>
-    <action id="Educational.CCEditTaskDescription" class="com.jetbrains.edu.coursecreator.actions.CCEditTaskDescription"/>
-
     <action id="LessonCard-left" class="com.intellij.openapi.actionSystem.EmptyAction" use-shortcut-of="EditorLeft"/>
     <action id="LessonCard-right" class="com.intellij.openapi.actionSystem.EmptyAction" use-shortcut-of="EditorRight"/>
-
-    <group id="Educational.Educator.NewFile">
-      <action id="Educational.Educator.CreateTask" class="com.jetbrains.edu.coursecreator.actions.studyItem.CCCreateTask"/>
-      <action id="Educational.Educator.CreateLesson"
-              class="com.jetbrains.edu.coursecreator.actions.studyItem.CCCreateLesson"/>
-      <action id="Educational.Educator.CreateSection"
-              class="com.jetbrains.edu.coursecreator.actions.studyItem.CCCreateSection"/>
-      <separator/>
-      <add-to-group group-id="NewGroup" anchor="first"/>
-    </group>
-
-    <action id="Educational.Educator.ChangeCourseInfo" class="com.jetbrains.edu.coursecreator.actions.CCChangeCourseInfo"/>
-    <action id="Educational.Educator.CheckAllTasks" class="com.jetbrains.edu.coursecreator.actions.checkAllTasks.CCCheckAllTasksAction"/>
-
-    <action class="com.jetbrains.edu.coursecreator.actions.CCCreateCoursePreview" id="Educational.Educator.CreateCoursePreview"/>
-
-    <group id="Educational.Educator.CourseCreator.FrameworkLesson" popup="false"
-           class="com.jetbrains.edu.coursecreator.actions.CCFrameworkLessonActionGroup">
-      <action id="Educational.Educator.SyncChangesWithNextTasks"
-              class="com.jetbrains.edu.coursecreator.actions.CCSyncChangesWithNextTasks"
-              icon="com.jetbrains.edu.EducationalCoreIcons.Actions.SyncChanges">
-      </action>
-      <action id="Educational.Educator.AllowFileToSyncChanges"
-              class="com.jetbrains.edu.coursecreator.actions.taskFile.CCAllowFileSyncChanges"
-              icon="AllIcons.Actions.Show"/>
-      <action id="Educational.Educator.IgnoreFilePropagation"
-              class="com.jetbrains.edu.coursecreator.actions.taskFile.CCIgnoreFileInSyncChanges"
-              icon="com.jetbrains.edu.EducationalCoreIcons.Actions.IgnoreSyncFile"/>
-      <action id="Educational.Educator.ShowUnsyncedChanges"
-              class="com.jetbrains.edu.coursecreator.actions.taskFile.CCShowUnsyncedChanges"
-              icon="AllIcons.Actions.Diff"
-              internal="true">
-      </action>
-      <separator/>
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="before" relative-to-action="Educational.Educator.CourseCreator.Menu"/>
-    </group>
-
-    <group id="Educational.Educator.CourseCreator.Menu" popup="true"
-           class="com.jetbrains.edu.coursecreator.actions.CCProjectViewActionGroup">
-      <action id="Educational.Educator.ShowToStudent" class="com.jetbrains.edu.coursecreator.actions.taskFile.CCMakeVisibleToLearner"/>
-      <action id="Educational.Educator.HideFromStudent" class="com.jetbrains.edu.coursecreator.actions.taskFile.CCHideFromLearner"/>
-      <action id="Educational.Educator.ShowPreview" class="com.jetbrains.edu.coursecreator.actions.taskFile.CCShowPreview">
-        <add-to-group group-id="EditorTabPopupMenu"/>
-      </action>
-      <action id="Educational.Educator.CCWrapWithSection" class="com.jetbrains.edu.coursecreator.actions.studyItem.CCWrapWithSection"/>
-      <action id="Educational.Educator.CCRemoveSection" class="com.jetbrains.edu.coursecreator.actions.studyItem.CCRemoveSection"/>
-      <action id="Educational.Educator.IncludeIntoTask" class="com.jetbrains.edu.coursecreator.actions.taskFile.CCIncludeIntoTask"/>
-      <action id="Educational.Educator.ExcludeFromTask" class="com.jetbrains.edu.coursecreator.actions.taskFile.CCExcludeFromTask"/>
-      <separator/>
-      <reference ref="Educational.Educator.CreateCoursePreview"/>
-      <reference ref="Educational.Educator.ChangeCourseInfo"/>
-      <reference ref="Educational.Educator.CheckAllTasks"/>
-      <action id="Educational.Educator.PackCourse" class="com.jetbrains.edu.coursecreator.actions.CCCreateCourseArchiveAction"/>
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="before" relative-to-action="CutCopyPasteGroup"/>
-      <add-to-group group-id="FileMenu" anchor="before" relative-to-action="FileMainSettingsGroup"/>
-    </group>
-
-    <action id="Educational.Educator.ExportStepikIds" class="com.jetbrains.edu.coursecreator.actions.stepik.ExportStepikIds"/>
-
-    <group id="Educational.Educator.AnswerPlaceholder">
-      <action id="Educational.Educator.AddAnswerPlaceholder"
-              class="com.jetbrains.edu.coursecreator.actions.placeholder.CCAddAnswerPlaceholder"/>
-      <group id="Educational.Educator.ModifyAnswerPlaceholder" popup="true" text="Answer Placeholder"
-             class="com.jetbrains.edu.coursecreator.CCAnswerPlaceholderActionGroup">
-        <action id="Educational.Educator.EditAnswerPlaceholder"
-                class="com.jetbrains.edu.coursecreator.actions.placeholder.CCEditAnswerPlaceholder"/>
-        <action id="Educational.Educator.RemoveDependency" class="com.jetbrains.edu.coursecreator.actions.placeholder.CCRemoveDependency"/>
-        <action id="Educational.Educator.DeleteAnswerPlaceholder"
-                class="com.jetbrains.edu.coursecreator.actions.placeholder.CCDeleteAnswerPlaceholder"/>
-        <action id="Educational.Educator.DeleteAllPlaceholders"
-                class="com.jetbrains.edu.coursecreator.actions.placeholder.CCDeleteAllAnswerPlaceholdersAction"/>
-        <separator/>
-      </group>
-      <separator/>
-      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-    </group>
-
-    <action id="Educational.Educator.EditCourseFromArchive" class="com.jetbrains.edu.coursecreator.actions.CCEditCourseArchive"/>
 
     <group id="Educational.LearnAndTeachFileMenu"
            class="com.jetbrains.edu.learning.newproject.LearnAndTeachFileMenuGroup"
@@ -249,7 +165,6 @@
     <action id="Educational.WatchTutorial" class="com.jetbrains.edu.learning.actions.LearnMoreAction">
       <add-to-group group-id="HelpMenu" anchor="before" relative-to-action="HelpTopics"/>
     </action>
-    <action id="Educational.SolveAllTasksBefore" class="com.jetbrains.edu.coursecreator.actions.CCSolveAllTasksBeforeAction"/>
     <action id="Educational.CreateNewIssue"
             class="com.jetbrains.edu.learning.actions.CreateNewYouTrackIssue"
             icon="com.jetbrains.edu.EducationalCoreIcons.Actions.EduCourse">
@@ -273,7 +188,6 @@
 
     <!-- Actions located in the right corner of the Course View header -->
     <group id="Educational.CourseView.Header.Right">
-      <reference ref="Educational.Educator.CreateCoursePreview"/>
       <reference ref="Educational.Educator.OpenEducatorHelp"/>
     </group>
 
@@ -293,7 +207,6 @@
 
     <!-- Actions located in the right corner of Task tool window -->
     <group id="Educational.TaskToolWindowView.TitleActions">
-      <reference ref="Educational.CCEditTaskDescription"/>
       <reference ref="Educational.PreviousTask"/>
       <reference ref="Educational.NextTask"/>
     </group>
@@ -386,7 +299,6 @@
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.stepik.UpdateCourseNotificationProvider"/>
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.editor.EduTaskFileNotificationProvider"/>
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.yaml.YamlConfigNotificationProvider"/>
-    <editorNotificationProvider implementation="com.jetbrains.edu.coursecreator.framework.editor.SyncChangesEditorNotificationsProvider"/>
 
     <!-- com.jetbrains.edu.learning.notification.EduNotificationManager.JETBRAINS_ACADEMY_GROUP_ID -->
     <notificationGroup id="JetBrains Academy" displayType="BALLOON"
@@ -405,7 +317,6 @@
     <!--for educators-->
     <xml.xmlSuppressionProvider
         implementation="com.jetbrains.edu.coursecreator.taskDescription.ShortcutInTaskDescriptionSuppressionProvider"/>
-    <fileEditorProvider implementation="com.jetbrains.edu.coursecreator.framework.editor.EduSplitFileEditorProvider" order="first"/>
 
     <!-- Rename -->
     <renamePsiElementProcessor implementation="com.jetbrains.edu.coursecreator.handlers.rename.CCDescriptionFileRenameProcessor"
@@ -437,7 +348,6 @@
     <experimentalFeature id="edu.course.creator.split.editor" percentOfUsers="100" internalFeature="true">
       <description>Enables previous task view for guided projects</description>
     </experimentalFeature>
-    <liveTemplateContext implementation="com.jetbrains.edu.coursecreator.taskDescription.HintTemplateContextType"/>
     <defaultLiveTemplates file="liveTemplates/hint.xml"/>
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.yaml.GeneratedRemoteInfoNotificationProvider"/>
     <registryKey key="edu.course.creator.solve.all"

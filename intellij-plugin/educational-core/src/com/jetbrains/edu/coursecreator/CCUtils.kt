@@ -1,9 +1,7 @@
 package com.jetbrains.edu.coursecreator
 
-import com.intellij.CommonBundle
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runUndoTransparentWriteAction
@@ -18,10 +16,7 @@ import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootModificationUtil
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.NlsContexts.Button
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -30,9 +25,11 @@ import com.intellij.util.Function
 import com.intellij.util.PathUtil
 import com.jetbrains.edu.coursecreator.framework.CCFrameworkLessonManager
 import com.jetbrains.edu.coursecreator.handlers.StudyItemRefactoringHandler
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.CourseInfoHolder
+import com.jetbrains.edu.learning.EduDocumentListener
+import com.jetbrains.edu.learning.course
+import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -109,17 +106,6 @@ object CCUtils {
   fun saveOpenedDocuments(project: Project) {
     val openDocuments = FileEditorManager.getInstance(project).openFiles.mapNotNull { FileDocumentManager.getInstance().getDocument(it) }
     openDocuments.forEach { FileDocumentManager.getInstance().saveDocument(it) }
-  }
-
-  fun isCourseCreator(project: Project): Boolean {
-    val course = StudyTaskManager.getInstance(project).course ?: return false
-    return CourseMode.EDUCATOR == course.courseMode || CourseMode.EDUCATOR == EduUtilsKt.getCourseModeForNewlyCreatedProject(project)
-  }
-
-  fun updateActionGroup(e: AnActionEvent) {
-    val presentation = e.presentation
-    val project = e.project
-    presentation.isEnabledAndVisible = project != null && isCourseCreator(project)
   }
 
   /**
@@ -257,35 +243,5 @@ object CCUtils {
 
       }
     })
-  }
-
-  fun askToWrapTopLevelLessons(
-    project: Project,
-    course: EduCourse,
-    @Button yesText: String = EduCoreBundle.message("label.wrap")
-  ): Boolean {
-    val result = Messages.showYesNoDialog(
-      project,
-      EduCoreBundle.message("notification.wrap.lessons.into.section.message"),
-      EduCoreBundle.message("notification.wrap.lessons.into.section"),
-      yesText,
-      CommonBundle.getCancelButtonText(),
-      null
-    )
-    if (result != Messages.YES) {
-      return false
-    }
-    wrapLessonsIntoSections(project, course)
-    return true
-  }
-
-  private fun wrapLessonsIntoSections(project: Project, course: Course) {
-    ApplicationManager.getApplication().invokeAndWait {
-      val lessons = course.lessons
-      for (lesson in lessons) {
-        wrapIntoSection(project, course, listOf(lesson), "Section. " + StringUtil.capitalize(lesson.name))
-      }
-      course.configurator?.courseBuilder?.refreshProject(project, RefreshCause.STRUCTURE_MODIFIED)
-    }
   }
 }
