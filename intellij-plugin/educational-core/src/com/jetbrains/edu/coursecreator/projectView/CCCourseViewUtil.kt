@@ -50,9 +50,9 @@ fun SyncChangesHelpTooltip.tryInstallNewTooltip(project: Project, treeNode: Tree
 
   val taskFile = node.virtualFile?.getTaskFile(project) ?: return false
 
-  var title: String? = null
-  var description: String? = null
-  var actionText: String? = null
+  var title: String?
+  var description: String?
+  var actionText: String?
   var secondaryActionText: String? = null
 
   val state = SyncChangesStateManager.getInstance(project).getSyncChangesState(taskFile)
