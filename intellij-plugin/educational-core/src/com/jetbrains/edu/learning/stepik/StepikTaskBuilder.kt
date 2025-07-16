@@ -374,7 +374,7 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
     private const val DEFAULT_EDU_TASK_NAME = "Edu Task"
     private const val UNKNOWN_TASK_NAME = "Unknown"
     private val LOG = Logger.getInstance(StepikTaskBuilder::class.java)
-    val langAndVersionRegex = Regex("^([a-zA-Z+#]+)\\s?([.|0-9]+)\$")
+    val langAndVersionRegex = Regex("^([a-zA-Z+#]+)\\s?([.|0-9]+)$")
 
     private fun addPlaceholdersTexts(file: TaskFile) {
       val fileText = file.contents.textualRepresentation
