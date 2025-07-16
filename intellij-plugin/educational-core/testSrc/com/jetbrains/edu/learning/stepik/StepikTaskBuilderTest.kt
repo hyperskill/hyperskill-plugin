@@ -43,7 +43,7 @@ class StepikTaskBuilderTest : EduTestCase() {
       MockResponseFactory.fromString(
         when (path) {
           "/api/attempts?step=-1&user=-1" -> attemptsGet
-          else -> error("Wrong path: ${path}")
+          else -> error("Wrong path: $path")
         }
       )
     }

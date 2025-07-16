@@ -69,7 +69,7 @@ class HyperskillCheckSortingBasedTaskTest : HyperskillCheckActionTestBase() {
             submissionWithFailedStatus
           }
 
-          else -> error("Wrong path: ${path}")
+          else -> error("Wrong path: $path")
         },
         responseCode = HttpStatus.SC_OK
       )

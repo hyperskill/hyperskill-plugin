@@ -54,8 +54,8 @@ class YoutubeVideoLinkTest : EduTestCase() {
 
   private fun doTestGetYoutubeVideoId(link: String) {
     val id = link.getYoutubeVideoId()
-    assertTrue("Check containsYoutubeLink failed for link ${link}", link.containsYoutubeLink())
-    assertEquals("Failed to get video id for link ${link}", videoId, id)
+    assertTrue("Check containsYoutubeLink failed for link $link", link.containsYoutubeLink())
+    assertEquals("Failed to get video id for link $link", videoId, id)
   }
 
   private fun doTest(taskDescriptionWithVideo: String) {

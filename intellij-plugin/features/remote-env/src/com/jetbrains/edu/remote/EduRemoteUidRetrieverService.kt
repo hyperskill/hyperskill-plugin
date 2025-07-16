@@ -24,7 +24,7 @@ class EduRemoteUidRetrieverService(private val project: Project, private val sco
   private val checkInterval = 5.seconds
   private val isStarted = AtomicBoolean(false)
   private val fileWithUid: File
-    get() = File(System.getProperty(INFO_FILE_PATH_PROPERTY_NAME)?.toString() ?: INFO_FILE_PATH)
+    get() = File(System.getProperty(INFO_FILE_PATH_PROPERTY_NAME) ?: INFO_FILE_PATH)
 
   fun start() {
     val submissionsManager = SubmissionsManager.getInstance(project)

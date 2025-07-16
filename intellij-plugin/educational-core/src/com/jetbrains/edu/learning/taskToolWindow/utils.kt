@@ -107,7 +107,7 @@ fun processYoutubeLink(text: String, taskId: Int): String {
   for (element in videoElements) {
     val sourceElements = element.getElementsByTag(SOURCE)
     if (sourceElements.size != 1) {
-      LOG.warn("Incorrect number of youtube video sources for task ${taskId}")
+      LOG.warn("Incorrect number of youtube video sources for task $taskId")
       continue
     }
     val src = sourceElements.attr(SRC_ATTRIBUTE)
