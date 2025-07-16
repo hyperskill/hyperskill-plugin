@@ -32,7 +32,7 @@ open class MockNewStudyItemUi(
 
     val info = NewStudyItemInfo(
       name ?: model.suggestedName,
-      index ?: model.baseIndex + AFTER_DELTA,
+      index ?: (model.baseIndex + AFTER_DELTA),
       itemVariant.producer
     )
     callback(info) {

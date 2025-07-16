@@ -58,7 +58,13 @@ class CCChangeFileVisibilityTest : EduActionTestCase() {
     vararg paths: String,
     courseMode: CourseMode = CourseMode.EDUCATOR,
     pathPrefix: String = ""
-  ) = doTest(false, false, *paths, courseMode = courseMode, pathPrefix = pathPrefix)
+  ) = doTest(
+    shouldActionBeEnabled = false,
+    shouldOppositeActionBeEnabled = false,
+    paths = *paths,
+    courseMode = courseMode,
+    pathPrefix = pathPrefix
+  )
 
   private fun doTest(
     shouldActionBeEnabled: Boolean,

@@ -21,11 +21,8 @@ class ScalaSbtEduTaskChecker(
 ) : EduTaskCheckerBase(task, envChecker, project) {
   override fun createDefaultTestConfigurations(): List<RunnerAndConfigurationSettings> {
     val configurations = createTestConfigurationsForTestDirectories().filter { it.configuration.type == preferredConfigurationType }
-    return if (configurations.isEmpty()) {
+    return configurations.ifEmpty {
       task.getAllTestDirectories(project).map { createConfiguration(it) }
-    }
-    else {
-      configurations
     }
   }
 

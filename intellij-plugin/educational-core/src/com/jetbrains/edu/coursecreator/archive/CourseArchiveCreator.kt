@@ -158,7 +158,7 @@ class CourseArchiveCreator(
           baseMessage
         }
         else {
-          baseMessage + " " + EduCoreBundle.message(
+          "$baseMessage " + EduCoreBundle.message(
             "error.failed.to.generate.course.archive.io.exception.additional.message",
             exceptionMessage
           )
