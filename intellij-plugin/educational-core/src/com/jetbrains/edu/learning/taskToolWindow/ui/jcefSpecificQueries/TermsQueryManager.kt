@@ -4,21 +4,15 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.util.Disposer
-import com.intellij.ui.GotItComponentBuilder
-import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.intellij.util.Alarm
-import com.jetbrains.edu.learning.ai.terms.TermsInteractionListener
-import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.taskToolWindow.TERM_CLASS
-import com.jetbrains.edu.learning.taskToolWindow.ui.JsEventData
 import com.jetbrains.edu.learning.taskToolWindow.ui.canShowTerms
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.handler.CefLoadHandlerAdapter
-import java.awt.Point
 
 /**
  * Manages tooltips that display definitions of terms.
@@ -102,35 +96,7 @@ class TermsQueryManager private constructor(
   private fun showDefinitionOfTerm(data: String) {
     if (data.isBlank()) return
     disposeExistingTooltip()
-    val parsedData = JsEventData.fromJson(data) ?: return
-    val component = taskJBCefBrowser.component ?: return
-    val termTitle = parsedData.term
-
-    val definition = TermsProjectSettings.getInstance(project).getTaskTerms(task)?.find { it.value == termTitle }?.definition ?: return
-
-    val isBelowMiddle = parsedData.y < component.height / 2
-    val position = if (isBelowMiddle) Balloon.Position.below else Balloon.Position.above
-    val pointY = if (isBelowMiddle) parsedData.bottomOfTermRect else parsedData.topOfTermRect
-
-    val preferredPoint = Point(parsedData.x, pointY ?: parsedData.y)
-
-    gotItTooltip = GotItComponentBuilder(definition)
-      .showButton(false)
-      .build(this)
-      .apply {
-        show(RelativePoint(component, preferredPoint), position)
-      }
-    sendTermHoveredEvent(task)
-    alarm.cancelAllRequests()
-    alarm.addRequest({ sendTermViewedEvent(task) }, TERM_VIEW_DELAY)
-  }
-
-  private fun sendTermHoveredEvent(task: Task) {
-    project.messageBus.syncPublisher(TermsInteractionListener.TOPIC).termHovered(task)
-  }
-
-  private fun sendTermViewedEvent(task: Task) {
-    project.messageBus.syncPublisher(TermsInteractionListener.TOPIC).termViewed(task)
+    return
   }
 
   private fun disposeExistingTooltip() {
@@ -145,8 +111,6 @@ class TermsQueryManager private constructor(
   }
 
   companion object {
-    private const val TERM_VIEW_DELAY: Long = 2000L
-
     @JvmStatic
     fun getTermsQueryManager(project: Project, task: Task?, taskJBCefBrowser: JBCefBrowserBase): TermsQueryManager? {
       if (task == null || !canShowTerms(project, task)) return null

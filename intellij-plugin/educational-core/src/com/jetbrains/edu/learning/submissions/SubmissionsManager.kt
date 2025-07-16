@@ -169,17 +169,11 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
       val platformName = getPlatformName()
 
       taskToolWindowView.showLoadingSubmissionsPanel(platformName)
-      taskToolWindowView.showLoadingCommunityPanel(platformName)
       loadSubmissionsContent(course, submissionsProvider, loadSolutions)
       communitySubmissionsProvider?.loadCommunityContent(course)
 
       notifySubmissionsChanged()
     }, ProcessIOExecutorService.INSTANCE)
-  }
-
-  fun removeCommunitySubmission(taskId: Int, submissionId: Int) {
-    communitySubmissions[taskId]?.submissions?.removeIf { it.id == submissionId }
-    notifySubmissionsChanged()
   }
 
   fun loadCommunitySubmissions(task: Task) {
@@ -191,7 +185,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
       if (!isLoggedIn) return@thenApply
 
       val taskToolWindowView = TaskToolWindowView.getInstance(project)
-      taskToolWindowView.showLoadingCommunityPanel(getPlatformName())
       val taskId = task.id
       val result = communitySubmissionsProvider.loadCommunitySubmissions(course, task)
       if (result == null) {
@@ -213,7 +206,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
       if (!isLoggedIn) return@thenApply
 
       val taskToolWindowView = TaskToolWindowView.getInstance(project)
-      taskToolWindowView.showLoadingCommunityPanel(getPlatformName())
       val taskId = task.id
       val result = communitySubmissionsProvider.loadMoreCommunitySubmissions(course, task, latest, oldest)
       if (result == null) {

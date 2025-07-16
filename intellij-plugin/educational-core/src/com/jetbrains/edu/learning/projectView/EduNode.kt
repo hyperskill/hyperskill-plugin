@@ -9,7 +9,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleTextAttributes
-import com.jetbrains.edu.learning.ai.TranslationProjectSettings
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.projectView.CourseViewUtils.testPresentation
 import org.jetbrains.annotations.TestOnly
@@ -28,8 +27,7 @@ abstract class EduNode<T : StudyItem>(
   override fun updateImpl(data: PresentationData) {
     data.clearText()
     val item = item ?: return
-    val translatedName = TranslationProjectSettings.getInstance(project).getStudyItemTranslatedName(item)
-    val name = translatedName ?: item.presentableName
+    val name = item.presentableName
     val icon = CourseViewUtils.getIcon(item)
     data.addText(name, SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK))
     additionalInfo?.let { data.addText(" $additionalInfo", SimpleTextAttributes.GRAYED_ATTRIBUTES) }

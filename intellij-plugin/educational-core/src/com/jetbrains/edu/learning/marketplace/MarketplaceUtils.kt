@@ -4,8 +4,6 @@ package com.jetbrains.edu.learning.marketplace
 
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
-import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.JSON_FORMAT_VERSION
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -32,7 +30,3 @@ fun isRemoteUpdateFormatVersionCompatible(project: Project, remoteCourseFormatVe
   }
   return true
 }
-
-fun Project.isMarketplaceCourse(): Boolean = course?.isMarketplace == true
-
-fun Project.isMarketplaceStudentCourse(): Boolean = isMarketplaceCourse() && isStudentProject()

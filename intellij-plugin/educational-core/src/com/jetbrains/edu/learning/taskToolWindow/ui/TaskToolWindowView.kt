@@ -37,10 +37,6 @@ abstract class TaskToolWindowView(val project: Project) : EduTestAware {
   abstract fun updateTabs(task: Task? = null)
   abstract fun updateTab(tabType: TabType)
   abstract fun showLoadingSubmissionsPanel(platformName: String)
-  abstract fun showLoadingCommunityPanel(platformName: String)
-  abstract fun showMyTab()
-  abstract fun showCommunityTab()
-  abstract fun isCommunityTabShowing(): Boolean
   abstract fun readyToCheck()
   abstract fun scrollNavMap(task: Task?)
   abstract fun checkStarted(task: Task, startSpinner: Boolean = false)

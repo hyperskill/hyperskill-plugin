@@ -15,7 +15,6 @@ import com.intellij.util.Alarm
 import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.actions.CompareWithAnswerAction
-import com.jetbrains.edu.learning.actions.EduAIHintsUtils.getHintActionPresentation
 import com.jetbrains.edu.learning.checker.CheckUtils
 import com.jetbrains.edu.learning.checker.details.CheckDetailsView
 import com.jetbrains.edu.learning.courseFormat.CheckResult
@@ -24,9 +23,6 @@ import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.ext.canShowSolution
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.marketplace.isMarketplaceStudentCourse
-import com.jetbrains.edu.learning.marketplace.peekSolution.LinkToCommunitySolutionsPanel
-import com.jetbrains.edu.learning.marketplace.peekSolution.MarketplacePeekSolutionPanel
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.stepik.hyperskill.PostHyperskillProjectToGithub
@@ -105,13 +101,6 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
       }
     }
 
-    // Show peek solution and (or) community solutions for Marketplace student courses when task is not solved and AI Hints are unavailable
-    if (project.isMarketplaceStudentCourse() && !checkResult.isSolved && !getHintActionPresentation(project).isEnabled()) {
-      val communityLinkPanel =
-        if (task.canShowSolution()) MarketplacePeekSolutionPanel(project, task) else LinkToCommunitySolutionsPanel(project, task)
-      linksPanel.add(communityLinkPanel, BorderLayout.NORTH)
-    }
-
     return linksPanel
   }
 
@@ -126,7 +115,7 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
     }
 
     val peekSolution = when {
-      !task.canShowSolution() || (project.isMarketplaceStudentCourse() && !checkResult.isSolved) -> null
+      !task.canShowSolution() -> null
       project.isStudentProject() -> {
         val isExternal = task.course is HyperskillCourse
         val text = EduCoreBundle.message("label.peek.solution") + if (isExternal) "" else "..."

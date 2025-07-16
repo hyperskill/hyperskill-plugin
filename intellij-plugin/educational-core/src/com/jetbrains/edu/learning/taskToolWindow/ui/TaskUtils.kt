@@ -5,8 +5,6 @@ package com.jetbrains.edu.learning.taskToolWindow.ui
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
-import com.jetbrains.edu.learning.ai.TranslationProjectSettings
-import com.jetbrains.edu.learning.ai.terms.TheoryLookupSettings
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -16,7 +14,6 @@ import com.jetbrains.edu.learning.taskToolWindow.IMG_TAG
 import com.jetbrains.edu.learning.taskToolWindow.SCRIPT_TAG
 import com.jetbrains.edu.learning.taskToolWindow.SRC_ATTRIBUTE
 import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.StyleManager
-import com.jetbrains.educational.core.format.enum.TranslationLanguage
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -100,7 +97,5 @@ fun getSortingShortcutHTML(
 }
 
 fun canShowTerms(project: Project, task: Task): Boolean {
-  if (!TheoryLookupSettings.getInstance().isTheoryLookupEnabled) return false
-  val language = TranslationProjectSettings.getInstance(project).translationLanguage ?: return true
-  return language.code != TranslationLanguage.ENGLISH.code || language.code != task.course.languageCode
+  return false
 }

@@ -23,32 +23,24 @@ import com.intellij.ui.InlineBannerBase
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.util.maximumHeight
-import com.intellij.util.asSafely
 import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
-import com.jetbrains.edu.learning.ai.TranslationProjectSettings
-import com.jetbrains.edu.learning.ai.terms.TermsProjectSettings
-import com.jetbrains.edu.learning.ai.terms.TheoryLookupSettings
-import com.jetbrains.edu.learning.combineStateFlow
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
-import com.jetbrains.edu.learning.invokeLater
 import com.jetbrains.edu.learning.isHeadlessEnvironment
-import com.jetbrains.edu.learning.marketplace.isMarketplaceCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.stepik.hyperskill.metrics.HyperskillMetricsService
 import com.jetbrains.edu.learning.submissions.SubmissionsListener
 import com.jetbrains.edu.learning.submissions.SubmissionsManager
-import com.jetbrains.edu.learning.submissions.ui.MarketplaceSubmissionsTab
 import com.jetbrains.edu.learning.submissions.ui.SubmissionsTab
 import com.jetbrains.edu.learning.taskToolWindow.ui.check.CheckPanel
 import com.jetbrains.edu.learning.taskToolWindow.ui.navigationMap.NavigationMapAction
@@ -62,7 +54,6 @@ import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType.SUBMISSIONS_TAB
 import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TaskToolWindowTab
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.awt.BorderLayout
@@ -81,23 +72,16 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
     Disposer.register(this, tabManager)
 
     scope.launch {
-      TranslationProjectSettings.getInstance(project).translationProperties.collectLatest {
-        withContext(Dispatchers.EDT) {
-          updateHeaders()
-          updateTaskDescription()
-          ProjectView.getInstance(project).refresh()
-        }
+      withContext(Dispatchers.EDT) {
+        updateHeaders()
+        updateTaskDescription()
+        ProjectView.getInstance(project).refresh()
       }
     }
 
     scope.launch {
-      combineStateFlow(
-        TermsProjectSettings.getInstance(project).termsProperties,
-        TheoryLookupSettings.getInstance().theoryLookupProperties
-      ).collectLatest {
-        withContext(Dispatchers.EDT) {
-          updateTaskDescription()
-        }
+      withContext(Dispatchers.EDT) {
+        updateTaskDescription()
       }
     }
   }
@@ -140,39 +124,6 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
     ApplicationManager.getApplication().invokeLater {
       submissionsTab.showLoadingPanel(platformName)
     }
-  }
-
-  override fun showLoadingCommunityPanel(platformName: String) {
-    if (currentTask == null || !project.isMarketplaceCourse()) return
-
-    val submissionsTab = getSubmissionTab() ?: return
-    ApplicationManager.getApplication().invokeLater {
-      submissionsTab.asSafely<MarketplaceSubmissionsTab>()?.showLoadingCommunityPanel(platformName)
-    }
-  }
-
-  override fun showMyTab() {
-    if (!project.isMarketplaceCourse()) return
-
-    val submissionsTab = getSubmissionTab() ?: return
-    project.invokeLater {
-      submissionsTab.asSafely<MarketplaceSubmissionsTab>()?.showMyTab()
-    }
-  }
-
-  override fun showCommunityTab() {
-    if (!project.isMarketplaceCourse()) return
-
-    val submissionsTab = getSubmissionTab() ?: return
-    project.invokeLater {
-      submissionsTab.asSafely<MarketplaceSubmissionsTab>()?.showCommunityTab()
-    }
-  }
-
-  override fun isCommunityTabShowing(): Boolean {
-    if (!project.isMarketplaceCourse()) return false
-    val submissionsTab = getSubmissionTab() ?: return false
-    return submissionsTab.asSafely<MarketplaceSubmissionsTab>()?.isCommunityTabShowing() ?: false
   }
 
   private fun getSubmissionTab(): SubmissionsTab? = getTab(SUBMISSIONS_TAB) as? SubmissionsTab
@@ -219,14 +170,10 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
       return
     }
 
-    val translationSettings = TranslationProjectSettings.getInstance(project)
-
-    val translatedTaskName = translationSettings.getStudyItemTranslatedName(task)
-    taskName.text = translatedTaskName ?: task.presentableName
+    taskName.text = task.presentableName
 
     val lesson = task.lesson
-    val translatedLessonName = translationSettings.getStudyItemTranslatedName(lesson)
-    lessonHeader.setHeaderText(translatedLessonName ?: lesson.presentableName)
+    lessonHeader.setHeaderText(lesson.presentableName)
   }
 
   override fun updateTaskDescription() {

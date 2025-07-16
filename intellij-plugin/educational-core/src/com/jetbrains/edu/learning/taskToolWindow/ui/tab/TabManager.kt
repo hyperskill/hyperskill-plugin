@@ -9,12 +9,10 @@ import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
-import com.jetbrains.edu.learning.marketplace.isMarketplaceCourse
 import com.jetbrains.edu.learning.stepik.hyperskill.TheoryTab
 import com.jetbrains.edu.learning.stepik.hyperskill.TopicsTab
 import com.jetbrains.edu.learning.stepik.hyperskill.getRelatedTheoryTask
 import com.jetbrains.edu.learning.submissions.SubmissionsManager
-import com.jetbrains.edu.learning.submissions.ui.MarketplaceSubmissionsTab
 import com.jetbrains.edu.learning.submissions.ui.SubmissionsTab
 import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType.*
 
@@ -51,7 +49,7 @@ class TabManager(private val project: Project) : Disposable {
       DESCRIPTION_TAB -> DescriptionTab(project)
       THEORY_TAB -> TheoryTab(project)
       TOPICS_TAB -> TopicsTab(project)
-      SUBMISSIONS_TAB -> if (project.isMarketplaceCourse()) MarketplaceSubmissionsTab(project) else SubmissionsTab(project)
+      SUBMISSIONS_TAB -> SubmissionsTab(project)
     }
     Disposer.register(this, taskToolWindowTab)
     tabbedPane.addTab(tabType.tabName, taskToolWindowTab)
