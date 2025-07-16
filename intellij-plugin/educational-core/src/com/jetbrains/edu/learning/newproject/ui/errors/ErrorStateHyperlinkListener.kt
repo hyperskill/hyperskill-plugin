@@ -20,7 +20,6 @@ import com.jetbrains.edu.learning.authUtils.AuthorizationPlace
 import com.jetbrains.edu.learning.installAndEnablePlugin
 import com.jetbrains.edu.learning.newproject.ui.CoursesPanel
 import com.jetbrains.edu.learning.newproject.ui.coursePanel.CoursePanel
-import com.jetbrains.edu.learning.stepik.api.StepikConnector
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
 import javax.swing.JTextPane
 import javax.swing.event.HyperlinkEvent
@@ -45,7 +44,6 @@ class ErrorStateHyperlinkListener(private val parentDisposable: Disposable) : Hy
 
       is ErrorState.NotLoggedIn -> {
         // TODO: Update course list
-        StepikConnector.getInstance().doAuthorize(*postLoginActions, authorizationPlace = AuthorizationPlace.START_COURSE_DIALOG)
       }
 
       is ErrorState.JCEFRequired -> invokeSwitchUILibrary(coursePanel)

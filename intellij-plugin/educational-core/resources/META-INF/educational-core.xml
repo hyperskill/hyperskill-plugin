@@ -106,7 +106,6 @@
   </extensionPoints>
 
   <actions>
-    <action id="Educational.ImportLocalCourse" class="com.jetbrains.edu.learning.actions.ImportLocalCourseAction"/>
     <action id="Educational.Check" class="com.jetbrains.edu.learning.actions.CheckAction"/>
     <action id="Educational.Run"
             class="com.jetbrains.edu.learning.actions.RunTaskAction"
@@ -239,16 +238,12 @@
     </group>
 
     <action id="Educational.Educator.EditCourseFromArchive" class="com.jetbrains.edu.coursecreator.actions.CCEditCourseArchive"/>
-    <action id="Educational.Educator.StepikChangeHost"
-            class="com.jetbrains.edu.learning.stepik.changeHost.StepikChangeHost"
-            internal="true"/>
 
     <group id="Educational.LearnAndTeachFileMenu"
            class="com.jetbrains.edu.learning.newproject.LearnAndTeachFileMenuGroup"
            popup="true"
            icon="com.jetbrains.edu.EducationalCoreIcons.Actions.EduCourse">
       <reference ref="Educational.BrowseCourses"/>
-      <reference ref="Educational.Educator.NewCourse"/>
       <add-to-group group-id="FileOpenGroup" relative-to-action="OpenFile" anchor="after"/>
     </group>
     <action id="Educational.WatchTutorial" class="com.jetbrains.edu.learning.actions.LearnMoreAction">
@@ -308,13 +303,8 @@
     <applicationService serviceInterface="com.jetbrains.edu.learning.EduBrowser"
                         serviceImplementation="com.jetbrains.edu.learning.EduBrowser"
                         testServiceImplementation="com.jetbrains.edu.learning.MockEduBrowser"/>
-    <applicationService serviceInterface="com.jetbrains.edu.learning.stepik.api.StepikConnector"
-                        serviceImplementation="com.jetbrains.edu.learning.stepik.api.StepikConnectorImpl"
-                        testServiceImplementation="com.jetbrains.edu.learning.stepik.api.MockStepikConnector"/>
 
     <applicationService serviceImplementation="com.jetbrains.edu.coursecreator.settings.CCSettings"/>
-
-    <applicationService serviceImplementation="com.jetbrains.edu.learning.ai.terms.TheoryLookupSettings"/>
 
     <applicationService serviceInterface="com.jetbrains.edu.learning.courseGeneration.ProjectOpener"
                         serviceImplementation="com.jetbrains.edu.learning.courseGeneration.ProjectOpenerImpl"
@@ -406,7 +396,6 @@
     <statistics.applicationUsagesCollector implementation="com.jetbrains.edu.learning.statistics.EduStateUsagesCollector"/>
     <statistics.counterUsagesCollector implementationClass="com.jetbrains.edu.learning.statistics.EduCounterUsageCollector"/>
     <applicationService serviceImplementation="com.jetbrains.edu.learning.EduSettings"/>
-    <httpRequestHandler implementation="com.jetbrains.edu.learning.stepik.builtInServer.StepikRestService"/>
     <httpRequestHandler implementation="com.jetbrains.edu.learning.taskToolWindow.ui.EduToolsResourcesRequestHandler"/>
 
     <registryKey key="edu.course.update.check.interval"

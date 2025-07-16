@@ -8,7 +8,6 @@ import com.jetbrains.edu.learning.authUtils.TokenInfo
 import com.jetbrains.edu.learning.network.USER_AGENT
 import com.jetbrains.edu.learning.network.eduToolsUserAgent
 import com.jetbrains.edu.learning.stepik.StepikNames.getTokenUrl
-import com.jetbrains.edu.learning.stepik.api.StepikConnector
 import org.apache.commons.codec.binary.Base64
 import org.apache.http.Consts
 import org.apache.http.HttpStatus

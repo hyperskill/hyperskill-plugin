@@ -32,7 +32,6 @@ import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.stepik.api.StepikBasedConnector.Companion.getStepikBasedConnector
-import com.jetbrains.edu.learning.stepik.api.StepikConnector
 import com.jetbrains.edu.learning.xmlEscaped
 import com.jetbrains.rd.util.first
 import org.jetbrains.annotations.NonNls
@@ -175,19 +174,6 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
   }
 
   private fun ChoiceTask.fillForCourseCreatorMode() {
-    val choiceStep = StepikConnector.getInstance().getChoiceStepSource(stepId)
-    if (choiceStep != null) {
-      choiceStep.source?.let { choiceStepOptions ->
-        isMultipleChoice = choiceStepOptions.isMultipleChoice
-        choiceOptions = choiceStepOptions.options.map { ChoiceOption(it.text, it.choiceStatus) }
-      }
-      if (choiceStep.feedbackCorrect.isNotEmpty()) {
-        messageCorrect = choiceStep.feedbackCorrect
-      }
-      if (choiceStep.feedbackWrong.isNotEmpty()) {
-        messageIncorrect = choiceStep.feedbackWrong
-      }
-    }
     initTaskFiles(this)
   }
 

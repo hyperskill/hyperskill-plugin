@@ -12,7 +12,6 @@ import com.jetbrains.edu.learning.authUtils.deserializeOAuthAccount
 import com.jetbrains.edu.learning.authUtils.serialize
 import com.jetbrains.edu.learning.stepik.StepikUser
 import com.jetbrains.edu.learning.stepik.StepikUserInfo
-import com.jetbrains.edu.learning.stepik.api.StepikConnector
 import org.jdom.Element
 
 @State(name = "EduSettings", storages = [Storage("other.xml")])
@@ -27,12 +26,6 @@ class EduSettings : PersistentStateComponent<Element> {
     get() = _user
     set(user) {
       _user = user
-      if (user != null) {
-        StepikConnector.getInstance().notifyUserLoggedIn()
-      }
-      else {
-        StepikConnector.getInstance().notifyUserLoggedOut()
-      }
     }
 
   @Property

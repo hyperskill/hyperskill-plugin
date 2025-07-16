@@ -22,6 +22,7 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.STATUS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TEXT
 import com.jetbrains.edu.learning.json.mixins.NotImplementedInMixin
 import com.jetbrains.edu.learning.stepik.StepikNames
+import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
 import java.util.*
 
 const val IS_IDEA_COMPATIBLE = "is_idea_compatible"
@@ -220,4 +221,4 @@ class TaskFileTextDeserializer(vc: Class<*>? = null) : StdDeserializer<String>(v
   }
 }
 
-private val LOG: Logger = logger<StepikConnector>()
+private val LOG: Logger = logger<HyperskillConnector>()

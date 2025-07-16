@@ -398,7 +398,6 @@ class CourseAdditionalInfo : AdditionalInfo {
 }
 
 class LessonAdditionalInfo : AdditionalInfo {
-  // needed for com.jetbrains.edu.coursecreator.actions.stepik.hyperskill.GetHyperskillLesson
   @JsonProperty(ADDITIONAL_FILES)
   var additionalFiles: List<EduFile> = listOf()
 

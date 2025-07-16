@@ -59,7 +59,6 @@ interface StepikBasedConnector {
   companion object {
     fun Course.getStepikBasedConnector(): StepikBasedConnector {
       return when {
-        isStepikRemote -> StepikConnector.getInstance()
         this is HyperskillCourse -> HyperskillConnector.getInstance()
         else -> error("Wrong course type: ${course.itemType}")
       }

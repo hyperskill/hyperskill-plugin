@@ -23,7 +23,6 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
-import com.jetbrains.edu.learning.stepik.StepikNames.getStepikProfilePath
 
 @Suppress("DialogTitleCapitalization")
 fun showUpdateAvailableNotification(project: Project, updateAction: () -> Unit) {
@@ -42,5 +41,3 @@ fun showUpdateAvailableNotification(project: Project, updateAction: () -> Unit) 
     }
     .notify(project)
 }
-
-val StepikUser.profileUrl: String get() = "${getStepikProfilePath()}${userInfo.id}"

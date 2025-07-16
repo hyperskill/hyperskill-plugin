@@ -15,12 +15,10 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootModificationUtil
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.NlsActions
 import com.intellij.openapi.util.NlsContexts.Button
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
@@ -37,11 +35,8 @@ import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.marketplace.MarketplaceNotificationUtils.showLoginNeededNotification
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.stepik.api.StepikConnector
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
-import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import java.io.IOException
 import java.util.*
@@ -264,18 +259,6 @@ object CCUtils {
     })
   }
 
-  fun lessonFromDir(course: Course, lessonDir: VirtualFile, project: Project): Lesson? {
-    val parentDir = lessonDir.parent
-    if (parentDir != null && parentDir.name == project.courseDir.name) {
-      return course.getLesson(lessonDir.name)
-    }
-    else {
-      val sectionDir = lessonDir.parent ?: return null
-      val section = course.getSection(sectionDir.name) ?: return null
-      return section.getLesson(lessonDir.name)
-    }
-  }
-
   fun askToWrapTopLevelLessons(
     project: Project,
     course: EduCourse,
@@ -304,36 +287,5 @@ object CCUtils {
       }
       course.configurator?.courseBuilder?.refreshProject(project, RefreshCause.STRUCTURE_MODIFIED)
     }
-  }
-
-  private fun checkIfAuthorized(
-    project: Project,
-    failedActionTitle: String,
-    isLoggedIn: Boolean,
-    authAction: () -> Unit
-  ): Boolean {
-    val indicator = ProgressManager.getInstance().progressIndicator
-    indicator?.checkCanceled()
-
-    if (!isLoggedIn) {
-      showLoginNeededNotification(project, failedActionTitle) { authAction() }
-      return false
-    }
-    return true
-  }
-
-  fun checkIfAuthorizedToStepik(project: Project, @Nls(capitalization = Nls.Capitalization.Title) failedActionTitle: String): Boolean {
-    return checkIfAuthorized(project, failedActionTitle, EduSettings.isLoggedIn()) {
-      StepikConnector.getInstance().doAuthorize()
-    }
-  }
-
-  /**
-   * Use for actions with double naming only (e.g. [com.jetbrains.edu.coursecreator.actions.marketplace.MarketplacePushCourse],
-   * [com.jetbrains.edu.coursecreator.actions.stepik.hyperskill.PushHyperskillLesson])
-   * Concatenates upload and update action texts for action search in find actions
-   */
-  fun addGluingSlash(updateText: @NlsActions.ActionText String, uploadText: @NlsActions.ActionText String): String {
-    return "${updateText}/${uploadText}"
   }
 }
