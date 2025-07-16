@@ -2,15 +2,12 @@ package com.jetbrains.edu.learning.newproject.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.ui.DialogWrapperDialog
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.tree.TreeUtil
-import com.jetbrains.edu.coursecreator.actions.CCNewCourseAction
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.coursesStorage.CourseDeletedListener
 import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorageBase
@@ -24,7 +21,6 @@ import java.awt.FlowLayout
 import java.awt.Font
 import javax.swing.JPanel
 import javax.swing.JTree
-import javax.swing.ScrollPaneConstants
 import javax.swing.event.TreeSelectionListener
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeCellRenderer
@@ -41,11 +37,10 @@ class CoursesProvidersSidePanel(private val myCoursesProvider: MyCoursesProvider
   init {
     val panel = JPanel(BorderLayout())
     panel.add(tree, BorderLayout.CENTER)
-    panel.add(createCourseActionLink(), BorderLayout.SOUTH)
 
     setViewportView(panel)
-    horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-    verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER
+    horizontalScrollBarPolicy = HORIZONTAL_SCROLLBAR_NEVER
+    verticalScrollBarPolicy = VERTICAL_SCROLLBAR_NEVER
     preferredSize = JBUI.size(SCROLL_PANE_WIDTH, SCROLL_PANE_HEIGHT)
     border = JBUI.Borders.customLine(CoursePanel.DIVIDER_COLOR, 0, 0, 0, 1)
     val connection = ApplicationManager.getApplication().messageBus.connect(disposable)
@@ -75,19 +70,6 @@ class CoursesProvidersSidePanel(private val myCoursesProvider: MyCoursesProvider
       focusListeners.forEach { removeFocusListener(it) }
       treeExpansionListeners.forEach { removeTreeExpansionListener(it) }
       setSelectionRow(1)
-    }
-  }
-
-  private fun createCourseActionLink(): JPanel {
-    fun closeDialog() {
-      val dialog = UIUtil.getParentOfType(DialogWrapperDialog::class.java, this@CoursesProvidersSidePanel)
-      dialog?.dialogWrapper?.close(DialogWrapper.OK_EXIT_CODE)
-    }
-
-    val courseAction =
-      ToolbarActionWrapper(EduCoreBundle.lazyMessage("course.dialog.create.course"), CCNewCourseAction(onOKAction = ::closeDialog))
-    return createHyperlinkWithContextHelp(courseAction).apply {
-      border = JBUI.Borders.empty(12)
     }
   }
 
