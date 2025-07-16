@@ -106,7 +106,7 @@ abstract class LoginWidget<T : OAuthAccount<out UserInfo>>(
 
     val accountActionLabel = if (!isLoggedIn) {
       EduHyperlinkLabel(EduCoreBundle.message("account.widget.login"), true) {
-        connector.doAuthorize(Runnable { postLoginActions() }, authorizationPlace = AuthorizationPlace.WIDGET)
+        connector.doAuthorize({ postLoginActions() }, authorizationPlace = AuthorizationPlace.WIDGET)
         popup.closeOk(null)
       }
     }

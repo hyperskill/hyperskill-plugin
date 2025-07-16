@@ -242,7 +242,7 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
 
   private fun getPlatformName(): String = course?.getSubmissionsProvider()?.getPlatformName() ?: error("Failed to get platform Name")
 
-  fun doAuthorize() = course?.getSubmissionsProvider()?.doAuthorize(Runnable { prepareSubmissionsContentWhenLoggedIn() })
+  fun doAuthorize() = course?.getSubmissionsProvider()?.doAuthorize({ prepareSubmissionsContentWhenLoggedIn() })
 
   private fun loadSubmissionsContent(course: Course, submissionsProvider: SubmissionsProvider, loadSolutions: () -> Unit) {
     submissions.putAll(submissionsProvider.loadAllSubmissions(course))

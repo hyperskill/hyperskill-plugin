@@ -20,7 +20,7 @@ abstract class OAuthLoginOptions<T : OAuthAccount<out UserInfo>> : LoginOptions<
   override fun createAuthorizeListener(): HyperlinkAdapter =
     object : HyperlinkAdapter() {
       override fun hyperlinkActivated(e: HyperlinkEvent) {
-        connector.doAuthorize(Runnable { postLoginActions() }, authorizationPlace = AuthorizationPlace.SETTINGS)
+        connector.doAuthorize({ postLoginActions() }, authorizationPlace = AuthorizationPlace.SETTINGS)
       }
     }
 

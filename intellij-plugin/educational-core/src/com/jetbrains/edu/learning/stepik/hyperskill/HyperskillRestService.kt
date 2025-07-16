@@ -103,7 +103,7 @@ class HyperskillRestService : OAuthRestService(HYPERSKILL) {
   private fun withHyperskillAuthorization(userId: Int, action: () -> String?): String? {
     val connector = HyperskillConnector.getInstance()
     return if (!connector.isLoggedIn()) {
-      connector.doAuthorize(Runnable { action() })
+      connector.doAuthorize({ action() })
       null
     }
     else {
@@ -138,7 +138,7 @@ class HyperskillRestService : OAuthRestService(HYPERSKILL) {
         HyperskillSettings.INSTANCE.account = null
 
         // login
-        HyperskillConnector.getInstance().doAuthorize(Runnable { action() })
+        HyperskillConnector.getInstance().doAuthorize({ action() })
         null
       }
 
