@@ -3,16 +3,13 @@ package com.jetbrains.edu.learning.newproject.ui.errors
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
 import com.jetbrains.edu.learning.EduNames
-import com.jetbrains.edu.learning.EduSettings
 import com.jetbrains.edu.learning.compatibility.CourseCompatibility
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMENT
 import com.jetbrains.edu.learning.courseFormat.PluginInfo
 import com.jetbrains.edu.learning.courseFormat.ext.compatibility
 import com.jetbrains.edu.learning.courseFormat.ext.languageDisplayName
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.HyperskillCourseAdvertiser
 import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
@@ -20,7 +17,6 @@ import com.jetbrains.edu.learning.newproject.ui.errors.ErrorSeverity.*
 import com.jetbrains.edu.learning.newproject.ui.errors.ValidationMessageType.ERROR
 import com.jetbrains.edu.learning.newproject.ui.errors.ValidationMessageType.WARNING
 import com.jetbrains.edu.learning.newproject.ui.getRequiredPluginsMessage
-import com.jetbrains.edu.learning.stepik.StepikNames
 import com.jetbrains.edu.learning.stepik.hyperskill.settings.HyperskillSettings
 import com.jetbrains.edu.learning.ui.EduColors.errorTextForeground
 import com.jetbrains.edu.learning.ui.EduColors.warningTextForeground
@@ -70,8 +66,6 @@ sealed class ErrorState(
     errorTextForeground,
     false
   )
-
-  object StepikLoginRequired : LoginRequired(StepikNames.STEPIK)
 
   //TODO: remove it?
   object HyperskillLoginRequired : LoginRequired(EduNames.JBA)
@@ -154,15 +148,6 @@ sealed class ErrorState(
           CoursesStorage.getInstance().hasCourse(this) -> None
           this is HyperskillCourseAdvertiser -> if (HyperskillSettings.INSTANCE.account == null) HyperskillLoginNeeded else None
           this is HyperskillCourse -> if (HyperskillSettings.INSTANCE.account == null) HyperskillLoginRequired else None
-          this is EduCourse -> {
-            if (!isMarketplace && !isLoggedInToStepik()) {
-              if (isStepikLoginRequired(this)) StepikLoginRequired else NotLoggedIn
-            }
-            else {
-              None
-            }
-          }
-
           else -> None
         }
       }
@@ -185,10 +170,6 @@ sealed class ErrorState(
         ValidationMessage(EduCoreBundle.message("validation.plugins.disabled.or.not.installed.plugins"))
       }
     }
-
-    private fun isLoggedInToStepik(): Boolean = EduSettings.isLoggedIn()
-
-    private fun isStepikLoginRequired(selectedCourse: EduCourse): Boolean = selectedCourse is StepikCourse
 
   }
 }

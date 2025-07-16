@@ -488,7 +488,6 @@
     <configurator language="TEXT" courseType="Hyperskill"
                   implementationClass="com.jetbrains.edu.learning.stepik.hyperskill.PlainTextHyperskillConfigurator"/>
 
-    <optionsProvider instance="com.jetbrains.edu.learning.stepik.StepikOptions"/>
     <checkListener implementation="com.jetbrains.edu.learning.statistics.PostFeedbackCheckListener"/>
     <checkListener implementation="com.jetbrains.edu.coursecreator.validation.ValidationCheckListener"/>
     <coursesPlatformProviderFactory id="JetBrainsAcademy" order="first"

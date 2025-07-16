@@ -6,7 +6,6 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.coursecreator.AdditionalFilesUtils
 import com.jetbrains.edu.coursecreator.actions.stepik.hyperskill.GetHyperskillLesson
-import com.jetbrains.edu.coursecreator.actions.stepik.hyperskill.PushHyperskillLesson
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.InMemoryBinaryContents

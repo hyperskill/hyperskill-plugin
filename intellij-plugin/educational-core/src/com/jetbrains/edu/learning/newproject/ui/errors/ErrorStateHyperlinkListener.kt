@@ -43,7 +43,7 @@ class ErrorStateHyperlinkListener(private val parentDisposable: Disposable) : Hy
         HyperskillConnector.getInstance().doAuthorize(*postLoginActions, authorizationPlace = AuthorizationPlace.START_COURSE_DIALOG)
       }
 
-      is ErrorState.StepikLoginRequired, ErrorState.NotLoggedIn -> {
+      is ErrorState.NotLoggedIn -> {
         // TODO: Update course list
         StepikConnector.getInstance().doAuthorize(*postLoginActions, authorizationPlace = AuthorizationPlace.START_COURSE_DIALOG)
       }
@@ -109,4 +109,3 @@ class ErrorStateHyperlinkListener(private val parentDisposable: Disposable) : Hy
   }
 
 }
-
