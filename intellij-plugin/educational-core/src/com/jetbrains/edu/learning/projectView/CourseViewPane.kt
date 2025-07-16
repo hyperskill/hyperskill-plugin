@@ -178,7 +178,7 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
         return ArrayUtil.EMPTY_OBJECT_ARRAY
       }
       val elements = element.children
-      elements.forEach { node -> node.setParent(element) }
+      elements.forEach { node -> node.parent = element }
       return ArrayUtil.toObjectArray(elements)
     }
 
