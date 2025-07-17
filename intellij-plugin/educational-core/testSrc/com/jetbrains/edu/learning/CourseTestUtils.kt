@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.intellij.lang.Language
 import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.json.configureCourseMapper
 import com.jetbrains.edu.learning.json.getCourseMapper
@@ -21,7 +21,7 @@ import java.io.IOException
 import java.util.*
 
 @Throws(IOException::class)
-fun createCourseFromJson(pathToJson: String, courseMode: CourseMode, isEncrypted: Boolean = false): EduCourse {
+fun createCourseFromJson(pathToJson: String, courseMode: CourseMode, isEncrypted: Boolean = false): HyperskillCourse {
   val courseJson = File(pathToJson).readText()
   val courseMapper = getCourseMapper(object : FileContentsFactory {
     override fun createBinaryContents(file: EduFile) =
@@ -33,7 +33,7 @@ fun createCourseFromJson(pathToJson: String, courseMode: CourseMode, isEncrypted
   configureCourseMapper(courseMapper, isEncrypted)
   var objectNode = courseMapper.readTree(courseJson) as ObjectNode
   objectNode = migrate(objectNode)
-  return courseMapper.treeToValue(objectNode, EduCourse::class.java).apply {
+  return courseMapper.treeToValue(objectNode, HyperskillCourse::class.java).apply {
     this.courseMode = courseMode
   }
 }
@@ -44,15 +44,6 @@ private fun configureCourseMapper(courseMapper: ObjectMapper, isEncrypted: Boole
   courseMapper.addMixIn(Lesson::class.java, TestRemoteLessonMixin::class.java)
   courseMapper.addMixIn(Task::class.java, TestRemoteTaskMixin::class.java)
 }
-
-fun newCourse(courseLanguage: Language, courseMode: CourseMode = CourseMode.EDUCATOR, environment: String = ""): Course =
-  EduCourse().apply {
-    name = "Test Course"
-    description = "Test Description"
-    this.courseMode = courseMode
-    this.environment = environment
-    languageId = courseLanguage.id
-  }
 
 @Suppress("unused") // used for correct updateDate deserialization from json test data
 abstract class TestRemoteLessonMixin : RemoteLessonMixin() {

@@ -6,28 +6,17 @@ import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.JSON_FORMAT_VERSION
 import com.jetbrains.edu.learning.courseFormat.attempts.Attempt
-import com.jetbrains.edu.learning.courseFormat.attempts.DataTaskAttempt.Companion.toDataTaskAttempt
-import com.jetbrains.edu.learning.courseFormat.attempts.Dataset
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.TableTask
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.stepik.api.StepikBasedSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createChoiceTaskSubmission
 import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createCodeTaskSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createDataTaskSubmission
 import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createEduTaskSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createNumberTaskSubmission
 import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createRemoteEduTaskSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createSortingBasedTaskSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createStringTaskSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createTableTaskSubmission
 import com.jetbrains.edu.learning.submissions.getSolutionFiles
 import com.jetbrains.edu.learning.yaml.YamlMapper
 import org.junit.Test
-import java.util.*
 
 class HyperskillCreateSubmissionTest : EduTestCase() {
   private val hyperskillCourse: HyperskillCourse by lazy {
@@ -147,148 +136,6 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
       |  version: $JSON_FORMAT_VERSION
       |  language: $language
       |  code: $answer
-      |
-    """.trimMargin()
-    )
-  }
-
-  @Test
-  fun `test creating submission for choice task`() {
-    val task = hyperskillCourse.allTasks.find { it.id == 3 } as ChoiceTask
-    task.selectedVariants = mutableListOf(0)
-    val dataset = Dataset().apply {
-      options = task.choiceOptions.map { it.text }
-    }
-    val attempt = Attempt().apply {
-      id = 123
-      this.dataset = dataset
-    }
-
-    val submission = createChoiceTaskSubmission(task, attempt)
-    doTest(
-      submission, """
-      |attempt: 123
-      |reply:
-      |  version: $JSON_FORMAT_VERSION
-      |  choices:
-      |  - true
-      |  - false
-      |  - false
-      |
-    """.trimMargin()
-    )
-  }
-
-  @Test
-  fun `test creating submission for string task`() {
-    val attempt = Attempt().apply { id = 123 }
-    val answer = "answer"
-
-    val submission = createStringTaskSubmission(attempt, answer)
-    doTest(
-      submission, """
-      |attempt: 123
-      |reply:
-      |  version: $JSON_FORMAT_VERSION
-      |  text: $answer
-      |
-    """.trimMargin()
-    )
-  }
-
-  @Test
-  fun `test creating submission for number task`() {
-    val attempt = Attempt().apply { id = 123 }
-    val answer = 123.toString()
-
-    val submission = createNumberTaskSubmission(attempt, answer)
-    doTest(
-      submission, """
-      |attempt: 123
-      |reply:
-      |  version: $JSON_FORMAT_VERSION
-      |  number: $answer
-      |
-    """.trimMargin()
-    )
-  }
-
-  @Test
-  fun `test creating submission for data task`() {
-    val dataTaskAttempt = Attempt(123, Date(), 300).toDataTaskAttempt()
-    val answer = "answer"
-
-    val submission = createDataTaskSubmission(dataTaskAttempt, answer)
-    doTest(
-      submission, """
-      |attempt: 123
-      |reply:
-      |  version: $JSON_FORMAT_VERSION
-      |  file: $answer
-      |
-    """.trimMargin()
-    )
-  }
-
-  @Test
-  fun `test creating submission for sorting based task`() {
-    val attempt = Attempt().apply { id = 123 }
-
-    val ordering = intArrayOf(2, 0, 1)
-
-    val submission = createSortingBasedTaskSubmission(attempt, ordering)
-    doTest(
-      submission, """
-      |attempt: 123
-      |reply:
-      |  version: $JSON_FORMAT_VERSION
-      |  ordering:
-      |  - 2
-      |  - 0
-      |  - 1
-      |
-    """.trimMargin()
-    )
-  }
-
-  @Test
-  fun `test creating submission for table task`() {
-    val attempt = Attempt().apply { id = 123 }
-
-    val course = courseWithFiles {
-      lesson {
-        tableTask(rows = listOf("A", "B"), columns = listOf("1", "2", "3"))
-      }
-    }
-
-    val task = course.lessons.first().taskList.first() as TableTask
-
-    task.choose(0, 1)
-    task.choose(1, 2)
-
-    val submission = createTableTaskSubmission(attempt, task)
-    doTest(
-      submission, """
-      |attempt: 123
-      |reply:
-      |  version: $JSON_FORMAT_VERSION
-      |  choices:
-      |  - name_row: A
-      |    columns:
-      |    - name: 1
-      |      answer: false
-      |    - name: 2
-      |      answer: true
-      |    - name: 3
-      |      answer: false
-      |  - name_row: B
-      |    columns:
-      |    - name: 1
-      |      answer: false
-      |    - name: 2
-      |      answer: false
-      |    - name: 3
-      |      answer: true
       |
     """.trimMargin()
     )

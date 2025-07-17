@@ -14,7 +14,6 @@ import com.jetbrains.php.composer.ComposerUtils
 import com.jetbrains.php.composer.actions.ComposerInstallAction
 import com.jetbrains.php.composer.actions.ComposerOptionsManager
 import com.jetbrains.php.composer.execution.phar.PharComposerExecution
-import kotlin.String
 
 class PhpCourseProjectGenerator(
   builder: PhpCourseBuilder,

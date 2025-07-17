@@ -28,7 +28,6 @@ abstract class MoveHandlerTestBase(
       val mode = project.course?.courseMode
       val refactoringContext = when (mode) {
         CourseMode.STUDENT -> "in learner mode"
-        CourseMode.EDUCATOR -> "in educator mode"
         null -> "outside course project"
       }
 
@@ -71,10 +70,6 @@ abstract class MoveHandlerTestBase(
 
     // Check Move is not forbidden for course project in learner mode
     StudyTaskManager.getInstance(project).course = course
-    eduHandlers.checkMoveIsNotForbidden(element, target, context)
-
-    // Check Move is not forbidden for course project in educator mode
-    course.courseMode = CourseMode.EDUCATOR
     eduHandlers.checkMoveIsNotForbidden(element, target, context)
   }
 

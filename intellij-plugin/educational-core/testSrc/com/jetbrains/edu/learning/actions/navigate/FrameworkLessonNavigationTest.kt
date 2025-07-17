@@ -2,7 +2,6 @@ package com.jetbrains.edu.learning.actions.navigate
 
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
-import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.actions.PreviousTaskAction
@@ -12,8 +11,12 @@ import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
+import com.jetbrains.edu.learning.fileTree
+import com.jetbrains.edu.learning.findTask
+import com.jetbrains.edu.learning.getContainingTask
 import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import com.jetbrains.edu.learning.testAction
 import org.junit.Test
 
 // Note, `CodeInsightTestFixture#type` can trigger completion (e.g. it inserts paired `"`)
@@ -56,52 +59,6 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
         }
       }
     }
-    fileTree.assertEquals(rootDir, myFixture)
-  }
-
-  @Test
-  fun `test next no tests dir in marketplace course`() {
-    val course = courseWithFiles {
-      frameworkLesson {
-        eduTask {
-          taskFile("task1.kt")
-          taskFile("tests/test1.kt")
-        }
-        eduTask {
-          taskFile("task2.kt")
-          taskFile("tests/test2.kt")
-        }
-      }
-    }.apply { isMarketplace = true }
-
-    withVirtualFileListener(course) {
-      val task = course.findTask("lesson1", "task1")
-      task.openTaskFileInEditor("task1.kt")
-      myFixture.type("123")
-      task.status = CheckStatus.Solved
-      testAction(NextTaskAction.ACTION_ID)
-    }
-
-    val fileTree = fileTree {
-      dir("lesson1") {
-        dir("task") {
-          file("task2.kt")
-          dir("tests") {
-            file("test2.kt")
-          }
-        }
-        dir("task1") {
-          file("task.md")
-        }
-        dir("task2") {
-          file("task.md")
-        }
-      }
-    }
-    val task = course.findTask("lesson1", "task2")
-    val taskFile = task.getTaskFile("tests/test2.kt")
-    val file = taskFile?.getVirtualFile(project)
-    assertEmpty(file?.document?.text)
     fileTree.assertEquals(rootDir, myFixture)
   }
 
@@ -364,19 +321,6 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
         }
       }
     }.assertEquals(rootDir, myFixture)
-  }
-
-  @Test
-  fun `test navigation in CC mode`() {
-    val course = createFrameworkCourse(CourseMode.EDUCATOR)
-    val task1 = course.findTask("lesson1", "task1")
-    val task2 = course.findTask("lesson1", "task2")
-    val task3 = course.findTask("lesson1", "task3")
-
-    withVirtualFileListener(course) {
-      doTest(PreviousTaskAction.ACTION_ID, task1) { task2.openTaskFileInEditor("buzz.kt") }
-      doTest(NextTaskAction.ACTION_ID, task3) { task2.openTaskFileInEditor("buzz.kt") }
-    }
   }
 
   @Test

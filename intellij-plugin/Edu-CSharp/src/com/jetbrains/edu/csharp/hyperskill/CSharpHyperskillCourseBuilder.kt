@@ -4,7 +4,10 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.edu.csharp.CSharpLanguageSettings
 import com.jetbrains.edu.csharp.CSharpProjectSettings
 import com.jetbrains.edu.csharp.includeTopLevelDirsInCourseView
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.EduCourseBuilder
+import com.jetbrains.edu.learning.LanguageSettings
+import com.jetbrains.edu.learning.RefreshCause
+import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
 

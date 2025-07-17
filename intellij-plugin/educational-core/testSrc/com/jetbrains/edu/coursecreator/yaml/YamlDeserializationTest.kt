@@ -1,10 +1,9 @@
 package com.jetbrains.edu.coursecreator.yaml
 
-import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
-import com.intellij.util.ThrowableRunnable
-import com.jetbrains.edu.learning.EduNames
-import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMENT
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.CourseMode
+import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
+import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.ext.languageById
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
@@ -24,77 +23,9 @@ import com.jetbrains.edu.learning.yaml.YamlMapper.studentMapper
 import com.jetbrains.edu.learning.yaml.YamlTestCase
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
 import org.junit.Test
-import java.util.*
-import kotlin.test.assertContains
 
 
 class YamlDeserializationTest : YamlTestCase() {
-
-  @Test
-  fun `test course`() {
-    val name = "Test Course"
-    val language = "Russian"
-    val programmingLanguage = "Plain text"
-    val solutionsHidden = true
-    val firstLesson = "the first lesson"
-    val secondLesson = "the second lesson"
-    val yamlContent = """
-      |title: $name
-      |language: $language
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: $programmingLanguage
-      |solutions_hidden: $solutionsHidden
-      |content:
-      |- $firstLesson
-      |- $secondLesson
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertEquals(name, course.name)
-    assertEquals(language, course.humanLanguage)
-    assertEquals(programmingLanguage, course.languageById!!.displayName)
-    assertEquals(solutionsHidden, course.solutionsHidden)
-    assertNull(course.languageVersion)
-    assertNotNull(course.description)
-    assertEquals(DEFAULT_ENVIRONMENT, course.environment)
-    assertTrue(course is EduCourse)
-    assertEquals(listOf(firstLesson, secondLesson), course.items.map { it.name })
-    assertFalse(course.isMarketplace)
-  }
-
-  @Test
-  fun `test course with no content`() {
-    val yamlContent = """
-      |title: Test Course
-      |language: Russian
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: Plain text
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertTrue(course is EduCourse)
-    assertFalse(course.solutionsHidden)
-    assertEmpty(course.items)
-  }
-
-  @Test
-  fun `test course with environment`() {
-    val environment = EduNames.ANDROID
-    val yamlContent = """
-      |title: Test Course
-      |language: English
-      |programming_language: Plain text
-      |summary: |-
-      |  This is a course about string theory.
-      |environment: $environment
-      |content:
-      |- lesson1
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertEquals(environment, course.environment)
-  }
 
   @Test
   fun `test hyperskill course`() {
@@ -120,92 +51,6 @@ class YamlDeserializationTest : YamlTestCase() {
     assertEquals(language, course.humanLanguage)
     assertEquals(programmingLanguage, course.languageById!!.displayName)
     assertEquals(listOf(firstLesson, secondLesson), course.items.map { it.name })
-    assertFalse(course.isMarketplace)
-  }
-
-  @Test
-  fun `test stepik course`() {
-    val name = "Test Course"
-    val language = "Russian"
-    val programmingLanguage = "Plain text"
-    val firstLesson = "the first lesson"
-    val secondLesson = "the second lesson"
-    val yamlContent = """
-      |type: stepik
-      |title: $name
-      |language: $language
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: $programmingLanguage
-      |content:
-      |- $firstLesson
-      |- $secondLesson
-      |""".trimMargin()
-    val course = basicMapper().deserializeCourse(yamlContent) as StepikCourse
-    assertEquals(name, course.name)
-    assertEquals(language, course.humanLanguage)
-    assertEquals(programmingLanguage, course.languageById!!.displayName)
-    assertEquals(listOf(firstLesson, secondLesson), course.items.map { it.name })
-    assertFalse(course.isMarketplace)
-  }
-
-  @Test
-  fun `test course with language version`() {
-    val name = "Test Course"
-    val language = "Russian"
-    val programmingLanguage = "Plain text"
-    val programmingLanguageVersion = "1.42"
-    val yamlContent = """
-      |title: $name
-      |language: $language
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: $programmingLanguage
-      |programming_language_version: $programmingLanguageVersion
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertEquals(programmingLanguage, course.languageById!!.displayName)
-    assertEquals(programmingLanguageVersion, course.languageVersion)
-  }
-
-  @Test
-  fun `test course with link`() {
-    val name = "Test Course"
-    val language = "Russian"
-    val programmingLanguage = "Plain text"
-    val link = "https://course_link.com"
-    val yamlContent = """
-      |title: $name
-      |language: $language
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: $programmingLanguage
-      |feedback_link: $link
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertEquals(link, course.feedbackLink)
-  }
-
-  @Test
-  fun `test course with content tags`() {
-    val name = "Test Course"
-    val language = "Russian"
-    val programmingLanguage = "Plain text"
-    val contentTags = listOf("kotlin", "cycles")
-    val yamlContent = """
-      |title: $name
-      |language: $language
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: $programmingLanguage
-      |tags: $contentTags
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertEquals(contentTags, course.contentTags)
   }
 
   @Test
@@ -763,131 +608,6 @@ class YamlDeserializationTest : YamlTestCase() {
   }
 
   @Test
-  fun `test vendor with email`() {
-    val yamlContent = """
-      |title: Test Course
-      |language: Russian
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |vendor:
-      |  name: Jetbrains
-      |  email: academy@jetbrains.com
-      |programming_language: Plain text
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertTrue(course is EduCourse)
-    val vendor = course.vendor
-    checkNotNull(vendor)
-    assertEquals("Jetbrains", vendor.name)
-    assertEquals("academy@jetbrains.com", vendor.email)
-    assertNull(vendor.url)
-  }
-
-  @Test
-  fun `test vendor with url`() {
-    val yamlContent = """
-      |title: Test Course
-      |language: Russian
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |vendor:
-      |  name: Jetbrains
-      |  url: jetbrains.com
-      |programming_language: Plain text
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertTrue(course is EduCourse)
-    val vendor = course.vendor
-    checkNotNull(vendor)
-    assertEquals("Jetbrains", vendor.name)
-    assertEquals("jetbrains.com", vendor.url)
-    assertNull(vendor.email)
-  }
-
-  @Test
-  fun `test isMarketplace`() {
-    val yamlContent = """
-      |type: marketplace
-      |title: Test Course
-      |language: Russian
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: Plain text
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertTrue(course is EduCourse)
-    assertTrue(course.isMarketplace)
-  }
-
-  @Test
-  fun `test generatedEdId`() {
-    val generatedEduId = "generatedEduId"
-    val yamlContent = """
-      |type: marketplace
-      |title: Test Course
-      |language: Russian
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: Plain text
-      |generated_edu_id: $generatedEduId
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertTrue(course is EduCourse)
-    assertEquals(generatedEduId, (course as EduCourse).generatedEduId)
-  }
-
-  @Test
-  fun `test private course`() {
-    val yamlContent = """
-      |title: Test Course
-      |language: Russian
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |is_private: true
-      |programming_language: Plain text
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertTrue(course is EduCourse)
-    assertTrue(course.isMarketplacePrivate)
-  }
-
-  @Test
-  fun `test public course`() {
-    val yamlContent = """
-      |title: Test Course
-      |language: Russian
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: Plain text
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertTrue(course is EduCourse)
-    assertFalse(course.isMarketplacePrivate)
-  }
-
-  @Test
-  fun `test default courseVersion`() {
-    val yamlContent = """
-      |type: marketplace
-      |title: Test Course
-      |language: Russian
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: Plain text
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertTrue(course is EduCourse)
-    assertEquals(1, course.marketplaceCourseVersion)
-  }
-
-  @Test
   fun `test file visibility`() {
     val taskFileName = "Task.java"
     val testFileName = "Test.java"
@@ -953,28 +673,6 @@ class YamlDeserializationTest : YamlTestCase() {
   }
 
   @Test
-  fun `test non-english locale`() {
-    val defaultLocale = Locale.getDefault()
-    Locale.setDefault(Locale.KOREAN)
-    val yamlContent = """
-      |title: Test Course
-      |language: Russian
-      |summary: |-
-      |  This is a course about string theory.
-      |  Why not?"
-      |programming_language: Plain text
-      |content:
-      |- the first lesson
-      |- the second lesson
-      |""".trimMargin()
-
-    assertNoException(InvalidDefinitionException::class.java, ThrowableRunnable {
-      deserializeNotNull(yamlContent)
-    })
-    Locale.setDefault(defaultLocale)
-  }
-
-  @Test
   fun `test cc mode`() {
     val yamlContent = """
       |title: Test Course
@@ -1007,37 +705,6 @@ class YamlDeserializationTest : YamlTestCase() {
       |""".trimMargin()
 
     assertEquals(CourseMode.STUDENT, getCourseMode(yamlContent))
-  }
-
-  @Test
-  fun `test environment settings`() {
-    val yamlContent = """
-      |title: Test Course
-      |language: English
-      |summary: Test Course Description
-      |programming_language: Plain text
-      |content:
-      |- lesson1
-      |mode: Study
-      |environment_settings:
-      |  foo: bar
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertEquals(mapOf("foo" to "bar"), course.environmentSettings)
-  }
-
-  @Test
-  fun `test disabled features`() {
-    val yamlContent = """
-      |title: Test Course
-      |language: English
-      |summary: Test Course Description
-      |programming_language: Plain text
-      |disabled_features:
-      |- ai-hints
-      |""".trimMargin()
-    val course = deserializeNotNull(yamlContent)
-    assertContains(course.disabledFeatures, "ai-hints")
   }
 
   private fun deserializeNotNull(yamlContent: String): Course = basicMapper().deserializeCourse(yamlContent)

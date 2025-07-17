@@ -2,9 +2,7 @@ package com.jetbrains.edu.cpp.courseGeneration
 
 import com.jetbrains.cidr.lang.OCLanguage
 import com.jetbrains.edu.cpp.CppProjectSettings
-import com.jetbrains.edu.cpp.getExpectedTaskCMakeText
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
 import com.jetbrains.edu.learning.fileTree
 import org.junit.Test
@@ -12,84 +10,6 @@ import org.junit.Test
 class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
 
   override val defaultSettings = CppProjectSettings()
-
-  @Test
-  fun `test create new cc edu GoogleTest course`() {
-    val course = course(
-      language = OCLanguage.getInstance(),
-      courseMode = CourseMode.EDUCATOR,
-      environment = "GoogleTest"
-    ) { }
-    createCourseStructure(course)
-
-    fileTree {
-      dir("lesson1/task1") {
-        dir("src") {
-          file("task.cpp")
-        }
-        dir("test") {
-          file("test.cpp")
-        }
-        file("task.md")
-        file(
-          "CMakeLists.txt",
-          getExpectedTaskCMakeText(course, defaultSettings, "global-lesson1-task1")
-        )
-      }
-      dir("cmake") {
-        file("utils.cmake")
-        file("googletest.cmake")
-        file("googletest-download.cmake")
-      }
-      file("CMakeLists.txt")
-    }.assertEquals(rootDir)
-
-    assertListOfAdditionalFiles(
-      course,
-      "CMakeLists.txt" to null,
-      "cmake/utils.cmake" to null,
-      "cmake/googletest.cmake" to null,
-      "cmake/googletest-download.cmake" to null
-    )
-  }
-
-  @Test
-  fun `test create new cc edu Catch course`() {
-    val course = course(
-      language = OCLanguage.getInstance(),
-      courseMode = CourseMode.EDUCATOR,
-      environment = "Catch"
-    ) {}
-    createCourseStructure(course)
-
-    fileTree {
-      dir("lesson1/task1") {
-        dir("src") {
-          file("task.cpp")
-        }
-        dir("test") {
-          file("test.cpp")
-        }
-        file("task.md")
-        file(
-          "CMakeLists.txt",
-          getExpectedTaskCMakeText(course, defaultSettings, "global-lesson1-task1")
-        )
-      }
-      dir("cmake") {
-        file("utils.cmake")
-        file("catch.cmake")
-      }
-      file("CMakeLists.txt")
-    }.assertEquals(rootDir)
-
-    assertListOfAdditionalFiles(
-      course,
-      "CMakeLists.txt" to null,
-      "cmake/utils.cmake" to null,
-      "cmake/catch.cmake" to null
-    )
-  }
 
   @Test
   fun `test study edu course structure with top-level lesson`() {
@@ -116,7 +36,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
         dir("test") {
           file("test.cpp")
         }
-        file("task.md")
+        file("task.html")
         file("CMakeLists.txt")
       }
       file("CMakeLists.txt.in")
@@ -152,7 +72,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
         dir("test") {
           file("test.cpp")
         }
-        file("task.md")
+        file("task.html")
         file("CMakeLists.txt")
       }
       file("CMakeLists.txt.in")
@@ -195,7 +115,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
         dir("test") {
           file("test.cpp")
         }
-        file("task.md")
+        file("task.html")
         file("CMakeLists.txt")
       }
       dir("top_level_lesson/task") {
@@ -205,7 +125,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
         dir("test") {
           file("test.cpp")
         }
-        file("task.md")
+        file("task.html")
         file("CMakeLists.txt")
       }
       file("CMakeLists.txt.in")
@@ -250,7 +170,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
           dir("test") {
             file("test.cpp")
           }
-          file("task.md")
+          file("task.html")
           file("CMakeLists.txt")
         }
         dir("output") {
@@ -265,7 +185,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
           dir("src") {
             file("task.cpp")
           }
-          file("task.md")
+          file("task.html")
           file("CMakeLists.txt")
         }
       }

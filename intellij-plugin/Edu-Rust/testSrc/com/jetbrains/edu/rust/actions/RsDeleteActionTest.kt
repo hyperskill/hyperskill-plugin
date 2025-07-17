@@ -47,53 +47,6 @@ class RsDeleteActionTest : RsActionTestBase() {
   )
 
   @Test
-  fun `test delete last lesson with trailing comma`() {
-    val course = courseWithFiles(
-      courseMode = CourseMode.EDUCATOR,
-      language = RsLanguage
-    ) {
-      lesson("lesson1") {
-        eduTask("task1") {
-          rustTaskFile("main.rs")
-        }
-      }
-      lesson("lesson2") {
-        eduTask("task2") {
-          rustTaskFile("main.rs")
-        }
-      }
-      additionalFile(
-        "Cargo.toml", """
-        [workspace]
-        
-        members = [
-            "lesson1/*/",
-            "lesson2/*/",
-        ]
-        
-        exclude = [
-            "**/*.yaml"
-        ]
-      """.trimIndent()
-      )
-    }
-
-    doTest(
-      course, "lesson2", """
-        [workspace]
-        
-        members = [
-            "lesson1/*/",
-        ]
-        
-        exclude = [
-            "**/*.yaml"
-        ]
-    """
-    )
-  }
-
-  @Test
   fun `test delete section`() = doTest(
     createRustCourse(), "section1", """
       [workspace]
@@ -164,7 +117,7 @@ class RsDeleteActionTest : RsActionTestBase() {
 
   private fun createRustCourse(): Course {
     return courseWithFiles(
-      courseMode = CourseMode.EDUCATOR,
+      courseMode = CourseMode.STUDENT,
       language = RsLanguage
     ) {
       lesson("lesson1") {

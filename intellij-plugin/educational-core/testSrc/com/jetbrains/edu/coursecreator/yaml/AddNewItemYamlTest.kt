@@ -24,7 +24,7 @@ class AddNewItemYamlTest : YamlTestCase() {
   }
 
   override fun createCourse() {
-    courseWithFiles(courseMode = CourseMode.EDUCATOR, description = "test") {
+    courseWithFiles(courseMode = CourseMode.STUDENT, description = "test") {
       lesson("lesson1") {
         eduTask("task1") {
           taskFile("test1.txt")

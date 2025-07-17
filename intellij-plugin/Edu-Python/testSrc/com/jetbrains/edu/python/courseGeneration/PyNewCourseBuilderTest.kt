@@ -14,27 +14,6 @@ class PyNewCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {
   override val defaultSettings: PyProjectSettings = PyProjectSettings()
 
   @Test
-  fun `test new educator course`() {
-    val course = pythonCourse(CourseMode.EDUCATOR)
-    createCourseStructure(course)
-    fileTree {
-      dir("lesson1") {
-        dir("task1") {
-          file("__init__.py")
-          file("task.py")
-          file("task.md")
-          dir("tests") {
-            file("__init__.py")
-            file("test_task.py")
-          }
-        }
-      }
-    }.assertEquals(rootDir)
-
-    assertListOfAdditionalFiles(course)
-  }
-
-  @Test
   fun `test student course`() {
     val course = pythonCourse(CourseMode.STUDENT) {
       lesson("lesson1") {
@@ -71,7 +50,7 @@ class PyNewCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {
           file("__init__.py")
           file("file1.py")
           file("file2.py")
-          file("task.md")
+          file("task.html")
           dir("tests") {
             file("__init__.py")
             file("tests.py")
@@ -81,7 +60,7 @@ class PyNewCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {
           file("__init__.py")
           file("file3.py")
           file("file4.py")
-          file("task.md")
+          file("task.html")
           dir("tests") {
             file("__init__.py")
             file("tests1.py")
@@ -94,7 +73,7 @@ class PyNewCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {
           file("__init__.py")
           file("file5.py")
           file("file6.py")
-          file("task.md")
+          file("task.html")
           dir("tests") {
             file("__init__.py")
             file("tests.py")

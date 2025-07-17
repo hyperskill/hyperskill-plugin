@@ -39,16 +39,6 @@ class TaskDescriptionTest : EduTestCase() {
     assertEquals(expectedTextWithoutTags, taskDescription)
   }
 
-  @Test
-  fun `test hyperskill tags not removed`() {
-    val expectedTextWithTags = createCourseWithHyperskillTags(courseProducer = ::EduCourse)
-
-    val task = findTask(0, 0)
-    val taskDescription = task.getFormattedTaskText(project)
-
-    assertEquals(expectedTextWithTags, taskDescription)
-  }
-
   private fun createCourseWithHyperskillTags(courseProducer: () -> Course): String {
     val taskText = "text [ALERT-danger]danger[/ALERT] [HINT]hint[/HINT] [PRE]pre[/PRE] [META]meta[/META]"
 

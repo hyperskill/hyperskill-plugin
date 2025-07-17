@@ -6,7 +6,6 @@ import com.intellij.openapi.util.NlsContexts.LinkLabel
 import com.intellij.ui.components.AnActionLink
 import com.intellij.util.ui.JBUI
 import javax.swing.Icon
-import javax.swing.SwingConstants
 
 class LightColoredActionLink(
   @LinkLabel text: String,

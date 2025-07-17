@@ -9,7 +9,6 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
 import com.jetbrains.edu.learning.courseFormat.ext.CourseValidationResult
 import com.jetbrains.edu.learning.courseFormat.ext.PluginsRequired
 import com.jetbrains.edu.learning.courseFormat.tasks.AnswerTask
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.hasParams
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -126,55 +125,6 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
       }
       file("build.gradle")
       file("settings.gradle")
-    }
-    fileTree.assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)
-  }
-
-  @Test
-  fun `test open dataset problem without samples`() {
-    mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, HyperskillOpenStepWithProjectRequest(1, step14259.id, "TEXT"))
-    val fileTree = fileTree {
-      dir(HYPERSKILL_TOPICS) {
-        dir(step8139.title) {
-          dir(THEORY) {
-            file("Task.txt")
-            file("task.html")
-          }
-          dir(step8143.title) {
-            file("Task.txt")
-            file("task.html")
-          }
-          dir(step14259.title) {
-            file("Task.txt")
-            file("task.html")
-          }
-        }
-      }
-    }
-    fileTree.assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)
-  }
-
-  @Test
-  fun `test open dataset problem with samples`() {
-    mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, HyperskillOpenStepWithProjectRequest(1, step12164.id, "TEXT"))
-    val fileTree = fileTree {
-      dir(HYPERSKILL_TOPICS) {
-        dir(step10933.title) {
-          dir(THEORY) {
-            file("Task.txt")
-            file("task.html")
-          }
-          dir(step12164.title) {
-            dir(DataTask.DATA_FOLDER_NAME) {
-              dir(DataTask.DATA_SAMPLE_FOLDER_NAME) {
-                file(DataTask.INPUT_FILE_NAME)
-              }
-            }
-            file("Task.txt")
-            file("task.html")
-          }
-        }
-      }
     }
     fileTree.assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)
   }

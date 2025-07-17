@@ -1,15 +1,8 @@
 package com.jetbrains.edu.learning.courseGeneration
 
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
-import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.ext.getAllTestVFiles
-import com.jetbrains.edu.learning.courseFormat.ext.getDescriptionFile
-import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.fileTree
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
 import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
 import org.hamcrest.CoreMatchers.hasItem
@@ -39,84 +32,6 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
     assertThat(openFiles, hasItem(visible))
   }
 
-  @Test
-  fun `test substitute placeholder answers in CC mode`() {
-    val course = course(courseMode = CourseMode.EDUCATOR) {
-      lesson("lesson1") {
-        eduTask("task1") {
-          taskFile(
-            "TaskFile1.kt", """
-            fun foo(): String = <p>TODO()</p>
-            fun bar(): Int = <p>TODO()</p>
-            fun baz(): Boolean = <p>TODO()</p>
-          """
-          ) {
-            placeholder(0, "\"\"")
-            placeholder(1, "0")
-            placeholder(2, "false")
-          }
-        }
-      }
-    }
-    createCourseStructure(course)
-
-    fileTree {
-      dir("lesson1/task1") {
-        file(
-          "TaskFile1.kt", """
-          fun foo(): String = ""
-          fun bar(): Int = 0
-          fun baz(): Boolean = false
-        """
-        )
-        file("task.md")
-      }
-    }.assertEquals(rootDir)
-  }
-
-  @Test
-  fun `test opened files in CC mode`() {
-    val course = course(courseMode = CourseMode.EDUCATOR) {
-      lesson("lesson1") {
-        eduTask("task1") {
-          taskFile(
-            "TaskFile1.kt", """
-            fun foo(): String = <p>TODO()</p>
-            fun bar(): Int = <p>TODO()</p>
-            fun baz(): Boolean = <p>TODO()</p>
-          """
-          ) {
-            placeholder(0, "\"\"")
-            placeholder(1, "0")
-            placeholder(2, "false")
-          }
-        }
-      }
-    }
-    createCourseStructure(course)
-
-    fileTree {
-      dir("lesson1/task1") {
-        file(
-          "TaskFile1.kt", """
-          fun foo(): String = ""
-          fun bar(): Int = 0
-          fun baz(): Boolean = false
-        """
-        )
-        file("task.md")
-      }
-    }.assertEquals(rootDir)
-
-    val task = course.lessons[0].taskList[0]
-    val taskDir = task.getDir(project.courseDir)!!
-    val openFiles = FileEditorManagerEx.getInstanceEx(project).openFiles
-    openFiles.forEach { openFile ->
-      assertTrue(VfsUtil.isAncestor(taskDir, openFile, true))
-    }
-    assertContainsElements(openFiles.toList(), task.getAllTestVFiles(project))
-    assertContainsElements(openFiles.toList(), task.getDescriptionFile(project))
-  }
 
   @Test
   fun `test course preview not added to course storage`() {
@@ -125,9 +40,7 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
         eduTask("task1") {
         }
       }
-    } as EduCourse).apply {
-      isPreview = true
-    }
+    } as HyperskillCourse)
 
     createCourseStructure(coursePreview)
 

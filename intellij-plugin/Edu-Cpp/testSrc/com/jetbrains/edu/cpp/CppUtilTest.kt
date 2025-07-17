@@ -2,8 +2,8 @@ package com.jetbrains.edu.cpp
 
 import com.jetbrains.cmake.CMakeListsFileType
 import com.jetbrains.edu.learning.EduTestCase
-import org.hamcrest.text.IsEqualIgnoringCase
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.text.IsEqualIgnoringCase
 import org.junit.Test
 
 class CppUtilTest : EduTestCase() {

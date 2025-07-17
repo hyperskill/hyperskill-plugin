@@ -10,7 +10,6 @@ import com.jetbrains.edu.learning.authUtils.ConnectorUtils
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.attempts.Attempt
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikLesson
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderDependencyMixin
@@ -68,7 +67,6 @@ interface StepikBasedConnector {
 
     fun createObjectMapper(module: SimpleModule): ObjectMapper {
       val objectMapper = ConnectorUtils.createMapper()
-      objectMapper.addMixIn(StepikLesson::class.java, StepikLessonMixin::class.java)
       objectMapper.addMixIn(EduFile::class.java, StepikEduFileMixin::class.java)
       objectMapper.addMixIn(TaskFile::class.java, StepikTaskFileMixin::class.java)
       objectMapper.addMixIn(Task::class.java, StepikTaskMixin::class.java)

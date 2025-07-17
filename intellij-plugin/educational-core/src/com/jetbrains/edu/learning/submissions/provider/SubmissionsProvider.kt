@@ -18,7 +18,7 @@ interface SubmissionsProvider {
   fun loadSubmissions(tasks: List<Task>, courseId: Int): SubmissionsData
 
   fun loadCourseStateOnClose(project: Project, course: Course): Map<Int, Submission> = mapOf()
-  
+
   fun areSubmissionsAvailable(course: Course): Boolean
 
   fun isLoggedIn(): Boolean

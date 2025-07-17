@@ -1,6 +1,5 @@
 package com.jetbrains.edu.learning
 
-import com.google.common.collect.Lists
 import com.intellij.lang.Language
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.ComponentManagerEx
@@ -31,10 +30,10 @@ import com.jetbrains.edu.learning.configurators.FakeGradleConfigurator
 import com.jetbrains.edu.learning.configurators.FakeGradleHyperskillConfigurator
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.STEPIK
 import com.jetbrains.edu.learning.courseFormat.ext.customContentPath
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
@@ -70,7 +69,6 @@ abstract class EduTestCase : BasePlatformTestCase() {
     // for course with no files. This flag is checked in this method and it does nothing if the flag is false
     project.putUserData(YamlFormatSettings.YAML_TEST_PROJECT_READY, false)
     registerConfigurator<PlainTextConfigurator>(PlainTextLanguage.INSTANCE, courseType = HYPERSKILL)
-    registerConfigurator<PlainTextConfigurator>(PlainTextLanguage.INSTANCE, courseType = STEPIK)
     registerConfigurator<PlainTextConfigurator>(PlainTextLanguage.INSTANCE, environment = EduNames.ANDROID)
     registerConfigurator<FakeGradleConfigurator>(FakeGradleBasedLanguage)
     registerConfigurator<FakeGradleHyperskillConfigurator>(FakeGradleBasedLanguage, courseType = HYPERSKILL)
@@ -113,8 +111,8 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
   @Throws(IOException::class)
   protected open fun createCourse() {
-    val course = EduCourse()
-    course.name = "Edu test course"
+    val course = HyperskillCourse()
+    course.name = "Hyperskill test course"
     course.languageId = PlainTextLanguage.INSTANCE.id
     StudyTaskManager.getInstance(project).course = course
   }
@@ -190,14 +188,12 @@ abstract class EduTestCase : BasePlatformTestCase() {
     description: String = "Test Course Description",
     environment: String = "",
     language: Language = PlainTextLanguage.INSTANCE,
-    courseVendor: Vendor? = null,
-    courseProducer: () -> Course = ::EduCourse,
+    courseProducer: () -> Course = ::HyperskillCourse,
     createYamlConfigs: Boolean = false,
     customPath: String = "",
     buildCourse: CourseBuilder.() -> Unit
   ): Course {
     val course = course(name, language, description, environment, courseMode, courseProducer, buildCourse).apply {
-      vendor = courseVendor
       customContentPath = customPath
 
       initializeCourse(project, course)
@@ -266,45 +262,6 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
   protected inline fun withVirtualFileListener(course: Course, action: () -> Unit) {
     withVirtualFileListener(project, course, testRootDisposable, action)
-  }
-
-  protected fun Course.asRemote(courseMode: CourseMode = CourseMode.EDUCATOR): EduCourse {
-    var idCounter = 0
-
-    val remoteCourse = EduCourse()
-    remoteCourse.id = ++idCounter
-    remoteCourse.name = name
-    remoteCourse.courseMode = courseMode
-    remoteCourse.items = Lists.newArrayList(items)
-    remoteCourse.languageId = languageId
-    remoteCourse.languageVersion = languageVersion
-    remoteCourse.description = description
-    remoteCourse.additionalFiles = additionalFiles
-
-    for (item in remoteCourse.items) {
-      if (item is Section) {
-        item.id = ++idCounter
-        for (lesson in item.lessons) {
-          lesson.id = ++idCounter
-          for (task in lesson.taskList) {
-            task.id = ++idCounter
-          }
-        }
-      }
-
-      if (item is Lesson) {
-        item.id = ++idCounter
-        for (task in item.taskList) {
-          task.id = ++idCounter
-        }
-      }
-    }
-
-    remoteCourse.sectionIds = remoteCourse.sections.map { it.id }
-
-    remoteCourse.init(true)
-    StudyTaskManager.getInstance(project).course = remoteCourse
-    return remoteCourse
   }
 
   protected fun getTestFile(fileName: String) = testDataPath + fileName

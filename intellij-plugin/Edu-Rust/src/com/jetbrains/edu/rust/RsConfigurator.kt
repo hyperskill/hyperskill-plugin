@@ -5,9 +5,9 @@ import com.intellij.openapi.util.BuildNumber
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.edu.EducationalCoreIcons
 import com.jetbrains.edu.learning.EduCourseBuilder
-import com.jetbrains.edu.learning.configuration.attributesEvaluator.AttributesEvaluator
-import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
+import com.jetbrains.edu.learning.configuration.EduConfigurator
+import com.jetbrains.edu.learning.configuration.attributesEvaluator.AttributesEvaluator
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.PluginInfos
 import com.jetbrains.edu.learning.pluginVersion

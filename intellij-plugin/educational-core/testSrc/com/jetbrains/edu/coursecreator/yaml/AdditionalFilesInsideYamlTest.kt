@@ -5,6 +5,7 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import org.junit.Test
 import kotlin.test.assertContentEquals
 
@@ -24,7 +25,7 @@ class AdditionalFilesInsideYamlTest : EduTestCase() {
     }
 
     val course = project.course!!
-    StudyTaskManager.getInstance(project).course = EduCourse() // this course has no tasks
+    StudyTaskManager.getInstance(project).course = HyperskillCourse() // this course has no tasks
 
     val additionalFiles = collectAdditionalFiles(course.configurator, project, detectTaskFoldersByContents = true)
       .sortedBy { it.name }

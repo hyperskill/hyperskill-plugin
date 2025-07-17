@@ -66,7 +66,7 @@ class PlainTextCheckerTest : CheckersTestBase<EmptyProjectSettings>() {
           }
         }
       }
-    }.apply { isMarketplace = true }
+    }
   }
 
   @Test
@@ -82,26 +82,9 @@ class PlainTextCheckerTest : CheckersTestBase<EmptyProjectSettings>() {
   }
 
   @Test
-  fun `test test files content created and deleted in output task`() {
-    val outputTask = myCourse.allTasks.single { it.name == "OutputTask" }
-
-    val testFiles = outputTask.taskFiles.values.filter { false }
-    assertEquals(1, testFiles.size)
-    val taskDir = outputTask.getDir(project.courseDir) ?: error("No task dir found")
-    val testFile = testFiles[0]
-    val vTestFile = taskDir.findFileByRelativePath(testFile.name) ?: error("no virtual file found for the test file")
-
-    assertEmpty(vTestFile.document.text)
-    checkTask(outputTask)
-    assertEmpty(vTestFile.document.text)
-  }
-
-  @Test
   fun `test visible test files content is not change in edu task`() {
     val eduTask = myCourse.allTasks.first { it.name == "EduTaskWithVisibleTests" }
 
-    val testFiles = eduTask.taskFiles.values.filter { false }
-    assertEquals(0, testFiles.size)
     val taskDir = eduTask.getDir(project.courseDir) ?: error("No task dir found")
     val testFile = eduTask.taskFiles.values.single { EduUtilsKt.isTestsFile(eduTask, it.name) }
     val vTestFile = taskDir.findFileByRelativePath(testFile.name) ?: error("no virtual file found for the test file")

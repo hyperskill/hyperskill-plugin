@@ -39,7 +39,6 @@ class AdditionalFilesMigratorTest(
       course,
       { project ->
         // make YAML files to be of version 1, when additional files are not in course-info.yaml
-        val mode = if (courseMode == CourseMode.STUDENT) "mode: Study" else ""
         createFile(
           "course-info.yaml", """
           type: marketplace
@@ -49,7 +48,7 @@ class AdditionalFilesMigratorTest(
           content:
             - lesson1
           yaml_version: 1
-          $mode
+          mode: Study
           """
         )
         createFile(
@@ -118,8 +117,7 @@ class AdditionalFilesMigratorTest(
     fun data(): Collection<Any> {
 
       return listOf(
-        CourseMode.STUDENT,
-        CourseMode.EDUCATOR
+        CourseMode.STUDENT
       )
     }
   }

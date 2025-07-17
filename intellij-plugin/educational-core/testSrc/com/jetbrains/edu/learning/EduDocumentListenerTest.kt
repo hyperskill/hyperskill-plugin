@@ -14,6 +14,7 @@ import com.intellij.usages.UsageInfo2UsageAdapter
 import com.intellij.util.CommonProcessors
 import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.ext.getDocument
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import org.junit.Test
 import java.io.IOException
 
@@ -349,7 +350,7 @@ class EduDocumentListenerTest : EduTestCase() {
   @Throws(IOException::class)
   override fun createCourse() {
     myFixture.copyDirectoryToProject("lesson1", "lesson1")
-    val course = EduCourse()
+    val course = HyperskillCourse()
     course.name = "Edu test course"
     course.languageId = PlainTextLanguage.INSTANCE.id
     StudyTaskManager.getInstance(myFixture.project).course = course

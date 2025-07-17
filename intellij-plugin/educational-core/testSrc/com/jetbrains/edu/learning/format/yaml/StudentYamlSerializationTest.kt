@@ -32,6 +32,7 @@ class StudentYamlSerializationTest : EduTestCase() {
 
     doTest(
       course, """
+      |type: hyperskill
       |title: Test Course
       |language: English
       |summary: Test Course Description
@@ -644,6 +645,7 @@ class StudentYamlSerializationTest : EduTestCase() {
 
     doTest(
       course, """
+      |type: hyperskill
       |title: Test Course
       |language: English
       |summary: Test Course Description

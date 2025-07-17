@@ -27,17 +27,17 @@ class CourseWithCustomContentPathTest : EduTestCase() {
         dir("lesson1") {
           dir("task1") {
             file("Fizz.kt")
-            file("task.md")
+            file("task.html")
           }
           dir("task2") {
             file("Buzz.kt")
-            file("task.md")
+            file("task.html")
           }
         }
         dir("lesson2") {
           dir("task1") {
             file("FizzBuzz.kt")
-            file("task.md")
+            file("task.html")
           }
         }
       }
@@ -72,11 +72,11 @@ class CourseWithCustomContentPathTest : EduTestCase() {
           dir("lesson1") {
             dir("task1") {
               file("Fizz.kt")
-              file("task.md")
+              file("task.html")
             }
             dir("task2") {
               file("Buzz.kt")
-              file("task.md")
+              file("task.html")
             }
           }
         }
@@ -84,7 +84,7 @@ class CourseWithCustomContentPathTest : EduTestCase() {
           dir("lesson1") {
             dir("task1") {
               file("FizzBuzz.kt")
-              file("task.md")
+              file("task.html")
             }
           }
         }

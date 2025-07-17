@@ -5,10 +5,8 @@ import com.intellij.openapi.util.JDOMUtil
 import com.intellij.util.xmlb.SkipDefaultsSerializationFilter
 import com.intellij.util.xmlb.XmlSerializer
 import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.configuration.PlainTextConfigurator
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -28,24 +26,12 @@ open class CoursesInfosStorageTestBase : EduTestCase() {
     val coursesStorage = CoursesStorage.getInstance()
 
     val hyperskillCourse = hyperskillCourse(language = PlainTextLanguage.INSTANCE) {}
-    val eduCourse = course {}
-
     for ((course, configuratorClass) in listOf(
-      hyperskillCourse to PlainTextHyperskillConfigurator::class.java,
-      eduCourse to PlainTextConfigurator::class.java
+      hyperskillCourse to PlainTextHyperskillConfigurator::class.java
     )) {
       coursesStorage.addCourse(course, "location", 0, 0)
       assertInstanceOf(coursesStorage.getCourseMetaInfo(course)!!.toCourse().configurator, configuratorClass)
     }
-  }
-
-  @Test
-  fun testCourseModeRespected() {
-    val coursesStorage = CoursesStorage.getInstance()
-    val educatorCourse = course(courseMode = CourseMode.EDUCATOR) {}
-    coursesStorage.addCourse(educatorCourse, "", 0, 0)
-    val studentCourse = course {}
-    assertFalse(coursesStorage.hasCourse(studentCourse))
   }
 
   @Test
@@ -192,36 +178,6 @@ open class CoursesInfosStorageTestBase : EduTestCase() {
     val coursesStorage = CoursesStorage.getInstance()
     coursesStorage.state.courses.clear()
     return coursesStorage
-  }
-
-  @Test
-  fun testCCGroup() {
-    val coursesStorage = getCoursesStorage()
-    val educatorCourse = course(courseMode = CourseMode.EDUCATOR) {}
-    coursesStorage.addCourse(educatorCourse, "", 0, 0)
-    val coursesInGroups = coursesStorage.coursesInGroups()
-    assertSize(1, coursesInGroups)
-    assertEquals(EduCoreBundle.message("course.dialog.my.courses.course.creation"), coursesInGroups.first().name)
-  }
-
-  @Test
-  fun testAllCoursesGroups() {
-    val coursesStorage = getCoursesStorage()
-
-    val educatorCourse = course(name = "CC course", courseMode = CourseMode.EDUCATOR) {}
-    coursesStorage.addCourse(educatorCourse, "/CC course", 0, 0)
-
-    val inProgressCourse = course(name = "In Progress") {}
-    coursesStorage.addCourse(inProgressCourse, "/in_progress", 1, 10)
-
-    val completedCourse = course(name = "Completed") {}
-    coursesStorage.addCourse(completedCourse, "/completed", 10, 10)
-
-    val coursesInGroups = coursesStorage.coursesInGroups()
-    assertSize(3, coursesInGroups)
-    assertEquals(EduCoreBundle.message("course.dialog.my.courses.course.creation"), coursesInGroups.first().name)
-    assertEquals(EduCoreBundle.message("course.dialog.in.progress"), coursesInGroups[1].name)
-    assertEquals(EduCoreBundle.message("course.dialog.completed"), coursesInGroups[2].name)
   }
 
   protected fun doSerializationTest(course: Course) {

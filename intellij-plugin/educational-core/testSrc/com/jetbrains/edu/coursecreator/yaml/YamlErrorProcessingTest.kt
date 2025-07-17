@@ -39,24 +39,6 @@ class YamlErrorProcessingTest : YamlTestCase() {
   }
 
   @Test
-  fun `test invalid field value`() {
-    doTest(
-      """
-            |title: Test course
-            |language: wrong
-            |summary: |-
-            |  This is a course about string theory.
-            |  Why not?"
-            |programming_language: Plain text
-            |content:
-            |- the first lesson
-            |- the second lesson
-            |""".trimMargin(), YamlConfigSettings.COURSE_CONFIG,
-      "Unknown language \"wrong\"", InvalidYamlFormatException::class.java
-    )
-  }
-
-  @Test
   fun `test unexpected symbol`() {
     @Suppress("DEPRECATION")
     doTest(

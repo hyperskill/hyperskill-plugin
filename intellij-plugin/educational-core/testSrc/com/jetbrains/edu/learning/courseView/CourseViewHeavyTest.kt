@@ -28,7 +28,7 @@ class CourseViewHeavyTest : CourseViewHeavyTestBase() {
     PlatformTestUtil.assertTreeEqual(
       tree, """
       -Project
-       -CourseNode Edu test course  0/4
+       -CourseNode Edu test course
         -LessonNode lesson1
          -TaskNode task1
           taskFile1.txt

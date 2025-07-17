@@ -24,6 +24,7 @@ class StudentYamlDeserializationTest : EduTestCase() {
   @Test
   fun `test course mode`() {
     val yamlContent = """
+      |type: hyperskill
       |title: Test Course
       |mode: Study
       |language: Russian
@@ -35,21 +36,6 @@ class StudentYamlDeserializationTest : EduTestCase() {
     val course = studentMapper().deserializeCourse(yamlContent)
     assertNotNull(course)
     assertEquals(CourseMode.STUDENT, course.courseMode)
-  }
-
-  @Test
-  fun `test marketplace course type`() {
-    val yamlContent = """
-      |type: marketplace
-      |title: Test Course
-      |language: English
-      |summary: Test Course Description
-      |programming_language: Plain text
-      |mode: Study
-      |""".trimMargin()
-    val course = studentMapper().deserializeCourse(yamlContent)
-    assertNotNull(course)
-    assertTrue(course is EduCourse)
   }
 
   @Test
@@ -711,24 +697,6 @@ class StudentYamlDeserializationTest : EduTestCase() {
     """.trimMargin()
     ), expectedPlaceholderVisibility = false
   )
-
-  @Test
-  fun `test disabled features`() {
-    val course = studentMapper().deserializeCourse(
-      """
-      |title: Test Course
-      |mode: Study
-      |language: Russian
-      |summary: Test course
-      |programming_language: Plain text
-      |disabled_features:
-      |- ai-hints
-    """.trimMargin()
-    )
-
-    assertNotNull(course)
-    assertContainsElements(course.disabledFeatures, "ai-hints")
-  }
 
   private fun deserializeTask(yamlContent: String) = studentMapper().deserializeTask(yamlContent)
 }

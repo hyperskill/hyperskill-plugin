@@ -62,10 +62,6 @@ class TaskDescriptionInCourseLinksTest : TaskDescriptionLinksTestBase() {
     doTest("course://framework%20lesson%203/task3/TaskFile6.txt", "framework lesson 3/task/TaskFile6.txt")
 
   @Test
-  fun `test link to task file in current task of framework lesson in educator mode`() =
-    doTest("course://framework%20lesson%203/task3/TaskFile6.txt", "framework lesson 3/task3/TaskFile6.txt", CourseMode.EDUCATOR)
-
-  @Test
   fun `test link to task file in non current task of framework lesson`() = doTest("course://framework%20lesson%203/task4/TaskFile7.txt")
 
   @Test

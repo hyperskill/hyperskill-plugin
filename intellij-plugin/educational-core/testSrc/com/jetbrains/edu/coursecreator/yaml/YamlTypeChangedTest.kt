@@ -1,20 +1,12 @@
 package com.jetbrains.edu.coursecreator.yaml
 
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.Lesson
-import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.placeholder.PlaceholderPainter
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings.YAML_TEST_PROJECT_READY
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings.YAML_TEST_THROW_EXCEPTION
 import com.jetbrains.edu.learning.yaml.YamlTestCase
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
 import org.junit.Test
 
@@ -23,62 +15,6 @@ class YamlTypeChangedTest : YamlTestCase() {
   override fun setUp() {
     super.setUp()
     project.putUserData(YAML_TEST_PROJECT_READY, false)
-  }
-
-  override fun createCourse() {
-    courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson {
-        eduTask {
-          taskFile("test1.txt", text = "// <p>my</p> task file text") {
-            placeholder(0, "TODO")
-          }
-        }
-        choiceTask("choice", choiceOptions = mapOf("1" to ChoiceOptionStatus.CORRECT, "2" to ChoiceOptionStatus.CORRECT)) {
-          taskFile("test1.txt")
-        }
-      }
-    }
-  }
-
-  @Test
-  fun `test edu to choice task`() {
-    testTaskTypeChanged(ChoiceTask().itemType, ChoiceTask::class.java)
-  }
-
-  // EDU-1907
-  @Test
-  fun `test placeholders repainted`() {
-    // imitating opening task file and placeholders painting
-    val taskFile = findTaskFile(0, 0, "test1.txt")
-    myFixture.openFileInEditor(taskFile.getVirtualFile(project)!!)
-    PlaceholderPainter.showPlaceholders(project, taskFile)
-
-    // change task type and remove placeholders
-    testTaskTypeChanged(ChoiceTask().itemType, ChoiceTask::class.java)
-
-    // check that old placeholders not painted anymore
-    assertEquals(0, PlaceholderPainter.getPaintedPlaceholder().size)
-  }
-
-  @Test
-  fun `test choice to edu task`() {
-    testTaskTypeChanged(EduTask().itemType, EduTask::class.java)
-  }
-
-  @Test
-  fun `test lesson to framework lesson`() {
-    testLessonTypeChanged("framework", FrameworkLesson::class.java)
-  }
-
-  @Test
-  fun `test framework to lesson`() {
-    testLessonTypeChanged("lesson", Lesson::class.java)
-  }
-
-  @Test
-  fun `test edu to stepik course`() {
-    project.putUserData(YAML_TEST_THROW_EXCEPTION, false)
-    testCourseTypeChanged(YamlMixinNames.STEPIK_TYPE_YAML, StepikCourse::class.java)
   }
 
   @Test

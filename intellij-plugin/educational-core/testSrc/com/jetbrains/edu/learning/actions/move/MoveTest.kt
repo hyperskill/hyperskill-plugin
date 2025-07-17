@@ -1,7 +1,6 @@
 package com.jetbrains.edu.learning.actions.move
 
 import com.jetbrains.edu.learning.EduTestDialog
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.withEduTestDialog
@@ -163,52 +162,5 @@ class MoveTest : MoveTestBase() {
 
     assertNotNull(task1.getTaskFile(taskFileName))
     assertNull(task2.getTaskFile(taskFileName))
-  }
-
-  @Test
-  fun `test move task files in CC mode 1`() {
-    val lessonName = "lesson1"
-    val taskName = "task1"
-    val taskFileName = "taskFile1.txt"
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson(lessonName) {
-        eduTask(taskName) {
-          taskFile("src/$taskFileName")
-        }
-      }
-    }
-
-    val sourceFile = findPsiFile("$lessonName/$taskName/src/$taskFileName")
-    val targetDir = findPsiDirectory("$lessonName/$taskName")
-
-    doMoveAction(course, sourceFile, targetDir)
-    val task = course.findTask(lessonName, taskName)
-
-    assertNull(task.getTaskFile("src/$taskFileName"))
-    assertNotNull(task.getTaskFile(taskFileName))
-  }
-
-  @Test
-  fun `test move task files in CC mode 2`() {
-    val lessonName = "lesson1"
-    val taskName = "task1"
-    val taskFileName = "taskFile1.txt"
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson(lessonName) {
-        eduTask(taskName) {
-          taskFile(taskFileName)
-          taskFile("src/taskFile2.txt")
-        }
-      }
-    }
-
-    val sourceFile = findPsiFile("$lessonName/$taskName/$taskFileName")
-    val targetDir = findPsiDirectory("$lessonName/$taskName/src")
-
-    doMoveAction(course, sourceFile, targetDir)
-    val task = course.findTask(lessonName, taskName)
-
-    assertNull(task.getTaskFile(taskFileName))
-    assertNotNull(task.getTaskFile("src/$taskFileName"))
   }
 }

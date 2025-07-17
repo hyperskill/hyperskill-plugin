@@ -4,7 +4,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -21,7 +20,6 @@ class CheckActionListener : CheckListener {
   }
 
   private fun checkFeedbackEqualsWithCheckResult(task: Task, checkResult: CheckResult) {
-    if (task.course.courseMode == CourseMode.EDUCATOR) return
     val errorMessage = "Check result and saved feedback doesn't match for ${task.name}"
     val feedback = task.feedback ?: error("CheckFeedback should be filled out for ${task.lesson.name}/${task.name}")
     assertEquals(errorMessage, feedback.message, checkResult.message)

@@ -4,7 +4,6 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.courseFormat.CheckResultDiff
 import com.jetbrains.edu.learning.courseFormat.EduTestInfo
 import com.jetbrains.edu.learning.courseFormat.EduTestInfo.PresentableStatus.COMPLETED
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
@@ -14,15 +13,6 @@ class EduTestInfoTest(
   private val eduTestInfo: EduTestInfo,
   @Suppress("UNUSED_PARAMETER") testSuffix: String
 ) : EduTestCase() {
-  private val objectMapper by lazy { MarketplaceSubmissionsConnector.getInstance().objectMapper }
-
-  @Test
-  fun `test EduTestInfo serialization`() {
-    val serialized = objectMapper.writeValueAsString(eduTestInfo)
-    assertEquals(eduTestInfo.expectedJson(), serialized)
-  }
-
-  private fun EduTestInfo.expectedJson(): String = """{"name":"$name","status":$status}"""
 
   companion object {
     @JvmStatic

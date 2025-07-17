@@ -30,7 +30,7 @@ class ValidStudyItemNameTest(
     checkFileTree {
       dir("lesson name") {
         dir(expected) {
-          file("task.md")
+          file("task.html")
         }
       }
     }

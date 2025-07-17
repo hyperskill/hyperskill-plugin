@@ -4,6 +4,7 @@ import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.actions.RefreshAnswerPlaceholder
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.testAction
 import org.junit.Test
 import java.io.IOException
@@ -87,7 +88,7 @@ class RefreshPlaceholderTest : EduTestCase() {
   @Throws(IOException::class)
   override fun createCourse() {
     myFixture.copyDirectoryToProject("lesson1", "lesson1")
-    val course = EduCourse()
+    val course = HyperskillCourse()
     course.name = "Edu test course"
     course.languageId = PlainTextLanguage.INSTANCE.id
     StudyTaskManager.getInstance(myFixture.project).course = course

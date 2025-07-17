@@ -3,7 +3,6 @@ package com.jetbrains.edu.learning.newproject.ui.coursePanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.learning.newproject.ui.GrayTextHtmlPanel
-import javax.swing.ScrollPaneConstants
 
 
 private const val INFO_PANEL_TOP_OFFSET = 7

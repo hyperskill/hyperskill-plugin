@@ -3,7 +3,6 @@ package com.jetbrains.edu.rust.learn
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.jetbrains.edu.learning.configuration.CourseCantBeStartedException

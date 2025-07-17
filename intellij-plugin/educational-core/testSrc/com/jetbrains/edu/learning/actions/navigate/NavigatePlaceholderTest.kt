@@ -5,6 +5,7 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.actions.NextPlaceholderAction
 import com.jetbrains.edu.learning.actions.PrevPlaceholderAction
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.testAction
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
@@ -99,7 +100,7 @@ class NavigatePlaceholderTest : EduTestCase() {
   override fun createCourse() {
     myFixture.copyDirectoryToProject("lesson1", "lesson1")
     myFixture.copyDirectoryToProject("lesson2", "lesson2")
-    val course = EduCourse()
+    val course = HyperskillCourse()
     course.name = "Edu test course"
     course.languageId = PlainTextLanguage.INSTANCE.id
     StudyTaskManager.getInstance(project).course = course

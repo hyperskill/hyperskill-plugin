@@ -28,7 +28,7 @@ class CourseViewTest : CourseViewTestBase() {
 
     val structure = """
                     -Project
-                     -CourseNode Edu test course  0/4
+                     -CourseNode Edu test course
                       -LessonNode lesson1
                        +TaskNode task1
                        +TaskNode task2
@@ -65,7 +65,7 @@ class CourseViewTest : CourseViewTestBase() {
 
     val structure = """
                     -Project
-                     +CourseNode Edu test course  0/2
+                     +CourseNode Edu test course
                     """.trimIndent()
     PlatformTestUtil.assertTreeEqual(pane.tree, structure)
 
@@ -103,7 +103,7 @@ class CourseViewTest : CourseViewTestBase() {
 
     val structure = """
                     -Project
-                     -CourseNode Edu test course  1/4
+                     -CourseNode Edu test course
                       -LessonNode lesson1
                        -TaskNode task1
                         taskFile1.txt
@@ -150,7 +150,7 @@ class CourseViewTest : CourseViewTestBase() {
 
       val structure = """
                       -Project
-                       -CourseNode Edu test course  1/2
+                       -CourseNode Edu test course
                         -LessonNode lesson2
                          -TaskNode task1
                           taskFile2.txt
@@ -175,7 +175,7 @@ class CourseViewTest : CourseViewTestBase() {
 
     val structure = """
                     -Project
-                     -CourseNode Edu test course  0/4
+                     -CourseNode Edu test course
                       -IntermediateDirectoryNode some
                        -IntermediateDirectoryNode path
                         -LessonNode lesson1

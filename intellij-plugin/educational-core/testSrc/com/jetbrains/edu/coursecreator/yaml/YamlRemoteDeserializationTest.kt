@@ -18,38 +18,6 @@ import org.junit.Test
 import java.util.*
 
 class YamlRemoteDeserializationTest : YamlTestCase() {
-
-  @Test
-  fun `test course`() {
-    val id = 1
-    val yamlText = """
-    |id: $id
-    |update_date: Thu, 01 Jan 1970 00:00:00 UTC
-    |default_section: $id
-    |""".trimMargin()
-
-    val configFile = createConfigFile(yamlText, REMOTE_COURSE_CONFIG)
-    val course = YamlDeserializer.deserializeRemoteItem(configFile.name, VfsUtil.loadText(configFile)) as EduCourse
-    assertEquals(1, course.id)
-    assertEquals(Date(0), course.updateDate)
-    assertEquals(listOf(1), course.sectionIds)
-  }
-
-  @Test
-  fun `test marketplace course`() {
-    val id = 1
-    val yamlText = """
-    |id: $id
-    |course_version: 5
-    |default_section: $id
-    |""".trimMargin()
-
-    val configFile = createConfigFile(yamlText, REMOTE_COURSE_CONFIG)
-    val course = YamlDeserializer.deserializeRemoteItem(configFile.name, VfsUtil.loadText(configFile)) as EduCourse
-    assertEquals(1, course.id)
-    assertEquals(5, course.marketplaceCourseVersion)
-  }
-
   @Test
   fun `test hyperskill project`() {
     val id = 15
@@ -97,21 +65,6 @@ class YamlRemoteDeserializationTest : YamlTestCase() {
     assertEquals(expected.id, actual.id)
     assertEquals(expected.stepId, actual.stepId)
     assertEquals(expected.isCompleted, actual.isCompleted)
-  }
-
-  @Test
-  fun `test course without top-level lessons`() {
-    val id = 1
-    val yamlText = """
-    |id: $id
-    |update_date: Thu, 01 Jan 1970 00:00:00 UTC
-    |""".trimMargin()
-
-    val configFile = createConfigFile(yamlText, REMOTE_COURSE_CONFIG)
-    val course = YamlDeserializer.deserializeRemoteItem(configFile.name, VfsUtil.loadText(configFile)) as EduCourse
-    assertEquals(1, course.id)
-    assertEquals(Date(0), course.updateDate)
-    assertTrue(course.sectionIds.isEmpty())
   }
 
   @Test
@@ -184,7 +137,7 @@ class YamlRemoteDeserializationTest : YamlTestCase() {
     |""".trimMargin()
 
     val configFile = createConfigFile(yamlText, REMOTE_COURSE_CONFIG)
-    val course = YamlDeserializer.deserializeRemoteItem(configFile.name, VfsUtil.loadText(configFile)) as EduCourse
+    val course = YamlDeserializer.deserializeRemoteItem(configFile.name, VfsUtil.loadText(configFile)) as HyperskillCourse
     assertEquals(1, course.id)
     assertEquals(Date(1000), course.updateDate)
   }

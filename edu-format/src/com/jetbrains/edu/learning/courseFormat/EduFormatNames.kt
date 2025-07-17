@@ -73,7 +73,6 @@ object EduFormatNames {
   const val HYPERSKILL = "Hyperskill"
 
   // stepik
-  const val STEPIK = "Stepik"
   const val ATTEMPT = "attempt"
   const val CHECK_PROFILE = "check_profile"
 

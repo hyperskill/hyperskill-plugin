@@ -37,7 +37,7 @@ class JNodesTests : CourseViewTestBase() {
     assertCourseView(
       """
       |-Project
-      | -CourseNode Test Course  0/2
+      | -CourseNode Test Course
       |  -LessonNode lesson1
       |   -TaskNode task1
       |    -DirectoryNode src

@@ -3,7 +3,6 @@ package com.jetbrains.edu.learning.actions.taskFile
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.ReadOnlyModificationException
 import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.document
 import org.junit.Test
 
@@ -29,33 +28,6 @@ class ChangeFileEditableTest : EduTestCase() {
       mustBeEditable = false
     )
 
-    checkEditabilityOfFile(
-      path = "lesson1/task/editableFile.txt",
-      initialTextInTask = initialTextInEditableFile,
-      mustBeEditable = true
-    )
-  }
-
-
-  @Test
-  fun `test check editability of any file in task for educator course`() {
-    val initialTextInNonEditableFile = "text in nonEditableFile"
-    val initialTextInEditableFile = "text in editableFile"
-
-    courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson("lesson1") {
-        eduTask("task") {
-          taskFile("nonEditableFile.txt", text = initialTextInNonEditableFile, editable = false)
-          taskFile("editableFile.txt", text = initialTextInEditableFile)
-        }
-      }
-    }
-
-    checkEditabilityOfFile(
-      path = "lesson1/task/nonEditableFile.txt",
-      initialTextInTask = initialTextInNonEditableFile,
-      mustBeEditable = true
-    )
     checkEditabilityOfFile(
       path = "lesson1/task/editableFile.txt",
       initialTextInTask = initialTextInEditableFile,

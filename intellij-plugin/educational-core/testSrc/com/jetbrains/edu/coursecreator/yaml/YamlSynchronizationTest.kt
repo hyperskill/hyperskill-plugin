@@ -5,7 +5,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings
 import com.jetbrains.edu.learning.yaml.YamlFormatSettings
@@ -13,16 +12,6 @@ import com.jetbrains.edu.learning.yaml.YamlTestCase
 import org.junit.Test
 
 class YamlSynchronizationTest : YamlTestCase() {
-
-  override fun createCourse() {
-    courseWithFiles(courseMode = CourseMode.EDUCATOR, description = "test") {
-      section {
-        lesson {
-          eduTask()
-        }
-      }
-    }
-  }
 
   @Test
   fun `test invalid config file`() {

@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.CourseMode.Companion.toCourseMode
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikLesson
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask.Companion.CODE_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.DataTask.Companion.DATA_TASK_TYPE
@@ -115,7 +114,6 @@ object YamlDeserializer {
     val type = asText(treeNode.get(YamlMixinNames.TYPE))
     val clazz = when (type) {
       FrameworkLesson().itemType -> FrameworkLesson::class.java
-      StepikLesson().itemType -> StepikLesson::class.java
       null, Lesson().itemType -> Lesson::class.java
       else -> formatError(unsupportedItemTypeMessage(type, LESSON))
     }

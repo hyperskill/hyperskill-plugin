@@ -150,7 +150,7 @@ class YamlMigrationTest : EduTestCase() {
     ) {
       val migratedCourse = loadCourse(project) ?: kotlin.test.fail("failed to load course")
 
-      assertEquals(migratedCourse.allTasks[0].presentableName, "task-info.yaml,task.md")
+      assertEquals(migratedCourse.allTasks[0].presentableName, "task-info.yaml,task.html")
     }
   }
 

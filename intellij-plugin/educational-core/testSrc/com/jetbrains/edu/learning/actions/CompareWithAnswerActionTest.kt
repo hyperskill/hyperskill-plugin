@@ -9,7 +9,6 @@ import com.jetbrains.edu.learning.EduActionTestCase
 import com.jetbrains.edu.learning.EduBrowser
 import com.jetbrains.edu.learning.MockEduBrowser
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.stepik.hyperskill.HYPERSKILL_SOLUTIONS_ANCHOR
 import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
 import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillTaskLink
@@ -36,19 +35,6 @@ class CompareWithAnswerActionTest : EduActionTestCase() {
 
     val mockEduBrowser = EduBrowser.getInstance() as MockEduBrowser
     assertEquals("${hyperskillTaskLink(findTask(0, 0))}$HYPERSKILL_SOLUTIONS_ANCHOR", mockEduBrowser.lastVisitedUrl)
-  }
-
-  @Test
-  fun `test disabled in educator mode`() {
-    courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson {
-        eduTask {
-          taskFile("task.txt", "task file text")
-        }
-      }
-    }
-
-    doTestDisabled()
   }
 
   @Test

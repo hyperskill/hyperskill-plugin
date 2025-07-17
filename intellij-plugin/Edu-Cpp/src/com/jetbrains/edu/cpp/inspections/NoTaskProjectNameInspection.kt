@@ -10,12 +10,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.jetbrains.cmake.CMakeListsFileType
 import com.jetbrains.cmake.psi.CMakeVisitor
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.cpp.findCMakeCommand
 import com.jetbrains.edu.cpp.getCMakeProjectName
 import com.jetbrains.edu.cpp.messages.EduCppBundle
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.getTaskFile
 import org.jetbrains.annotations.Nls
 
 class NoTaskProjectNameInspection : LocalInspectionTool() {

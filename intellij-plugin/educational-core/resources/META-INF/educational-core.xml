@@ -197,7 +197,6 @@
 
     <group id="Educational.CheckPanel.Right">
       <reference ref="Educational.RefreshTask"/>
-      <reference ref="Educational.LeaveInIdeFeedbackAction"/>
       <reference ref="Educational.LeaveFeedbackAction"/>
     </group>
 

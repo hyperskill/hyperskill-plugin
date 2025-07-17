@@ -18,7 +18,6 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JTree
 import javax.swing.ScrollPaneConstants
-import javax.swing.SwingConstants
 import javax.swing.event.TreeModelEvent
 import javax.swing.tree.DefaultMutableTreeNode
 

@@ -4,17 +4,18 @@ import com.intellij.sql.psi.SqlLanguage
 import com.jetbrains.edu.learning.CourseBuilder
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 
 fun sqlCourse(
   courseMode: CourseMode = CourseMode.STUDENT,
   testLanguage: SqlTestLanguage = SqlTestLanguage.KOTLIN,
   buildCourse: CourseBuilder.() -> Unit
-): EduCourse {
+): HyperskillCourse {
   return course(
     language = SqlLanguage.INSTANCE,
     courseMode = courseMode,
     buildCourse = buildCourse
   ).apply {
     sqlTestLanguage = testLanguage
-  } as EduCourse
+  } as HyperskillCourse
 }

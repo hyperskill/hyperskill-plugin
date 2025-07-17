@@ -62,16 +62,6 @@ class HyperskillPostToSocialNetworksTest : EduActionTestCase() {
     }
 
   @Test
-  fun `test do not show dialog in course creator mode`() =
-    doTest(lessonName = "Project", taskName = "Task2", createCourse = { createHyperskillCourse(CourseMode.EDUCATOR) }) { course, task ->
-      (course as HyperskillCourse).getProjectLesson()?.visitTasks {
-        if (it != task) {
-          it.status = CheckStatus.Solved
-        }
-      }
-    }
-
-  @Test
   fun `test do not show dialog if not all tasks is solved`() = doTest(lessonName = "Project", taskName = "Task1")
 
   @Test
@@ -140,7 +130,7 @@ class HyperskillPostToSocialNetworksTest : EduActionTestCase() {
     }
   }
 
-  private fun createEduCourse(): EduCourse {
+  private fun createEduCourse(): HyperskillCourse {
     return courseWithFiles {
       frameworkLesson("Project") {
         eduTask("Task1") {
@@ -151,7 +141,7 @@ class HyperskillPostToSocialNetworksTest : EduActionTestCase() {
         }
       }
 
-    } as EduCourse
+    } as HyperskillCourse
   }
 
 

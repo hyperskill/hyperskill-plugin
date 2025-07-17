@@ -3,7 +3,10 @@ package com.jetbrains.edu.learning.update
 import com.jetbrains.edu.learning.CourseBuilder
 import com.jetbrains.edu.learning.actions.navigate.NavigationTestBase
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.StudyItem
+import com.jetbrains.edu.learning.courseFormat.copy
+import com.jetbrains.edu.learning.courseFormat.copyFileContents
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
@@ -68,33 +71,11 @@ abstract class UpdateTestBase<T : Course> : NavigationTestBase() {
     val course = courseWithFiles(id = 1, name = title, language = FakeGradleBasedLanguage, courseProducer = ::HyperskillCourse) {
       courseBuilder()
     } as HyperskillCourse
-    course.marketplaceCourseVersion = 1
     course.hyperskillProject = HyperskillProject().apply {
       this.title = title
       description = "Project Description"
     }
     course.stages = listOf(HyperskillStage(1, "", 1, true), HyperskillStage(2, "", 2))
-    return course
-  }
-
-  protected fun createBasicMarketplaceCourse(buildCourse: (CourseBuilder.() -> Unit)? = null): EduCourse {
-    val courseBuilder = buildCourse ?: {
-      section("section1", id = 1) {
-        lesson("lesson1", id = 1) {
-          eduTask("task1", stepId = 1) {
-            taskFile("src/Task.kt")
-            taskFile("src/Baz.kt")
-            taskFile("test/Tests.kt")
-          }
-        }
-      }
-      additionalFile("build.gradle", "apply plugin: \"java\"")
-      additionalFile("settings.gradle")
-    }
-    val course = courseWithFiles(id = 1, name = "Marketplace Course", language = FakeGradleBasedLanguage, courseProducer = ::EduCourse) {
-      courseBuilder()
-    } as EduCourse
-    course.marketplaceCourseVersion = 1
     return course
   }
 

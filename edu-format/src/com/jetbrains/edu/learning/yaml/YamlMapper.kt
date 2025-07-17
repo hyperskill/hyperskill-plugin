@@ -19,7 +19,6 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillTopic
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikLesson
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
@@ -28,7 +27,10 @@ import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.json.encrypt.EncryptionModule
 import com.jetbrains.edu.learning.yaml.format.*
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
-import com.jetbrains.edu.learning.yaml.format.hyperskill.*
+import com.jetbrains.edu.learning.yaml.format.hyperskill.HyperskillCourseMixin
+import com.jetbrains.edu.learning.yaml.format.hyperskill.HyperskillProjectMixin
+import com.jetbrains.edu.learning.yaml.format.hyperskill.HyperskillStageMixin
+import com.jetbrains.edu.learning.yaml.format.hyperskill.HyperskillTopicMixin
 import com.jetbrains.edu.learning.yaml.format.remote.*
 import com.jetbrains.edu.learning.yaml.format.student.*
 import com.jetbrains.edu.learning.yaml.format.tasks.*
@@ -112,7 +114,6 @@ object YamlMapper {
     addMixIn(HyperskillCourse::class.java, RemoteCourseYamlMixin::class.java)
     addMixIn(Course::class.java, CourseYamlMixin::class.java)
     addMixIn(Section::class.java, SectionYamlMixin::class.java)
-    addMixIn(StepikLesson::class.java, StepikLessonYamlMixin::class.java)
     addMixIn(Lesson::class.java, LessonYamlMixin::class.java)
     addMixIn(FrameworkLesson::class.java, FrameworkLessonYamlMixin::class.java)
     addMixIn(Task::class.java, TaskYamlMixin::class.java)
@@ -129,7 +130,6 @@ object YamlMapper {
 
   private fun addRemoteMixIns(mapper: ObjectMapper) {
     mapper.addMixIn(Lesson::class.java, RemoteStudyItemYamlMixin::class.java)
-    mapper.addMixIn(StepikLesson::class.java, StepikLessonRemoteYamlMixin::class.java)
     mapper.addMixIn(Section::class.java, RemoteStudyItemYamlMixin::class.java)
     mapper.addMixIn(Task::class.java, RemoteStudyItemYamlMixin::class.java)
     mapper.addMixIn(DataTask::class.java, RemoteDataTaskYamlMixin::class.java)

@@ -38,16 +38,6 @@ class PlaceholderHighlightingPassTest : EduTestCase() {
   """, status = CheckStatus.Solved
   )
 
-  @Test
-  fun `test placeholder highlighting in educator mode`() = doTest(
-    """
-    <p>oneline placeholder</p> some text  
-    <p>multiline
-       placeholder</p>
-    empty <p></p> placeholder 
-  """, courseMode = CourseMode.EDUCATOR
-  )
-
   private fun doTest(
     text: String,
     status: CheckStatus = CheckStatus.Unchecked,

@@ -2,7 +2,6 @@ package com.jetbrains.edu.learning.actions.rename
 
 import com.intellij.testFramework.LightPlatformTestCase
 import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
@@ -100,13 +99,13 @@ class RenameTest : RenameTestBase() {
 
     doRenameAction(
       course,
-      "lesson1/task1/$taskMd",
-      taskHtml,
+      "lesson1/task1/$taskHtml",
+      taskMd,
       shouldBeInvoked = false
     )
     assertEquals(DescriptionFormat.MD, course.lessons[0].taskList[0].descriptionFormat)
-    assertNull(findDescriptionFile(taskHtml))
-    assertNotNull(findDescriptionFile(taskMd))
+    assertNull(findDescriptionFile(taskMd))
+    assertNotNull(findDescriptionFile(taskHtml))
   }
 
   @Test
@@ -189,130 +188,5 @@ class RenameTest : RenameTestBase() {
     val task2 = course.findTask("lesson1", "task2")
     assertNull(task2.getTaskFile("taskFile2.txt"))
     assertNotNull(task2.getTaskFile("taskFile3.txt"))
-  }
-
-  @Test
-  fun `test rename section in CC mode`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      section {
-        lesson {
-          eduTask {
-            taskFile("taskFile1.txt")
-          }
-        }
-      }
-    }
-
-    doRenameAction(course, "section1", "section2")
-    assertEquals(1, course.items.size)
-    assertNull(course.getSection("section1"))
-    assertNotNull(course.getSection("section2"))
-  }
-
-  @Test
-  fun `test rename lesson in section in CC mode`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      section {
-        lesson {
-          eduTask {
-            taskFile("taskFile1.txt")
-          }
-        }
-      }
-    }
-
-    doRenameAction(course, "section1/lesson1", "lesson2")
-    assertEquals(1, course.items.size)
-    val section = course.getSection("section1")!!
-    assertNotNull(section)
-    assertNotNull(section.getLesson("lesson2"))
-    assertNull(section.getLesson("lesson1"))
-  }
-
-  @Test
-  fun `test rename lesson in course in CC mode`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson {
-        eduTask {
-          taskFile("taskFile1.txt")
-        }
-      }
-    }
-
-    doRenameAction(course, "lesson1", "lesson2")
-    assertEquals(1, course.items.size)
-    assertNotNull(course.getLesson("lesson2"))
-    assertNull(course.getLesson("lesson1"))
-  }
-
-  @Test
-  fun `test rename task in CC mode`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson {
-        eduTask {
-          taskFile("taskFile1.txt")
-        }
-      }
-    }
-    doRenameAction(course, "lesson1/task1", "task2")
-    assertEquals(1, course.items.size)
-    val lesson = course.getLesson("lesson1")!!
-    assertNotNull(lesson)
-    assertNotNull(lesson.getTask("task2"))
-    assertNull(lesson.getTask("task1"))
-  }
-
-  @Test
-  fun `test rename task description file in CC mode`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson {
-        eduTask {
-          taskFile("taskFile1.txt")
-        }
-      }
-    }
-
-    val taskHtml = DescriptionFormat.HTML.fileName
-    val taskMd = DescriptionFormat.MD.fileName
-
-    doRenameAction(course, "lesson1/task1/$taskMd", taskHtml)
-    assertEquals(DescriptionFormat.HTML, course.lessons[0].taskList[0].descriptionFormat)
-    assertNull(findDescriptionFile(taskMd))
-    assertNotNull(findDescriptionFile(taskHtml))
-  }
-
-  @Test
-  fun `test wrong new task description file name in CC mode`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson {
-        eduTask {
-          taskFile("taskFile1.txt")
-        }
-      }
-    }
-
-    val taskMd = DescriptionFormat.MD.fileName
-    val newFileName = "incorrectFileName.txt"
-    doRenameAction(course, "lesson1/task1/$taskMd", newFileName, shouldBeInvoked = false)
-    assertEquals(DescriptionFormat.MD, course.lessons[0].taskList[0].descriptionFormat)
-    assertNull(findDescriptionFile(newFileName))
-    assertNotNull(findDescriptionFile(taskMd))
-  }
-
-  @Test
-  fun `test rename task file in CC mode`() {
-    val course = courseWithFiles(courseMode = CourseMode.EDUCATOR) {
-      lesson {
-        eduTask {
-          taskFile("taskFile1.txt")
-        }
-      }
-    }
-    // When there isn't any rename handler for file, rename action uses default one.
-    // And default rename handler has special code for unit tests not to show rename dialog at all
-    doRenameAction(course, "lesson1/task1/taskFile1.txt", "taskFile2.txt", shouldBeShown = false)
-    val task = course.findTask("lesson1", "task1")
-    assertNull(task.getTaskFile("taskFile1.txt"))
-    assertNotNull(task.getTaskFile("taskFile2.txt"))
   }
 }
