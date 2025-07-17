@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.util.StdConverter
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMENT
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.PYCHARM
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ADDITIONAL_FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DISABLED_FEATURES
@@ -28,7 +29,6 @@ import com.jetbrains.edu.learning.yaml.errorHandling.formatError
 import com.jetbrains.edu.learning.yaml.errorHandling.unnamedItemAtMessage
 import com.jetbrains.edu.learning.yaml.errorHandling.unsupportedItemTypeMessage
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CONTENT
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.EDU_YAML_TYPE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ENVIRONMENT
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ENVIRONMENT_SETTINGS
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.FEEDBACK_LINK
@@ -73,11 +73,7 @@ import java.util.*
 @JsonDeserialize(builder = CourseBuilder::class)
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY,
-  property = TYPE, defaultImpl = EduCourse::class, visible = true
-)
-@JsonSubTypes(
-  JsonSubTypes.Type(EduCourse::class, name = "edu"),
-  JsonSubTypes.Type(EduCourse::class, name = "marketplace")
+  property = TYPE, defaultImpl = HyperskillCourse::class, visible = true
 )
 abstract class CourseYamlMixin {
   val itemType: String
@@ -206,8 +202,6 @@ open class CourseBuilder(
       name = title
       description = summary ?: ""
       environment = yamlEnvironment ?: DEFAULT_ENVIRONMENT
-      feedbackLink = yamlFeedbackLink
-      if (marketplaceCourseVersion == 0) marketplaceCourseVersion = 1
       solutionsHidden = areSolutionsHidden ?: false
       contentTags = yamlContentTags
       environmentSettings = yamlEnvironmentSettings
@@ -238,11 +232,7 @@ open class CourseBuilder(
   }
 
   open fun makeCourse(): Course? {
-    val course = when (courseType) {
-      EDU_YAML_TYPE, null -> EduCourse()
-      else -> formatError(unsupportedItemTypeMessage(courseType, EduFormatNames.COURSE))
-    }
-    return course
+    formatError(unsupportedItemTypeMessage(courseType ?: "Unknown", EduFormatNames.COURSE))
   }
 }
 

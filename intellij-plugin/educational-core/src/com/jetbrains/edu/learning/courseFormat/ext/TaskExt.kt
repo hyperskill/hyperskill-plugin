@@ -18,17 +18,23 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.PsiUtilCore
 import com.intellij.util.concurrency.annotations.RequiresReadLock
-import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.EduUtilsKt.convertToHtml
+import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat.Companion.TASK_DESCRIPTION_PREFIX
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.*
+import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
+import com.jetbrains.edu.learning.courseFormat.tasks.TableTask
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingBasedTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
+import com.jetbrains.edu.learning.getTextFromTaskTextFile
+import com.jetbrains.edu.learning.isTestsFile
 import com.jetbrains.edu.learning.messages.EduCoreBundle
+import com.jetbrains.edu.learning.selectedTaskFile
 import com.jetbrains.edu.learning.taskToolWindow.removeHyperskillTags
 import com.jetbrains.edu.learning.taskToolWindow.replaceActionIDsWithShortcuts
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
@@ -181,7 +187,7 @@ fun Task.canShowSolution(): Boolean {
   return shouldShow && taskFiles.values.any { it.canShowSolution() }
 }
 
-fun Task.hasSolutions(): Boolean = course.isMarketplace || this !is TheoryTask && this !is DataTask
+fun Task.hasSolutions(): Boolean = this !is TheoryTask && this !is DataTask
 
 fun Task.getCodeTaskFile(project: Project): TaskFile? {
 
@@ -230,17 +236,6 @@ fun Task.revertTaskParameters() {
       clearSelectedVariants()
     }
   }
-}
-
-fun Task.shouldBeEmpty(path: String): Boolean {
-  return shouldGenerateTestsOnTheFly() &&
-         EduUtilsKt.isTestsFile(this, path) &&
-         getTaskFile(path)?.isVisible != true
-}
-
-fun Task.shouldGenerateTestsOnTheFly(): Boolean {
-  val course = lesson.course
-  return course.isStudy && course is EduCourse && course.isMarketplace && (this is EduTask || this is OutputTask)
 }
 
 @RequiresReadLock

@@ -2,7 +2,6 @@ package com.jetbrains.edu.learning.taskToolWindow
 
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import org.junit.Test

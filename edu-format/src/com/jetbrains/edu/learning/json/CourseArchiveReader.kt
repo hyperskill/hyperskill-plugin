@@ -160,7 +160,6 @@ fun ObjectMapper.configureCourseMapper(isEncrypted: Boolean) {
 }
 
 fun ObjectMapper.addStudyItemMixins() {
-  addMixIn(EduCourse::class.java, RemoteEduCourseMixin::class.java)
   addMixIn(PluginInfo::class.java, PluginInfoMixin::class.java)
   addMixIn(Section::class.java, RemoteSectionMixin::class.java)
   addMixIn(FrameworkLesson::class.java, RemoteFrameworkLessonMixin::class.java)

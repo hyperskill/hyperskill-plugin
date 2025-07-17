@@ -46,7 +46,6 @@ import com.jetbrains.edu.learning.yaml.YamlConfigSettings.remoteConfigFileName
 import com.jetbrains.edu.learning.yaml.YamlMapper.basicMapper
 import com.jetbrains.edu.learning.yaml.YamlMapper.remoteMapper
 import com.jetbrains.edu.learning.yaml.YamlMapper.studentMapper
-import com.jetbrains.edu.learning.yaml.YamlMapper.studentMapperWithEncryption
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import javax.swing.JLabel
@@ -222,7 +221,7 @@ object YamlFormatSynchronizer {
   }
 
   fun Course.mapper(): ObjectMapper = if (isStudy) {
-    if (isMarketplace) studentMapperWithEncryption() else studentMapper()
+    studentMapper()
   }
   else {
     basicMapper()

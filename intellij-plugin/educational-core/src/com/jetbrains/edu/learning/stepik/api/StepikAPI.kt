@@ -89,14 +89,6 @@ class UsersList {
   lateinit var users: List<StepikUserInfo>
 }
 
-class CoursesList {
-  @JsonProperty(META)
-  lateinit var meta: Map<Any, Any>
-
-  @JsonProperty(COURSES)
-  lateinit var courses: MutableList<EduCourse>
-}
-
 class SectionsList {
   @JsonProperty(SECTIONS)
   lateinit var sections: List<StepikSection>

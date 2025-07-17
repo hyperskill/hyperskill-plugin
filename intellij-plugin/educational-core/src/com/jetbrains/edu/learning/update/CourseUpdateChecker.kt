@@ -11,7 +11,6 @@ import com.jetbrains.edu.learning.EduTestAware
 import com.jetbrains.edu.learning.EduUtilsKt.isNewlyCreated
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.isUnitTestMode
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
@@ -40,7 +39,7 @@ abstract class CourseUpdateChecker(protected val project: Project) : Disposable,
     if (!courseCanBeUpdated()) {
       return
     }
-    if (project.isNewlyCreated() && course !is EduCourse) {
+    if (project.isNewlyCreated()) {
       queueNextCheck()
     }
     else {

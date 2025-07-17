@@ -3,7 +3,6 @@ package com.jetbrains.edu.sql.jvm.gradle.update
 import com.intellij.database.dataSource.LocalDataSourceManager
 import com.intellij.testFramework.PlatformTestUtil
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.sql.jvm.gradle.SqlCourseGenerationTestBase

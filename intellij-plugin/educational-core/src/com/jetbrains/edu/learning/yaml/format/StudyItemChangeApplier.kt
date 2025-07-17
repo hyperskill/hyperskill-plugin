@@ -40,7 +40,7 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
   }
 
   private fun <T : ItemContainer> changeType(project: Project, existingItem: T, deserializedItem: T) {
-    if (deserializedItem is EduCourse || deserializedItem is HyperskillCourse) {
+    if (deserializedItem is HyperskillCourse) {
       deserializedItem.items = existingItem.items
       deserializedItem.init(deserializedItem, false)
       StudyTaskManager.getInstance(project).course = deserializedItem as Course

@@ -19,7 +19,6 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillTopic
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.courseFormat.stepik.StepikLesson
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
@@ -29,7 +28,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.json.encrypt.EncryptionModule
 import com.jetbrains.edu.learning.yaml.format.*
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.STEPIK_TYPE_YAML
 import com.jetbrains.edu.learning.yaml.format.hyperskill.*
 import com.jetbrains.edu.learning.yaml.format.remote.*
 import com.jetbrains.edu.learning.yaml.format.student.*
@@ -112,7 +110,6 @@ object YamlMapper {
 
   private fun ObjectMapper.addMixIns() {
     addMixIn(HyperskillCourse::class.java, RemoteCourseYamlMixin::class.java)
-    addMixIn(StepikCourse::class.java, RemoteCourseYamlMixin::class.java)
     addMixIn(Course::class.java, CourseYamlMixin::class.java)
     addMixIn(Section::class.java, SectionYamlMixin::class.java)
     addMixIn(StepikLesson::class.java, StepikLessonYamlMixin::class.java)
@@ -128,7 +125,6 @@ object YamlMapper {
     addMixIn(AnswerPlaceholderDependency::class.java, AnswerPlaceholderDependencyYamlMixin::class.java)
 
     registerSubtypes(NamedType(HyperskillCourse::class.java, HYPERSKILL_TYPE_YAML))
-    registerSubtypes(NamedType(StepikCourse::class.java, STEPIK_TYPE_YAML))
   }
 
   private fun addRemoteMixIns(mapper: ObjectMapper) {

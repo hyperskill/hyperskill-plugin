@@ -1,11 +1,11 @@
 package com.jetbrains.edu.learning.marketplace.update
 
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.EduFile
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.update.CourseUpdater
 import com.jetbrains.edu.learning.update.UpdateTestBase
+import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
 class MarketplaceCourseUpdateTest : UpdateTestBase<EduCourse>() {

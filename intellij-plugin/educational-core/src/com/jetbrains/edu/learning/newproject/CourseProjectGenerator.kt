@@ -42,11 +42,11 @@ import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
 import com.jetbrains.edu.learning.configuration.EduConfigurator
 import com.jetbrains.edu.learning.configuration.courseFileAttributes
-import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.CourseVisibility.FeaturedVisibility
-import com.jetbrains.edu.learning.courseFormat.CourseVisibility.LocalVisibility
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.CourseMode
+import com.jetbrains.edu.learning.courseFormat.EduFile
+import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.ext.isPreview
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ONLY_IDEA_DIRECTORY
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.createChildFile
@@ -102,7 +102,7 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
     YamlFormatSynchronizer.saveAll(project)
     YamlFormatSynchronizer.startSynchronization(project)
 
-    if (!course.isStudy && !course.isPreview && !isHeadlessEnvironment && JBCefApp.isSupported()) {
+    if (!course.isStudy && !isHeadlessEnvironment && JBCefApp.isSupported()) {
       CCOpenEducatorHelp.doOpen(project)
     }
 
@@ -193,10 +193,8 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
 
     baseDir.putUserData(COURSE_MODE_TO_CREATE, course.courseMode)
 
-    if (isCourseTrusted(course, false)) {
-      @Suppress("UnstableApiUsage")
-      TrustedPaths.getInstance().setProjectPathTrusted(location.toPath(), true)
-    }
+    @Suppress("UnstableApiUsage")
+    TrustedPaths.getInstance().setProjectPathTrusted(location.toPath(), true)
 
     val holder = CourseInfoHolder.fromCourse(course, baseDir)
 
@@ -355,22 +353,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
 
     @Topic.AppLevel
     val COURSE_PROJECT_CONFIGURATION: Topic<CourseProjectConfigurationListener> = createTopic("COURSE_PROJECT_CONFIGURATION")
-
-    // TODO: provide more precise heuristic for Gradle, sbt and other "dangerous" build systems
-    // See https://youtrack.jetbrains.com/issue/EDU-4182
-    private fun isCourseTrusted(course: Course, isNewCourseCreatorCourse: Boolean): Boolean {
-      if (isNewCourseCreatorCourse) return true
-      if (course !is EduCourse) return true
-      if (course.visibility is FeaturedVisibility) return true
-      // Trust any course loaded from Marketplace since we verify every update
-      // as well as show agreement for every course.
-      //
-      // Local visibility here means that the course was manually loaded from Marketplace
-      // and opened via `Open Course from Disk` or similar action.
-      // We can't be sure that it wasn't modified anyhow, so we don't trust such courses
-      if (course.isMarketplaceRemote && course.visibility != LocalVisibility) return true
-      return course.isPreview
-    }
 
     fun OpenProjectTask(
       course: Course,

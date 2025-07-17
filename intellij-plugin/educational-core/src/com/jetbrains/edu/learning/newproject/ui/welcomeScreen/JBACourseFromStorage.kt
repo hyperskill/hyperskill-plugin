@@ -7,11 +7,7 @@ import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.edu.learning.EduNames
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.EduCourse
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.STEPIK
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.newproject.ui.logo
 import javax.swing.Icon
 
@@ -70,7 +66,6 @@ class JBACourseFromStorage() : CourseInfo() {
     environment = course.environment
     languageId = course.languageId
     languageVersion = course.languageVersion
-    isMarketplace = course.isMarketplace
     this.location = location
     this.tasksTotal = tasksTotal
     this.tasksSolved = tasksSolved
@@ -92,22 +87,16 @@ class JBACourseFromStorage() : CourseInfo() {
     get() = this.courseMode == CourseMode.STUDENT
 
   fun toCourse(): Course {
-    val eduCourse = when (itemType) {
-      HYPERSKILL -> HyperskillCourse()
-      STEPIK -> StepikCourse()
-      EduNames.EDU -> EduCourse()
-      else -> EduCourse()
-    }
+    val course = HyperskillCourse()
 
-    eduCourse.id = id
-    eduCourse.name = name
-    eduCourse.description = description
-    eduCourse.courseMode = courseMode
-    eduCourse.environment = environment
-    eduCourse.languageId = languageId
-    eduCourse.languageVersion = languageVersion
-    eduCourse.isMarketplace = isMarketplace
-    return eduCourse
+    course.id = id
+    course.name = name
+    course.description = description
+    course.courseMode = courseMode
+    course.environment = environment
+    course.languageId = languageId
+    course.languageVersion = languageVersion
+    return course
   }
 
   private fun convertProgrammingLanguageVersion(value: String) {

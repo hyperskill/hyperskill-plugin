@@ -1,9 +1,7 @@
 package com.jetbrains.edu.learning.newproject.ui.coursePanel
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.VerticalFlowLayout
-import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.panels.HorizontalLayout
@@ -11,7 +9,6 @@ import com.intellij.ui.components.panels.NonOpaquePanel
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.EducationalCoreIcons
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.ui.CoursesDialogFontManager
 import com.jetbrains.edu.learning.newproject.ui.GRAY_COLOR
@@ -21,9 +18,6 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import java.awt.Font
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class CourseDetailsPanel(leftMargin: Int) : NonOpaquePanel(VerticalFlowLayout(0, 5)), CourseSelectionListener {
@@ -49,25 +43,10 @@ class CourseDetailsPanel(leftMargin: Int) : NonOpaquePanel(VerticalFlowLayout(0,
   override fun onCourseSelectionChanged(data: CourseBindData) {
     val course = data.course
     courseDetailsHeader.isVisible = course.description.isNotEmpty()
-    if (course is EduCourse) {
-      val hasStatistics = courseStatisticsPanel.setStatistics(course)
-      courseStatisticsPanel.isVisible = hasStatistics
-    }
-    else {
-      courseStatisticsPanel.isVisible = false
-    }
+    courseStatisticsPanel.isVisible = false
     descriptionPanel.bind(course)
     revalidate()
     repaint()
-  }
-
-  companion object {
-    const val DATE_PATTERN: String = "MMM d, yyyy"
-
-    fun formatNumber(number: Int): String {
-      return NumberFormat.getNumberInstance(Locale.US).format(number)
-    }
-
   }
 }
 
@@ -139,45 +118,6 @@ private class CourseStatisticsPanel : NonOpaquePanel(HorizontalLayout(0)) {
       border = JBUI.Borders.emptyRight(6)
       font = componentsFont
     }
-  }
-
-  fun setStatistics(course: EduCourse): Boolean {
-    var hasStatistics = false
-    rating.icon = AllIcons.Plugins.Rating
-    if (course.reviewScore != 0.0) {
-      @Suppress("UnstableApiUsage")
-      @NlsSafe
-      val reviewScore = "%.${1}f".format(course.reviewScore)
-      rating.text = reviewScore
-      hasStatistics = true
-    }
-    else {
-      rating.text = EduCoreBundle.message("course.dialog.card.not.rated")
-    }
-
-    learners.isVisible = course.learnersCount != 0
-    if (learners.isVisible) {
-      hasStatistics = true
-    }
-    learners.text = if (course.learnersCount == 1) {
-      EduCoreBundle.message("course.dialog.course.stats.one.learner")
-    }
-    else {
-      val learnersCount = CourseDetailsPanel.formatNumber(course.learnersCount)
-      EduCoreBundle.message("course.dialog.course.stats.learners", learnersCount)
-    }
-
-    lastDotLabel.isVisible = course.updateDate != Date(0)
-    date.isVisible = course.updateDate != Date(0)
-    date.text = EduCoreBundle.message(
-      "course.dialog.updated",
-      SimpleDateFormat(CourseDetailsPanel.DATE_PATTERN, Locale.US).format(course.updateDate)
-    )
-    if (date.isVisible) {
-      hasStatistics = true
-    }
-
-    return hasStatistics
   }
 }
 

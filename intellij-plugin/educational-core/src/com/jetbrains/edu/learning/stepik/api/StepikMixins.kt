@@ -7,21 +7,21 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.text.StringUtil
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
+import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholderDependency
+import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.ID
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
+import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_VISIBLE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.NAME
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLACEHOLDERS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.STATUS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TEXT
 import com.jetbrains.edu.learning.json.mixins.NotImplementedInMixin
-import com.jetbrains.edu.learning.stepik.StepikNames
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
 import java.util.*
 
@@ -70,79 +70,6 @@ open class StepikItemMixin {
 
   @JsonProperty(UPDATE_DATE)
   lateinit var updateDate: Date
-}
-
-@JsonDeserialize(builder = StepikCourseBuilder::class)
-abstract class StepikEduCourseMixin
-
-@JsonPOJOBuilder(withPrefix = "")
-private class StepikCourseBuilder(
-  @JsonProperty(ID) val id: Int,
-  @JsonProperty(UPDATE_DATE) val updateDate: Date,
-  @JsonProperty(IS_IDEA_COMPATIBLE) val ideaCompatible: Boolean,
-  @JsonProperty(IS_ADAPTIVE) val isAdaptive: Boolean,
-  @JsonProperty(COURSE_FORMAT) val courseFormat: String,
-  @JsonProperty(SECTIONS) val sectionIds: List<Int>?,
-  @JsonProperty(INSTRUCTORS) val instructors: List<Int>?,
-  @JsonProperty(IS_PUBLIC) val isPublic: Boolean,
-  @JsonProperty(SUMMARY) val summary: String,
-  @JsonProperty(TITLE) val title: String,
-  @JsonProperty(LANGUAGE) val languageCode: String,
-  @JsonProperty(LEARNERS_COUNT) val learnersCount: Int = 0,
-  @JsonProperty(REVIEW_SUMMARY) val reviewSummary: Int = 0
-) {
-  private fun build(): Course {
-    val course = if (ideaCompatible) {
-      EduCourse()
-    }
-    else {
-      StepikCourse().also {
-        it.isAdaptive = isAdaptive
-      }
-    }
-
-    course.also {
-      it.id = id
-      it.updateDate = updateDate
-      it.sectionIds = sectionIds ?: emptyList()
-      it.instructors = instructors ?: emptyList()
-      it.isStepikPublic = isPublic
-      it.description = summary
-      it.name = title
-      it.languageCode = languageCode
-      it.learnersCount = learnersCount
-      it.reviewSummary = reviewSummary
-    }
-    course.setCourseFormat(courseFormat)
-    return course
-  }
-}
-
-private fun EduCourse.setCourseFormat(courseFormat: String) {
-  // courseFormat format: "pycharm<version> <language>$ENVIRONMENT_SEPARATOR<environment>"
-  val languageIndex = courseFormat.indexOf(" ")
-  if (languageIndex == -1) {
-    LOG.info("Language for course `$name` with `$courseFormat` type can't be set because it isn't `pycharm` course")
-    return
-  }
-  val environmentIndex = courseFormat.indexOf(ENVIRONMENT_SEPARATOR, languageIndex + 1)
-  if (environmentIndex != -1) {
-    languageId = courseFormat.substring(languageIndex + 1, environmentIndex)
-    environment = courseFormat.substring(environmentIndex + 1)
-  }
-  else {
-    languageId = courseFormat.substring(languageIndex + 1)
-  }
-
-  if (courseFormat.contains(StepikNames.PYCHARM_PREFIX)) {
-    val formatVersionString = courseFormat.substring(StepikNames.PYCHARM_PREFIX.length, languageIndex)
-    formatVersion = try {
-      formatVersionString.toInt()
-    }
-    catch (e: NumberFormatException) {
-      JSON_FORMAT_VERSION
-    }
-  }
 }
 
 class StepikLessonMixin : StepikItemMixin() {

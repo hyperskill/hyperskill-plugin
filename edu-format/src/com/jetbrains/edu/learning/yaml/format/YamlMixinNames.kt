@@ -32,7 +32,6 @@ object YamlMixinNames {
   const val STAGES = "stages"
   const val THEORY_ID = "theory_id"
   const val HYPERSKILL_TYPE_YAML = "hyperskill"
-  const val STEPIK_TYPE_YAML = "stepik"
   const val END_DATE_TIME = "end_date_time"
 
   // lesson

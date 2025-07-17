@@ -5,16 +5,13 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.learning.FileInfo
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.ext.shouldBeEmpty
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 
 class UserCreatedFileListener(project: Project) : EduVirtualFileListener(project) {
 
   override fun fileDeleted(fileInfo: FileInfo, file: VirtualFile) {
     val (task, pathInTask) = fileInfo as? FileInfo.FileInTask ?: return
-    if (!task.shouldBeEmpty(pathInTask)) {
-      task.removeTaskFile(pathInTask)
-    }
+    task.removeTaskFile(pathInTask)
   }
 
   override fun taskFileCreated(taskFile: TaskFile, file: VirtualFile) {

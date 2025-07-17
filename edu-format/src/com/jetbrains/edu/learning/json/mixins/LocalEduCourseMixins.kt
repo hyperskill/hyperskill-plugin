@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.util.StdConverter
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.MARKETPLACE
+import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
@@ -412,14 +412,10 @@ class CourseDeserializer : StdDeserializer<Course>(Course::class.java) {
 
   private fun deserializeCourse(jsonObject: ObjectNode, codec: ObjectCodec): Course? {
     if (jsonObject.has(COURSE_TYPE)) {
-      val courseType = jsonObject.get(COURSE_TYPE).asText()
-      val course = codec.treeToValue(jsonObject, EduCourse::class.java)
-      if (courseType == MARKETPLACE) {
-        course.isMarketplace = true
-      }
+      val course = codec.treeToValue(jsonObject, HyperskillCourse::class.java)
       return course
     }
-    return codec.treeToValue(jsonObject, EduCourse::class.java)
+    return codec.treeToValue(jsonObject, HyperskillCourse::class.java)
   }
 }
 

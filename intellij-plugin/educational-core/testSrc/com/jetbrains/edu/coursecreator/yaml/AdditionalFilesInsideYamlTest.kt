@@ -4,7 +4,6 @@ import com.jetbrains.edu.coursecreator.AdditionalFilesUtils.collectAdditionalFil
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import org.junit.Test
 import kotlin.test.assertContentEquals

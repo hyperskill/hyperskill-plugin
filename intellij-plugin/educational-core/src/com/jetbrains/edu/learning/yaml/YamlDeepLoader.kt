@@ -16,7 +16,6 @@ import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.courseFormat.ext.shouldBeEmpty
 import com.jetbrains.edu.learning.courseFormat.ext.updateDescriptionTextAndFormat
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
@@ -138,7 +137,7 @@ object YamlDeepLoader {
       task.parent = this
       val taskDir = task.getDir(project.courseDir)
       val invalidTaskFilesNames = task.taskFiles
-        .filter { (name, _) -> taskDir?.findFileByRelativePath(name) == null && !task.shouldBeEmpty(name) }.map { it.key }
+        .filter { (name, _) -> taskDir?.findFileByRelativePath(name) == null }.map { it.key }
       invalidTaskFilesNames.forEach { task.removeTaskFile(it) }
     }
   }

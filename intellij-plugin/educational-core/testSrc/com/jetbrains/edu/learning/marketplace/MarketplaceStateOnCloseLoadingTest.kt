@@ -4,7 +4,6 @@ import com.intellij.openapi.util.Disposer
 import com.jetbrains.edu.learning.SolutionLoadingTestBase
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.marketplace.MarketplaceSolutionLoadingTest.Companion.getConfiguredSubmissionsList

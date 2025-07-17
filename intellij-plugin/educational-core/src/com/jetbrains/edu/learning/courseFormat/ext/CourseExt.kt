@@ -78,12 +78,6 @@ val Course.tags: List<Tag>
 
     technologyName?.let { tags.add(ProgrammingLanguageTag(it)) }
     tags.add(HumanLanguageTag(humanLanguage))
-
-    if (course is EduCourse) {
-      if (visibility is CourseVisibility.FeaturedVisibility) {
-        tags.add(FeaturedTag())
-      }
-    }
     return tags
   }
 
@@ -91,36 +85,16 @@ val Course.languageById: Language?
   get() = Language.findLanguageByID(languageId)
 
 
-val Course.isPreview: Boolean
-  get() = this is EduCourse && isPreview
-
 val Course.compatibility: CourseCompatibility
   get() {
     if (this is HyperskillCourseAdvertiser) {
       return CourseCompatibility.Compatible
     }
 
-    // @formatter:off
-    return versionCompatibility() ?:
-           pluginCompatibility() ?:
-           configuratorCompatibility() ?:
-           CourseCompatibility.Compatible
-    // @formatter:on
+    return versionCompatibility() ?: pluginCompatibility() ?: configuratorCompatibility() ?: CourseCompatibility.Compatible
   }
 
 private fun Course.versionCompatibility(): CourseCompatibility? {
-  if (this !is EduCourse) {
-    return null
-  }
-
-  if (languageId.isEmpty()) {
-    return CourseCompatibility.Unsupported
-  }
-
-  if (formatVersion > JSON_FORMAT_VERSION) {
-    return CourseCompatibility.IncompatibleVersion
-  }
-
   return null
 }
 

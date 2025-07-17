@@ -15,7 +15,6 @@ open module com.jetbrains.edu.format {
 
   exports com.jetbrains.edu.learning.courseFormat;
   exports com.jetbrains.edu.learning.courseFormat.tasks;
-  exports com.jetbrains.edu.learning.marketplace.api;
   exports com.jetbrains.edu.learning;
   exports com.jetbrains.edu.learning.json;
   exports com.jetbrains.edu.learning.json.mixins;

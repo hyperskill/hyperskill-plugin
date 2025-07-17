@@ -30,9 +30,7 @@ import com.jetbrains.edu.learning.EduUtilsKt.isNewlyCreated
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.ext.isPreview
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.handlers.UserCreatedFileListener
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -86,7 +84,7 @@ class EduProjectActivity : ProjectActivity {
       }
       val coursesStorage = CoursesStorage.getInstance()
       val location = project.basePath
-      if (!coursesStorage.hasCourse(course) && location != null && !course.isPreview) {
+      if (!coursesStorage.hasCourse(course) && location != null) {
         coursesStorage.addCourse(course, location)
       }
     }
@@ -114,7 +112,7 @@ class EduProjectActivity : ProjectActivity {
     val propertyComponent = PropertiesComponent.getInstance(project)
     if (propertyComponent.getBoolean(YAML_MIGRATED)) return
     propertyComponent.setValue(YAML_MIGRATED, true)
-    if (course !is HyperskillCourse && course !is StepikCourse) return
+    if (course !is HyperskillCourse) return
 
     course.visitTasks {
       if (it is ChoiceTask) {

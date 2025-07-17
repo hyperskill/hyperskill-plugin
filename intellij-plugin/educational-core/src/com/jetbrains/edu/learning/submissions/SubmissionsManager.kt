@@ -13,7 +13,6 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames.CORRECT
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.createTopic
 import com.jetbrains.edu.learning.invokeLater
-import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmission
 import com.jetbrains.edu.learning.submissions.provider.CommunitySubmissionsProvider
 import com.jetbrains.edu.learning.submissions.provider.CommunitySubmissionsProvider.Companion.getCommunitySubmissionsProvider
 import com.jetbrains.edu.learning.submissions.provider.SubmissionsProvider
@@ -84,11 +83,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
                      ?: getCommunitySubmissionFromMemory(task.id, submissionId)
                      ?: return null
 
-    if (submission is MarketplaceSubmission && submission.solutionFiles == null) {
-      val course = course ?: return null
-      val submissionsProvider = course.getSubmissionsProvider() ?: return null
-      submissionsProvider.loadSolutionFiles(submission)
-    }
     return submission
   }
 

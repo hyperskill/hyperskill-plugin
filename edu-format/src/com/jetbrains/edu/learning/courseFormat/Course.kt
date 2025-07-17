@@ -52,16 +52,6 @@ abstract class Course : LessonContainer() {
 
   open var languageCode: String = "en"
 
-  // Marketplace:
-  var isMarketplace: Boolean = false
-  var vendor: Vendor? = null
-  var marketplaceCourseVersion: Int = 0
-  var organization: String? = null
-  var isMarketplacePrivate: Boolean = false
-  var createDate: Date = Date(0)
-  var feedbackLink: String? = null
-  var license: String? = null
-
   @Suppress("SetterBackingFieldAssignment")
   @Deprecated("Use languageId and languageVersion instead")
   private var programmingLanguage: String? = null
@@ -147,7 +137,7 @@ abstract class Course : LessonContainer() {
 
   val authorFullNames: List<String>
     get() {
-      return organization?.let { listOf(it) } ?: authors.map { it.getFullName() }
+      return authors.map { it.getFullName() }
     }
 
   open val humanLanguage: String
@@ -155,10 +145,6 @@ abstract class Course : LessonContainer() {
 
   open val isStepikRemote: Boolean
     get() = false
-
-  fun incrementMarketplaceCourseVersion(remoteCourseVersion: Int) {
-    marketplaceCourseVersion = remoteCourseVersion + 1
-  }
 
   fun isEditableFile(path: String): Boolean {
     return !nonEditableFiles.contains(path)

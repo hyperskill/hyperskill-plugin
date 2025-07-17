@@ -125,16 +125,8 @@ class HyperskillCourse : Course {
   // lexicographical order
   companion object {
     private val SUPPORTED_STEP_TYPES: Set<String> = setOf(
-      HyperskillTaskType.CHOICE.type,
       HyperskillTaskType.CODE.type,
-      HyperskillTaskType.DATASET.type,
-      HyperskillTaskType.MATCHING.type,
-      HyperskillTaskType.NUMBER.type,
       HyperskillTaskType.PYCHARM.type,
-      HyperskillTaskType.SORTING.type,
-      HyperskillTaskType.STRING.type,
-      HyperskillTaskType.TABLE.type,
-      HyperskillTaskType.TEXT.type,
     )
 
     fun isStepSupported(type: String?): Boolean = type in SUPPORTED_STEP_TYPES

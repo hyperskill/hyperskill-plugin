@@ -36,7 +36,10 @@ import com.jetbrains.edu.learning.checker.details.CheckDetailsView
 import com.jetbrains.edu.learning.checker.remote.RemoteTaskCheckerManager.remoteCheckerForTask
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.CheckResult.Companion.failedToCheck
-import com.jetbrains.edu.learning.courseFormat.ext.*
+import com.jetbrains.edu.learning.courseFormat.ext.configurator
+import com.jetbrains.edu.learning.courseFormat.ext.getDir
+import com.jetbrains.edu.learning.courseFormat.ext.getDocument
+import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -153,26 +156,7 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
       if (task.course.isStudy) {
         createTests(invisibleTestFiles)
       }
-      return try {
-        checker.check(indicator)
-      }
-      finally {
-        if (task.shouldGenerateTestsOnTheFly()) {
-          deleteTests(invisibleTestFiles)
-        }
-      }
-    }
-
-    private fun deleteTests(testFiles: List<TaskFile>) {
-      invokeAndWaitIfNeeded {
-        testFiles.forEach { file ->
-          when (file.contents) {
-            is BinaryContents -> replaceFileBytes(file, EMPTY_BYTE_ARRAY)
-            is TextualContents -> replaceFileText(file, "")
-            is UndeterminedContents -> replaceFileText(file, "")
-          }
-        }
-      }
+      return checker.check(indicator)
     }
 
     private fun createTests(testFiles: List<TaskFile>) {

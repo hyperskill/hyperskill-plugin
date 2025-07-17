@@ -6,7 +6,6 @@ import com.intellij.testFramework.PlatformTestUtil
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.actions.CheckAction
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmission
 import com.jetbrains.edu.learning.marketplace.changeHost.SubmissionsServiceHost

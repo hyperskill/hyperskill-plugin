@@ -14,7 +14,6 @@ import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.Lesson
-import com.jetbrains.edu.learning.courseFormat.ext.isPreview
 import com.jetbrains.edu.learning.courseFormat.ext.project
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
@@ -89,7 +88,7 @@ object ProgressUtil {
       pane.updateCourseProgress(progress)
     }
     val location = project.basePath
-    if (location != null && !course.isPreview) {
+    if (location != null) {
       CoursesStorage.getInstance().updateCourseProgress(course, location, progress.tasksSolved, progress.tasksTotalNum)
     }
   }

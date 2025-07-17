@@ -191,10 +191,6 @@
       <reference ref="Educational.Educator.OpenEducatorHelp"/>
     </group>
 
-    <action id="Educational.LeaveInIdeFeedbackAction"
-            class="com.jetbrains.edu.learning.actions.LeaveInIdeFeedbackAction"
-            icon="com.jetbrains.edu.EducationalCoreIcons.Actions.CommentTask"/>
-
     <group id="Educational.CheckPanel.Left">
       <reference ref="Educational.Run"/>
     </group>
@@ -387,7 +383,6 @@
     <configurator language="TEXT" courseType="Hyperskill"
                   implementationClass="com.jetbrains.edu.learning.stepik.hyperskill.PlainTextHyperskillConfigurator"/>
 
-    <checkListener implementation="com.jetbrains.edu.learning.statistics.PostFeedbackCheckListener"/>
     <checkListener implementation="com.jetbrains.edu.coursecreator.validation.ValidationCheckListener"/>
     <coursesPlatformProviderFactory id="JetBrainsAcademy" order="first"
                                     implementation="com.jetbrains.edu.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProviderFactory"/>

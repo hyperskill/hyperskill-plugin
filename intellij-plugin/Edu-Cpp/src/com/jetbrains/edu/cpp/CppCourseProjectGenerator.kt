@@ -11,7 +11,6 @@ import com.jetbrains.edu.learning.courseFormat.EduFile
 import com.jetbrains.edu.learning.courseFormat.ItemContainer
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
@@ -52,10 +51,6 @@ class CppCourseProjectGenerator(builder: CppCourseBuilder, course: Course) :
     openCourseParams: Map<String, String>,
     onConfigurationFinished: () -> Unit
   ) {
-    if (course is StepikCourse) {
-      course.items.forEach { addCMakeListToStepikTasks(it, project, projectSettings) }
-    }
-
     val googleTestSrc = FileUtil.join(project.courseDir.path, TEST_FRAMEWORKS_BASE_DIR_VALUE, GTEST_SOURCE_DIR_VALUE)
     VcsConfiguration.getInstance(project).addIgnoredUnregisteredRoots(listOf(googleTestSrc))
 

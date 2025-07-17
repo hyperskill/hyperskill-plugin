@@ -13,7 +13,6 @@ import com.jetbrains.edu.learning.configuration.PlainTextTaskCheckerProvider.Com
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.courseFormat.ext.shouldBeEmpty
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -57,7 +56,7 @@ class PlainTextTaskCheckerProvider : TaskCheckerProvider {
         val taskDir = task.getDir(project.courseDir) ?: error("No taskDir in tests")
         val checkResultFile = taskDir.findChild(CHECK_RESULT_FILE)
 
-        val testFiles = task.taskFiles.values.filter { task.shouldBeEmpty(it.name) }
+        val testFiles = task.taskFiles.values.filter { false }
         for (testFile in testFiles) {
           val vTestFile = taskDir.findFileByRelativePath(testFile.name) ?: error("No virtual test file found")
           invokeAndWaitIfNeeded {

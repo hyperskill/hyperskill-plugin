@@ -12,7 +12,6 @@ import com.intellij.ui.JBColor
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.ext.isPreview
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseGeneration.ProjectOpener
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -84,7 +83,7 @@ class OpenCourseButton(private val openCourseMetadata: () -> Map<String, String>
     dialog.dialogWrapper?.close(DialogWrapper.OK_EXIT_CODE)
   }
 
-  override fun isVisible(course: Course): Boolean = !course.isPreview && CoursesStorage.getInstance().hasCourse(course)
+  override fun isVisible(course: Course): Boolean = CoursesStorage.getInstance().hasCourse(course)
 }
 
 /**
@@ -100,7 +99,7 @@ class StartCourseButton(
   }
 
   override fun isVisible(course: Course): Boolean {
-    return !(!course.isPreview && CoursesStorage.getInstance().hasCourse(course))
+    return !(CoursesStorage.getInstance().hasCourse(course))
   }
 }
 

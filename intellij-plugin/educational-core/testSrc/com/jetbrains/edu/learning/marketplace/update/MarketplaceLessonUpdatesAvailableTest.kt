@@ -2,7 +2,6 @@ package com.jetbrains.edu.learning.marketplace.update
 
 import com.intellij.util.Time
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.update.UpdatesAvailableTestBase
 import kotlinx.coroutines.runBlocking
 import org.junit.Test

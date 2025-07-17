@@ -2,7 +2,6 @@ package com.jetbrains.edu.learning.marketplace.update
 
 import com.intellij.openapi.application.runReadAction
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getTaskText
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask

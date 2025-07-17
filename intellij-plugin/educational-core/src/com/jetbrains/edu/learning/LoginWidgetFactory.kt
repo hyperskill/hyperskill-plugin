@@ -10,7 +10,6 @@ import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager
 import com.jetbrains.edu.coursecreator.CCUtils.isLocalCourse
 import com.jetbrains.edu.learning.EduUtilsKt.isEduProject
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.ext.isPreview
 
 abstract class LoginWidgetFactory : StatusBarWidgetFactory {
   protected abstract val widgetId: String
@@ -33,7 +32,7 @@ abstract class LoginWidgetFactory : StatusBarWidgetFactory {
       return false
     }
 
-    return !course.isPreview && !project.isLocalCourse && isWidgetAvailable(course)
+    return !project.isLocalCourse && isWidgetAvailable(course)
   }
 
   override fun disposeWidget(widget: StatusBarWidget) = Disposer.dispose(widget)

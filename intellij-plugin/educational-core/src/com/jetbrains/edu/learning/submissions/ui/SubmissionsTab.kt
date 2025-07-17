@@ -67,12 +67,7 @@ open class SubmissionsTab(project: Project) : TaskToolWindowCardTextTab(project,
     val submissionsList = submissionsManager.getSubmissionsFromMemory(setOf(task.id))
 
     if (!isLoggedIn) {
-      if (task.course.isMarketplace && submissionsList.isNotEmpty()) {
-        return getSubmissionsText(submissionsList).toString() to SubmissionsDifferenceLinkHandler(project, task, submissionsManager)
-      }
-      else {
-        return LoginLinkHandler.getLoginText() to LoginLinkHandler(project, submissionsManager)
-      }
+      return LoginLinkHandler.getLoginText() to LoginLinkHandler(project, submissionsManager)
     }
 
     if (submissionsList.isEmpty()) {

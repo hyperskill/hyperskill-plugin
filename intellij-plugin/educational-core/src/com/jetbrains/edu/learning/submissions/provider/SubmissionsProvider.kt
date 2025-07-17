@@ -4,7 +4,6 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmission
 import com.jetbrains.edu.learning.submissions.Submission
 
 /**
@@ -19,9 +18,7 @@ interface SubmissionsProvider {
   fun loadSubmissions(tasks: List<Task>, courseId: Int): SubmissionsData
 
   fun loadCourseStateOnClose(project: Project, course: Course): Map<Int, Submission> = mapOf()
-
-  fun loadSolutionFiles(submission: MarketplaceSubmission) {}
-
+  
   fun areSubmissionsAvailable(course: Course): Boolean
 
   fun isLoggedIn(): Boolean

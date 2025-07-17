@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.yaml.errorHandling.formatError
 import com.jetbrains.edu.learning.yaml.errorHandling.unsupportedItemTypeMessage
 import com.jetbrains.edu.learning.yaml.format.CourseBuilder
@@ -21,7 +19,6 @@ import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.LANGUAGE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.PROGRAMMING_LANGUAGE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.PROGRAMMING_LANGUAGE_VERSION
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.SOLUTIONS_HIDDEN
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.STEPIK_TYPE_YAML
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.SUMMARY
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.TAGS
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.TITLE
@@ -63,9 +60,7 @@ class RemoteCourseBuilder(
   override fun makeCourse(): Course {
     return when (courseType) {
       HYPERSKILL_TYPE_YAML -> HyperskillCourse()
-      STEPIK_TYPE_YAML -> StepikCourse()
-      null -> EduCourse()
-      else -> formatError(unsupportedItemTypeMessage(courseType, EduFormatNames.COURSE))
+      else -> formatError(unsupportedItemTypeMessage(courseType ?: "Unknown", EduFormatNames.COURSE))
     }
   }
 }

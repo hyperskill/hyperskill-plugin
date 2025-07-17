@@ -10,7 +10,6 @@ import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.Section
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.ext.shouldBeEmpty
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 fun VirtualFile.fileInfo(project: Project): FileInfo? {
@@ -45,8 +44,7 @@ private fun shouldIgnore(file: VirtualFile, project: Project, task: Task): Boole
   val courseDir = project.courseDir
   if (!FileUtil.isAncestor(courseDir.path, file.path, true)) return true
   val course = StudyTaskManager.getInstance(project).course ?: return true
-  if (course.configurator?.excludeFromArchive(project, file) == true) return true
-  return task.shouldBeEmpty(file.path)
+  return course.configurator?.excludeFromArchive(project, file) == true
 }
 
 sealed class FileInfo {

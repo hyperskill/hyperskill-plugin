@@ -3,13 +3,11 @@ package com.jetbrains.edu.learning.marketplace
 import com.intellij.testFramework.PlatformTestUtil.waitWhileBusy
 import com.intellij.util.application
 import com.jetbrains.edu.learning.actions.CheckAction
-import com.jetbrains.edu.learning.courseFormat.EduCourse
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.CORRECT
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.WRONG
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.marketplace.api.MarketplaceSubmission
-import com.jetbrains.edu.learning.marketplace.api.SubmissionsService
 import com.jetbrains.edu.learning.mockService
 import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.stepik.SubmissionsTestBase
@@ -18,6 +16,7 @@ import com.jetbrains.edu.learning.ui.getUICheckLabel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
 class ChoiceTaskSubmissionsTest : SubmissionsTestBase() {

@@ -8,7 +8,6 @@ import com.jetbrains.edu.cpp.CMakeConstants.CMAKE_GOOGLE_TEST_DOWNLOAD
 import com.jetbrains.edu.cpp.CMakeConstants.CMAKE_UTILS
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 
 object CMakeConstants {
@@ -62,11 +61,6 @@ data class TemplateInfo(private val templateName: String, val generatedFileName:
 
 fun getCppTemplates(course: Course): CppTemplates =
   when {
-    course is StepikCourse ->
-      CppTemplates(
-        testTaskCMakeList = CppTemplates.defaultExecutableTaskCMakeList
-      )
-
     course is HyperskillCourse -> CppTemplates(
       testTaskCMakeList = TemplateInfo(
         "hyperskill.task.executable.CMakeLists.txt",

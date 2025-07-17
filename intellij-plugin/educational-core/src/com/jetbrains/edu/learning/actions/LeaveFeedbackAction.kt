@@ -31,9 +31,6 @@ class LeaveFeedbackAction :
     if (!project.isStudentProject()) return
     val task = project.getCurrentTask() ?: return
     val course = task.course
-    // For marketplace courses, `com.jetbrains.edu.learning.actions.LeaveInIdeFeedbackAction` should be used instead
-    if (course.isMarketplace) return
-
     if (course is HyperskillCourse) {
       e.presentation.text = EduCoreBundle.message("action.show.discussions.text")
       e.presentation.description = EduCoreBundle.message("action.show.discussions.description")

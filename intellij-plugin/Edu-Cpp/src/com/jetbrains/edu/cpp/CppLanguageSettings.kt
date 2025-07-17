@@ -6,12 +6,10 @@ import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.util.io.IOUtil
-import com.jetbrains.cmake.completion.CMakeRecognizedCPPLanguageStandard.CPP11
 import com.jetbrains.cmake.completion.CMakeRecognizedCPPLanguageStandard.CPP14
 import com.jetbrains.edu.cpp.messages.EduCppBundle
 import com.jetbrains.edu.learning.LanguageSettings
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.stepik.StepikCourse
 import com.jetbrains.edu.learning.newproject.ui.errors.SettingsValidationResult
 import com.jetbrains.edu.learning.newproject.ui.errors.ValidationMessage
 import com.jetbrains.edu.learning.newproject.ui.errors.ValidationMessageType.WARNING
@@ -29,12 +27,7 @@ class CppLanguageSettings : LanguageSettings<CppProjectSettings>() {
     disposable: CheckedDisposable,
     context: UserDataHolder?
   ): List<LabeledComponent<JComponent>> {
-    val standards = if (course is StepikCourse) {
-      arrayOf(CPP11.standard, CPP14.standard)
-    }
-    else {
-      getLanguageVersions().toTypedArray()
-    }
+    val standards = getLanguageVersions().toTypedArray()
 
     val langStandardComboBox = ComboBox(standards)
     val courseLanguageStandard = course.languageVersion
@@ -48,7 +41,7 @@ class CppLanguageSettings : LanguageSettings<CppProjectSettings>() {
       notifyListeners()
     }
 
-    return listOf<LabeledComponent<JComponent>>(LabeledComponent.create(langStandardComboBox, CPP_STANDARD_PREFIX, BorderLayout.WEST))
+    return listOf(LabeledComponent.create(langStandardComboBox, CPP_STANDARD_PREFIX, BorderLayout.WEST))
   }
 
   override fun validate(course: Course?, courseLocation: String?): SettingsValidationResult {

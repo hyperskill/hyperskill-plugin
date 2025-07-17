@@ -17,7 +17,6 @@ import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.ext.dirName
 import com.jetbrains.edu.learning.courseFormat.ext.getPathToChildren
-import com.jetbrains.edu.learning.courseFormat.ext.shouldBeEmpty
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ALL_EXCEPT_IDEA_DIRECTORY
 import com.jetbrains.edu.learning.courseGeneration.macro.EduMacroUtils
@@ -143,7 +142,7 @@ object GeneratorUtils {
   @RequiresBlockingContext
   @Throws(IOException::class)
   private fun createTaskContent(holder: CourseInfoHolder<out Course?>, task: Task, taskDir: VirtualFile) {
-    val (testFiles, taskFiles) = task.taskFiles.values.partition { task.shouldBeEmpty(it.name) }
+    val (testFiles, taskFiles) = task.taskFiles.values.partition { false }
 
     for (file in taskFiles) {
       createChildFile(holder, taskDir, file.name, file.contents, file.isEditable)
