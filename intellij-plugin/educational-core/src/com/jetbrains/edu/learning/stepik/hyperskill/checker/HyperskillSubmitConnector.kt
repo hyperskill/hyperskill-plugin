@@ -11,9 +11,8 @@ import com.jetbrains.edu.learning.courseFormat.ext.getText
 import com.jetbrains.edu.learning.courseFormat.ext.languageById
 import com.jetbrains.edu.learning.courseFormat.ext.languageDisplayName
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingBasedTask
+import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
+import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.onError
 import com.jetbrains.edu.learning.stepik.StepikLanguage
@@ -77,56 +76,6 @@ object HyperskillSubmitConnector {
 
     val languageDisplayName = course.languageDisplayName
     return Err("""Unknown language "$languageDisplayName". Check if support for "$languageDisplayName" is enabled.""")
-  }
-
-  fun submitChoiceTask(task: ChoiceTask): Result<StepikBasedSubmission, String> {
-    val connector = task.getStepikBasedConnector()
-    val attempt = connector.getActiveAttemptOrPostNew(task).onError {
-      return Err(it)
-    }
-
-    val submission = HyperskillSubmissionFactory.createChoiceTaskSubmission(task, attempt)
-    return connector.postSubmission(submission)
-  }
-
-  fun submitSortingBasedTask(task: SortingBasedTask): Result<StepikBasedSubmission, String> {
-    val connector = task.getStepikBasedConnector()
-    val attempt = connector.getActiveAttemptOrPostNew(task).onError {
-      return Err(it)
-    }
-
-    val submission = HyperskillSubmissionFactory.createSortingBasedTaskSubmission(attempt, task.ordering)
-    return connector.postSubmission(submission)
-  }
-
-  fun submitTableTask(task: TableTask): Result<StepikBasedSubmission, String> {
-    val connector = task.getStepikBasedConnector()
-    val attempt = connector.getActiveAttemptOrPostNew(task).onError {
-      return Err(it)
-    }
-
-    val submission = HyperskillSubmissionFactory.createTableTaskSubmission(attempt, task)
-    return connector.postSubmission(submission)
-  }
-
-  fun submitDataTask(task: DataTask, answer: String): Result<StepikBasedSubmission, String> {
-    val attempt = task.attempt ?: return Err("Impossible to submit data task without active attempt")
-    val connector = task.getStepikBasedConnector()
-    val submission = HyperskillSubmissionFactory.createDataTaskSubmission(attempt, answer)
-    return connector.postSubmission(submission)
-  }
-
-  fun submitAnswerTask(project: Project, task: AnswerTask): Result<StepikBasedSubmission, String> {
-    val connector = task.getStepikBasedConnector()
-    val attempt = connector.postAttempt(task).onError {
-      return Err(it)
-    }
-
-    val submission = when (task) {
-      is StringTask -> HyperskillSubmissionFactory.createStringTaskSubmission(attempt, task.getInputAnswer(project))
-      is NumberTask -> HyperskillSubmissionFactory.createNumberTaskSubmission(attempt, task.getInputAnswer(project))
-    }
-    return connector.postSubmission(submission)
   }
 
   fun submitRemoteEduTask(task: RemoteEduTask, files: List<SolutionFile>): Result<StepikBasedSubmission, String> {

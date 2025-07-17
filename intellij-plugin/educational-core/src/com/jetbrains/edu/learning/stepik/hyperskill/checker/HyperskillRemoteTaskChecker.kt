@@ -9,10 +9,10 @@ import com.jetbrains.edu.learning.checker.remote.RemoteTaskChecker
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
+import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
+import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.courseFormat.tasks.UnsupportedTask
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.stepik.hyperskill.settings.HyperskillSettings
 
@@ -27,14 +27,8 @@ class HyperskillRemoteTaskChecker : RemoteTaskChecker {
       EduCoreBundle.message("check.login.error", EduNames.JBA)
     )
     return when (task) {
-      is AnswerTask -> HyperskillCheckConnector.checkAnswerTask(project, task)
-      is ChoiceTask -> HyperskillCheckConnector.checkChoiceTask(project, task)
       is CodeTask -> HyperskillCheckConnector.checkCodeTask(project, task)
-      is DataTask -> HyperskillCheckConnector.checkDataTask(project, task, indicator)
       is RemoteEduTask -> HyperskillCheckConnector.checkRemoteEduTask(project, task)
-      is SortingTask -> HyperskillCheckConnector.checkSortingBasedTask(project, task)
-      is MatchingTask -> HyperskillCheckConnector.checkSortingBasedTask(project, task)
-      is TableTask -> HyperskillCheckConnector.checkTableTask(project, task)
       is UnsupportedTask -> HyperskillCheckConnector.checkUnsupportedTask(task)
       else -> error("Can't check ${task.itemType} on ${EduNames.JBA}")
     }
@@ -42,9 +36,6 @@ class HyperskillRemoteTaskChecker : RemoteTaskChecker {
 
   override fun retry(task: Task): Result<Boolean, String> {
     HyperskillSettings.INSTANCE.account ?: Err(EduCoreBundle.message("check.login.error", EduNames.JBA))
-    return when (task) {
-      is ChoiceTask -> HyperskillCheckConnector.retryChoiceTask(task)
-      else -> error("Can't retry ${task.itemType} on ${EduNames.JBA}")
-    }
+    error("Can't retry ${task.itemType} on ${EduNames.JBA}")
   }
 }

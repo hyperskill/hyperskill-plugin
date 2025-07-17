@@ -3,35 +3,24 @@ package com.jetbrains.edu.learning.stepik
 import com.intellij.lang.Language
 import com.intellij.lang.LanguageCommenters
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.text.StringUtil.join
-import com.intellij.openapi.vfs.VfsUtilCore.VFS_SEPARATOR_CHAR
 import com.intellij.util.text.VersionComparatorUtil
-import com.jetbrains.edu.learning.Err
-import com.jetbrains.edu.learning.Ok
 import com.jetbrains.edu.learning.configuration.EduConfiguratorManager
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL
-import com.jetbrains.edu.learning.courseFormat.attempts.Attempt
+import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.languageById
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillTaskType
 import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask.Companion.DATA_FOLDER_NAME
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask.Companion.DATA_SAMPLE_FOLDER_NAME
 import com.jetbrains.edu.learning.courseFormat.tasks.DataTask.Companion.DATA_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask.Companion.INPUT_FILE_NAME
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask.Companion.EDU_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.IdeTask.Companion.IDE_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask.Companion.OUTPUT_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask.Companion.REMOTE_EDU_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask.Companion.THEORY_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.stepik.api.StepikBasedConnector.Companion.getStepikBasedConnector
 import com.jetbrains.edu.learning.xmlEscaped
 import com.jetbrains.rd.util.first
 import org.jetbrains.annotations.NonNls
@@ -62,17 +51,9 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
     {
       when (it) {
         // lexicographical order
-        HyperskillTaskType.CHOICE -> this::choiceTask
         HyperskillTaskType.CODE -> this::codeTask
-        HyperskillTaskType.DATASET -> this::dataTask
-        HyperskillTaskType.MATCHING -> this::matchingTask
-        HyperskillTaskType.NUMBER -> this::numberTask
         HyperskillTaskType.PYCHARM -> { _: String -> pycharmTask() }
         HyperskillTaskType.REMOTE_EDU -> { _: String -> pycharmTask(REMOTE_EDU_TASK_TYPE) }
-        HyperskillTaskType.SORTING -> this::sortingTask
-        HyperskillTaskType.STRING -> this::stringTask
-        HyperskillTaskType.TABLE -> this::tableTask
-        HyperskillTaskType.TEXT -> this::theoryTask
         else -> this::unsupportedTask
       }
     })
@@ -150,131 +131,6 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
         else langWithMaxVersion to codeTemplates[langWithMaxVersion]
       }
     }
-
-  private fun choiceTask(name: String): ChoiceTask {
-    val task = ChoiceTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked)
-    task.canCheckLocally = false
-    task.descriptionText = step.text
-    task.descriptionFormat = DescriptionFormat.HTML
-
-    if (!isUnitTestMode) {
-      when (val result = course.getStepikBasedConnector().getActiveAttemptOrPostNew(task)) {
-        is Ok -> fillChoiceTask(result.value, task)
-        is Err -> LOG.warn("Can't get attempt for Choice task of $courseType course: ${result.error}")
-      }
-    }
-
-    initTaskFiles(task)
-    return task
-  }
-
-  private fun sortingTask(name: String): SortingTask {
-    val task = SortingTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked)
-    task.descriptionText = step.text
-    task.descriptionFormat = DescriptionFormat.HTML
-
-    if (!isUnitTestMode) {
-      when (val result = course.getStepikBasedConnector().getActiveAttemptOrPostNew(task)) {
-        is Ok -> fillSortingTask(result.value, task)
-        is Err -> LOG.warn("Can't get attempt for Sorting task of $courseType course: ${result.error}")
-      }
-    }
-
-    initTaskFiles(task)
-    return task
-  }
-
-  private fun matchingTask(name: String): MatchingTask {
-    val task = MatchingTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked)
-
-    task.descriptionText = step.text
-    task.descriptionFormat = DescriptionFormat.HTML
-
-    if (!isUnitTestMode) {
-      when (val result = course.getStepikBasedConnector().getActiveAttemptOrPostNew(task)) {
-        is Ok -> fillMatchingTask(result.value, task)
-        is Err -> LOG.warn("Can't get attempt for Matching task of $courseType course: ${result.error}")
-      }
-    }
-
-    initTaskFiles(task)
-    return task
-  }
-
-  private fun tableTask(name: String): TableTask {
-    val task = TableTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked)
-
-    task.descriptionText = step.text
-    task.descriptionFormat = DescriptionFormat.HTML
-
-    if (!isUnitTestMode) {
-      when (val result = course.getStepikBasedConnector().getActiveAttemptOrPostNew(task)) {
-        is Ok -> fillTableTask(result.value, task)
-        is Err -> LOG.warn("Can't get attempt for Table task of $courseType course: ${result.error}")
-      }
-    }
-
-    initTaskFiles(task)
-    return task
-  }
-
-  private fun stringTask(name: String): StringTask {
-    val stringTask = StringTask(name, stepId, stepPosition, updateDate)
-    stringTask.init(step.text)
-    return stringTask
-  }
-
-  private fun numberTask(name: String): NumberTask {
-    val numberTask = NumberTask(name, stepId, stepPosition, updateDate)
-    numberTask.init(step.text)
-    return numberTask
-  }
-
-  private fun AnswerTask.init(description: String) {
-    descriptionText = description
-    descriptionFormat = DescriptionFormat.HTML
-
-    val text = EduCoreBundle.message("string.task.comment.file")
-    val taskFile = TaskFile(AnswerTask.ANSWER_FILE_NAME, text)
-    val answerPlaceholder = AnswerPlaceholder(0, text)
-    taskFile.addAnswerPlaceholder(answerPlaceholder)
-    addTaskFile(taskFile)
-  }
-
-  private fun theoryTask(name: String): TheoryTask {
-    val task = TheoryTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked)
-    task.descriptionText = step.text
-    task.descriptionFormat = DescriptionFormat.HTML
-
-    initTaskFiles(task)
-    return task
-  }
-
-  private fun dataTask(name: String): DataTask {
-    val task = DataTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked)
-    val options = step.pycharmOptions()
-
-    task.fillDescription()
-    initTaskFiles(task, "write your code here \n", getCodeTemplateForTask(options.codeTemplates))
-
-    val isSingleSample = options.samples?.size == 1
-    options.samples?.forEachIndexed { index, sample ->
-      if (sample.size == 2) {
-        val resultIndex = if (isSingleSample) "" else (index + 1).toString()
-        val folderName = "$DATA_SAMPLE_FOLDER_NAME$resultIndex"
-        val filePath = join(listOf(DATA_FOLDER_NAME, folderName, INPUT_FILE_NAME), VFS_SEPARATOR_CHAR.toString())
-        task.addTaskFile(TaskFile(filePath, sample.first()))
-      }
-      else {
-        LOG.warn("Unexpected sample format:")
-        sample.forEach {
-          LOG.warn("    $it")
-        }
-      }
-    }
-
-    return task
-  }
 
   // We can get an unsupported task for hyperskill courses only. There only task type is important, no other info is used
   private fun unsupportedTask(@NonNls name: String): Task {
@@ -380,62 +236,6 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
           placeholder.placeholderText = fileText.substring(offset, offset + length)
         }
       }
-    }
-
-    fun fillChoiceTask(attempt: Attempt, task: ChoiceTask): Boolean {
-      val dataset = attempt.dataset
-      if (dataset?.options == null) {
-        LOG.warn("Dataset for step ${task.id} is null")
-        return false
-      }
-      task.choiceOptions = dataset.options.orEmpty().map(::ChoiceOption)
-      task.isMultipleChoice = dataset.isMultipleChoice
-      return true
-    }
-
-    private fun fillSortingTask(attempt: Attempt, task: SortingTask): Boolean {
-      val dataset = attempt.dataset
-      if (dataset?.options == null) {
-        LOG.warn("Dataset for step ${task.id} is null")
-        return false
-      }
-      task.options = dataset.options.orEmpty()
-      return true
-    }
-
-    private fun fillMatchingTask(attempt: Attempt, task: MatchingTask): Boolean {
-      val dataset = attempt.dataset
-      if (dataset?.pairs == null) {
-        LOG.warn("Dataset for step ${task.id} is null")
-        return false
-      }
-      val pairs = dataset.pairs.orEmpty()
-      task.options = pairs.map { it.second }
-      task.captions = pairs.map { it.first }
-      return true
-    }
-
-    private fun fillTableTask(attempt: Attempt, task: TableTask): Boolean {
-      val dataset = attempt.dataset
-      if (dataset == null) {
-        LOG.warn("Dataset for step ${task.id} is null")
-        return false
-      }
-      val rows = dataset.rows
-      if (rows == null) {
-        LOG.warn("Dataset does not contain any rows for step ${task.id}")
-        return false
-      }
-
-      val columns = dataset.columns
-      if (columns == null) {
-        LOG.warn("Dataset does not contain any columns for step ${task.id}")
-        return false
-      }
-
-      val isCheckbox = dataset.isCheckbox
-      task.createTable(rows, columns, isCheckbox)
-      return true
     }
 
     @VisibleForTesting
