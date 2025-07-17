@@ -7,9 +7,6 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames.CORRECT
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.WRONG
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.learning.marketplace.MarketplaceSubmissionsTest.Companion.FIRST_TASK_SUBMISSION_AWS_KEY
-import com.jetbrains.edu.learning.marketplace.MarketplaceSubmissionsTest.Companion.SECOND_TASK_SUBMISSION_AWS_KEY
-import com.jetbrains.edu.learning.marketplace.MarketplaceSubmissionsTest.Companion.configureSubmissionsResponses
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 

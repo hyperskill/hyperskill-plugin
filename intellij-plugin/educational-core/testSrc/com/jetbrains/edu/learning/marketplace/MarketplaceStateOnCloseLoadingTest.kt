@@ -9,9 +9,6 @@ import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.marketplace.MarketplaceSolutionLoadingTest.Companion.getConfiguredSubmissionsList
 import com.jetbrains.edu.learning.marketplace.MarketplaceSolutionLoadingTest.Companion.solutionCorrect
 import com.jetbrains.edu.learning.marketplace.MarketplaceSolutionLoadingTest.Companion.solutionWrong
-import com.jetbrains.edu.learning.marketplace.MarketplaceSubmissionsTest.Companion.FIRST_TASK_SUBMISSION_AWS_KEY
-import com.jetbrains.edu.learning.marketplace.MarketplaceSubmissionsTest.Companion.SECOND_TASK_SUBMISSION_AWS_KEY
-import com.jetbrains.edu.learning.marketplace.MarketplaceSubmissionsTest.Companion.configureSubmissionsResponses
 import com.jetbrains.edu.learning.submissions.SubmissionSettings
 
 import org.intellij.lang.annotations.Language
