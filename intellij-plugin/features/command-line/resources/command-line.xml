@@ -1,6 +1,5 @@
 <idea-plugin package="com.jetbrains.edu.commandLine">
   <extensions defaultExtensionNs="com.intellij">
-    <appStarter id="createCourse" implementation="com.jetbrains.edu.commandLine.EduCourseCreatorAppStarter"/>
     <appStarter id="installCoursePlugins" implementation="com.jetbrains.edu.commandLine.EduCoursePluginInstallerAppStarter"/>
     <appStarter id="openCourse" implementation="com.jetbrains.edu.commandLine.EduOpenCourseAppStarter"/>
   </extensions>

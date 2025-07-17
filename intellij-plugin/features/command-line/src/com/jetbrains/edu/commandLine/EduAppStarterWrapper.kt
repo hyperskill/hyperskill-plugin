@@ -25,6 +25,6 @@ abstract class EduAppStarterWrapper(protected val command: EduCommand) : ModernA
 
   companion object {
     @JvmStatic
-    protected val LOG = logger<EduCourseCreatorAppStarter>()
+    protected val LOG = logger<EduAppStarterWrapper>()
   }
 }

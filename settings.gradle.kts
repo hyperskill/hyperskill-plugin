@@ -43,10 +43,6 @@ if (settings.providers.gradleProperty("environmentName").get() != "252") {
   include("intellij-plugin:features:remote-env")
 }
 
-if (settings.providers.gradleProperty("fleetIntegration").get().toBoolean()) {
-  include("fleet-plugin")
-}
-
 val secretProperties: String = "secret.properties"
 
 val isTeamCity: Boolean get() = System.getenv("TEAMCITY_VERSION") != null
@@ -147,16 +143,5 @@ pluginManagement {
     mavenCentral()
     gradlePluginPortal()
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
-    if (settings.providers.gradleProperty("fleetIntegration").get().toBoolean()) {
-      maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
-      maven("https://packages.jetbrains.team/maven/p/teamcity-rest-client/teamcity-rest-client")
-      maven {
-        url = uri("https://packages.jetbrains.team/maven/p/fleet/fleet-sdk")
-        credentials {
-          username = settings.providers.gradleProperty("spaceUsername").orNull
-          password = settings.providers.gradleProperty("spacePassword").orNull
-        }
-      }
-    }
   }
 }
