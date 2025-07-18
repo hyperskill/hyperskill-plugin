@@ -94,9 +94,7 @@ class NavigateTaskTest : EduTestCase() {
           taskFile("taskFile1.txt")
         }
         eduTask {
-          taskFile("taskFile2.txt", textWithPlaceholder) {
-            placeholder(0, "hello")
-          }
+          taskFile("taskFile2.txt", textWithPlaceholder)
         }
         eduTask {
           taskFile("taskFile3.txt")

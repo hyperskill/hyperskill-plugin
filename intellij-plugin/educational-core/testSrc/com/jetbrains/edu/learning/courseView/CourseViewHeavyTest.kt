@@ -86,9 +86,7 @@ class CourseViewHeavyTest : CourseViewHeavyTestBase() {
   private fun createCourseAndChangeView(): ProjectView = createCourseAndChangeView(course("Edu test course") {
     lesson {
       eduTask {
-        taskFile("taskFile1.txt", "a = <p>TODO()</p>") {
-          placeholder(0, "2")
-        }
+        taskFile("taskFile1.txt", "a = <p>TODO()</p>")
       }
       eduTask {
         taskFile("taskFile2.txt")

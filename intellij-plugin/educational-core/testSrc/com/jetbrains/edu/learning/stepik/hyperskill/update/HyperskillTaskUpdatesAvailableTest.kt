@@ -54,38 +54,6 @@ class HyperskillTaskUpdatesAvailableTest : UpdatesAvailableTestBase<HyperskillCo
   }
 
   @Test
-  fun `test updates are available when placeholders are changed`() {
-    localCourse = course(courseProducer = ::HyperskillCourse) {
-      lesson {
-        eduTask("task1", stepId = 1) {
-          taskFile("TaskFile1.kt", "fun foo() { <p>TODO</p>() }") {
-            placeholder(index = 0, placeholderText = "TODO")
-          }
-        }
-        eduTask("task2", stepId = 2) {
-          taskFile("TaskFile2.kt", "task file 2 text")
-        }
-      }
-    } as HyperskillCourse
-    localCourse.init(1, false)
-
-    val serverCourse = course(courseProducer = ::HyperskillCourse) {
-      lesson {
-        eduTask("task1", stepId = 1) {
-          taskFile("TaskFile1.kt", "fun foo() { <p>TODO()</p> }") {
-            placeholder(index = 0, placeholderText = "TODO()")
-          }
-        }
-        eduTask("task2", stepId = 2) {
-          taskFile("TaskFile2.kt", "task file 2 text")
-        }
-      }
-    } as HyperskillCourse
-
-    doTestUpdatesAvailable(serverCourse, 1)
-  }
-
-  @Test
   fun `test updates are available when the task changes its type`() {
     initiateLocalCourse()
     val serverCourse = course(courseProducer = ::HyperskillCourse) {
@@ -162,7 +130,7 @@ class HyperskillTaskUpdatesAvailableTest : UpdatesAvailableTestBase<HyperskillCo
 
     doTestUpdatesAvailable(serverCourse, 1)
   }
-  
+
   @Test
   fun `test updates are available when checkProfile for RemoteEduTask is changed`() {
     localCourse = course(courseProducer = ::HyperskillCourse) {

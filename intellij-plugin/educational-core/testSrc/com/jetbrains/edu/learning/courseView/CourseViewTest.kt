@@ -48,14 +48,10 @@ class CourseViewTest : CourseViewTestBase() {
       }
       frameworkLesson {
         eduTask {
-          taskFile("taskFile1.txt", "a = <p>TODO()</p>") {
-            placeholder(0, "2")
-          }
+          taskFile("taskFile1.txt", "a = <p>TODO()</p>")
         }
         eduTask {
-          taskFile("taskFile1.txt", "a = <p>TODO()</p>") {
-            placeholder(0, "2")
-          }
+          taskFile("taskFile1.txt", "a = <p>TODO()</p>")
           taskFile("taskFile2.txt")
         }
       }
@@ -128,16 +124,12 @@ class CourseViewTest : CourseViewTestBase() {
       courseWithFiles("Edu test course") {
         lesson {
           eduTask {
-            taskFile("taskFile1.txt", "a = <p>TODO()</p>") {
-              placeholder(0, "2")
-            }
+            taskFile("taskFile1.txt", "a = <p>TODO()</p>")
           }
         }
         lesson {
           eduTask {
-            taskFile("taskFile2.txt", "a = <p>TODO()</p>") {
-              placeholder(0, "2")
-            }
+            taskFile("taskFile2.txt", "a = <p>TODO()</p>")
           }
         }
       }

@@ -32,13 +32,8 @@
     <module name="sql-jvm"/>
 
     <!-- feature modules -->
-    <module name="code-insight-core"/>
-    <module name="code-insight-html"/>
-    <module name="code-insight-markdown"/>
-    <module name="code-insight-yaml"/>
     <module name="command-line"/>
     <module name="github"/>
-    <module name="ide-onboarding"/>
     <module name="social-media"/>
   </content>
 </idea-plugin>

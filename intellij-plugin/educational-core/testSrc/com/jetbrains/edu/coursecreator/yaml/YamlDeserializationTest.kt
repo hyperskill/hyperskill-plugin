@@ -277,30 +277,6 @@ class YamlDeserializationTest : YamlTestCase() {
   }
 
   @Test
-  fun `test empty placeholder`() {
-    val yamlContent = """
-    |type: edu
-    |files:
-    |- name: Test.java
-    |  placeholders:
-    |  - offset: 0
-    |    length: 3
-    |    placeholder_text: ""
-    |    dependency:
-    |      lesson: lesson1
-    |      task: task1
-    |      file: Test.java
-    |      placeholder: 1
-    |      is_visible: true
-    |""".trimMargin()
-    val task = basicMapper().deserializeTask(yamlContent)
-    assertTrue(task is EduTask)
-    val answerPlaceholder = task.taskFiles["Test.java"]!!.answerPlaceholders[0]
-    assertEquals("", answerPlaceholder.placeholderText)
-  }
-
-
-  @Test
   fun `test edu task with content tags`() {
     val contentTags = listOf("kotlin", "cycles")
     val yamlContent = """

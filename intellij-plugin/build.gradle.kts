@@ -71,13 +71,8 @@ dependencies {
     pluginModule(implementation(project("Edu-CSharp")))
     pluginModule(implementation(project("sql")))
     pluginModule(implementation(project("sql:sql-jvm")))
-    pluginModule(implementation(project("features:code-insight-core")))
-    pluginModule(implementation(project("features:code-insight-html")))
-    pluginModule(implementation(project("features:code-insight-markdown")))
-    pluginModule(implementation(project("features:code-insight-yaml")))
     pluginModule(implementation(project("features:command-line")))
     pluginModule(implementation(project("features:github")))
-    pluginModule(implementation(project("features:ide-onboarding")))
     if (!isAtLeast252) { // BACKCOMPAT: Temporarily exclude for 2025.2 as it doesn't compile
       pluginModule(implementation(project("features:remote-env")))
     }

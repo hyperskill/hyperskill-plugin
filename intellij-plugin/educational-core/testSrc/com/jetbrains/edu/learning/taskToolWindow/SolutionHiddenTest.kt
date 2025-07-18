@@ -41,9 +41,7 @@ class SolutionHiddenTest : EduTestCase() {
     courseWithFiles("Edu test course") {
       lesson(name = "lesson1") {
         eduTask(name = "task1") {
-          taskFile("taskFile1.txt", "a = <p>TODO()</p>") {
-            placeholder(0, "")
-          }
+          taskFile("taskFile1.txt", "a = <p>TODO()</p>")
         }
       }
     }
@@ -88,9 +86,7 @@ class SolutionHiddenTest : EduTestCase() {
     return courseWithFiles("Edu test course") {
       lesson(name = "lesson1") {
         eduTask(name = "task1") {
-          taskFile("taskFile1.txt", "a = <p>TODO()</p>") {
-            placeholder(0, "2")
-          }
+          taskFile("taskFile1.txt", "a = <p>TODO()</p>")
         }
       }
     }

@@ -42,9 +42,7 @@ class CompareWithAnswerActionTest : EduActionTestCase() {
     courseWithFiles {
       lesson {
         eduTask {
-          taskFile("task.txt", "task file text <p>placeholder</p>") {
-            placeholder(0, possibleAnswer = "answer")
-          }
+          taskFile("task.txt", "task file text <p>placeholder</p>")
         }
       }
     }

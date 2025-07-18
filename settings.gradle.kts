@@ -28,13 +28,8 @@ include(
   "intellij-plugin:sql",
   "intellij-plugin:sql:sql-jvm",
   "intellij-plugin:localization",
-  "intellij-plugin:features:code-insight-core",
-  "intellij-plugin:features:code-insight-html",
-  "intellij-plugin:features:code-insight-markdown",
-  "intellij-plugin:features:code-insight-yaml",
   "intellij-plugin:features:command-line",
   "intellij-plugin:features:github",
-  "intellij-plugin:features:ide-onboarding",
   "intellij-plugin:features:social-media",
 )
 
