@@ -32,7 +32,6 @@
     <module name="sql-jvm"/>
 
     <!-- feature modules -->
-    <module name="command-line"/>
     <module name="github"/>
     <module name="social-media"/>
   </content>

@@ -28,7 +28,6 @@ include(
   "intellij-plugin:sql",
   "intellij-plugin:sql:sql-jvm",
   "intellij-plugin:localization",
-  "intellij-plugin:features:command-line",
   "intellij-plugin:features:github",
   "intellij-plugin:features:social-media",
 )
