@@ -28,10 +28,6 @@ enum class StepikLanguage(val id: String?, val version: String = DEFAULT_VERSION
   override fun toString(): String = id ?: ""
 
   companion object {
-    private val NAME_MAP: Map<String?, StepikLanguage> by lazy {
-      values().associateBy { it.langName }
-    }
-
     private val TITLE_MAP: Map<Pair<String?, String>, StepikLanguage> by lazy {
       values().associateBy { it.id to it.version }
     }

@@ -19,7 +19,6 @@ import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.handlers.AnswerPlaceholderDeleteHandler
-import org.jetbrains.annotations.TestOnly
 import java.awt.*
 
 object PlaceholderPainter {
@@ -144,9 +143,6 @@ object PlaceholderPainter {
       hidePlaceholder(placeholder)
     }
   }
-
-  @TestOnly
-  fun getPaintedPlaceholder(): Set<AnswerPlaceholder> = disposables.keys
 
   private class PainterDisposable(private val placeholder: AnswerPlaceholder, editor: Editor) : Disposable {
     init {

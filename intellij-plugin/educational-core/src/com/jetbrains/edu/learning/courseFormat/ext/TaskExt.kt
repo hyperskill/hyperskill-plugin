@@ -24,12 +24,8 @@ import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat.Companion.TASK_DESCRIPTION_PREFIX
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
-import com.jetbrains.edu.learning.courseFormat.tasks.TableTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingBasedTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.getTextFromTaskTextFile
 import com.jetbrains.edu.learning.isTestsFile
@@ -187,7 +183,7 @@ fun Task.canShowSolution(): Boolean {
   return shouldShow && taskFiles.values.any { it.canShowSolution() }
 }
 
-fun Task.hasSolutions(): Boolean = this !is TheoryTask && this !is DataTask
+fun Task.hasSolutions(): Boolean = this !is TheoryTask
 
 fun Task.getCodeTaskFile(project: Project): TaskFile? {
 
@@ -219,23 +215,6 @@ fun Task.revertTaskFiles(project: Project) {
 
 fun Task.revertTaskParameters() {
   status = CheckStatus.Unchecked
-  when (this) {
-    is ChoiceTask -> {
-      clearSelectedVariants()
-    }
-
-    is DataTask -> {
-      attempt = null
-    }
-
-    is SortingBasedTask -> {
-      restoreInitialOrdering()
-    }
-
-    is TableTask -> {
-      clearSelectedVariants()
-    }
-  }
 }
 
 @RequiresReadLock

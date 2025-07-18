@@ -5,7 +5,6 @@ class FeedbackLink {
   var link: String? = null
 
   enum class LinkType {
-    MARKETPLACE,
     STEPIK,
     CUSTOM,
     NONE

@@ -16,9 +16,3 @@ fun Cipher(): Cipher = AES256Cipher.create()
 @Suppress("FunctionName")
 fun TestCipher(): Cipher = AES256Cipher.TEST_CIPHER
 
-/**
- * Returns a cipher which applies identity transformation for given [String] or [ByteArray],
- * i.e., it doesn't transform a given object anyhow and return it unmodified
- */
-@Suppress("FunctionName")
-fun NoOpCipher(): Cipher = NoOpCipher

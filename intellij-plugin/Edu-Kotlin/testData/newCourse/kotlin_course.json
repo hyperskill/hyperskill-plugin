@@ -7,7 +7,7 @@
         {
           "name" : "Hello, world",
           "stepic_id" : 0,
-          "description_text" : "<h2>Simple Functions</h2>\n<p>Take a look at <a href=\"http://kotlinlang.org/docs/reference/basic-syntax.html#defining-functions\">function syntax</a> and make the function <code>start</code> return the string <code>&quot;OK&quot;</code>.</p>\n<p>In the tasks the function <code>TODO()</code> is used that throws an exception. Your job during the koans will be to replace this function invocation with a meaningful code according to the problem.</p>",
+          "description_text" : "<h2>Simple Functions</h2>\n<p>Take a look at <a href=\"https://kotlinlang.org/docs/reference/basic-syntax.html#defining-functions\">function syntax</a> and make the function <code>start</code> return the string <code>&quot;OK&quot;</code>.</p>\n<p>In the tasks the function <code>TODO()</code> is used that throws an exception. Your job during the koans will be to replace this function invocation with a meaningful code according to the problem.</p>",
           "description_format" : "HTML",
           "task_type" : "edu",
           "files" : {
@@ -77,7 +77,7 @@
         {
           "name" : "Comparison",
           "stepic_id" : 0,
-          "description_text" : "<h2>Comparison</h2>\n<p>Read about <a href=\"http://kotlinlang.org/docs/reference/operator-overloading.html\">operator overloading</a> to learn how different conventions for operations like <code>==</code>, <code>&lt;</code>, <code>+</code> work in Kotlin. Add the function <code>compareTo</code> to the class MyDate to make it comparable. After that the code below <code>date1 &lt; date2</code> will start to compile.</p>\n<p>In Kotlin when you override a member, the modifier <a href=\"http://kotlinlang.org/docs/reference/classes.html#overriding-members\"><code>override</code></a> is mandatory.</p>",
+          "description_text" : "<h2>Comparison</h2>\n<p>Read about <a href=\"https://kotlinlang.org/docs/reference/operator-overloading.html\">operator overloading</a> to learn how different conventions for operations like <code>==</code>, <code>&lt;</code>, <code>+</code> work in Kotlin. Add the function <code>compareTo</code> to the class MyDate to make it comparable. After that the code below <code>date1 &lt; date2</code> will start to compile.</p>\n<p>In Kotlin when you override a member, the modifier <a href=\"https://kotlinlang.org/docs/reference/classes.html#overriding-members\"><code>override</code></a> is mandatory.</p>",
           "description_format" : "HTML",
           "task_type" : "edu",
           "files" : {

@@ -40,17 +40,6 @@ val isTeamCity: Boolean get() = System.getenv("TEAMCITY_VERSION") != null
 
 inline fun <reified T> nullValue(): Matcher<T> = CoreMatchers.nullValue(T::class.java)
 
-fun <T> withFeature(featureId: String, enabled: Boolean, action: () -> T): T {
-  val currentValue = isFeatureEnabled(featureId)
-  setFeatureEnabled(featureId, enabled)
-  return try {
-    action()
-  }
-  finally {
-    setFeatureEnabled(featureId, currentValue)
-  }
-}
-
 inline fun withTestDialog(dialog: TestDialog, action: () -> Unit) {
   val oldDialog = TestDialogManager.setTestDialog(dialog)
   try {

@@ -2,11 +2,9 @@ package com.jetbrains.edu.learning.format
 
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.util.JDOMUtil
-import com.intellij.util.xmlb.SkipDefaultsSerializationFilter
 import com.intellij.util.xmlb.XmlSerializer
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.messages.EduCoreBundle
@@ -178,19 +176,6 @@ open class CoursesInfosStorageTestBase : EduTestCase() {
     val coursesStorage = CoursesStorage.getInstance()
     coursesStorage.state.courses.clear()
     return coursesStorage
-  }
-
-  protected fun doSerializationTest(course: Course) {
-    val coursesStorage = CoursesStorage.getInstance()
-    val courses = coursesStorage.state.courses
-    coursesStorage.state.courses.removeAll(courses)
-    coursesStorage.addCourse(course, "\$USER_HOME$/IdeaProjects/AtomicKotlin")
-
-    @Suppress("UnstableApiUsage")
-    val actual = XmlSerializer.serialize(coursesStorage.state, SkipDefaultsSerializationFilter())
-    val expected = loadFromFile()
-
-    checkEquals(expected, actual)
   }
 
   protected fun deserializeState(): UserCoursesState {

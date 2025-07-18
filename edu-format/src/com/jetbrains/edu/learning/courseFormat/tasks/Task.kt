@@ -36,7 +36,6 @@ abstract class Task : StudyItem {
    */
   var solutionHidden: Boolean? = null
   var record: Int = -1
-  var isUpToDate: Boolean = true
 
   protected var checkStatus: CheckStatus = CheckStatus.Unchecked
 

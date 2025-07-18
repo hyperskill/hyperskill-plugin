@@ -9,11 +9,7 @@ import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.*
-import com.jetbrains.edu.learning.courseFormat.tasks.TableTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.framework.FrameworkLessonManager
 import com.jetbrains.edu.learning.invokeLater
@@ -26,26 +22,6 @@ object UpdateUtils {
     task.descriptionText = remoteTask.descriptionText
     task.descriptionFormat = remoteTask.descriptionFormat
     task.feedbackLink = remoteTask.feedbackLink
-
-    when {
-      task is ChoiceTask && remoteTask is ChoiceTask -> {
-        task.choiceOptions = remoteTask.choiceOptions
-        task.isMultipleChoice = remoteTask.isMultipleChoice
-      }
-
-      task is SortingTask && remoteTask is SortingTask -> {
-        task.options = remoteTask.options
-      }
-
-      task is MatchingTask && remoteTask is MatchingTask -> {
-        task.captions = remoteTask.captions
-        task.options = remoteTask.options
-      }
-
-      task is TableTask && remoteTask is TableTask -> {
-        task.createTable(remoteTask.rows, remoteTask.columns, remoteTask.isMultipleChoice)
-      }
-    }
 
     // Task Description file needs to be regenerated as it already exists
     val taskDir = task.getTaskDirectory(project)

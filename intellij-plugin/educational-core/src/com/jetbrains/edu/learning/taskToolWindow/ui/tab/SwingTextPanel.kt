@@ -1,7 +1,6 @@
 package com.jetbrains.edu.learning.taskToolWindow.ui.tab
 
 import com.intellij.openapi.project.Project
-import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.AsyncProcessIcon
 import com.intellij.util.ui.JBUI
@@ -71,14 +70,5 @@ class SwingTextPanel(project: Project) : TabTextPanel(project) {
       add(loadingTextPane)
     }
     return loadingPanel
-  }
-
-  fun addAdjustableBorder() = textPanel.verticalScrollBar.addAdjustmentListener {
-    if (textPanel.verticalScrollBar.value == 0) {
-      textPanel.border = JBUI.Borders.empty()
-    }
-    else {
-      textPanel.border = JBUI.Borders.customLineTop(JBColor.border())
-    }
   }
 }

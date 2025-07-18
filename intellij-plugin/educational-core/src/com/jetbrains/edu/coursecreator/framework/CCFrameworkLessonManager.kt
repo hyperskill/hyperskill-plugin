@@ -87,13 +87,6 @@ class CCFrameworkLessonManager(
   }
 
   /**
-   * Saves the current file state of the [task] to the storage and updates the record of the task.
-   */
-  fun saveCurrentState(task: Task) {
-    saveFileStateIntoStorage(task)
-  }
-
-  /**
    * Returns a list of task files that have been changed from the saved state for a given task.
    */
   fun getChangedFiles(task: Task): List<TaskFile> {
@@ -327,11 +320,6 @@ class CCFrameworkLessonManager(
 
   private fun concatNonEmptyPaths(vararg paths: String): String {
     return paths.filter { it.isNotEmpty() }.joinToString(VfsUtilCore.VFS_SEPARATOR)
-  }
-
-  @VisibleForTesting
-  fun getRecord(path: String): Int? {
-    return state.taskRecords[path]
   }
 
   @TestOnly

@@ -56,16 +56,8 @@ class TaskFile : EduFile {
     _answerPlaceholders.add(answerPlaceholder)
   }
 
-  fun removeAnswerPlaceholder(answerPlaceholder: AnswerPlaceholder) {
-    _answerPlaceholders.remove(answerPlaceholder)
-  }
-
   fun getAnswerPlaceholder(offset: Int): AnswerPlaceholder? {
     return _answerPlaceholders.firstOrNull { offset in it.offset..it.endOffset }
-  }
-
-  fun removeAllPlaceholders() {
-    _answerPlaceholders.clear()
   }
 
   fun sortAnswerPlaceholders() {
@@ -73,10 +65,6 @@ class TaskFile : EduFile {
     for (i in _answerPlaceholders.indices) {
       _answerPlaceholders[i].index = i
     }
-  }
-
-  fun hasFailedPlaceholders(): Boolean {
-    return _answerPlaceholders.any { it.status == CheckStatus.Failed }
   }
 
   fun isValid(text: String): Boolean {

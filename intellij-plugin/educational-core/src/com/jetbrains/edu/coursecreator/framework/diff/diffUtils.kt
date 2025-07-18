@@ -15,7 +15,6 @@ import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.framework.impl.FLTaskState
 import com.jetbrains.edu.learning.isUnitTestMode
-import org.jetbrains.annotations.TestOnly
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -82,16 +81,6 @@ fun applyChangesWithMergeDialog(
 
 private var MOCK: FLMultipleFileMergeUI? = null
 
-@TestOnly
-fun withFLMultipleFileMergeUI(mockUi: FLMultipleFileMergeUI, action: () -> Unit) {
-  try {
-    MOCK = mockUi
-    action()
-  }
-  finally {
-    MOCK = null
-  }
-}
 
 private fun showMultipleFileMergeDialog(
   project: Project,

@@ -5,8 +5,6 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.createCourseFiles
 import com.jetbrains.edu.learning.createCourseFromJson
 import org.junit.Test
@@ -47,7 +45,7 @@ class CourseFormatTest : EduTestCase() {
     assertFalse("No tasks found", taskList.isEmpty())
     assertTrue(taskList[0] is EduTask)
   }
-  
+
   @Test
   fun testFeedbackLinks() {
     assertEquals("https://www.jetbrains.com/", firstEduTask.feedbackLink)
@@ -82,17 +80,6 @@ class CourseFormatTest : EduTestCase() {
     val taskFile = task.getTaskFile("my_task.py")
     assertNotNull(taskFile)
     assertEquals("def foo():\n    write function body\n", taskFile!!.text)
-  }
-
-  @Test
-  fun testChoiceTasks() {
-    val task = courseFromJson.lessons[0].taskList[0]
-    check(task is ChoiceTask)
-    assertTrue(task.isMultipleChoice)
-    val choiceOptions = task.choiceOptions
-
-    val actualChoiceOptions = choiceOptions.associateBy({ it.text }, { it.status })
-    assertEquals(mapOf(Pair("1", ChoiceOptionStatus.CORRECT), Pair("2", ChoiceOptionStatus.INCORRECT)), actualChoiceOptions)
   }
 
   @Test

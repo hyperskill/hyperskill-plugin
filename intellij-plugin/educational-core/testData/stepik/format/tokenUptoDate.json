@@ -9,7 +9,7 @@
         "project_domain" : "stepik.org",
         "courses_default_publicity" : true,
         "is_standard_index" : true,
-        "project_help_center_url" : "http://support.stepik.org",
+        "project_help_center_url" : "https://support.stepik.org",
         "stripe_api_public_key" : "pk_live_vTMgNYTvMxpmKA0pN0ZQYoHT",
         "can_change_city" : true,
         "footer_logo" : "",

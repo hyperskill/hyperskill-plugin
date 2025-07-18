@@ -35,9 +35,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
 
   private val communitySubmissions = ConcurrentHashMap<Int, TaskCommunitySubmissions>()
 
-  // Guarded by synchronized `getCourseStateOnClose` method
-  private var courseStateOnClose: Map<Int, Submission> = emptyMap()
-
   var course: Course? = project.course
     @TestOnly set
 
@@ -67,16 +64,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
     }
   }
 
-  fun getSubmissions(task: Task): List<Submission>? {
-    return submissions[task.id]
-  }
-
-  private fun loadStateOnClose(): Map<Int, Submission> {
-    val course = course ?: error("Nullable Course")
-    val submissionsProvider =
-      SubmissionsProvider.getSubmissionsProviderForCourse(course) ?: error("SubmissionProvider for course ${course.id} not available")
-    return submissionsProvider.loadCourseStateOnClose(project, course)
-  }
 
   fun getSubmissionWithSolutionText(task: Task, submissionId: Int): Submission? {
     val submission = getOrLoadSubmissions(task).find { it.id == submissionId }
@@ -241,11 +228,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
   @TestOnly
   override fun cleanUpState() {
     submissions.clear()
-  }
-
-  @TestOnly
-  fun addCommunitySolutions(taskId: Int, solutions: MutableList<Submission>) {
-    communitySubmissions.putAll(mapOf(taskId to TaskCommunitySubmissions(solutions)))
   }
 
   companion object {

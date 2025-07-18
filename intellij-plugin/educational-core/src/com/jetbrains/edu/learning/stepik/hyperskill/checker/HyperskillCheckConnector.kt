@@ -11,10 +11,10 @@ import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.attempts.Attempt
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
+import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
+import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.courseFormat.tasks.UnsupportedTask
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.messages.EduFormatBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
@@ -43,9 +43,9 @@ object HyperskillCheckConnector {
     get() = HyperskillLoginListener
 
   fun isRemotelyChecked(task: Task): Boolean = when (task) {
-    is ChoiceTask -> !task.canCheckLocally
-    is CodeTask, is DataTask, is NumberTask, is RemoteEduTask, is StringTask,
-    is UnsupportedTask, is SortingTask, is MatchingTask, is TableTask -> true
+    is CodeTask,
+    is RemoteEduTask,
+    is UnsupportedTask -> true
 
     else -> false
   }

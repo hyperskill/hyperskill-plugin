@@ -182,7 +182,6 @@ open class CourseBuilder(
   @JsonProperty(TYPE) val courseType: String?,
   @JsonProperty(TITLE) val title: String,
   @JsonProperty(SUMMARY) val summary: String?,
-  @JsonProperty(FEEDBACK_LINK) val yamlFeedbackLink: String?,
   @JsonProperty(PROGRAMMING_LANGUAGE) val displayProgrammingLanguageName: String,
   @JsonProperty(PROGRAMMING_LANGUAGE_VERSION) val programmingLanguageVersion: String?,
   @JsonProperty(LANGUAGE) val language: String,

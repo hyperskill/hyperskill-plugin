@@ -16,12 +16,8 @@ import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.TableTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.UnsupportedTask
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
@@ -149,21 +145,6 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
 
     return when {
       first is UnsupportedTask && second !is UnsupportedTask -> true
-      first is ChoiceTask && second is ChoiceTask -> {
-        first.choiceOptions != second.choiceOptions
-      }
-
-      first is SortingTask && second is SortingTask -> {
-        first.options != second.options
-      }
-
-      first is MatchingTask && second is MatchingTask -> {
-        (first.options != second.options) || (first.captions != second.captions)
-      }
-
-      first is TableTask && second is TableTask -> {
-        (first.rows != second.rows) || (first.columns != second.columns) || (first.isMultipleChoice != second.isMultipleChoice)
-      }
 
       first is RemoteEduTask && second is RemoteEduTask -> {
         first.checkProfile != second.checkProfile

@@ -19,11 +19,6 @@ import com.fasterxml.jackson.databind.util.StdConverter
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ADDITIONAL_FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.AUTHORS
@@ -95,7 +90,6 @@ abstract class LocalEduCourseMixin {
   @JsonProperty(AUTHORS)
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   @JsonSerialize(contentConverter = UserInfoToString::class)
-  @JsonDeserialize(contentConverter = MarketplaceUserInfoFromString::class)
   private var authors: MutableList<UserInfo> = ArrayList()
 
   @JsonProperty(SUMMARY)
@@ -166,15 +160,6 @@ abstract class LocalEduCourseMixin {
 
 private class UserInfoToString : StdConverter<UserInfo, String?>() {
   override fun convert(value: UserInfo?): String? = value?.getFullName()
-}
-
-private class MarketplaceUserInfoFromString : StdConverter<String?, JBAccountUserInfo?>() {
-  override fun convert(value: String?): JBAccountUserInfo? {
-    if (value == null) {
-      return null
-    }
-    return JBAccountUserInfo(value)
-  }
 }
 
 abstract class PluginInfoMixin : PluginInfo() {
@@ -283,9 +268,6 @@ abstract class ChoiceTaskLocalMixin : LocalTaskMixin() {
   @JsonProperty
   private var isMultipleChoice: Boolean = false
 
-  @JsonProperty
-  private lateinit var choiceOptions: List<ChoiceOption>
-
   @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = FeedbackCorrectFilter::class)
   @JsonProperty
   private lateinit var messageCorrect: String
@@ -302,9 +284,6 @@ abstract class ChoiceTaskLocalMixin : LocalTaskMixin() {
 abstract class ChoiceOptionLocalMixin {
   @JsonProperty
   private var text: String = ""
-
-  @JsonProperty
-  private var status: ChoiceOptionStatus = ChoiceOptionStatus.UNKNOWN
 }
 
 @JsonPropertyOrder(NAME, IS_VISIBLE, TEXT, IS_BINARY, IS_EDITABLE, HIGHLIGHT_LEVEL)
@@ -449,7 +428,6 @@ class StudyItemDeserializer : StdDeserializer<StudyItem>(StudyItem::class.java) 
 fun deserializeTask(node: ObjectNode, taskType: String, objectMapper: ObjectCodec): Task? {
   return when (taskType) {
     IdeTask.IDE_TASK_TYPE -> objectMapper.treeToValue(node, IdeTask::class.java)
-    ChoiceTask.CHOICE_TASK_TYPE -> objectMapper.treeToValue(node, ChoiceTask::class.java)
     TheoryTask.THEORY_TASK_TYPE -> objectMapper.treeToValue(node, TheoryTask::class.java)
     CodeTask.CODE_TASK_TYPE -> objectMapper.treeToValue(node, CodeTask::class.java)
     // deprecated: old courses have pycharm tasks
@@ -458,9 +436,7 @@ fun deserializeTask(node: ObjectNode, taskType: String, objectMapper: ObjectCode
     }
 
     OutputTask.OUTPUT_TASK_TYPE -> objectMapper.treeToValue(node, OutputTask::class.java)
-    MatchingTask.MATCHING_TASK_TYPE -> objectMapper.treeToValue(node, MatchingTask::class.java)
     RemoteEduTask.REMOTE_EDU_TASK_TYPE -> objectMapper.treeToValue(node, RemoteEduTask::class.java)
-    SortingTask.SORTING_TASK_TYPE -> objectMapper.treeToValue(node, SortingTask::class.java)
     UnsupportedTask.UNSUPPORTED_TASK_TYPE -> objectMapper.treeToValue(node, UnsupportedTask::class.java)
     else -> {
       LOG.warning("Unsupported task type $taskType")

@@ -91,12 +91,8 @@ val Course.compatibility: CourseCompatibility
       return CourseCompatibility.Compatible
     }
 
-    return versionCompatibility() ?: pluginCompatibility() ?: configuratorCompatibility() ?: CourseCompatibility.Compatible
+    return configuratorCompatibility() ?: CourseCompatibility.Compatible
   }
-
-private fun Course.versionCompatibility(): CourseCompatibility? {
-  return null
-}
 
 // projectLanguage parameter should be passed only for hyperskill courses because for Hyperskill
 // it can differ from the course.programmingLanguage
@@ -164,13 +160,6 @@ private fun Course.configuratorCompatibility(): CourseCompatibility? {
   return if (configurator == null) CourseCompatibility.Unsupported else null
 }
 
-fun Course.updateEnvironmentSettings(project: Project, configurator: EduConfigurator<*>? = this.configurator) {
-  // The order is important here since it should preserve old values.
-  // Otherwise, it may override values provided by users manually (via `course-info.yaml` file, for example)
-  val newEnvironmentSettings = configurator?.getEnvironmentSettings(project).orEmpty() + course.environmentSettings
-  course.environmentSettings = newEnvironmentSettings
-}
-
 fun Course.visitEduFiles(visitor: (EduFile) -> Unit) {
   visitTasks { task ->
     for (taskFile in task.taskFiles.values) {
@@ -181,18 +170,6 @@ fun Course.visitEduFiles(visitor: (EduFile) -> Unit) {
   for (additionalFile in additionalFiles) {
     visitor(additionalFile)
   }
-}
-
-fun Course.visitItems(action: (StudyItem) -> Unit) {
-
-  fun walk(item: StudyItem) {
-    action(item)
-    if (item is ItemContainer) {
-      item.items.forEach(::walk)
-    }
-  }
-
-  items.forEach(::walk)
 }
 
 val Course?.customContentPath: String get() = this?.customContentPath ?: ""

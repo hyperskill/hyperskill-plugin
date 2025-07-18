@@ -25,8 +25,6 @@ import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.ext.updateDescriptionTextAndFormat
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TEXT
 import com.jetbrains.edu.learning.serialization.SerializationUtils
 import com.jetbrains.edu.learning.stepik.api.*
@@ -110,13 +108,8 @@ class Step {
     }
     else task.descriptionText
 
-    name = if (task is ChoiceTask) CHOICE else PYCHARM
-    if (task is ChoiceTask) {
-      feedbackCorrect = task.messageCorrect
-      feedbackWrong = task.messageIncorrect
-    }
+    name = PYCHARM
     options = when {
-      task is ChoiceTask -> ChoiceStepOptions(task)
       task.course is HyperskillCourse -> HyperskillStepOptions(project, task)
       else -> PyCharmStepOptions(project, task)
     }
@@ -247,18 +240,6 @@ class ChoiceStepOptions : StepOptions {
   var customPresentableName: String? = null
 
   constructor()
-
-  constructor(task: ChoiceTask) {
-    isMultipleChoice = task.isMultipleChoice
-    sampleSize = task.choiceOptions.size
-    customPresentableName = task.presentableName
-    options = task.choiceOptions.map {
-      val option = ChoiceStepOption()
-      option.text = it.text
-      option.isCorrect = it.status == ChoiceOptionStatus.CORRECT
-      option
-    }
-  }
 }
 
 class ChoiceStepOption {
@@ -271,8 +252,6 @@ class ChoiceStepOption {
   @JsonProperty(FEEDBACK)
   val feedback = ""
 }
-
-val ChoiceStepOption.choiceStatus: ChoiceOptionStatus get() = if (isCorrect) ChoiceOptionStatus.CORRECT else ChoiceOptionStatus.INCORRECT
 
 open class StepSource {
   @JsonProperty(ID)

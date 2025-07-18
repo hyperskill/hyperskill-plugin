@@ -283,6 +283,5 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
   companion object {
     private const val PROCESS_MESSAGE = "Check in progress"
     private val LOG = Logger.getInstance(CheckAction::class.java)
-    private val EMPTY_BYTE_ARRAY = byteArrayOf()
   }
 }

@@ -53,8 +53,6 @@ fun SyncChangesHelpTooltip.tryInstallNewTooltip(project: Project, treeNode: Tree
   var title: String?
   var description: String?
   var actionText: String?
-  var secondaryActionText: String? = null
-
   val state = SyncChangesStateManager.getInstance(project).getSyncChangesState(taskFile)
 
   when (state) {
@@ -63,14 +61,12 @@ fun SyncChangesHelpTooltip.tryInstallNewTooltip(project: Project, treeNode: Tree
       title = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.Changes.text")
       description = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.Changes.description")
       actionText = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ActionLink.Changes.text")
-      secondaryActionText = EduCoreBundle.message("action.Educational.Educator.IgnoreFilePropagation.ActionLink.text")
     }
 
     SyncChangesTaskFileState.WARNING -> {
       title = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.File.text")
       description = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.File.description")
       actionText = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ActionLink.File.text")
-      secondaryActionText = EduCoreBundle.message("action.Educational.Educator.IgnoreFilePropagation.ActionLink.File.text")
     }
   }
 

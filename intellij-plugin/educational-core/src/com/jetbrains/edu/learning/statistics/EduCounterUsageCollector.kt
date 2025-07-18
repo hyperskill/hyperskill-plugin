@@ -57,7 +57,7 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
   }
 
   private enum class PostCourseEvent {
-    UPLOAD, UPDATE
+    UPDATE
   }
 
   enum class SynchronizeCoursePlace {
@@ -155,11 +155,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
       ),
       enumField<AuthorizationPlace>(SOURCE)
     )
-    private val OBTAIN_JBA_TOKEN_EVENT = GROUP.registerEvent(
-      "obtain.jba.token",
-      "The event is recorded in case a request for a JetBrains account access token is processed.",
-      EventFields.Boolean(SUCCESS)
-    )
     private val SHOW_FULL_OUTPUT_EVENT = GROUP.registerEvent(
       "show.full.output",
       "The event is recorded in case a user clicks the Show Full Output link in the check result panel."
@@ -181,10 +176,7 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
       "The event is recorded in case a user checks a task in any course.",
       enumField<CheckStatus>("status")
     )
-    private val RATE_MARKETPLACE_COURSE = GROUP.registerEvent(
-      "rate.marketplace.course",
-      "The event is recorded in case a user clicks on the Rate Course icon in the Task Description."
-    )
+
     private val REVIEW_STAGE_TOPICS_EVENT = GROUP.registerEvent(
       "review.stage.topics",
       "The event is recorded in case a user clicks Review Topics for a stage in a JetBrains Academy project."
@@ -194,18 +186,7 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
       "The event is recorded in case a user expands/collapses hints in the Task Description.",
       enumField<HintEvent>(EVENT)
     )
-    private val CREATE_COURSE_PREVIEW_EVENT = GROUP.registerEvent(
-      "create.course.preview",
-      "The event is recorded in case an educator creates a course preview for a course in Course Creation mode."
-    )
-    private val PREVIEW_TASK_FILE_EVENT = GROUP.registerEvent(
-      "preview.task.file",
-      "The event is recorded in case an educator uses Preview for a task file in Course Creation mode."
-    )
-    private val CREATE_COURSE_ARCHIVE_EVENT = GROUP.registerEvent(
-      "create.course.archive",
-      "The event is recorded in case an educator generates an archive for their course in Course Creation mode."
-    )
+
     private val POST_COURSE_EVENT = GROUP.registerEvent(
       "post.course",
       "The event is recorded in case an educator uploads or updates their course on Stepik or Marketplace in Course Creation mode.",
@@ -216,10 +197,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
       "The event is recorded in case a course is synchronized with its latest version.",
       ITEM_TYPE_FIELD,
       enumField<SynchronizeCoursePlace>(SOURCE)
-    )
-    private val IMPORT_COURSE_EVENT = GROUP.registerEvent(
-      "import.course",
-      "The event is recorded in case a user opens a course from a disk in Learner mode."
     )
 
     private val X_DIALOG_SHOWN_EVENT = GROUP.registerEvent(
@@ -260,47 +237,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
         "create.new.file.in.non.template.based.framework.lesson.by.learner",
         "The event is recorded in case a user creates a new file in a Non-Template Based Framework Lesson in Learner mode."
       )
-
-    private val SOLUTION_SHARING_PROMPT_EVENT = GROUP.registerEvent(
-      "submission.share.invite.shown",
-      "The event is recorded in case a user enables the Solution Sharing banner/notification."
-    )
-
-    private val COMMUNITY_SOLUTION_DIFF_OPENED = GROUP.registerEvent(
-      "peer.solution.diff.opened",
-      "The event is recorded in case a user opens the Community Solution diff."
-    )
-
-    private val SUBMISSION_SUCCESS = GROUP.registerEvent(
-      "submission.attempt",
-      "The event is recorded in case a user makes a submission attempt, regardless of whether it fails or succeeds.",
-      EventFields.Boolean(SUCCESS)
-    )
-
-    private val AGREE_TO_ENABLE_INVITE_ACTION = GROUP.registerEvent(
-      "submission.invite.action",
-      "The event is recorded in case a user responds to the feature invitation, regardless of whether it is accepted or declined.",
-      EventFields.Boolean(SUCCESS)
-    )
-
-    private val AGREE_TO_ENABLE_SOLUTION_SHARE_STATE = GROUP.registerEvent(
-      "solution.share.state",
-      "The event is recorded in case a user's sharing preference is updated.",
-      EventFields.Boolean(SUCCESS)
-    )
-
-    private val OPEN_COMMUNITY_TAB = GROUP.registerEvent(
-      "open.community.tab",
-      "The event is recorded in case a user opens the Community panel on the Submissions tab to explore other learners' solutions."
-    )
-
-    private val COMMUNITY_TAB_OPENED_BY_LINK = GROUP.registerEvent(
-      "community.tab.opened.by.link",
-      "The event is logged when a user clicks the 'See community solutions' link to view solutions from other students. " +
-      "The event is marked as successful if clicking the link opens the Community tab. " +
-      "If the Community tab was already open, the event logs a failure.",
-      EventFields.Boolean(SUCCESS)
-    )
 
     private val UI_ONBOARDING_STARTED = GROUP.registerEvent(
       "ui.onboarding.started",

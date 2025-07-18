@@ -1,7 +1,6 @@
 package com.jetbrains.edu.learning.actions.navigate
 
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.actions.PreviousTaskAction
@@ -13,7 +12,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.getContainingTask
 import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.edu.learning.testAction
@@ -621,16 +619,6 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
       checkTask(task2)
       testAction(PreviousTaskAction.ACTION_ID)
       checkTask(task1)
-    }
-  }
-
-  private inline fun doTest(actionId: String, expectedTask: Task, init: () -> Unit) {
-    init()
-    testAction(actionId)
-    val currentFile = FileEditorManagerEx.getInstanceEx(myFixture.project).currentFile ?: error("Can't find current file")
-    val task = currentFile.getContainingTask(myFixture.project) ?: error("Can't find task for $currentFile")
-    check(expectedTask == task) {
-      "Expected ${expectedTask.name}, found ${task.name}"
     }
   }
 

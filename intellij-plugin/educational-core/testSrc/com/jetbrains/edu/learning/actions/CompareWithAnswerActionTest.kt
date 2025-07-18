@@ -60,12 +60,6 @@ class CompareWithAnswerActionTest : EduActionTestCase() {
     })
   }
 
-  private fun doTestDisabled() {
-    openFirstTaskFile()
-
-    testAction(CompareWithAnswerAction.ACTION_ID, shouldBeEnabled = false)
-  }
-
   private fun openFirstTaskFile() {
     val task = findTask(0, 0).apply { status = CheckStatus.Solved }
     task.openTaskFileInEditor("task.txt")

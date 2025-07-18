@@ -1,5 +1,0 @@
-package com.jetbrains.edu.markdown.taskDescription
-
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-
-class EduMarkdownUriSchemaCompletionProviderTest : EduUriSchemaCompletionProviderTestBase(DescriptionFormat.MD)

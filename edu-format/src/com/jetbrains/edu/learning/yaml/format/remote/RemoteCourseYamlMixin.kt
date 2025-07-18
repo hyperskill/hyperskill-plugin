@@ -46,7 +46,6 @@ class RemoteCourseBuilder(
   courseType,
   title,
   summary,
-  yamlFeedbackLink,
   displayProgrammingLanguageName,
   programmingLanguageVersion,
   language,

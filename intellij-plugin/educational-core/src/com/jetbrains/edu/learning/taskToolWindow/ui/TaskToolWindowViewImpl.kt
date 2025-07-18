@@ -32,7 +32,6 @@ import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.isHeadlessEnvironment
@@ -269,7 +268,7 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
   override fun checkFinished(task: Task, checkResult: CheckResult) {
     if (task != currentTask) return
     checkPanel.updateCheckDetails(task, checkResult)
-    if (task is DataTask || task.isChangedOnFailed) {
+    if (task.isChangedOnFailed) {
       updateCheckPanel(task)
     }
     if (checkResult.status == CheckStatus.Failed) {

@@ -15,14 +15,6 @@ import com.jetbrains.edu.learning.projectView.CourseViewPane
 
 abstract class EduActionTestCase : EduTestCase() {
 
-  protected fun dataContext(files: Array<VirtualFile>): DataContext {
-    return SimpleDataContext.builder()
-      .add(CommonDataKeys.PROJECT, project)
-      .add(LangDataKeys.MODULE, myFixture.module)
-      .add(CommonDataKeys.VIRTUAL_FILE_ARRAY, files)
-      .build()
-  }
-
   protected fun dataContext(file: VirtualFile): DataContext {
     val psiManager = PsiManager.getInstance(project)
     val psiFile = psiManager.findDirectory(file) ?: psiManager.findFile(file)

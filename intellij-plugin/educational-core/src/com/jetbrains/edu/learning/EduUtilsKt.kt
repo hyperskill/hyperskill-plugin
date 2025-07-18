@@ -17,13 +17,11 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PlatformUtils
 import com.intellij.util.TimeoutUtil
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.learning.cipher.Cipher
-import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.COURSE_META_FILE
+import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
+import com.jetbrains.edu.learning.courseFormat.CourseMode
+import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.courseFormat.zip.FileContentsFromZipFactory
-import com.jetbrains.edu.learning.json.readCourseJson
 import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
 import com.jetbrains.edu.learning.projectView.ProgressUtil.updateCourseProgress
 import com.jetbrains.edu.learning.taskToolWindow.ui.EduBrowserHyperlinkListener
@@ -38,12 +36,8 @@ import org.intellij.markdown.parser.sequentialparsers.EmphasisLikeParser
 import org.intellij.markdown.parser.sequentialparsers.SequentialParser
 import org.intellij.markdown.parser.sequentialparsers.SequentialParserManager
 import org.intellij.markdown.parser.sequentialparsers.impl.*
-import java.io.IOException
-import java.io.Reader
-import java.nio.charset.StandardCharsets
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
-import java.util.zip.ZipFile
 
 object EduUtilsKt {
   fun DataContext.showPopup(htmlContent: String, position: Balloon.Position = Balloon.Position.above) {
@@ -70,8 +64,6 @@ object EduUtilsKt {
     return HtmlGenerator(normalizedText, parsedTree, flavour, false).generateHtml()
   }
 
-  fun isZip(fileName: String): Boolean = StringUtil.endsWithIgnoreCase(fileName, ".zip")
-
   @Suppress("UnstableApiUsage")
   fun isAndroidStudio(): Boolean = "AndroidStudio" == PlatformUtils.getPlatformPrefix()
 
@@ -91,26 +83,6 @@ object EduUtilsKt {
   fun isTestsFile(task: Task, path: String): Boolean {
     val configurator = task.course.configurator ?: return false
     return configurator.isTestFile(task, path)
-  }
-
-  fun getLocalCourse(
-    zipFilePath: String,
-    readCourseJson: (() -> Reader, fileContentsFactory: FileContentsFactory) -> Course? = ::readCourseJson
-  ): Course? {
-    try {
-      return measureTimeAndLog("Read course archive") {
-        ZipFile(zipFilePath).use { zipFile ->
-          val entry = zipFile.getEntry(COURSE_META_FILE) ?: return@use null
-          val reader = { zipFile.getInputStream(entry).reader(StandardCharsets.UTF_8) }
-
-          readCourseJson(reader, FileContentsFromZipFactory(zipFilePath, Cipher()))
-        }
-      }
-    }
-    catch (e: IOException) {
-      LOG.error("Failed to unzip course archive", e)
-    }
-    return null
   }
 
   fun Project.isNewlyCreated(): Boolean {
@@ -168,17 +140,6 @@ object EduUtilsKt {
   }
 
   private val LOG = logger<EduUtilsKt>()
-}
-
-object Executor {
-  fun <T> execCancelable(message: String, callable: Callable<T>): T =
-    ProgressManager.getInstance().runProcessWithProgressSynchronously<T, RuntimeException>(
-      {
-        ProgressManager.getInstance().progressIndicator.isIndeterminate = true
-        EduUtilsKt.execCancelable(callable)
-      },
-      message, true, null
-    )
 }
 
 // org.intellij.markdown.flavours.gfm.GFMFlavourDescriptor considers links starting

@@ -1,6 +1,5 @@
 package com.jetbrains.edu.coursecreator.yaml
 
-import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
@@ -10,8 +9,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.IdeTask
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.format.doTestPlaceholderAndDependencyVisibility
 import com.jetbrains.edu.learning.yaml.YamlDeserializer.deserializeCourse
 import com.jetbrains.edu.learning.yaml.YamlDeserializer.deserializeLesson
@@ -256,56 +253,6 @@ class YamlDeserializationTest : YamlTestCase() {
     assertTrue(task is IdeTask)
     assertEquals(listOf("Test.java"), task.taskFiles.map { it.key })
     assertEquals(true, task.solutionHidden)
-  }
-
-  @Test
-  fun `test choice task`() {
-    val correct = "correct"
-    val incorrect = "incorrect"
-    val yamlContent = """
-      |type: choice
-      |files:
-      |- name: Test.java
-      |  visible: true
-      |is_multiple_choice: false
-      |message_correct: $correct
-      |message_incorrect: $incorrect
-      |options:
-      |- text: 1
-      |  is_correct: true
-      |- text: 2
-      |  is_correct: false
-      |""".trimMargin()
-    val task = basicMapper().deserializeTask(yamlContent)
-    assertTrue(task is ChoiceTask)
-    assertEquals(listOf("Test.java"), task.taskFiles.map { it.key })
-    assertEquals(
-      mapOf("1" to ChoiceOptionStatus.CORRECT, "2" to ChoiceOptionStatus.INCORRECT),
-      (task as ChoiceTask).choiceOptions.associateBy({ it.text }, { it.status })
-    )
-    assertEquals(correct, task.messageCorrect)
-    assertEquals(incorrect, task.messageIncorrect)
-  }
-
-  @Test
-  fun `test choice task without answers`() {
-    val yamlContent = """
-      |type: choice
-      |files:
-      |- name: Test.java
-      |  visible: true
-      |is_multiple_choice: false
-      |options:
-      |- text: 1
-      |- text: 2
-      |""".trimMargin()
-    val task = basicMapper().deserializeTask(yamlContent)
-    assertTrue(task is ChoiceTask)
-    assertEquals(listOf("Test.java"), task.taskFiles.map { it.key })
-    assertEquals(
-      mapOf("1" to ChoiceOptionStatus.UNKNOWN, "2" to ChoiceOptionStatus.UNKNOWN),
-      (task as ChoiceTask).choiceOptions.associateBy({ it.text }, { it.status })
-    )
   }
 
   @Test
@@ -707,5 +654,4 @@ class YamlDeserializationTest : YamlTestCase() {
     assertEquals(CourseMode.STUDENT, getCourseMode(yamlContent))
   }
 
-  private fun deserializeNotNull(yamlContent: String): Course = basicMapper().deserializeCourse(yamlContent)
 }

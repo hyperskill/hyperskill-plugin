@@ -21,7 +21,6 @@ import com.jetbrains.edu.learning.yaml.format.student.TakeFromStorageBinaryConte
 import com.jetbrains.edu.learning.yaml.format.student.TakeFromStorageTextualContents
 import org.jetbrains.annotations.TestOnly
 import java.util.concurrent.Future
-import java.util.concurrent.TimeoutException
 
 @Service(Service.Level.PROJECT)
 class LearningObjectsStorageManager(private val project: Project) : DumbAware, Disposable, EduTestAware {
@@ -90,17 +89,6 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
           persistingTasks.add(future)
         }
       }
-    }
-  }
-
-  @TestOnly
-  fun waitForPersisting() {
-    persistingTasks.forEach {
-      for (i in 1..10) {
-        if (it.isDone) return@forEach
-        Thread.sleep(50)
-      }
-      throw TimeoutException("Waiting for persisting task for too long")
     }
   }
 

@@ -2,7 +2,6 @@
 
 package com.jetbrains.edu.learning.json
 
-import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.InjectableValues
 import com.fasterxml.jackson.databind.MapperFeature
@@ -10,96 +9,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.COURSE_CONTENTS_FOLDER
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.MARKETPLACE
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.json.encrypt.EncryptionModule
 import com.jetbrains.edu.learning.json.migration.*
 import com.jetbrains.edu.learning.json.mixins.*
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.COURSE_TYPE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.VERSION
 import org.jetbrains.annotations.VisibleForTesting
-import java.io.IOException
-import java.io.Reader
 import java.text.SimpleDateFormat
 import java.util.*
 
-private val LOG = logger<LocalEduCourseMixin>()
-
-private class CourseJsonParsingException(message: String) : Exception(message)
-
-fun readCourseJson(reader: () -> Reader, fileContentsFactory: FileContentsFactory = EmtpyFileContentFactory): Course? {
-  return try {
-    val courseMapper = getCourseMapper(fileContentsFactory)
-    val isArchiveEncrypted = reader().use { currentReader ->
-      isArchiveEncrypted(currentReader, courseMapper)
-    }
-    courseMapper.configureCourseMapper(isArchiveEncrypted)
-    var courseNode = reader().use { currentReader ->
-      courseMapper.readTree(currentReader) as ObjectNode
-    }
-    courseNode = migrate(courseNode)
-    courseMapper.treeToValue(courseNode)
-  }
-  catch (e: IOException) {
-    LOG.severe("Failed to read course json: ${e.message}")
-    null
-  }
-  catch (e: CourseJsonParsingException) {
-    LOG.severe("Course json format error: ${e.message}")
-    null
-  }
-}
-
-@Throws(IOException::class, CourseJsonParsingException::class)
-private fun isArchiveEncrypted(reader: Reader, courseMapper: ObjectMapper): Boolean {
-  val (version, courseType) = getFormatVersionAndCourseTypeFromJson(reader, courseMapper)
-
-  if (version >= 12) return true
-  return courseType == MARKETPLACE
-}
-
-@Throws(IOException::class, CourseJsonParsingException::class)
-private fun getFormatVersionAndCourseTypeFromJson(
-  reader: Reader,
-  courseMapper: ObjectMapper
-): Pair<Int, String?> = courseMapper.createParser(reader).use { parser ->
-  var version: Int? = null
-  var courseType: String? = null
-
-  // read start object token
-  parser.nextToken()
-  if (!parser.hasToken(JsonToken.START_OBJECT)) throw CourseJsonParsingException("No opening bracket in course.json")
-
-  // read object fields until the END_OBJECT
-  while (parser.nextToken() != null && !parser.hasToken(JsonToken.END_OBJECT)) {
-
-    // if the object is not finished, we expect a field name
-    if (!parser.hasToken(JsonToken.FIELD_NAME)) throw CourseJsonParsingException("Unexpected token ${parser.currentToken} in course.json")
-
-    when (parser.currentName) {
-      VERSION -> {
-        version = parser.nextIntValue(-1)
-        if (version == -1) throw CourseJsonParsingException("Course format version specified incorrectly")
-      }
-
-      COURSE_TYPE -> courseType = parser.nextTextValue()
-      else -> {
-        parser.nextToken()
-        parser.skipChildren()
-      }
-    }
-
-    if (version != null && courseType != null) break
-  }
-
-  version ?: throw CourseJsonParsingException("Format version is not specified")
-  return Pair(version, courseType)
-}
 
 fun migrate(jsonObject: ObjectNode): ObjectNode {
   return migrate(jsonObject, JSON_FORMAT_VERSION)
@@ -165,8 +84,6 @@ fun ObjectMapper.addStudyItemMixins() {
   addMixIn(FrameworkLesson::class.java, RemoteFrameworkLessonMixin::class.java)
   addMixIn(Lesson::class.java, RemoteLessonMixin::class.java)
   addMixIn(Task::class.java, RemoteTaskMixin::class.java)
-  addMixIn(ChoiceTask::class.java, ChoiceTaskLocalMixin::class.java)
-  addMixIn(ChoiceOption::class.java, ChoiceOptionLocalMixin::class.java)
   addMixIn(TaskFile::class.java, TaskFileMixin::class.java)
   addMixIn(EduFile::class.java, EduFileMixin::class.java)
   addMixIn(AnswerPlaceholder::class.java, AnswerPlaceholderWithAnswerMixin::class.java)
@@ -178,6 +95,3 @@ fun JsonMapper.Builder.setDateFormat(): JsonMapper.Builder {
   mapperDateFormat.timeZone = TimeZone.getTimeZone("UTC")
   return defaultDateFormat(mapperDateFormat)
 }
-
-val EduFile.pathInArchive: String
-  get() = "$COURSE_CONTENTS_FOLDER/$pathInCourse"

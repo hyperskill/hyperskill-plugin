@@ -7,9 +7,6 @@ import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask.Companion.PYCHARM_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask.Companion.REMOTE_EDU_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.stepik.PyCharmStepOptions
 import com.jetbrains.edu.learning.stepik.StepikTaskBuilder
 import com.jetbrains.edu.learning.stepik.hasHeaderOrFooter
@@ -50,7 +47,7 @@ class HyperskillTaskBuilder(
       }
 
       when (this) {
-        is CodeTask, is DataTask, is ChoiceTask, is StringTask, is NumberTask, is SortingTask, is MatchingTask, is TableTask -> {
+        is CodeTask -> {
           name = stepSource.title
         }
 

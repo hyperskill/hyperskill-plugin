@@ -16,15 +16,8 @@ import com.jetbrains.edu.learning.configuration.courseFileAttributes
 import com.jetbrains.edu.learning.configuration.excludeFromArchive
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.EduFile
-import com.jetbrains.edu.learning.courseFormat.Lesson
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.getTask
 import com.jetbrains.edu.learning.isToEncodeContent
-import com.jetbrains.edu.learning.stepik.api.LessonAdditionalInfo
-import com.jetbrains.edu.learning.stepik.api.TaskAdditionalInfo
-import com.jetbrains.edu.learning.stepik.collectTaskFiles
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.TASK_CONFIG
 import java.io.IOException
 
@@ -86,21 +79,6 @@ object AdditionalFilesUtils {
 
     return courseIgnoreRules.isIgnored(file) ||
            excludedByConfigurator
-  }
-
-  @Suppress("DEPRECATION") // https://youtrack.jetbrains.com/issue/EDU-4930
-  fun collectAdditionalLessonInfo(lesson: Lesson, project: Project): LessonAdditionalInfo {
-    val nonPluginTasks = lesson.taskList.filter { !it.isPluginTaskType }
-    val taskInfo = nonPluginTasks.associateBy(Task::id) {
-      TaskAdditionalInfo(it.name, it.customPresentableName, collectTaskFiles(project, it))
-    }
-    val courseFiles: List<EduFile> = if (lesson.course is HyperskillCourse) {
-      collectAdditionalFiles(lesson.course.configurator, project)
-    }
-    else {
-      listOf()
-    }
-    return LessonAdditionalInfo(lesson.customPresentableName, taskInfo, courseFiles)
   }
 
   private fun additionalFilesVisitor(project: Project, courseConfigurator: EduConfigurator<*>, detectTaskFoldersByContents: Boolean) =

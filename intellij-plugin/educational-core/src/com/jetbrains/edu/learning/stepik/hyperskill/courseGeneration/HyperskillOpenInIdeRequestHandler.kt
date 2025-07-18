@@ -16,7 +16,6 @@ import com.jetbrains.edu.learning.courseFormat.ext.*
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillTaskType
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ALL_FILES
@@ -236,13 +235,11 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     val stepSource = connector.getStepSource(stepId).onError { error(it) }
 
     // Choosing language by user is allowed only for Data tasks, see EDU-4718
-    if (isLanguageSelectedByUser && !stepSource.isDataTask()) {
+    if (isLanguageSelectedByUser) {
       error("Language has been selected by user not for data task, but it must be specified for other tasks in request")
     }
     return stepSource
   }
-
-  private fun HyperskillStepSource.isDataTask(): Boolean = block?.name == DataTask.DATA_TASK_TYPE
 
   private fun Lesson.addProblems(stepSources: List<HyperskillStepSource>): Result<List<Task>, String> {
     val existingTasksIds = items.map { it.id }

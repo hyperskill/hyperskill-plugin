@@ -12,7 +12,6 @@ import com.jetbrains.edu.coursecreator.actions.studyItem.NewStudyItemUiModel
 import com.jetbrains.edu.coursecreator.newItemTitleMessage
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.isUnitTestMode
-import org.jetbrains.annotations.TestOnly
 
 private var MOCK: NewStudyItemUi? = null
 
@@ -31,17 +30,6 @@ fun showNewStudyItemDialog(
   val validator = CCStudyItemPathInputValidator(project, course, model.itemType, model.parentDir)
   val callback = NewStudyItemInfoCallback(validator, studyItemCreator)
   ui.show(project, course, model, callback)
-}
-
-@TestOnly
-fun withMockCreateStudyItemUi(mockUi: NewStudyItemUi, action: () -> Unit) {
-  try {
-    MOCK = mockUi
-    action()
-  }
-  finally {
-    MOCK = null
-  }
 }
 
 interface NewStudyItemUi {
@@ -89,7 +77,7 @@ class NewStudyItemPopupUi : NewStudyItemUi {
     val title = model.itemType.newItemTitleMessage
     val popup = NewItemPopupUtil.createNewItemPopup(title, contentPanel, nameField)
     contentPanel.setApplyAction { event ->
-      val variant = contentPanel.getSelectedItem() ?: return@setApplyAction
+      contentPanel.getSelectedItem() ?: return@setApplyAction
       val info = NewStudyItemInfo(nameField.text, model.baseIndex + CCItemPositionPanel.AFTER_DELTA)
       callback(info) { errorMessage ->
         if (errorMessage == null) {

@@ -1,32 +1,22 @@
 package com.jetbrains.edu.learning
 
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.testFramework.LightPlatformTestCase
 import com.jetbrains.edu.learning.configuration.PlainTextTaskCheckerProvider.Companion.CHECK_RESULT_FILE
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.LESSON
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.SECTION
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
-import com.jetbrains.edu.learning.courseFormat.attempts.DataTaskAttempt
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ONLY_IDEA_DIRECTORY
 import org.intellij.lang.annotations.Language
-import java.io.File
 import java.util.*
 import java.util.regex.Pattern
 
@@ -292,60 +282,6 @@ class LessonBuilder<T : Lesson>(val course: Course, section: Section?, val lesso
     buildTask: TaskBuilder.() -> Unit = {}
   ) = task(OutputTask(), name, customPresentableName, taskDescription, taskDescriptionFormat, stepId, updateDate, buildTask)
 
-  fun choiceTask(
-    name: String? = null,
-    customPresentableName: String? = null,
-    taskDescription: String? = null,
-    taskDescriptionFormat: DescriptionFormat? = null,
-    stepId: Int = 0,
-    updateDate: Date = Date(0),
-    choiceOptions: Map<String, ChoiceOptionStatus>,
-    isMultipleChoice: Boolean = false,
-    selectedVariants: MutableList<Int> = mutableListOf(),
-    status: CheckStatus = CheckStatus.Unchecked,
-    messageCorrect: String? = null,
-    messageIncorrect: String? = null,
-    quizHeader: String? = null,
-    buildTask: TaskBuilder.() -> Unit = {}
-  ) {
-    val choiceTask = ChoiceTask()
-    task(choiceTask, name, customPresentableName, taskDescription, taskDescriptionFormat, stepId, updateDate, buildTask)
-    if (stepId != 0) choiceTask.canCheckLocally = false
-    choiceTask.choiceOptions = choiceOptions.map { ChoiceOption(it.key, it.value) }
-    choiceTask.isMultipleChoice = isMultipleChoice
-    choiceTask.selectedVariants = selectedVariants
-    choiceTask.status = status
-    quizHeader?.also { choiceTask.quizHeader = it }
-    messageCorrect?.also { choiceTask.messageCorrect = it }
-    messageIncorrect?.also { choiceTask.messageIncorrect = it }
-  }
-
-  fun stringTask(
-    name: String? = null,
-    customPresentableName: String? = null,
-    taskDescription: String? = null,
-    taskDescriptionFormat: DescriptionFormat? = null,
-    stepId: Int = 0,
-    updateDate: Date = Date(0),
-    buildTask: TaskBuilder.() -> Unit = {}
-  ) {
-    val stringTask = StringTask()
-    task(stringTask, name, customPresentableName, taskDescription, taskDescriptionFormat, stepId, updateDate, buildTask)
-  }
-
-  fun numberTask(
-    name: String? = null,
-    customPresentableName: String? = null,
-    taskDescription: String? = null,
-    taskDescriptionFormat: DescriptionFormat? = null,
-    stepId: Int = 0,
-    updateDate: Date = Date(0),
-    buildTask: TaskBuilder.() -> Unit = {}
-  ) {
-    val numberTask = NumberTask()
-    task(numberTask, name, customPresentableName, taskDescription, taskDescriptionFormat, stepId, updateDate, buildTask)
-  }
-
   fun codeTask(
     name: String? = null,
     customPresentableName: String? = null,
@@ -355,86 +291,6 @@ class LessonBuilder<T : Lesson>(val course: Course, section: Section?, val lesso
     updateDate: Date = Date(0),
     buildTask: TaskBuilder.() -> Unit = {}
   ) = task(CodeTask(), name, customPresentableName, taskDescription, taskDescriptionFormat, stepId, updateDate, buildTask)
-
-  fun dataTask(
-    name: String? = null,
-    customPresentableName: String? = null,
-    taskDescription: String? = null,
-    stepId: Int = 0,
-    updateDate: Date = Date(0),
-    attempt: DataTaskAttempt? = null,
-    buildTask: TaskBuilder.() -> Unit = {}
-  ) {
-    val dataTask = DataTask()
-    task(dataTask, name, customPresentableName, taskDescription, DescriptionFormat.HTML, stepId, updateDate, buildTask)
-    dataTask.attempt = attempt
-  }
-
-  fun sortingTask(
-    name: String? = null,
-    customPresentableName: String? = null,
-    taskDescription: String? = null,
-    taskDescriptionFormat: DescriptionFormat? = null,
-    stepId: Int = 0,
-    updateDate: Date = Date(0),
-    options: List<String> = emptyList(),
-    ordering: IntArray = intArrayOf(),
-    status: CheckStatus = CheckStatus.Unchecked,
-    buildTask: TaskBuilder.() -> Unit = {}
-  ) {
-    val sortingTask = SortingTask()
-    task(sortingTask, name, customPresentableName, taskDescription, taskDescriptionFormat, stepId, updateDate, buildTask)
-    sortingTask.options = options
-    sortingTask.ordering = ordering
-    sortingTask.status = status
-  }
-
-  fun matchingTask(
-    name: String? = null,
-    customPresentableName: String? = null,
-    taskDescription: String? = null,
-    taskDescriptionFormat: DescriptionFormat? = null,
-    stepId: Int = 0,
-    updateDate: Date = Date(0),
-    captions: List<String> = emptyList(),
-    options: List<String> = emptyList(),
-    ordering: IntArray = intArrayOf(),
-    status: CheckStatus = CheckStatus.Unchecked,
-    buildTask: TaskBuilder.() -> Unit = {}
-  ) {
-    val task = MatchingTask()
-    task(task, name, customPresentableName, taskDescription, taskDescriptionFormat, stepId, updateDate, buildTask)
-    task.options = options
-    task.ordering = ordering
-    task.status = status
-    task.captions = captions
-  }
-
-  fun tableTask(
-    name: String? = null,
-    customPresentableName: String? = null,
-    taskDescription: String? = null,
-    taskDescriptionFormat: DescriptionFormat? = null,
-    stepId: Int = 0,
-    updateDate: Date = Date(0),
-    rows: List<String> = emptyList(),
-    columns: List<String> = emptyList(),
-    selected: Array<BooleanArray> = arrayOf(),
-    status: CheckStatus = CheckStatus.Unchecked,
-    buildTask: TaskBuilder.() -> Unit = {}
-  ) {
-    val task = TableTask()
-    task(task, name, customPresentableName, taskDescription, taskDescriptionFormat, stepId, updateDate, buildTask)
-    task.rows = rows
-    task.columns = columns
-    if (selected.size != task.rows.size || selected.firstOrNull()?.size != columns.size) {
-      task.createTable(rows, columns)
-    }
-    else {
-      task.selected = selected
-    }
-    task.status = status
-  }
 
   fun remoteEduTask(
     name: String? = null,
@@ -633,20 +489,6 @@ class TaskBuilder(val lesson: Lesson, val task: Task) {
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
   ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
 
-  fun taskFileFromResources(
-    disposable: Disposable,
-    name: String,
-    path: String,
-    visible: Boolean? = null,
-    buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) {
-    val ioFile = File(path)
-    VfsRootAccess.allowRootAccess(disposable, ioFile.absolutePath)
-    val file = LocalFileSystem.getInstance().findFileByIoFile(ioFile) ?: error("Can't find `$path`")
-    val text = file.loadEncodedContent()
-    taskFile(name, text, visible, buildTaskFile = buildTaskFile)
-  }
-
   fun dir(dirName: String, buildTask: TaskBuilder.() -> Unit) {
     val tmpTask = EduTask()
     val innerBuilder = TaskBuilder(lesson, tmpTask)
@@ -728,10 +570,6 @@ class TaskFileBuilder(val task: Task? = null) {
       placeholder.taskFile = taskFile
       taskFile.addAnswerPlaceholder(placeholder)
     }
-  }
-
-  fun withHighlightLevel(highlightLevel: EduFileErrorHighlightLevel) {
-    taskFile.errorHighlightLevel = highlightLevel
   }
 
   fun placeholder(

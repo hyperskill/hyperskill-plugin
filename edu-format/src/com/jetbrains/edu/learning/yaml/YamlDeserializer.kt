@@ -10,22 +10,12 @@ import com.jetbrains.edu.learning.courseFormat.CourseMode.Companion.toCourseMode
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask.Companion.CODE_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask.Companion.DATA_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask.Companion.EDU_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.IdeTask.Companion.IDE_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.NumberTask.Companion.NUMBER_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask.Companion.OUTPUT_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask.Companion.REMOTE_EDU_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.StringTask.Companion.STRING_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.TableTask.Companion.TABLE_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask.Companion.THEORY_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.UnsupportedTask.Companion.UNSUPPORTED_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask.Companion.CHOICE_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask.Companion.MATCHING_TASK_TYPE
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask.Companion.SORTING_TASK_TYPE
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.COURSE_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.LESSON_CONFIG
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.REMOTE_COURSE_CONFIG
@@ -136,17 +126,10 @@ object YamlDeserializer {
       REMOTE_EDU_TASK_TYPE -> RemoteEduTask::class.java
       OUTPUT_TASK_TYPE -> OutputTask::class.java
       THEORY_TASK_TYPE -> TheoryTask::class.java
-      DATA_TASK_TYPE -> DataTask::class.java
-      CHOICE_TASK_TYPE -> ChoiceTask::class.java
       IDE_TASK_TYPE -> IdeTask::class.java
       // for student mode
       CODE_TASK_TYPE -> CodeTask::class.java
-      STRING_TASK_TYPE -> StringTask::class.java
-      NUMBER_TASK_TYPE -> NumberTask::class.java
       UNSUPPORTED_TASK_TYPE -> UnsupportedTask::class.java
-      MATCHING_TASK_TYPE -> MatchingTask::class.java
-      SORTING_TASK_TYPE -> SortingTask::class.java
-      TABLE_TASK_TYPE -> TableTask::class.java
       else -> formatError(unsupportedItemTypeMessage(type, TASK))
     }
     return treeToValue(treeNode, clazz)
@@ -200,10 +183,7 @@ object YamlDeserializer {
   private fun deserializeTaskRemoteInfo(configFileText: String): StudyItem {
     val treeNode = remoteMapper().readTree(configFileText)
 
-    val clazz = when (asText(treeNode.get(YamlMixinNames.TYPE))) {
-      DATA_TASK_TYPE -> DataTask::class.java
-      else -> RemoteStudyItem::class.java
-    }
+    val clazz = RemoteStudyItem::class.java
 
     return remoteMapper().treeToValue(treeNode, clazz)
   }

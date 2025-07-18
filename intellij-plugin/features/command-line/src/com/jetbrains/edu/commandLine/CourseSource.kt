@@ -1,24 +1,17 @@
 package com.jetbrains.edu.commandLine
 
-import com.jetbrains.edu.learning.*
+import com.jetbrains.edu.learning.Err
+import com.jetbrains.edu.learning.Ok
+import com.jetbrains.edu.learning.Result
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
+import com.jetbrains.edu.learning.onError
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
 import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
 import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenProjectStageRequest
 
 @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
 enum class CourseSource(val option: String, val description: String) {
-
-  ARCHIVE("archive", "Path to course archive file") {
-    override suspend fun loadCourse(courseArchivePath: String): Result<Course, String> {
-      val course = EduUtilsKt.getLocalCourse(courseArchivePath)
-      return if (course != null) Ok(course) else Err("Failed to create course object from `$courseArchivePath` archive")
-    }
-
-    override fun isCourseFromSource(course: Course): Boolean = false
-  },
-
   HYPERSKILL("hyperskill", "Hyperskill project id") {
     override suspend fun loadCourse(location: String): Result<Course, String> {
       val projectId = location.toIntOrNull() ?: return Err("Hyperskill course id should be an integer. Got `$location`")

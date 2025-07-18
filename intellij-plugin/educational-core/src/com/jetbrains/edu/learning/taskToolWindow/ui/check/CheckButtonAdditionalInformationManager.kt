@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 /**
  * Manages additional information that should be displayed next to the Check button.
@@ -23,14 +22,6 @@ class CheckButtonAdditionalInformationManager {
 
   val additionalInformation: StateFlow<CheckButtonAdditionalInformation>
     get() = _additionalInformation.asStateFlow()
-
-  fun setInformation(key: String, value: String) {
-    _additionalInformation.update { it.put(key, value) }
-  }
-
-  fun removeInformation(key: String) {
-    _additionalInformation.update { it.remove(key) }
-  }
 
   companion object {
     fun getInstance(project: Project): CheckButtonAdditionalInformationManager =

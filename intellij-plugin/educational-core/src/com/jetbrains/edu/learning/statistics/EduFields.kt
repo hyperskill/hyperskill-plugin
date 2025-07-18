@@ -10,8 +10,6 @@ object EduFields {
   private const val LANGUAGE = "language"
   private const val PLATFORM = "platform"
   private const val COURSE_ID = "course_id"
-  private const val MARKETPLACE_COURSE_VERSION = "marketplace_course_version"
-  private const val TASK_ID = "task_id"
 
   private val PLATFORM_NAMES = listOf("PyCharm", "Hyperskill")
 

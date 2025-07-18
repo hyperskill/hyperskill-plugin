@@ -1,8 +1,6 @@
 package com.jetbrains.edu.coursecreator
 
-import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runUndoTransparentWriteAction
 import com.intellij.openapi.application.runWriteAction
@@ -10,7 +8,6 @@ import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
@@ -25,8 +22,6 @@ import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
-import java.io.IOException
 
 object CCUtils {
   private val LOG = Logger.getInstance(CCUtils::class.java)
@@ -67,11 +62,6 @@ object CCUtils {
       val newIndex = item.index + delta
       item.index = newIndex
     }
-  }
-
-  fun saveOpenedDocuments(project: Project) {
-    val openDocuments = FileEditorManager.getInstance(project).openFiles.mapNotNull { FileDocumentManager.getInstance().getDocument(it) }
-    openDocuments.forEach { FileDocumentManager.getInstance().saveDocument(it) }
   }
 
   /**
@@ -144,31 +134,4 @@ object CCUtils {
     }
   }
 
-  private fun synchronizeChanges(project: Project, course: Course, section: Section) {
-    YamlFormatSynchronizer.saveItem(section)
-    YamlFormatSynchronizer.saveItem(course)
-    ProjectView.getInstance(project).refresh()
-  }
-
-  private fun createSection(lessonsToWrap: List<Lesson>, sectionName: String, index: Int): Section {
-    val section = Section()
-    section.index = index
-    section.name = sectionName
-    section.addLessons(lessonsToWrap)
-    return section
-  }
-
-  private fun moveLesson(lessonDir: VirtualFile, sectionDir: VirtualFile) {
-    ApplicationManager.getApplication().runWriteAction(object : Runnable {
-      override fun run() {
-        try {
-          lessonDir.move(this, sectionDir)
-        }
-        catch (e1: IOException) {
-          LOG.error("Failed to move lesson " + lessonDir.name + " to the new section " + sectionDir.name)
-        }
-
-      }
-    })
-  }
 }

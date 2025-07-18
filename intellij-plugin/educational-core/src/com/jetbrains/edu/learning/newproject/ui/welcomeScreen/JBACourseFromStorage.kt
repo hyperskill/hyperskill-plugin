@@ -19,7 +19,6 @@ private const val PROGRAMMING_LANGUAGE_VERSION = "programmingLanguageVersion"
 class JBACourseFromStorage() : CourseInfo() {
   var type: String = ""
   var courseMode = CourseMode.STUDENT
-  var isMarketplace: Boolean = true
   var environment = ""
   val itemType
     @Transient

@@ -17,7 +17,7 @@ import javax.swing.JPanel
  * Constructor is called exclusively in [com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabManager.createTab]
  * and MUST NOT be called in any other places
  */
-class DescriptionTab(project: Project) : TaskToolWindowTab(project, TabType.DESCRIPTION_TAB) {
+class DescriptionTab(project: Project) : TaskToolWindowTab(project) {
 
   private val taskTextToolWindow = if (JavaUILibrary.isJCEF()) {
     JCEFToolWindow(project)

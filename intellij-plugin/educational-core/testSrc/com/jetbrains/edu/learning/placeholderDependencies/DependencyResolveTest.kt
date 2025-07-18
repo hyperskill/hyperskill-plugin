@@ -180,7 +180,7 @@ class DependencyResolveTest : EduTestCase() {
     assertTrue(
       "Resolved to wrong placeholder. Expected offset=$expectedOffset, length=$expectedLength, " +
       "but got offset=$actualOffset, length=$actualLength",
-      expectedOffset == actualOffset && expectedLength == expectedLength
+      expectedOffset == actualOffset && expectedLength == actualLength
     )
   }
 }

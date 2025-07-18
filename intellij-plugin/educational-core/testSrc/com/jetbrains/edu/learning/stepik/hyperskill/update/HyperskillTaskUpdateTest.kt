@@ -9,11 +9,6 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.update.TaskUpdateTestBase
 import org.junit.Test
@@ -283,95 +278,6 @@ class HyperskillTaskUpdateTest : TaskUpdateTestBase<HyperskillCourse>() {
     updateCourse(remoteCourse)
 
     assertTrue("UnsupportedTask hasn't been updated to EduTask", findTask(0, 0, 0) is EduTask)
-  }
-
-  @Test
-  fun `test choiceTask and its choice options have been updated`() {
-    localCourse = createBasicHyperskillCourse {
-      section(HYPERSKILL_TOPICS) {
-        lesson("lesson1", id = 1) {
-          choiceTask(
-            "task1", stepId = 1, choiceOptions = mapOf(
-              "Option1" to ChoiceOptionStatus.UNKNOWN,
-              "Option2" to ChoiceOptionStatus.UNKNOWN,
-              "Option3" to ChoiceOptionStatus.UNKNOWN
-            )
-          )
-          choiceTask(
-            "task2", stepId = 2, choiceOptions = mapOf(
-              "Option1" to ChoiceOptionStatus.UNKNOWN,
-              "Option2" to ChoiceOptionStatus.UNKNOWN,
-              "Option3" to ChoiceOptionStatus.UNKNOWN
-            )
-          )
-        }
-      }
-    }
-    localCourse.stages = listOf(HyperskillStage(1, "", 1, true), HyperskillStage(2, "", 2))
-
-    val newChoiceOptions = listOf("NewOption1", "NewOption2", "NewOption3").map { ChoiceOption(it, ChoiceOptionStatus.UNKNOWN) }
-    val remoteCourse = toRemoteCourse {
-      sections[0].lessons[0].apply {
-        val cTask = taskList[0] as ChoiceTask
-        cTask.choiceOptions = newChoiceOptions
-      }
-    }
-
-    updateCourse(remoteCourse)
-
-    val choiceOptions = (findTask(0, 0, 0) as ChoiceTask).choiceOptions
-    assertEquals("Choice options for the ChoiceTask have not been updated", newChoiceOptions, choiceOptions)
-  }
-
-  @Test
-  fun `test sortingTask and its options have been updated`() {
-    localCourse = createBasicHyperskillCourse {
-      section(HYPERSKILL_TOPICS) {
-        lesson("lesson1", id = 1) {
-          sortingTask("task1", stepId = 1, options = listOf("0", "1", "2"))
-          sortingTask("task2", stepId = 2, options = listOf("0", "1", "2"))
-        }
-      }
-    }
-    localCourse.stages = listOf(HyperskillStage(1, "", 1, true), HyperskillStage(2, "", 2))
-
-    val newOptions = listOf("3", "4", "5")
-    val remoteCourse = toRemoteCourse {
-      val task = sections[0].lessons[0].taskList[1] as SortingTask
-      task.options = newOptions
-    }
-
-    updateCourse(remoteCourse)
-
-    val newSortingOptions = (findTask(0, 0, 1) as SortingTask).options
-    assertEquals("Sorting options for the SortingTask have not been updated", newOptions, newSortingOptions)
-  }
-
-  @Test
-  fun `test matchingTask and its options have been updated`() {
-    localCourse = createBasicHyperskillCourse {
-      section(HYPERSKILL_TOPICS) {
-        lesson("lesson1", id = 1) {
-          matchingTask("task1", stepId = 1, options = listOf("0", "1", "2"), captions = listOf("A", "B", "C"))
-          matchingTask("task2", stepId = 2, options = listOf("0", "1", "2"), captions = listOf("A", "B", "C"))
-        }
-      }
-    }
-    localCourse.stages = listOf(HyperskillStage(1, "", 1, true), HyperskillStage(2, "", 2))
-
-    val newOptions = listOf("3", "4", "5")
-    val newCaptions = listOf("D", "E", "F")
-    val remoteCourse = toRemoteCourse {
-      val task = sections[0].lessons[0].taskList[1] as MatchingTask
-      task.options = newOptions
-      task.captions = newCaptions
-    }
-
-    updateCourse(remoteCourse)
-
-    val matchingTask = (findTask(0, 0, 1) as MatchingTask)
-    assertEquals("Matching options for the MatchingTask have not been updated", matchingTask.options, newOptions)
-    assertEquals("Matching captions for the MatchingTask have not been updated", matchingTask.captions, newCaptions)
   }
 
   @Test

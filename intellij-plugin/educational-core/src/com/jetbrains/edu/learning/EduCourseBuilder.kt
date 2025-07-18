@@ -17,7 +17,6 @@ import com.jetbrains.edu.learning.courseFormat.ext.testDirs
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTaskBase.Companion.INPUT_PATTERN_NAME
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTaskBase.Companion.OUTPUT_PATTERN_NAME
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.joinPaths
 import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
 import com.jetbrains.edu.learning.newproject.EduProjectSettings
@@ -155,8 +154,7 @@ interface EduCourseBuilder<Settings : EduProjectSettings> {
         )
         getExecutableTaskTemplates(course, info, withSources) + outputTemplate + inputTemplate
       }
-
-      is ChoiceTask -> getExecutableTaskTemplates(course, info, withSources)
+      
       is TheoryTask -> getExecutableTaskTemplates(course, info, withSources)
       is IdeTask -> getExecutableTaskTemplates(course, info, withSources)
       else -> return

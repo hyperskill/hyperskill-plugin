@@ -15,7 +15,6 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.components.AnActionLink
 import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.learning.EduNames
-import com.jetbrains.edu.learning.JavaUILibrary.Companion.isSwing
 import com.jetbrains.edu.learning.actions.OpenTaskOnSiteAction
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.Course
@@ -41,24 +40,15 @@ const val CODE_TAG = "code"
 const val IMG_TAG = "img"
 const val SCRIPT_TAG = "script"
 const val SRC_ATTRIBUTE = "src"
-private const val SPAN_ATTRIBUTE = "span"
-private const val HEIGHT_ATTRIBUTE = "height"
 const val HREF_ATTRIBUTE = "href"
-private const val STYLE_ATTRIBUTE = "style"
-private const val CLASS_ATTRIBUTE = "class"
-const val CODE_BLOCK_CLASS = "code-block"
-const val CODE_CLASS = "code"
 const val TERM_CLASS = "term"
 private const val SRCSET_ATTRIBUTE = "srcset"
 private const val DARK_SRC_CUSTOM_ATTRIBUTE = "dark-src"
-private const val WIDTH_ATTRIBUTE = "width"
-private const val BORDER_ATTRIBUTE = "border"
 private const val DARK_SUFFIX = "_dark"
 private val LOG: Logger = Logger.getInstance("com.jetbrains.edu.learning.taskToolWindow.utils")
 private val HYPERSKILL_TAGS = tagsToRegex({ "\\[$it](.*)\\[/$it]" }, "HINT", "PRE", "META") +
                               tagsToRegex({ "\\[$it-\\w+](.*)\\[/$it]" }, "ALERT")
 private val YOUTUBE_LINKS_REGEX = "https?://(www\\.)?(youtu\\.be|youtube\\.com)/?(watch\\?v=|embed)?.*".toRegex()
-private val EXTERNAL_LINK_REGEX = "https?://.*".toRegex()
 
 private fun tagsToRegex(pattern: (String) -> String, vararg tags: String): List<Regex> = tags.map { pattern(it).toRegex() }
 
@@ -130,7 +120,7 @@ private fun getClickableImageElement(src: String, taskId: Int): Element? {
     return null
   }
   val textToReplace =
-    "<a href=http://www.youtube.com/watch?v=${youtubeVideoId}><img src=http://img.youtube.com/vi/${youtubeVideoId}/0.jpg></a>"
+    "<a href=https://www.youtube.com/watch?v=${youtubeVideoId}><img src=https://img.youtube.com/vi/${youtubeVideoId}/0.jpg></a>"
   val documentToReplace = Jsoup.parse(textToReplace)
   val elements = documentToReplace.getElementsByTag("a")
   return if (elements.isNotEmpty()) {
@@ -255,23 +245,6 @@ fun useDarkSrcCustomAttributeIfPresent(element: Element): Boolean {
   }
 }
 
-fun getDashedUnderlineElement(document: Document, text: String): Element =
-  document.createElement(SPAN_ATTRIBUTE).apply {
-    attr(STYLE_ATTRIBUTE, "border-bottom: 1px dashed gray;")
-    attr(CLASS_ATTRIBUTE, TERM_CLASS)
-    appendText(text)
-  }
-
-fun getPictureSize(fontSize: Int): String {
-  return if (isSwing()) {
-    fontSize
-  }
-  else {
-    // rounding it to int is needed here, because if we are passing a float number, an arrow disappears in studio
-    (fontSize * 1.2).toInt()
-  }.toString()
-}
-
 fun addActionLinks(course: Course?, linkPanel: JPanel, topMargin: Int, leftMargin: Int) {
   if (course is HyperskillCourse) {
     linkPanel.add(
@@ -294,8 +267,6 @@ fun createActionLink(
 fun String.containsYoutubeLink(): Boolean = contains(YOUTUBE_LINKS_REGEX)
 
 fun String.replaceEncodedShortcuts() = this.replace(SHORTCUT_ENTITY_ENCODED, SHORTCUT_ENTITY)
-
-fun String.toShortcut(): String = "${SHORTCUT_ENTITY}$this;"
 
 fun String.containsShortcut(): Boolean = startsWith(SHORTCUT_ENTITY) || startsWith(SHORTCUT_ENTITY_ENCODED)
 

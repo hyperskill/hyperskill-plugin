@@ -13,7 +13,6 @@ import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.languageById
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillTaskType
 import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask.Companion.DATA_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask.Companion.EDU_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.IdeTask.Companion.IDE_TASK_TYPE
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask.Companion.OUTPUT_TASK_TYPE
@@ -38,7 +37,6 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
 
   private val pluginTaskTypes: Map<String, (String) -> Task> = mapOf(
     // lexicographical order
-    DATA_TASK_TYPE to { name: String -> DataTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked) },
     EDU_TASK_TYPE to { name: String -> EduTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked) },
     IDE_TASK_TYPE to { name: String -> IdeTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked) },
     OUTPUT_TASK_TYPE to { name: String -> OutputTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked) },
@@ -68,7 +66,7 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
   }
 
   private fun Task.fillDescription() {
-    if (this !is CodeTask && this !is DataTask) return
+    if (this !is CodeTask) return
 
     val options = step.pycharmOptions()
     val samples = options.samples
@@ -210,11 +208,6 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
     taskFile.text = editorText
     taskFile.name = taskFilePath
     task.addTaskFile(taskFile)
-  }
-
-  private fun getCodeTemplateForTask(codeTemplates: Map<String, String>?): String? {
-    val languageString = getLanguageName(language)
-    return codeTemplates?.get(languageString)
   }
 
   protected open fun getLanguageName(language: Language): String? {

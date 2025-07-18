@@ -9,9 +9,6 @@ import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getDescriptionFile
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
 import com.jetbrains.edu.learning.getTextFromTaskTextFile
 import com.jetbrains.edu.learning.update.elements.TaskUpdate
 import kotlinx.coroutines.Dispatchers
@@ -36,17 +33,6 @@ abstract class TaskUpdaterBase<T : Lesson>(project: Project, protected val lesso
       taskDescriptionText != remoteTask.descriptionText -> true
       descriptionFormat != remoteTask.descriptionFormat -> true
       javaClass != remoteTask.javaClass -> true
-      this is ChoiceTask && remoteTask is ChoiceTask -> {
-        choiceOptions != remoteTask.choiceOptions
-      }
-
-      this is SortingTask && remoteTask is SortingTask -> {
-        options != remoteTask.options
-      }
-
-      this is MatchingTask && remoteTask is MatchingTask -> {
-        options != remoteTask.options || captions != remoteTask.captions
-      }
 
       this is RemoteEduTask && remoteTask is RemoteEduTask -> {
         checkProfile != remoteTask.checkProfile

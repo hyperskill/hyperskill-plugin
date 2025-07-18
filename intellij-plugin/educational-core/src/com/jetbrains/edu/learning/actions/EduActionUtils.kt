@@ -4,16 +4,10 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.command.UndoConfirmationPolicy
-import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.command.undo.UndoManager
-import com.intellij.openapi.command.undo.UndoableAction
-import com.intellij.openapi.command.undo.UnexpectedUndoException
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.learning.checkIsBackgroundThread
@@ -61,26 +55,6 @@ object EduActionUtils {
     val project = e.project ?: return
     project.selectedTaskFile ?: return
     e.presentation.isEnabledAndVisible = true
-  }
-
-  fun runUndoableAction(
-    project: Project,
-    name: @NlsContexts.Command String?,
-    action: UndoableAction,
-    confirmationPolicy: UndoConfirmationPolicy
-  ) {
-    try {
-      WriteCommandAction.writeCommandAction(project)
-        .withName(name)
-        .withUndoConfirmationPolicy(confirmationPolicy)
-        .run<UnexpectedUndoException> {
-          action.redo()
-          UndoManager.getInstance(project).undoableActionPerformed(action)
-        }
-    }
-    catch (e: UnexpectedUndoException) {
-      LOG.error(e)
-    }
   }
 
   fun <T> waitAndDispatchInvocationEvents(future: Future<T>) {

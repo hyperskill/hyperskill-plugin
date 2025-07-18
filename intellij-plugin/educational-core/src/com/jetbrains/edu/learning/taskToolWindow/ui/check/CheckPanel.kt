@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
 import com.intellij.ui.InlineBannerBase
 import com.intellij.util.Alarm
 import com.intellij.util.ui.*
@@ -16,14 +15,11 @@ import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.CheckResult
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.DataTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.projectView.CourseViewUtils.isSolved
-import com.jetbrains.edu.learning.stepik.hyperskill.actions.DownloadDatasetAction
-import com.jetbrains.edu.learning.stepik.hyperskill.actions.RetryDataTaskAction
 import com.jetbrains.edu.learning.taskToolWindow.addActionLinks
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.edu.learning.ui.getUICheckLabel
@@ -151,42 +147,12 @@ class CheckPanel(private val project: Project, private val parentDisposable: Dis
   private fun updateCheckButtonWrapper(task: Task) {
     checkButtonWrapper.removeAll()
     when (task) {
-      is DataTask -> updateCheckButtonWrapper(task)
       is TheoryTask -> {}
       else -> {
         val isDefault = !(task.isChangedOnFailed && task.status == CheckStatus.Failed || task.isSolved)
         val isEnabled = !(task.isChangedOnFailed && task.status == CheckStatus.Failed)
         val checkComponent = CheckPanelButtonComponent(CheckAction(task.getUICheckLabel()), isDefault = isDefault, isEnabled = isEnabled)
         checkButtonWrapper.add(checkComponent, BorderLayout.WEST)
-      }
-    }
-  }
-
-  private fun updateCheckButtonWrapper(task: DataTask) {
-    when (task.status) {
-      CheckStatus.Unchecked -> {
-        val isRunning = task.isRunning()
-        val component = if (task.isTimeLimited && isRunning) {
-          val endDateTime = task.attempt?.endDateTime ?: error("EndDateTime is expected")
-          val checkTimer = CheckTimer(endDateTime) { updateCheckPanel(task) }
-          Disposer.register(parentDisposable, checkTimer)
-          checkTimer
-        }
-        else {
-          CheckPanelButtonComponent(EduActionUtils.getAction(DownloadDatasetAction.ACTION_ID) as DownloadDatasetAction)
-        }
-        checkButtonWrapper.add(component, BorderLayout.WEST)
-
-        val checkComponent = CheckPanelButtonComponent(CheckAction(task.getUICheckLabel()), isEnabled = isRunning, isDefault = isRunning)
-        checkButtonWrapper.add(checkComponent, BorderLayout.CENTER)
-      }
-
-      CheckStatus.Failed, CheckStatus.Solved -> {
-        val retryComponent = CheckPanelButtonComponent(
-          EduActionUtils.getAction(RetryDataTaskAction.ACTION_ID) as RetryDataTaskAction,
-          isDefault = true
-        )
-        checkButtonWrapper.add(retryComponent, BorderLayout.WEST)
       }
     }
   }

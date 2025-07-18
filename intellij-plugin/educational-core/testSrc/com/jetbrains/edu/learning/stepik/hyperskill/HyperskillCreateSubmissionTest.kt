@@ -9,7 +9,6 @@ import com.jetbrains.edu.learning.courseFormat.attempts.Attempt
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.stepik.api.StepikBasedSubmission
 import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createCodeTaskSubmission
 import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createEduTaskSubmission
@@ -30,16 +29,6 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
           remoteEduTask("Remote Edu problem", stepId = 2, checkProfile = "hyperskill_go") {
             taskFile("src/Task.kt")
             taskFile("src/Test.kt", visible = false)
-          }
-          choiceTask(
-            "Choice task", stepId = 3, isMultipleChoice = true,
-            choiceOptions = mapOf(
-              "Correct" to ChoiceOptionStatus.CORRECT,
-              "Incorrect" to ChoiceOptionStatus.INCORRECT,
-              "Unknown" to ChoiceOptionStatus.UNKNOWN
-            )
-          ) {
-            taskFile("Task.txt", "")
           }
         }
       }

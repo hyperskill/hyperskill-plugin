@@ -43,10 +43,6 @@ class GroupsComponent(
     courseGroupModel.setSelection(newCourseToSelect)
   }
 
-  fun removeSelection() {
-    courseGroupModel.removeSelection()
-  }
-
   fun initialSelection() {
     courseGroupModel.initialSelection()
   }

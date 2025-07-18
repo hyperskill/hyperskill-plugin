@@ -9,7 +9,7 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
-abstract class TaskToolWindowTab(val project: Project, private val tabType: TabType) : JPanel(BorderLayout()), Disposable {
+abstract class TaskToolWindowTab(val project: Project) : JPanel(BorderLayout()), Disposable {
   protected open val uiMode: JavaUILibrary = EduSettings.getInstance().javaUiLibrary
 
   init {

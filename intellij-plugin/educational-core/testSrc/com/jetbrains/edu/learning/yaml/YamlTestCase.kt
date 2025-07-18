@@ -11,9 +11,6 @@ import com.intellij.util.ui.UIUtil
 import com.jetbrains.edu.coursecreator.yaml.createConfigFiles
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.ItemContainer
-import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.configFileName
@@ -44,20 +41,6 @@ abstract class YamlTestCase : EduTestCase() {
 
     UIUtil.dispatchAllInvocationEvents()
     YamlLoader.loadItem(project, configFile, true)
-  }
-}
-
-fun checkConfigsExistAndNotEmpty(project: Project, course: Course) {
-  course.items.forEach { courseItem ->
-    checkConfig(project, courseItem)
-
-    // checking sections/top-level lessons
-    (courseItem as ItemContainer).items.forEach {
-      checkConfig(project, it)
-      if (it is Lesson) {
-        it.items.forEach { task -> checkConfig(project, task) }
-      }
-    }
   }
 }
 

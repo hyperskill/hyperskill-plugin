@@ -55,7 +55,7 @@ class RsLanguageSettings : LanguageSettings<RsProjectSettings>() {
 
     toolchainComboBox = comboBox
 
-    return listOf<LabeledComponent<JComponent>>(
+    return listOf(
       LabeledComponent.create(
         comboBox,
         EduRustBundle.message("toolchain.label.text"),

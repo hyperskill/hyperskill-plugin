@@ -4,7 +4,10 @@ import com.intellij.openapi.util.NlsActions
 import com.jetbrains.edu.coursecreator.StudyItemType
 import com.jetbrains.edu.coursecreator.presentableName
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.*
+import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
+import com.jetbrains.edu.learning.courseFormat.tasks.UnsupportedTask
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 
 
@@ -21,7 +24,6 @@ fun Task.getUICheckLabel(): String {
 
   return when (this) {
     is TheoryTask -> EduCoreBundle.message("action.check.run.text")
-    is DataTask -> EduCoreBundle.message("send.answer")
     is UnsupportedTask -> EduCoreBundle.message("hyperskill.unsupported.check.task")
     else -> defaultMessage
   }

@@ -380,9 +380,6 @@ object GeneratorUtils {
   fun getInternalTemplateText(templateName: String, templateVariables: Map<String, Any> = emptyMap()): String =
     FileTemplateManager.getDefaultInstance().getInternalTemplate(templateName).getText(templateVariables)
 
-  fun getJ2eeTemplateText(templateName: String): String =
-    FileTemplateManager.getDefaultInstance().getJ2eeTemplate(templateName).text
-
   @RequiresBlockingContext
   @Throws(IOException::class)
   private fun evaluateExistingTemplate(child: VirtualFile, templateVariables: Map<String, Any>): String {

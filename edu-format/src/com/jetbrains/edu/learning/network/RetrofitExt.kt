@@ -9,16 +9,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.courseFormat.logger
 import com.jetbrains.edu.learning.courseFormat.message
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ConnectionPool
+import okhttp3.Dispatcher
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level.BASIC
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
-import java.io.File
 import java.net.HttpURLConnection.*
 import java.util.concurrent.TimeUnit
 
@@ -135,19 +134,6 @@ fun <T> Response<T>.executeParsingErrors(omitErrors: Boolean = false): Result<Re
     }
   }
 }
-
-fun <T> Response<T>.checkStatusCode(): Response<T>? {
-  if (isSuccessful) return this
-  LOG.severe("Response is returned with ${this.code()} status code")
-  return null
-}
-
-fun File.toMultipartBody(): MultipartBody.Part {
-  val body = asRequestBody("application/octet-stream".toMediaTypeOrNull())
-  return MultipartBody.Part.createFormData("file", this.name, body)
-}
-
-fun String.toPlainTextRequestBody(): RequestBody = toRequestBody("text/plain".toMediaTypeOrNull())
 
 private fun processForbiddenErrorMessage(jsonText: String): String? {
   return try {

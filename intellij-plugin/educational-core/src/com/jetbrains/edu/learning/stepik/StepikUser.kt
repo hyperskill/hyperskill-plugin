@@ -19,18 +19,6 @@ class StepikUser : OAuthAccount<StepikUserInfo> {
     }
 
   @get:Transient
-  val firstName: String
-    get() {
-      return userInfo.firstName
-    }
-
-  @get:Transient
-  val lastName: String
-    get() {
-      return userInfo.lastName
-    }
-
-  @get:Transient
   val name: String
     get() {
       return arrayOf(userInfo.firstName, userInfo.lastName).joinToString(" ")

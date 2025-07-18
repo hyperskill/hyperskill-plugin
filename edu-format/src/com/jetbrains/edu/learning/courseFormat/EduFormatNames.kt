@@ -17,12 +17,6 @@ object EduFormatNames {
   const val TASK = "task"
   const val ITEM = "item"
 
-
-  // marketplace
-  const val SOLUTION = "solution"
-  const val STATES_ON_CLOSE = "states_on_close"
-  const val SUBMISSIONS = "submissions"
-
   // vendor
   const val EMAIL = "email"
   const val NAME = "name"
@@ -89,7 +83,6 @@ object EduFormatNames {
   // Single `ObjectiveC` id is used both for `ObjectiveC` and `C/C++`
   const val CPP = "ObjectiveC"
   const val GO = "go"
-  const val PHP = "PHP"
   const val CSHARP = "C#"
 
   const val PYTHON_2_VERSION = "2.x"
@@ -99,7 +92,6 @@ object EduFormatNames {
   const val TROUBLESHOOTING_GUIDE_URL = "https://plugins.jetbrains.com/plugin/10081-jetbrains-academy/docs/troubleshooting-guide.html"
   const val NO_TESTS_URL = "$TROUBLESHOOTING_GUIDE_URL#no_tests_have_run"
   const val FAILED_TO_CHECK_URL = "$TROUBLESHOOTING_GUIDE_URL#failed_to_launch_checking"
-  const val FAILED_TO_DELETE_SUBMISSIONS = "$TROUBLESHOOTING_GUIDE_URL#failed_to_delete_submissions"
 
   val LOGIN_NEEDED_MESSAGE = message("check.error.login.needed")
 }

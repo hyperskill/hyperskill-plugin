@@ -7,7 +7,7 @@ import java.awt.BorderLayout
 import java.awt.CardLayout
 import javax.swing.JPanel
 
-abstract class TaskToolWindowCardTextTab(project: Project, tabType: TabType) : TaskToolWindowTab(project, tabType) {
+abstract class TaskToolWindowCardTextTab(project: Project, tabType: TabType) : TaskToolWindowTab(project) {
 
   private val cardLayout = CardLayout()
 
@@ -29,8 +29,4 @@ abstract class TaskToolWindowCardTextTab(project: Project, tabType: TabType) : T
   }
 
   protected fun cards(): Array<in TabTextPanel> = cardLayoutPanel.components
-
-  protected fun showFirstCard() = cardLayout.first(cardLayoutPanel)
-
-  protected fun showLastCard() = cardLayout.last(cardLayoutPanel)
 }

@@ -19,11 +19,10 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillTopic
-import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOption
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.MatchingTask
-import com.jetbrains.edu.learning.courseFormat.tasks.matching.SortingTask
+import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
+import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
+import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
 import com.jetbrains.edu.learning.json.encrypt.EncryptionModule
 import com.jetbrains.edu.learning.yaml.format.*
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
@@ -31,9 +30,14 @@ import com.jetbrains.edu.learning.yaml.format.hyperskill.HyperskillCourseMixin
 import com.jetbrains.edu.learning.yaml.format.hyperskill.HyperskillProjectMixin
 import com.jetbrains.edu.learning.yaml.format.hyperskill.HyperskillStageMixin
 import com.jetbrains.edu.learning.yaml.format.hyperskill.HyperskillTopicMixin
-import com.jetbrains.edu.learning.yaml.format.remote.*
+import com.jetbrains.edu.learning.yaml.format.remote.DataTaskAttemptYamlMixin
+import com.jetbrains.edu.learning.yaml.format.remote.RemoteCourseYamlMixin
+import com.jetbrains.edu.learning.yaml.format.remote.RemoteEduTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.remote.RemoteStudyItemYamlMixin
 import com.jetbrains.edu.learning.yaml.format.student.*
-import com.jetbrains.edu.learning.yaml.format.tasks.*
+import com.jetbrains.edu.learning.yaml.format.tasks.CodeTaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.tasks.TaskYamlMixin
+import com.jetbrains.edu.learning.yaml.format.tasks.TheoryTaskYamlUtil
 import org.jetbrains.annotations.TestOnly
 import java.util.*
 
@@ -56,16 +60,6 @@ object YamlMapper {
     val mapper = createMapper()
     mapper.addMixIns()
     mapper.addMixIn(TaskFile::class.java, StudentTaskFileYamlMixin::class.java)
-    mapper.addMixIn(AnswerPlaceholder::class.java, StudentAnswerPlaceholderYamlMixin::class.java)
-    mapper.addStudentMixIns()
-    return mapper
-  }
-
-  fun studentMapperWithEncryption(): ObjectMapper {
-    val mapper = createMapper()
-    mapper.addMixIns()
-    mapper.addEncryptionModule()
-    mapper.addMixIn(TaskFile::class.java, StudentEncryptedTaskFileYamlMixin::class.java)
     mapper.addMixIn(AnswerPlaceholder::class.java, StudentAnswerPlaceholderYamlMixin::class.java)
     mapper.addStudentMixIns()
     return mapper
@@ -117,9 +111,7 @@ object YamlMapper {
     addMixIn(Lesson::class.java, LessonYamlMixin::class.java)
     addMixIn(FrameworkLesson::class.java, FrameworkLessonYamlMixin::class.java)
     addMixIn(Task::class.java, TaskYamlMixin::class.java)
-    addMixIn(ChoiceTask::class.java, ChoiceTaskYamlMixin::class.java)
     addMixIn(CodeTask::class.java, CodeTaskYamlMixin::class.java)
-    addMixIn(ChoiceOption::class.java, ChoiceOptionYamlMixin::class.java)
     addMixIn(EduFile::class.java, AdditionalFileYamlMixin::class.java)
     addMixIn(TaskFile::class.java, TaskFileYamlMixin::class.java)
     addMixIn(AnswerPlaceholder::class.java, AnswerPlaceholderYamlMixin::class.java)
@@ -132,7 +124,6 @@ object YamlMapper {
     mapper.addMixIn(Lesson::class.java, RemoteStudyItemYamlMixin::class.java)
     mapper.addMixIn(Section::class.java, RemoteStudyItemYamlMixin::class.java)
     mapper.addMixIn(Task::class.java, RemoteStudyItemYamlMixin::class.java)
-    mapper.addMixIn(DataTask::class.java, RemoteDataTaskYamlMixin::class.java)
     mapper.addMixIn(DataTaskAttempt::class.java, DataTaskAttemptYamlMixin::class.java)
     mapper.addHyperskillMixins()
   }
@@ -152,10 +143,6 @@ object YamlMapper {
     addMixIn(Task::class.java, StudentTaskYamlMixin::class.java)
     addMixIn(RemoteEduTask::class.java, RemoteEduTaskYamlMixin::class.java)
     addMixIn(TheoryTask::class.java, TheoryTaskYamlUtil::class.java)
-    addMixIn(ChoiceTask::class.java, StudentChoiceTaskYamlMixin::class.java)
-    addMixIn(SortingTask::class.java, SortingTaskYamlMixin::class.java)
-    addMixIn(MatchingTask::class.java, MatchingTaskYamlMixin::class.java)
-    addMixIn(TableTask::class.java, TableTaskYamlMixin::class.java)
     addMixIn(AnswerPlaceholder.MyInitialState::class.java, InitialStateMixin::class.java)
     addMixIn(CheckFeedback::class.java, FeedbackYamlMixin::class.java)
   }

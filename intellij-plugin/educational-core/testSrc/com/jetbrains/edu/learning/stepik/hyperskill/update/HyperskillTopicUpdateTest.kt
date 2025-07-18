@@ -4,7 +4,6 @@ import com.jetbrains.edu.learning.MockResponseFactory
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
 import com.jetbrains.edu.learning.courseFormat.Section
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.choice.ChoiceOptionStatus
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.hasParams
 import com.jetbrains.edu.learning.pathWithoutPrams
@@ -24,14 +23,6 @@ class HyperskillTopicUpdateTest : UpdateTestBase<HyperskillCourse>() {
           codeTask("codeTask", stepId = 11) {
             taskFile("main.kt", "fun main() {}")
           }
-        }
-        lesson("Topic 2", id = 2) {
-          choiceTask(
-            "choiceTask", stepId = 22, choiceOptions = mapOf(
-              "Option1" to ChoiceOptionStatus.UNKNOWN,
-              "Option2" to ChoiceOptionStatus.UNKNOWN,
-            )
-          )
         }
       }
     }

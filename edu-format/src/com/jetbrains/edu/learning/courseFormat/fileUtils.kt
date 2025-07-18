@@ -40,9 +40,4 @@ fun getBinaryFileLimit(): Int {
   return 1024 * 1024
 }
 
-fun getExtension(fileName: String): String {
-  val index = fileName.lastIndexOf('.')
-  return if (index < 0) "" else fileName.substring(index + 1)
-}
-
 private val LOG = logger<StudyItem>()

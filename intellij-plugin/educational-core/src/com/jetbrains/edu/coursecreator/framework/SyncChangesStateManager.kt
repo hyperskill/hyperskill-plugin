@@ -17,9 +17,7 @@ import com.jetbrains.edu.learning.FileInfo
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.framework.impl.visitFrameworkLessons
-import org.jetbrains.annotations.TestOnly
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 
 @Service(Service.Level.PROJECT)
 class SyncChangesStateManager(private val project: Project) : Disposable.Default {
@@ -104,11 +102,6 @@ class SyncChangesStateManager(private val project: Project) : Disposable.Default
   }
 
   fun updateSyncChangesState(task: Task) = queueUpdate(task)
-
-  @TestOnly
-  fun waitForAllRequestsProcessed() {
-    dispatcher.waitForAllExecuted(1, TimeUnit.SECONDS)
-  }
 
   private fun collectSyncChangesState(lesson: Lesson) {
     val state = collectState(lesson.taskList) { taskStateStorage[it] }

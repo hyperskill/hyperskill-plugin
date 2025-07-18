@@ -46,8 +46,6 @@ object CheckUtils {
     get() = EduFormatBundle.message("check.correct.solution")
   val COMPILATION_FAILED_MESSAGE: String
     get() = EduCoreBundle.message("check.error.compilation.failed")
-  val NOT_RUNNABLE_MESSAGE: String
-    get() = EduCoreBundle.message("check.error.solution.not.runnable")
   val SYNTAX_ERROR_MESSAGE: String
     get() = EduCoreBundle.message("check.error.syntax.error")
   val EXECUTION_ERROR_MESSAGE: String

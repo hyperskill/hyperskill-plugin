@@ -7,7 +7,6 @@ object EduNames {
   const val JBA = "Hyperskill"
   const val HINTS = "hints"
 
-  const val FRAMEWORK_LESSON = "guided project"
   const val COURSE = "course"
   const val ITEM = "item"
   const val PROJECT = "project"
@@ -24,7 +23,6 @@ object EduNames {
   const val OUT = "out"
   const val STEPIK_IDS_JSON = "stepik_ids.json"
   const val COURSE_IGNORE = ".courseignore"
-  const val CHANGE_NOTES = "change-notes.txt"
 
   const val VCS_GIT = ".git"
 
@@ -39,10 +37,8 @@ object EduNames {
   const val ENVIRONMENT_CONFIGURATION_LINK_SCALA = "$TROUBLESHOOTING_GUIDE_URL#environment_configuration_scala"
   const val ENVIRONMENT_CONFIGURATION_LINK_JS = "$TROUBLESHOOTING_GUIDE_URL#environment_configuration_js"
   const val ENVIRONMENT_CONFIGURATION_LINK_RUST = "$TROUBLESHOOTING_GUIDE_URL#environment_configuration_rust"
-  const val ENVIRONMENT_CONFIGURATION_LINK_CPP = "$TROUBLESHOOTING_GUIDE_URL#environment_configuration_cpp"
   const val ENVIRONMENT_CONFIGURATION_LINK_GO = "$TROUBLESHOOTING_GUIDE_URL#environment_configuration_go"
   const val ENVIRONMENT_CONFIGURATION_LINK_PHP = "$TROUBLESHOOTING_GUIDE_URL#environment_configuration_php"
-  const val ENVIRONMENT_CONFIGURATION_LINK_ANDROID = "$TROUBLESHOOTING_GUIDE_URL#environment_configuration_android"
   const val ENVIRONMENT_CONFIGURATION_LINK_GRADLE = "$TROUBLESHOOTING_GUIDE_URL#environment_configuration_gradle"
 
   // Help links

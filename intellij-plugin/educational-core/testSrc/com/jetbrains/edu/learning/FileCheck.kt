@@ -9,7 +9,6 @@ data class FileCheck(
   val shouldContain: Boolean,
   val additionalCheck: ((TaskFile) -> Unit)? = null
 ) {
-  fun invert(): FileCheck = copy(shouldContain = !shouldContain)
   fun check() {
     val taskFile = task.taskFiles[path]
     if (shouldContain) {
@@ -29,4 +28,3 @@ data class FileCheck(
 }
 
 infix fun String.`in`(task: Task): FileCheck = FileCheck(task, this, true)
-infix fun String.notIn(task: Task): FileCheck = FileCheck(task, this, false)

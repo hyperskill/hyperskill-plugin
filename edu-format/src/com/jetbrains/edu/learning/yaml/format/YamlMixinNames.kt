@@ -34,9 +34,6 @@ object YamlMixinNames {
   const val HYPERSKILL_TYPE_YAML = "hyperskill"
   const val END_DATE_TIME = "end_date_time"
 
-  // lesson
-  const val UNIT = "unit"
-
   // framework lesson
   const val CURRENT_TASK = "current_task"
   const val IS_TEMPLATE_BASED = JsonMixinNames.IS_TEMPLATE_BASED

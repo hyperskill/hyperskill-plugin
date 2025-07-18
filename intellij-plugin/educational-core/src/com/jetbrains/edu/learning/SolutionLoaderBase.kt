@@ -361,7 +361,6 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
   ) {
     companion object {
       val EMPTY = TaskSolutions(null, CheckStatus.Unchecked)
-      val INCOMPATIBLE = TaskSolutions(null, CheckStatus.Unchecked, hasIncompatibleSolutions = true)
     }
   }
 }

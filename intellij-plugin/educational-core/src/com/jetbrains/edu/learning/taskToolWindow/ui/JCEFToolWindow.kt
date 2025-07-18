@@ -7,11 +7,9 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.jcef.JBCefApp
 import com.intellij.ui.jcef.JBCefClient
 import com.intellij.ui.jcef.JCEFHtmlPanel
-import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.learning.JavaUILibrary
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.taskToolWindow.links.JCefToolWindowLinkHandler
-import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TaskQueryManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TermsQueryManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.jcefSpecificQueries.TermsQueryManager.Companion.getTermsQueryManager
 import org.jetbrains.annotations.TestOnly
@@ -22,7 +20,6 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
   private var termsQueryManager: TermsQueryManager? = null
 
   private val taskSpecificJBCefBrowser = JCEFHtmlPanel(true, JBCefApp.getInstance().createClient(), null)
-  private var taskSpecificQueryManager: TaskQueryManager<out Task>? = null
 
   init {
     val jcefLinkInToolWindowHandler = JCefToolWindowLinkHandler(project)
@@ -75,28 +72,10 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
 
   override fun updateTaskSpecificPanel(task: Task?) {
     taskSpecificJBCefBrowser.component.isVisible = false
-
-    val taskText = getHTMLTemplateText(task) ?: return
-
-    // Dispose taskSpecificQueryManager manually because this disposes existing JSQueries and removes them from JS_QUERY_POOL
-    taskSpecificQueryManager?.let {
-      Disposer.dispose(it)
-    }
-
-    taskSpecificQueryManager = getTaskSpecificQueryManager(task, taskSpecificJBCefBrowser)
-
-    taskSpecificJBCefBrowser.component.preferredSize = JBUI.size(Int.MAX_VALUE, 250)
-    val html = htmlWithResources(project, taskText, task)
-    taskSpecificJBCefBrowser.loadHTML(html)
-    taskSpecificJBCefBrowser.component.isVisible = true
   }
 
   override fun dispose() {
     super.dispose()
-    // Dispose undisposed yet taskSpecificQueryManager
-    taskSpecificQueryManager?.let {
-      Disposer.dispose(it)
-    }
   }
 
   companion object {

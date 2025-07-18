@@ -19,6 +19,5 @@ interface RemoteEnvHelper {
 
     fun isRemoteDevServer(): Boolean = EP_NAME.computeSafeIfAny { it.isRemoteServer() } == true
 
-    fun getUserUidToken(): String? = EP_NAME.computeSafeIfAny { it.getUserUidToken() }
   }
 }

@@ -29,7 +29,6 @@ object JsonMixinNames {
   const val SOLUTIONS_HIDDEN = "solutions_hidden"
   const val VERSION = "version"
   const val PLUGINS = "plugins"
-  const val GUEST = "guest"
   const val MARKETPLACE_COURSE_VERSION = "course_version"
 
   //plugin dependency

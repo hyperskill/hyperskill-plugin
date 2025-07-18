@@ -106,6 +106,5 @@ class EduSettings : PersistentStateComponent<Element> {
     private const val STEPIK_USER = "StepikUser"
 
     fun getInstance(): EduSettings = service()
-    fun isLoggedIn(): Boolean = getInstance().user != null
   }
 }

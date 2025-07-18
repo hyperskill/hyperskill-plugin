@@ -5,8 +5,6 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.newvfs.NewVirtualFile
 import com.jetbrains.edu.learning.actions.navigate.NavigationTestBase
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
 
 abstract class SolutionLoadingTestBase : NavigationTestBase() {
@@ -42,7 +40,4 @@ abstract class SolutionLoadingTestBase : NavigationTestBase() {
     return newText
   }
 
-  protected fun checkTaskStatuses(tasks: List<Task>, expectedStatuses: List<CheckStatus>) {
-    tasks.zip(expectedStatuses).forEach { (task, status) -> assertEquals(status, task.status) }
-  }
 }
