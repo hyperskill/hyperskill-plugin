@@ -239,7 +239,7 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
         val taskFromServer = it.remoteItem
         val hasLocalTaskBecomeSupported = localTask is UnsupportedTask && taskFromServer !is UnsupportedTask
         if (hasLocalTaskBecomeSupported) {
-          replaceTaskInCourse(localTask as UnsupportedTask, taskFromServer)
+          replaceTaskInCourse(localTask, taskFromServer)
         }
         if (localTask.status != CheckStatus.Solved || hasLocalTaskBecomeSupported) {
           // if name of remote task changes name of dir local task will not

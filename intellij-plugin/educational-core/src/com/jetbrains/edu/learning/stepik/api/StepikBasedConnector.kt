@@ -4,15 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.intellij.openapi.application.ApplicationManager
 import com.jetbrains.edu.learning.Err
-import com.jetbrains.edu.learning.Ok
 import com.jetbrains.edu.learning.Result
 import com.jetbrains.edu.learning.authUtils.ConnectorUtils
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.EduFile
 import com.jetbrains.edu.learning.courseFormat.attempts.Attempt
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.isUnitTestMode
-import com.jetbrains.edu.learning.json.mixins.AnswerPlaceholderDependencyMixin
 import com.jetbrains.edu.learning.messages.EduFormatBundle
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
 
@@ -20,17 +19,6 @@ interface StepikBasedConnector {
   val platformName: String
 
   fun getActiveAttempt(task: Task): Result<Attempt?, String>
-
-  fun getActiveAttemptOrPostNew(task: Task): Result<Attempt, String> {
-    val activeAttempt = getActiveAttempt(task)
-    if (activeAttempt is Ok) {
-      val value = activeAttempt.value
-      if (value != null) {
-        return Ok(value)
-      }
-    }
-    return postAttempt(task)
-  }
 
   fun postAttempt(task: Task): Result<Attempt, String>
 
@@ -68,10 +56,7 @@ interface StepikBasedConnector {
     fun createObjectMapper(module: SimpleModule): ObjectMapper {
       val objectMapper = ConnectorUtils.createMapper()
       objectMapper.addMixIn(EduFile::class.java, StepikEduFileMixin::class.java)
-      objectMapper.addMixIn(TaskFile::class.java, StepikTaskFileMixin::class.java)
       objectMapper.addMixIn(Task::class.java, StepikTaskMixin::class.java)
-      objectMapper.addMixIn(AnswerPlaceholder::class.java, StepikAnswerPlaceholderMixin::class.java)
-      objectMapper.addMixIn(AnswerPlaceholderDependency::class.java, AnswerPlaceholderDependencyMixin::class.java)
       objectMapper.registerModule(module)
       return objectMapper
     }

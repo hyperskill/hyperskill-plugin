@@ -19,6 +19,5 @@ abstract class OutputTaskBase : Task {
   companion object {
     const val OUTPUT_PATTERN_NAME = "output.txt"
     const val INPUT_PATTERN_NAME = "input.txt"
-    const val LATEST_OUTPUT_PATTERN_NAME = "latest_output.txt"
   }
 }

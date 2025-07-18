@@ -19,7 +19,6 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
@@ -38,7 +37,6 @@ import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.macro.EduMacroUtils
-import com.jetbrains.edu.learning.exceptions.BrokenPlaceholderException
 import com.jetbrains.edu.learning.exceptions.HugeBinaryFileException
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import org.apache.commons.codec.binary.Base64
@@ -286,19 +284,6 @@ fun VirtualFile.toStudentFile(project: Project, task: Task): TaskFile? {
     FileDocumentManager.getInstance().saveDocument(document)
     val studentFile = LightVirtualFile("student_task", PlainTextFileType.INSTANCE, document.text)
     runWithListener(project, taskFile, studentFile) { studentDocument: Document ->
-      for (placeholder in taskFile.answerPlaceholders) {
-        try {
-          placeholder.possibleAnswer = studentDocument.getText(TextRange.create(placeholder.offset, placeholder.endOffset))
-          EduUtilsKt.replaceAnswerPlaceholder(studentDocument, placeholder)
-        }
-        catch (e: IndexOutOfBoundsException) {
-          // We are here because placeholder is broken. We need to put broken placeholder into exception.
-          // We need to take it from original task, because taskCopy has issues with links (taskCopy.lesson is always null)
-          val file = task.getTaskFile(taskFile.name)
-          val answerPlaceholder = file?.answerPlaceholders?.get(placeholder.index)
-          throw BrokenPlaceholderException(EduCoreBundle.message("exception.broken.placeholder.title"), answerPlaceholder ?: placeholder)
-        }
-      }
       val text = studentDocument.immutableCharSequence.toString()
       // We have just substituted placeholders and thus changed the text for the student file.
       // It means we can not use the text from disk, and we should store the result in memory.

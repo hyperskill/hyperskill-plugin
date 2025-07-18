@@ -9,20 +9,13 @@ import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.rust.messages.EduRustBundle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.rust.cargo.toolchain.RsToolchainBase
-import java.nio.file.Path
 
 // BACKCOMPAT: 2025.1. Merge it into RsOpenCourseHandler
 object RsOpenCourseHelper {
-
-  private const val RUST_ROVER_BANNER = "rustrover_banner"
-
   private val LOG = logger<RsOpenCourseHelper>()
 
   suspend fun openCourse(
-    courseId: Int,
-    toolchain: RsToolchainBase,
-    projectLocation: Path?
+    courseId: Int
   ) {
     val location = searchExistingCourseLocation(courseId)
     if (location != null) {

@@ -6,9 +6,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VfsUtilCore
@@ -20,9 +18,12 @@ import com.intellij.psi.util.PsiUtilCore
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.jetbrains.edu.learning.EduUtilsKt.convertToHtml
 import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat.Companion.TASK_DESCRIPTION_PREFIX
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
+import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
+import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
@@ -86,29 +87,6 @@ fun Task.getAllTestVFiles(project: Project): MutableList<VirtualFile> {
   return testFiles
 }
 
-val Task.placeholderDependencies: List<AnswerPlaceholderDependency>
-  get() = taskFiles.values.flatMap { taskFile -> taskFile.answerPlaceholders.mapNotNull { it.placeholderDependency } }
-
-fun Task.getUnsolvedTaskDependencies(): List<Task> {
-  return placeholderDependencies
-    .mapNotNull { it.resolve(course)?.taskFile?.task }
-    .filter { it.status != CheckStatus.Solved }
-    .distinct()
-}
-
-fun Task.getDependentTasks(): Set<Task> {
-  val course = course
-  return course.items.flatMap { item ->
-    when (item) {
-      is Lesson -> item.taskList
-      is Section -> item.lessons.flatMap { it.taskList }
-      else -> emptyList()
-    }
-  }.filterTo(HashSet()) { task ->
-    task.placeholderDependencies.any { it.resolve(course)?.taskFile?.task == this }
-  }
-}
-
 fun Task.hasChangedFiles(project: Project): Boolean {
   for (taskFile in taskFiles.values) {
     val document = taskFile.getDocument(project) ?: continue
@@ -122,16 +100,7 @@ fun Task.hasChangedFiles(project: Project): Boolean {
 fun Task.saveStudentAnswersIfNeeded(project: Project) {
   if (lesson !is FrameworkLesson) return
 
-  val taskDir = getDir(project.courseDir) ?: return
-  for ((_, taskFile) in taskFiles) {
-    val virtualFile = taskFile.findTaskFileInDir(taskDir) ?: continue
-    val document = FileDocumentManager.getInstance().getDocument(virtualFile) ?: continue
-    for (placeholder in taskFile.answerPlaceholders) {
-      val startOffset = placeholder.offset
-      val endOffset = placeholder.endOffset
-      placeholder.studentAnswer = document.getText(TextRange.create(startOffset, endOffset))
-    }
-  }
+  getDir(project.courseDir) ?: return
   YamlFormatSynchronizer.saveItem(this)
 }
 
@@ -171,16 +140,8 @@ fun Task.getDescriptionFile(
 fun DescriptionFormat.fileNameWithTranslation(translationLanguage: TranslationLanguage): String =
   "${TASK_DESCRIPTION_PREFIX}_${translationLanguage.code}.$extension"
 
-private fun TaskFile.canShowSolution() =
-  answerPlaceholders.isNotEmpty() && answerPlaceholders.all { it.possibleAnswer.isNotEmpty() }
-
 fun Task.canShowSolution(): Boolean {
-  if (course is HyperskillCourse) {
-    return hasSolutions() && status == CheckStatus.Solved
-  }
-  val hiddenByEducator = solutionHidden ?: course.solutionsHidden
-  val shouldShow = !hiddenByEducator || status == CheckStatus.Solved
-  return shouldShow && taskFiles.values.any { it.canShowSolution() }
+  return hasSolutions() && status == CheckStatus.Solved
 }
 
 fun Task.hasSolutions(): Boolean = this !is TheoryTask
@@ -231,7 +192,7 @@ fun Task.updateDescriptionTextAndFormat(project: Project) = runReadAction {
     descriptionText = VfsUtil.loadText(taskDescriptionFile)
     descriptionFormat = taskDescriptionFile.toDescriptionFormat()
   }
-  catch (e: IOException) {
+  catch (_: IOException) {
     LOG.warn("Failed to load text " + taskDescriptionFile.name)
     descriptionFormat = DescriptionFormat.HTML
     descriptionText = EduCoreBundle.message("task.description.not.found")

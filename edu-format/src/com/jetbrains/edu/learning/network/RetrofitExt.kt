@@ -145,10 +145,10 @@ private fun processForbiddenErrorMessage(jsonText: String): String? {
     val courseNode = mapper.readTree(jsonText) as ObjectNode
     courseNode.get("message")?.asText()
   }
-  catch (e: ClassCastException) {
+  catch (_: ClassCastException) {
     null
   }
-  catch (e: JsonParseException) {
+  catch (_: JsonParseException) {
     null
   }
 }

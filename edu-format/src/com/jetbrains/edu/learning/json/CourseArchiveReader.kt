@@ -84,10 +84,7 @@ fun ObjectMapper.addStudyItemMixins() {
   addMixIn(FrameworkLesson::class.java, RemoteFrameworkLessonMixin::class.java)
   addMixIn(Lesson::class.java, RemoteLessonMixin::class.java)
   addMixIn(Task::class.java, RemoteTaskMixin::class.java)
-  addMixIn(TaskFile::class.java, TaskFileMixin::class.java)
   addMixIn(EduFile::class.java, EduFileMixin::class.java)
-  addMixIn(AnswerPlaceholder::class.java, AnswerPlaceholderWithAnswerMixin::class.java)
-  addMixIn(AnswerPlaceholderDependency::class.java, AnswerPlaceholderDependencyMixin::class.java)
 }
 
 fun JsonMapper.Builder.setDateFormat(): JsonMapper.Builder {

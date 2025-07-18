@@ -3,14 +3,12 @@ package com.jetbrains.edu.learning
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.LangDataKeys
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileSystemItem
 import com.intellij.psi.PsiManager
-import com.jetbrains.edu.coursecreator.CCStudyItemDeleteProvider
 import com.jetbrains.edu.learning.projectView.CourseViewPane
 
 abstract class EduActionTestCase : EduTestCase() {
@@ -26,7 +24,6 @@ abstract class EduActionTestCase : EduTestCase() {
       .add(CommonDataKeys.VIRTUAL_FILE, file)
       .add(CommonDataKeys.VIRTUAL_FILE_ARRAY, arrayOf(file))
       .add(CommonDataKeys.PSI_ELEMENT, psiFile)
-      .add(PlatformDataKeys.DELETE_ELEMENT_PROVIDER, CCStudyItemDeleteProvider())
     if (psiFile is PsiFile) {
       builder.add(LangDataKeys.PSI_FILE, psiFile)
     }
@@ -44,7 +41,6 @@ abstract class EduActionTestCase : EduTestCase() {
       .add(CommonDataKeys.VIRTUAL_FILE, file)
       .add(CommonDataKeys.VIRTUAL_FILE_ARRAY, arrayOf(file))
       .add(CommonDataKeys.PSI_ELEMENT, element)
-      .add(PlatformDataKeys.DELETE_ELEMENT_PROVIDER, CCStudyItemDeleteProvider())
       .build()
   }
 }

@@ -18,10 +18,6 @@ import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ONLY_IDEA_DIRECTORY
 import org.intellij.lang.annotations.Language
 import java.util.*
-import java.util.regex.Pattern
-
-private val OPENING_TAG: Pattern = Pattern.compile("<p>")
-private val CLOSING_TAG: Pattern = Pattern.compile("</p>")
 
 @DslMarker
 annotation class CourseDsl
@@ -385,9 +381,7 @@ class TaskBuilder(val lesson: Lesson, val task: Task) {
 
     if (contents !is BinaryContents) {
       val textBuilder = StringBuilder(contents.textualRepresentation.trimIndent())
-      val placeholders = extractPlaceholdersFromText(textBuilder)
       taskFileBuilder.withContents(InMemoryTextualContents(textBuilder.toString()))
-      taskFileBuilder.withPlaceholders(placeholders)
     }
     else {
       taskFileBuilder.withContents(contents)
@@ -503,26 +497,6 @@ class TaskBuilder(val lesson: Lesson, val task: Task) {
     }
   }
 
-  private fun extractPlaceholdersFromText(text: StringBuilder): List<AnswerPlaceholder> {
-    val openingMatcher = OPENING_TAG.matcher(text)
-    val closingMatcher = CLOSING_TAG.matcher(text)
-    val placeholders = mutableListOf<AnswerPlaceholder>()
-    var pos = 0
-    while (openingMatcher.find(pos)) {
-      val answerPlaceholder = AnswerPlaceholder()
-      if (!closingMatcher.find(openingMatcher.end())) {
-        error("No matching closing tag found")
-      }
-      answerPlaceholder.offset = openingMatcher.start()
-      answerPlaceholder.length = closingMatcher.start() - openingMatcher.end()
-      answerPlaceholder.placeholderText = text.substring(openingMatcher.end(), closingMatcher.start())
-      placeholders.add(answerPlaceholder)
-      text.delete(closingMatcher.start(), closingMatcher.end())
-      text.delete(openingMatcher.start(), openingMatcher.end())
-      pos = answerPlaceholder.endOffset
-    }
-    return placeholders
-  }
 }
 
 @CourseDsl
@@ -563,31 +537,6 @@ class TaskFileBuilder(val task: Task? = null) {
 
   fun withContents(contents: FileContents) {
     taskFile.contents = contents
-  }
-
-  fun withPlaceholders(placeholders: List<AnswerPlaceholder>) {
-    for (placeholder in placeholders) {
-      placeholder.taskFile = taskFile
-      taskFile.addAnswerPlaceholder(placeholder)
-    }
-  }
-
-  fun placeholder(
-    index: Int, possibleAnswer: String? = null, placeholderText: String? = null,
-    dependency: String = "", isVisible: Boolean = true
-  ) {
-    val answerPlaceholder = taskFile.answerPlaceholders[index]
-    if (possibleAnswer != null) {
-      answerPlaceholder.possibleAnswer = possibleAnswer
-    }
-    if (placeholderText != null) {
-      answerPlaceholder.placeholderText = placeholderText
-    }
-    val createdDependency = AnswerPlaceholderDependency.create(answerPlaceholder, dependency)
-    if (createdDependency != null) {
-      answerPlaceholder.placeholderDependency = createdDependency
-    }
-    answerPlaceholder.isVisible = isVisible
   }
 }
 

@@ -39,9 +39,6 @@ fun Task.getCurrentTaskVirtualFile(project: Project): VirtualFile? {
     if (resultFile == null) {
       resultFile = file
     }
-
-    val hasNewPlaceholder = taskFile.answerPlaceholders.any { p -> p.placeholderDependency == null }
-    if (hasNewPlaceholder) return file
   }
   return resultFile
 }

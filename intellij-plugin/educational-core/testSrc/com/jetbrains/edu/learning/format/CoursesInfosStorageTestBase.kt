@@ -12,7 +12,6 @@ import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
 import com.jetbrains.edu.learning.newproject.coursesStorage.UserCoursesState
 import com.jetbrains.edu.learning.stepik.hyperskill.PlainTextHyperskillConfigurator
 import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourse
-import junit.framework.ComparisonFailure
 import org.jdom.Element
 import org.junit.Test
 import java.nio.file.Paths
@@ -187,12 +186,6 @@ open class CoursesInfosStorageTestBase : EduTestCase() {
     val name = getTestName(true)
     val loaded = Paths.get(testDataPath).resolve("$name.xml")
     return JDOMUtil.load(loaded)
-  }
-
-  private fun checkEquals(expected: Element, actual: Element) {
-    if (!JDOMUtil.areElementsEqual(expected, actual)) {
-      throw ComparisonFailure("Elements are not equal", JDOMUtil.writeElement(expected), JDOMUtil.writeElement(actual))
-    }
   }
 
   override fun getTestDataPath() = "testData/coursesStorage"

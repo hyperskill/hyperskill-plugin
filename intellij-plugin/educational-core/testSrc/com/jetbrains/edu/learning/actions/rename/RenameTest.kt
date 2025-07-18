@@ -103,7 +103,7 @@ class RenameTest : RenameTestBase() {
       taskMd,
       shouldBeInvoked = false
     )
-    assertEquals(DescriptionFormat.MD, course.lessons[0].taskList[0].descriptionFormat)
+    assertEquals(DescriptionFormat.HTML, course.lessons[0].taskList[0].descriptionFormat)
     assertNull(findDescriptionFile(taskMd))
     assertNotNull(findDescriptionFile(taskHtml))
   }

@@ -178,7 +178,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
             file("task.cpp")
           }
           file("output.txt")
-          file("task.md")
+          file("task.html")
           file("CMakeLists.txt")
         }
         dir("theory") {

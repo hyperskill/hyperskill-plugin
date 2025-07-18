@@ -18,7 +18,7 @@ class HyperskillReplyDeserializer(vc: Class<*>? = null) : StdDeserializer<Reply>
   }
 
   companion object {
-    private val LOG: Logger = Logger.getInstance(StepikReplyDeserializer::class.java)
+    private val LOG: Logger = Logger.getInstance(HyperskillReplyDeserializer::class.java)
 
     private fun ObjectNode.tryGuessType(): Class<out Reply> {
       val typesToImportantField = mapOf(

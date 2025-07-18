@@ -88,9 +88,6 @@
                     interface="com.jetbrains.edu.learning.RemoteEnvHelper"
                     dynamic="true"/>
 
-    <extensionPoint qualifiedName="Educational.yamlActionsHelper"
-                    interface="com.jetbrains.edu.coursecreator.actions.YamlActionsHelper"
-                    dynamic="true"/>
     <extensionPoint qualifiedName="Educational.courseViewPaneCustomization"
                     interface="com.jetbrains.edu.learning.projectView.CourseViewPaneCustomization"
                     dynamic="true"/>
@@ -115,12 +112,6 @@
       <add-to-group group-id="RunConfiguration.Group" anchor="before" relative-to-action="DeleteRunConfiguration"/> <!-- top right -->
     </action>
     <action id="Educational.Retry" class="com.jetbrains.edu.learning.actions.RetryAction"/>
-    <action id="Educational.PrevPlaceholder"
-            class="com.jetbrains.edu.learning.actions.PrevPlaceholderAction"
-            icon="AllIcons.Actions.Back"/>
-    <action id="Educational.NextPlaceholder"
-            class="com.jetbrains.edu.learning.actions.NextPlaceholderAction"
-            icon="AllIcons.Actions.Forward"/>
     <action id="Educational.PreviousTask"
             class="com.jetbrains.edu.learning.actions.PreviousTaskAction"
             icon="AllIcons.Actions.Back"/>
@@ -137,11 +128,6 @@
     <action id="Educational.CompareWithAnswer"
             class="com.jetbrains.edu.learning.actions.CompareWithAnswerAction"
             icon="AllIcons.Actions.Diff"/>
-    <action id="Educational.RefreshAnswerPlaceholder"
-            class="com.jetbrains.edu.learning.actions.RefreshAnswerPlaceholder"
-            icon="AllIcons.Actions.Refresh">
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-    </action>
     <action id="Educational.SwitchTaskDescriptionPanel" class="com.jetbrains.edu.learning.actions.SwitchTaskPanelAction">
     </action>
 
@@ -270,7 +256,6 @@
 
     <!-- placeholders -->
     <editorFactoryListener implementation="com.jetbrains.edu.learning.editor.EduEditorFactoryListener"/>
-    <highlightingPassFactory implementation="com.jetbrains.edu.learning.placeholder.PlaceholderHighlightingPassFactory"/>
     <additionalTextAttributes scheme="Default" file="colorScheme/EduDefault.xml"/>
     <additionalTextAttributes scheme="Darcula" file="colorScheme/EduDarcula.xml"/>
     <registryKey key="edu.placeholder.highlighting.pass" defaultValue="false" restartRequired="true"
@@ -289,8 +274,6 @@
     <refactoring.moveHandler implementation="com.jetbrains.edu.learning.handlers.EduMoveDelegate" order="first"/>
 
     <!-- Notifications   -->
-    <editorNotificationProvider
-        implementation="com.jetbrains.edu.learning.placeholderDependencies.UnsolvedDependenciesNotificationProvider"/>
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.stepik.UpdateCourseNotificationProvider"/>
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.editor.EduTaskFileNotificationProvider"/>
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.yaml.YamlConfigNotificationProvider"/>
@@ -328,18 +311,7 @@
     <highlightErrorFilter implementation="com.jetbrains.edu.coursecreator.CCHighlightErrorFilter"/>
 
     <projectViewPane implementation="com.jetbrains.edu.learning.projectView.CourseViewPane"/>
-    <editorActionHandler action="EditorBackSpace" implementationClass="com.jetbrains.edu.learning.editor.EduTypedHandler"
-                         order="first"/>
-    <editorActionHandler action="EditorDelete" implementationClass="com.jetbrains.edu.learning.editor.EduTypedHandler"
-                         order="first"/>
 
-    <editorActionHandler action="EditorCut" implementationClass="com.jetbrains.edu.learning.editor.EduCutTypedHandler"
-                         order="first"/>
-    <editorActionHandler action="EditorCutLineEnd" implementationClass="com.jetbrains.edu.learning.editor.EduTypedLineHandler"/>
-    <editorActionHandler action="EditorCutLineBackward" implementationClass="com.jetbrains.edu.learning.editor.EduTypedLineHandler"/>
-    <editorActionHandler action="EditorDeleteToLineEnd" implementationClass="com.jetbrains.edu.learning.editor.EduTypedLineHandler"/>
-    <editorActionHandler action="EditorDeleteToLineStart" implementationClass="com.jetbrains.edu.learning.editor.EduTypedLineHandler"/>
-    <editorActionHandler action="EditorDeleteLine" implementationClass="com.jetbrains.edu.learning.editor.EduTypedLineHandler"/>
     <experimentalFeature id="edu.course.creator.split.editor" percentOfUsers="100" internalFeature="true">
       <description>Enables previous task view for guided projects</description>
     </experimentalFeature>

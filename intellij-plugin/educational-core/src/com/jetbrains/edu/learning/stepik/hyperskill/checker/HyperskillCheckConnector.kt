@@ -130,7 +130,7 @@ object HyperskillCheckConnector {
     return try {
       URL(HYPERSKILL_URL).host
     }
-    catch (e: MalformedURLException) {
+    catch (_: MalformedURLException) {
       return HYPERSKILL_DEFAULT_HOST
     }
   }

@@ -9,7 +9,7 @@ import java.awt.BorderLayout
  * Tab initialization is made in [com.jetbrains.edu.learning.taskToolWindow.ui.tab.TaskToolWindowTextTab.init] method
  * and it must be called in constructor to initialize all necessary UI.
  */
-abstract class TaskToolWindowTextTab(project: Project, tabType: TabType) : TaskToolWindowTab(project) {
+abstract class TaskToolWindowTextTab(project: Project) : TaskToolWindowTab(project) {
   private lateinit var innerPanel: TabTextPanel
 
   private fun createTextPanel(): TabTextPanel {

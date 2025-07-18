@@ -50,24 +50,6 @@ object YamlMixinNames {
   // theory task
   const val POST_SUBMISSION_ON_OPEN = "post_submission_on_open"
 
-  // choice task
-  const val IS_CORRECT = "is_correct"
-  const val OPTIONS = "options"
-  const val IS_MULTIPLE_CHOICE = "is_multiple_choice"
-  const val FEEDBACK_CORRECT = "message_correct"
-  const val FEEDBACK_INCORRECT = "message_incorrect"
-  const val SELECTED_OPTIONS = "selected_options"
-  const val QUIZ_HEADER = "quiz_header"
-  const val LOCAL_CHECK = "local_check"
-
-  //sorting based task
-  const val ORDERING = "ordering"
-  const val CAPTIONS = "captions"
-
-  //table task
-  const val ROWS = "rows"
-  const val COLUMNS = "columns"
-
   // feedback
   const val MESSAGE = "message"
   const val TIME = "time"
@@ -86,24 +68,10 @@ object YamlMixinNames {
   const val PROPAGATABLE = "propagatable"
   const val HIGHLIGHT_LEVEL = JsonMixinNames.HIGHLIGHT_LEVEL
 
-  // placeholder
-  const val OFFSET = JsonMixinNames.OFFSET
-  const val LENGTH = JsonMixinNames.LENGTH
-  const val PLACEHOLDER_TEXT = JsonMixinNames.PLACEHOLDER_TEXT
-  const val DEPENDENCY = JsonMixinNames.DEPENDENCY
-  const val INIT_FROM_DEPENDENCY = "initialized_from_dependency"
-  const val STUDENT_ANSWER = "student_answer"
-  const val INITIAL_STATE = "initial_state"
-  const val ENCRYPTED_POSSIBLE_ANSWER = "encrypted_possible_answer"
-  const val SELECTED = "selected"
-
   // placeholder dependency
   const val SECTION = JsonMixinNames.SECTION
   const val LESSON = JsonMixinNames.LESSON
   const val TASK = JsonMixinNames.TASK
-  const val FILE = JsonMixinNames.FILE
-  const val PLACEHOLDER = JsonMixinNames.PLACEHOLDER
-  const val IS_VISIBLE = JsonMixinNames.IS_VISIBLE
 
   // remote study item
   const val ID = JsonMixinNames.ID

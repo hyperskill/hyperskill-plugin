@@ -52,24 +52,6 @@ class CourseFormatTest : EduTestCase() {
   }
 
   @Test
-  fun testPlaceholderText() {
-    val taskFile = firstEduTask.getTaskFile("task.py")
-    check(taskFile != null)
-    val answerPlaceholders = taskFile.answerPlaceholders
-    assertEquals(1, answerPlaceholders.size)
-    assertEquals("write function body", answerPlaceholders[0].placeholderText)
-  }
-
-  @Test
-  fun testPossibleAnswer() {
-    val taskFile = firstEduTask.getTaskFile("task.py")
-    check(taskFile != null)
-    val answerPlaceholders = taskFile.answerPlaceholders
-    assertEquals(1, answerPlaceholders.size)
-    assertEquals("pass", answerPlaceholders[0].possibleAnswer)
-  }
-
-  @Test
   fun testStudentTaskText() {
     val lessons = courseFromJson.lessons
     assertFalse("No lessons found", lessons.isEmpty())
@@ -87,24 +69,6 @@ class CourseFormatTest : EduTestCase() {
     val task = courseFromJson.lessons[0].taskList[0]
     assertTrue(task.solutionHidden!!)
   }
-
-  @Test
-  fun testPlaceholderWithInvisibleDependency() = doTestPlaceholderAndDependencyVisibility(
-    courseFromJson.lessons[0].taskList[0],
-    expectedPlaceholderVisibility = false
-  )
-
-  @Test
-  fun testInvisiblePlaceholder() = doTestPlaceholderAndDependencyVisibility(
-    courseFromJson.lessons[0].taskList[0],
-    expectedPlaceholderVisibility = false
-  )
-
-  @Test
-  fun testVisiblePlaceholderAndInvisibleDependency() = doTestPlaceholderAndDependencyVisibility(
-    courseFromJson.lessons[0].taskList[0],
-    expectedPlaceholderVisibility = false
-  )
 
   @Test
   fun testCourseLanguageVersionEmpty() {

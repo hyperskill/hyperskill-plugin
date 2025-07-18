@@ -26,14 +26,6 @@ class TaskFile : EduFile {
     this.isLearnerCreated = isLearnerCreated
   }
 
-  var answerPlaceholders: List<AnswerPlaceholder>
-    get() = _answerPlaceholders
-    set(value) {
-      _answerPlaceholders = value.toMutableList()
-    }
-
-  private var _answerPlaceholders = mutableListOf<AnswerPlaceholder>()
-
   @Transient
   private var _task: Task? = null
 
@@ -43,31 +35,11 @@ class TaskFile : EduFile {
       _task = value
     }
 
-  fun initTaskFile(task: Task, isRestarted: Boolean) {
+  fun initTaskFile(task: Task) {
     this.task = task
-    for (answerPlaceholder in _answerPlaceholders) {
-      answerPlaceholder.init(this, isRestarted)
-    }
-
-    sortAnswerPlaceholders()
   }
 
-  fun addAnswerPlaceholder(answerPlaceholder: AnswerPlaceholder) {
-    _answerPlaceholders.add(answerPlaceholder)
-  }
-
-  fun getAnswerPlaceholder(offset: Int): AnswerPlaceholder? {
-    return _answerPlaceholders.firstOrNull { offset in it.offset..it.endOffset }
-  }
-
-  fun sortAnswerPlaceholders() {
-    _answerPlaceholders.sortWith(AnswerPlaceholderComparator)
-    for (i in _answerPlaceholders.indices) {
-      _answerPlaceholders[i].index = i
-    }
-  }
-
-  fun isValid(text: String): Boolean {
-    return _answerPlaceholders.all { it.isValid(text.length) }
+  fun isValid(): Boolean {
+    return true
   }
 }

@@ -17,7 +17,6 @@ import com.jetbrains.edu.learning.submissions.ui.linkHandler.SubmissionsDifferen
 import com.jetbrains.edu.learning.taskToolWindow.links.SwingToolWindowLinkHandler
 import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.StyleManager
 import com.jetbrains.edu.learning.taskToolWindow.ui.tab.SwingTextPanel
-import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType.SUBMISSIONS_TAB
 import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TaskToolWindowCardTextTab
 import java.util.concurrent.CompletableFuture
 
@@ -25,7 +24,7 @@ import java.util.concurrent.CompletableFuture
  * Constructor is called exclusively in [com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabManager.createTab]
  * and MUST NOT be called in any other places
  */
-open class SubmissionsTab(project: Project) : TaskToolWindowCardTextTab(project, SUBMISSIONS_TAB) {
+open class SubmissionsTab(project: Project) : TaskToolWindowCardTextTab(project) {
 
   override val uiMode: JavaUILibrary
     get() = JavaUILibrary.SWING

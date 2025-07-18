@@ -818,8 +818,6 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
     private val step13299 = StepInfo(13299, "Complete the handler description")
     private val step7020 = StepInfo(7020, "Find a handler for the request")
 
-    private val step525047 = StepInfo(525047, "Fix signature")
-
     @Suppress("unused") // not recommended step
     private val step9886 = StepInfo(9886, "Pets in boxes")
     private val topic85 = TopicInfo(85)

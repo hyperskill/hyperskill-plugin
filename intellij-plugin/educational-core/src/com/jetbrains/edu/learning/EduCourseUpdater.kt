@@ -5,7 +5,6 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
@@ -60,9 +59,6 @@ abstract class EduCourseUpdater(val project: Project, val course: Course) {
 
     @Throws(IOException::class)
     fun createTaskDirectories(project: Project, lessonDir: VirtualFile, task: Task) {
-      if (!task.lesson.course.isStudy) {
-        CCUtils.initializeTaskPlaceholders(project.toCourseInfoHolder(), task)
-      }
       GeneratorUtils.createTask(project, task, lessonDir)
     }
   }

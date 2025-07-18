@@ -2,10 +2,15 @@
 
 package com.jetbrains.edu.learning.yaml.format
 
-import com.fasterxml.jackson.annotation.*
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.EduFile
+import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
+import com.jetbrains.edu.learning.courseFormat.TaskFile
+import com.jetbrains.edu.learning.courseFormat.message
 import com.jetbrains.edu.learning.json.mixins.HighlightLevelValueFilter
 import com.jetbrains.edu.learning.json.mixins.NotImplementedInMixin
 import com.jetbrains.edu.learning.json.mixins.TrueValueFilter
@@ -46,10 +51,6 @@ abstract class AdditionalFileYamlMixin : EduFileYamlMixin() {
 @JsonPropertyOrder(NAME, VISIBLE, PLACEHOLDERS, EDITABLE, HIGHLIGHT_LEVEL)
 @JsonDeserialize(builder = TaskFileBuilder::class)
 abstract class TaskFileYamlMixin : EduFileYamlMixin() {
-
-  @JsonProperty(PLACEHOLDERS)
-  private lateinit var _answerPlaceholders: List<AnswerPlaceholder>
-
   @JsonProperty(VISIBLE)
   private var isVisible = true
 
@@ -103,7 +104,6 @@ class AdditionalFileBuilder(
 @JsonPOJOBuilder(buildMethodName = "buildTaskFile", withPrefix = "")
 open class TaskFileBuilder(
   name: String?,
-  @JsonSetter(contentNulls = Nulls.SKIP) @JsonProperty(PLACEHOLDERS) val placeholders: List<AnswerPlaceholder> = mutableListOf(),
   @JsonProperty(VISIBLE) val visible: Boolean = true,
   @JsonProperty(EDITABLE) val editable: Boolean = true,
   @JsonProperty(PROPAGATABLE) val propagatable: Boolean = true,
@@ -119,7 +119,6 @@ open class TaskFileBuilder(
   }
 
   protected open fun setupTaskFile(taskFile: TaskFile) {
-    taskFile.answerPlaceholders = placeholders
     taskFile.isVisible = visible
     taskFile.isEditable = editable
     taskFile.isPropagatable = propagatable

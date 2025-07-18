@@ -45,7 +45,6 @@ import com.jetbrains.edu.learning.yaml.YamlConfigSettings.configFileName
 import com.jetbrains.edu.learning.yaml.YamlConfigSettings.remoteConfigFileName
 import com.jetbrains.edu.learning.yaml.YamlMapper.basicMapper
 import com.jetbrains.edu.learning.yaml.YamlMapper.remoteMapper
-import com.jetbrains.edu.learning.yaml.YamlMapper.studentMapper
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import javax.swing.JLabel
@@ -220,12 +219,7 @@ object YamlFormatSynchronizer {
     return COURSE_CONFIG == name || SECTION_CONFIG == name || LESSON_CONFIG == name || TASK_CONFIG == name
   }
 
-  fun Course.mapper(): ObjectMapper = if (isStudy) {
-    studentMapper()
-  }
-  else {
-    basicMapper()
-  }
+  fun Course.mapper(): ObjectMapper = basicMapper()
 }
 
 private fun Task.disambiguateTaskFilesContents(project: Project) {

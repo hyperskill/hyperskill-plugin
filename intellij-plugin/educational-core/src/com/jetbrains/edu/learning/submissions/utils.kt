@@ -41,13 +41,7 @@ fun getSolutionFiles(project: Project, task: Task): List<SolutionFile> {
     ApplicationManager.getApplication().runReadAction {
       val document = FileDocumentManager.getInstance().getDocument(virtualFile) ?: return@runReadAction
       val text = document.text
-      var insertedTextLength = 0
       val builder = StringBuilder(text)
-      for (placeholder in taskFile.answerPlaceholders) {
-        builder.insert(placeholder.offset + insertedTextLength, OPEN_PLACEHOLDER_TAG)
-        builder.insert(placeholder.offset + insertedTextLength + placeholder.length + OPEN_PLACEHOLDER_TAG.length, CLOSE_PLACEHOLDER_TAG)
-        insertedTextLength += OPEN_PLACEHOLDER_TAG.length + CLOSE_PLACEHOLDER_TAG.length
-      }
       files.add(SolutionFile(taskFile.name, builder.toString(), taskFile.isVisible))
     }
   }

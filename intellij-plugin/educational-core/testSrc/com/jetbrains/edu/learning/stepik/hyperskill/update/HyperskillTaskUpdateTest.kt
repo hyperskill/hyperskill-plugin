@@ -1,10 +1,8 @@
 package com.jetbrains.edu.learning.stepik.hyperskill.update
 
-import com.intellij.openapi.application.runReadAction
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.ext.getTaskText
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
@@ -12,7 +10,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.update.TaskUpdateTestBase
 import org.junit.Test
-import java.util.*
 
 class HyperskillTaskUpdateTest : TaskUpdateTestBase<HyperskillCourse>() {
   override fun getUpdater(localCourse: HyperskillCourse) = HyperskillCourseUpdaterNew(project, localCourse)
@@ -210,45 +207,7 @@ class HyperskillTaskUpdateTest : TaskUpdateTestBase<HyperskillCourse>() {
     }
     expectedStructure.assertEquals(rootDir)
   }
-
-  @Test
-  fun `test task description with placeholders have been updated`() {
-    localCourse = createBasicHyperskillCourse {
-      lesson("lesson1", id = 1) {
-        eduTask("task1", stepId = 1, taskDescription = "Old Description", taskDescriptionFormat = DescriptionFormat.HTML) {
-          taskFile("src/Task.kt", "fun foo() { <p>TODO</p>() }") {
-            placeholder(index = 0, placeholderText = "TODO")
-          }
-          taskFile("src/Baz.kt", "fun baz() {}")
-          taskFile("test/Tests.kt", "fun test1() {}")
-        }
-        eduTask("task2", stepId = 2, taskDescription = "Old Description", taskDescriptionFormat = DescriptionFormat.HTML) {
-          taskFile("src/Task.kt", "fun foo() {}")
-          taskFile("src/Baz.kt", "fun baz() {}")
-          taskFile("test/Tests2.kt", "fun test2() {}")
-        }
-      }
-      additionalFile("build.gradle", "apply plugin: \"java\"")
-    }
-    localCourse.stages = listOf(HyperskillStage(1, "", 1, true), HyperskillStage(2, "", 2))
-
-    val newText = "TODO()"
-    val remoteCourse = toRemoteCourse {
-      taskList[0].apply {
-        descriptionText = "fun foo() { <p>$newText</p> }"
-        updateDate = Date(100)
-        taskFiles["src/Task.kt"]?.answerPlaceholders?.first()?.placeholderText = newText
-      }
-    }
-
-    updateCourse(remoteCourse)
-
-    val taskDescription = runReadAction {
-      findTask(0, 0).getTaskText(project)!!
-    }
-    assertTrue("Task Description not updated", taskDescription.contains(newText))
-  }
-
+  
   @Test
   fun `test task type has been updated from unsupported to supported`() {
     localCourse = createBasicHyperskillCourse {

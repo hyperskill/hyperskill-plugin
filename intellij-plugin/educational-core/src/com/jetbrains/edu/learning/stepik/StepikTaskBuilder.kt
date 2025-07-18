@@ -96,8 +96,8 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
         }
       }
       if (memoryLimit != null && timeLimit != null) {
-        append("""<br><font color="gray">${EduCoreBundle.message("stepik.memory.limit", memoryLimit!!)}</font>""")
-        append("""<br><font color="gray">${EduCoreBundle.message("stepik.time.limit", timeLimit!!)}</font><br><br>""")
+        append("""<br><font color="gray">${EduCoreBundle.message("stepik.memory.limit", memoryLimit)}</font>""")
+        append("""<br><font color="gray">${EduCoreBundle.message("stepik.time.limit", timeLimit)}</font><br><br>""")
       }
     }
   }
@@ -167,7 +167,6 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
     val options = step.options
     if (options is PyCharmStepOptions) {
       options.files?.forEach {
-        addPlaceholdersTexts(it)
         task.addTaskFile(it)
       }
     }
@@ -219,17 +218,6 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
     private const val UNKNOWN_TASK_NAME = "Unknown"
     private val LOG = Logger.getInstance(StepikTaskBuilder::class.java)
     val langAndVersionRegex = Regex("^([a-zA-Z+#]+)\\s?([.|0-9]+)$")
-
-    private fun addPlaceholdersTexts(file: TaskFile) {
-      val fileText = file.contents.textualRepresentation
-      for (placeholder in file.answerPlaceholders) {
-        val offset = placeholder.offset
-        val length = placeholder.length
-        if (fileText.length > offset + length) {
-          placeholder.placeholderText = fileText.substring(offset, offset + length)
-        }
-      }
-    }
 
     @VisibleForTesting
     fun String.prepareSample(): String = xmlEscaped.replace("\n", "<br>")

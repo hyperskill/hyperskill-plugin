@@ -19,7 +19,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotifications
 import com.jetbrains.edu.learning.EduUtilsKt.isNewlyCreated
 import com.jetbrains.edu.learning.actions.EduActionUtils
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.CheckStatus
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseFormat.ext.findTaskFileInDir
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
@@ -253,21 +255,6 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
 
     private val LOG = Logger.getInstance(SolutionLoaderBase::class.java)
 
-    private fun updatePlaceholders(taskFile: TaskFile, updatedPlaceholders: List<AnswerPlaceholder>) {
-      val answerPlaceholders = taskFile.answerPlaceholders
-      if (answerPlaceholders.size != updatedPlaceholders.size) {
-        LOG.warn("")
-        return
-      }
-      for ((answerPlaceholder, updatedPlaceholder) in answerPlaceholders.zip(updatedPlaceholders)) {
-        answerPlaceholder.placeholderText = updatedPlaceholder.placeholderText
-        answerPlaceholder.status = updatedPlaceholder.status
-        answerPlaceholder.offset = updatedPlaceholder.offset
-        answerPlaceholder.length = updatedPlaceholder.length
-        answerPlaceholder.selected = updatedPlaceholder.selected
-      }
-    }
-
     private fun Task.modificationDate(project: Project): Date {
       val lesson = lesson
       return if (lesson is FrameworkLesson && lesson.currentTask() != this) {
@@ -315,7 +302,7 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       frameworkLessonManager.saveExternalChanges(task, taskSolutions.solutions.mapValues { it.value.text })
       for (taskFile in task.taskFiles.values) {
         val solution = taskSolutions.solutions[taskFile.name] ?: continue
-        updatePlaceholders(taskFile, solution.placeholders)
+
         taskFile.isVisible = solution.isVisible
       }
     }
@@ -339,7 +326,7 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
           taskFile.isVisible = solution.isVisible
 
           if (!taskFile.isVisible) continue
-          updatePlaceholders(taskFile, solution.placeholders)
+
           EduDocumentListener.modifyWithoutListener(task, path) {
             runUndoTransparentWriteAction {
               val document = FileDocumentManager.getInstance().getDocument(vFile) ?: error("No document for $path")
@@ -351,7 +338,7 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
     }
   }
 
-  protected data class Solution(val text: String, val isVisible: Boolean, val placeholders: List<AnswerPlaceholder>)
+  protected data class Solution(val text: String, val isVisible: Boolean)
 
   protected class TaskSolutions(
     val date: Date?,

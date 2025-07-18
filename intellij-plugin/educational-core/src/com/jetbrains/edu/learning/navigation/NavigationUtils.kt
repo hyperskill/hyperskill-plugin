@@ -4,15 +4,11 @@ import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.application.WriteIntentReadAction
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.ScrollType
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Pair
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
@@ -25,7 +21,6 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.framework.FrameworkLessonManager
-import com.jetbrains.edu.learning.placeholderDependencies.PlaceholderDependencyManager
 import org.jetbrains.annotations.VisibleForTesting
 import javax.swing.tree.TreePath
 
@@ -151,19 +146,6 @@ object NavigationUtils {
     return null
   }
 
-  fun navigateToAnswerPlaceholder(editor: Editor, answerPlaceholder: AnswerPlaceholder) {
-    if (editor.isDisposed) return
-    val offsets = getPlaceholderOffsets(answerPlaceholder)
-    editor.caretModel.moveToOffset(offsets.first)
-    editor.scrollingModel.scrollToCaret(ScrollType.CENTER)
-    editor.selectionModel.setSelection(offsets.first, offsets.second)
-  }
-
-  fun navigateToFirstAnswerPlaceholder(editor: Editor, taskFile: TaskFile) {
-    val visiblePlaceholders = taskFile.answerPlaceholders.filter { it.isCurrentlyVisible }
-    val firstAnswerPlaceholder = visiblePlaceholders.firstOrNull() ?: return
-    navigateToAnswerPlaceholder(editor, firstAnswerPlaceholder)
-  }
 
   @VisibleForTesting
   fun getFirstTask(course: Course): Task? {
@@ -244,25 +226,10 @@ object NavigationUtils {
       ProjectView.getInstance(project).select(selectingDir, selectingDir, false)
       return
     }
-
-    // We need update dependencies before file opening to find out which placeholders are visible
-    PlaceholderDependencyManager.updateDependentPlaceholders(project, task)
-
+    
     @Suppress("NAME_SHADOWING")
     var fileToActivate: VirtualFile? = fileToActivate
 
-    for ((_, taskFile) in taskFiles) {
-      if (taskFile.answerPlaceholders.isEmpty()) continue
-      // We want to open task file only if it has `new` placeholder(s).
-      // Currently, we consider that `new` placeholder is a visible placeholder,
-      // i.e. placeholder without dependency or with visible dependency.
-      if (!taskFile.isVisible || taskFile.answerPlaceholders.all { !it.isCurrentlyVisible }) continue
-      val virtualFile = taskFile.findTaskFileInDir(taskDir) ?: continue
-      FileEditorManager.getInstance(project).openFile(virtualFile, true)
-      if (fileToActivate == null) {
-        fileToActivate = virtualFile
-      }
-    }
     if (fileToActivate == null) {
       fileToActivate = getFirstTaskFile(taskDir, task)
     }
@@ -272,7 +239,6 @@ object NavigationUtils {
       updateProjectView(project, fileToActivate)
     }
 
-    selectFirstAnswerPlaceholder(project)
     ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.RUN)?.hide(null)
 
     if (lesson is FrameworkLesson && lesson.course.isStudy) {
@@ -290,29 +256,6 @@ object NavigationUtils {
       val virtualFile = taskFile.getVirtualFile(project)
       virtualFile?.setHighlightLevelInsideWriteAction(project, taskFile.errorHighlightLevel)
     }
-  }
-
-  private fun selectFirstAnswerPlaceholder(project: Project) {
-    val eduState = project.eduState ?: return
-    val (_, _, editor, taskFile, _, _) = eduState
-
-    IdeFocusManager.getInstance(project).requestFocus(editor.contentComponent, true)
-    if (!taskFile.isValid(editor.document.text)) {
-      return
-    }
-
-    val placeholder = taskFile.answerPlaceholders.firstOrNull { it.isCurrentlyVisible } ?: return
-    val offsets = getPlaceholderOffsets(placeholder)
-
-    with(editor) {
-      selectionModel.setSelection(offsets.first, offsets.second)
-      caretModel.moveToOffset(offsets.first)
-      scrollingModel.scrollToCaret(ScrollType.CENTER)
-    }
-  }
-
-  fun getPlaceholderOffsets(answerPlaceholder: AnswerPlaceholder): Pair<Int, Int> {
-    return Pair.create(answerPlaceholder.offset, answerPlaceholder.endOffset)
   }
 
   @RequiresEdt

@@ -35,7 +35,6 @@ import com.intellij.util.PathUtil
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
-import com.jetbrains.edu.coursecreator.CCUtils
 import com.jetbrains.edu.coursecreator.CCUtils.isLocalCourse
 import com.jetbrains.edu.coursecreator.ui.CCOpenEducatorHelp
 import com.jetbrains.edu.learning.*
@@ -279,9 +278,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
   ) {
     measureTimeAndLog("Course content generation") {
       val course = holder.course
-      if (!course.isStudy) {
-        CCUtils.initializeCCPlaceholders(holder)
-      }
       GeneratorUtils.createCourse(holder, indicator)
       createAdditionalFiles(holder)
       EduCounterUsageCollector.eduProjectCreated(course)

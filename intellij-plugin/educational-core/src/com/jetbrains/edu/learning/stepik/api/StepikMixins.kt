@@ -11,14 +11,11 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.text.StringUtil
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholderDependency
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.ID
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_VISIBLE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.NAME
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLACEHOLDERS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.STATUS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TEXT
 import com.jetbrains.edu.learning.json.mixins.NotImplementedInMixin
@@ -95,32 +92,6 @@ open class StepikEduFileMixin {
     get
     @JsonProperty(TEXT)
     set
-}
-
-@JsonPropertyOrder(NAME, PLACEHOLDERS, IS_VISIBLE, TEXT)
-class StepikTaskFileMixin : StepikEduFileMixin() {
-  @JsonProperty(PLACEHOLDERS)
-  lateinit var _answerPlaceholders: MutableList<AnswerPlaceholder>
-}
-
-class StepikAnswerPlaceholderMixin {
-  @JsonProperty(OFFSET)
-  var offset = -1
-
-  @JsonProperty(LENGTH)
-  private var length = -1
-
-  @JsonProperty(DEPENDENCY)
-  lateinit var placeholderDependency: AnswerPlaceholderDependency
-
-  @JsonProperty(POSSIBLE_ANSWER)
-  lateinit var possibleAnswer: String
-
-  @JsonProperty(PLACEHOLDER_TEXT)
-  lateinit var placeholderText: String
-
-  @JsonProperty(SELECTED)
-  private var selected = false
 }
 
 @JsonPropertyOrder(NAME, STEPIK_ID, STATUS, FILES, TASK_TYPE)

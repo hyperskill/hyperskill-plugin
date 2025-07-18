@@ -26,14 +26,12 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CHOICE_OPTIONS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.COURSE_TYPE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CUSTOM_NAME
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DEPENDENCY
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DESCRIPTION_FORMAT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DESCRIPTION_TEXT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DISABLED_FEATURES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ENVIRONMENT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ENVIRONMENT_SETTINGS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FEEDBACK_LINK
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FILE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FRAMEWORK_TYPE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.HIGHLIGHT_LEVEL
@@ -44,21 +42,15 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_VISIBLE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ITEMS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ITEM_TYPE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.LANGUAGE
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.LENGTH
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.LESSON
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MAX_VERSION
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MESSAGE_CORRECT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MESSAGE_INCORRECT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MIN_VERSION
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.NAME
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.OFFSET
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLACEHOLDER
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLACEHOLDERS
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLACEHOLDER_TEXT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLUGINS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLUGIN_ID
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLUGIN_NAME
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.POSSIBLE_ANSWER
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE_ID
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE_VERSION
@@ -69,7 +61,6 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.SOLUTION_HIDDEN
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.STATUS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.SUMMARY
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TAGS
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TASK
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TASK_LIST
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TASK_TYPE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TEXT
@@ -317,63 +308,6 @@ abstract class EduFileMixin {
   var errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.TEMPORARY_SUPPRESSION
 }
 
-@JsonPropertyOrder(NAME, PLACEHOLDERS, IS_VISIBLE, TEXT, IS_BINARY, IS_EDITABLE, HIGHLIGHT_LEVEL)
-@JsonDeserialize(builder = TaskFileBuilder::class)
-abstract class TaskFileMixin : EduFileMixin() {
-  @JsonProperty(PLACEHOLDERS)
-  private lateinit var _answerPlaceholders: List<AnswerPlaceholder>
-}
-
-@JsonPropertyOrder(OFFSET, LENGTH, DEPENDENCY, PLACEHOLDER_TEXT, IS_VISIBLE)
-@JsonDeserialize(converter = AnswerPlaceholderConverter::class)
-abstract class AnswerPlaceholderMixin {
-  @JsonProperty(OFFSET)
-  private var offset: Int = -1
-
-  @JsonProperty(LENGTH)
-  private var length: Int = -1
-
-  @JsonProperty(DEPENDENCY)
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private lateinit var placeholderDependency: AnswerPlaceholderDependency
-
-  @JsonProperty(PLACEHOLDER_TEXT)
-  private lateinit var placeholderText: String
-
-  @JsonProperty(IS_VISIBLE)
-  @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = TrueValueFilter::class)
-  private var isVisible: Boolean = true
-}
-
-@JsonPropertyOrder(OFFSET, LENGTH, DEPENDENCY, POSSIBLE_ANSWER, PLACEHOLDER_TEXT)
-abstract class AnswerPlaceholderWithAnswerMixin : AnswerPlaceholderMixin() {
-  @JsonProperty(POSSIBLE_ANSWER)
-  @Encrypt
-  private lateinit var possibleAnswer: String
-}
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-abstract class AnswerPlaceholderDependencyMixin {
-  @JsonProperty(SECTION)
-  private lateinit var sectionName: String
-
-  @JsonProperty(LESSON)
-  private lateinit var lessonName: String
-
-  @JsonProperty(TASK)
-  private lateinit var taskName: String
-
-  @JsonProperty(FILE)
-  private lateinit var fileName: String
-
-  @JsonProperty(PLACEHOLDER)
-  private var placeholderIndex: Int = -1
-
-  @JsonProperty(IS_VISIBLE)
-  @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = TrueValueFilter::class)
-  private var isVisible = true
-}
-
 @Suppress("unused")
 abstract class EduTestInfoMixin {
   @JsonProperty(NAME)
@@ -516,27 +450,10 @@ private open class EduFileBuilder {
 @JsonPOJOBuilder(withPrefix = "")
 private class TaskFileBuilder : EduFileBuilder() {
 
-  @JsonProperty(PLACEHOLDERS)
-  var answerPlaceholders: List<AnswerPlaceholder> = mutableListOf()
-
   private fun build(): TaskFile {
     val result = TaskFile()
     updateFile(result)
 
-    result.answerPlaceholders = answerPlaceholders
     return result
-  }
-}
-
-class AnswerPlaceholderConverter : StdConverter<AnswerPlaceholder, AnswerPlaceholder?>() {
-  override fun convert(value: AnswerPlaceholder): AnswerPlaceholder =
-    value.apply { takeIsVisibleFromDependency() }
-}
-
-fun AnswerPlaceholder.takeIsVisibleFromDependency() {
-  val dependency = placeholderDependency ?: return
-  if (!dependency.isVisible) {
-    dependency.isVisible = true
-    isVisible = false
   }
 }

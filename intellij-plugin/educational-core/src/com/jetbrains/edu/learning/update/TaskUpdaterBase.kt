@@ -3,7 +3,6 @@ package com.jetbrains.edu.learning.update
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.Lesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.getDescriptionFile
@@ -47,23 +46,6 @@ abstract class TaskUpdaterBase<T : Lesson>(project: Project, protected val lesso
   }
 
   private fun isTaskFileChanged(taskFile: TaskFile, newTaskFile: TaskFile): Boolean {
-    if (taskFile.contents.textualRepresentation != newTaskFile.contents.textualRepresentation) return true
-    val taskFilePlaceholders = taskFile.answerPlaceholders
-    val newTaskFilePlaceholders = newTaskFile.answerPlaceholders
-    if (taskFilePlaceholders.size != newTaskFilePlaceholders.size) return true
-    if (newTaskFilePlaceholders.isNotEmpty()) {
-      for ((i, newPlaceholder) in newTaskFilePlaceholders.withIndex()) {
-        val existingPlaceholder = taskFilePlaceholders[i]
-        if (arePlaceholdersDiffer(existingPlaceholder, newPlaceholder)) return true
-      }
-    }
-    return false
+    return taskFile.contents.textualRepresentation != newTaskFile.contents.textualRepresentation
   }
-
-  private fun arePlaceholdersDiffer(placeholder: AnswerPlaceholder, newPlaceholder: AnswerPlaceholder): Boolean =
-    newPlaceholder.length != placeholder.initialState.length
-    || newPlaceholder.offset != placeholder.initialState.offset
-    || newPlaceholder.placeholderText != placeholder.placeholderText
-    || newPlaceholder.possibleAnswer != placeholder.possibleAnswer
-    || newPlaceholder.placeholderDependency.toString() != placeholder.placeholderDependency.toString()
 }

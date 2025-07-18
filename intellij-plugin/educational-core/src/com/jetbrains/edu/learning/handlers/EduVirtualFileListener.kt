@@ -12,7 +12,6 @@ import com.jetbrains.edu.learning.EduUtilsKt
 import com.jetbrains.edu.learning.FileInfo
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.fileInfo
-import com.jetbrains.edu.learning.placeholder.PlaceholderHighlightingManager
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 
 abstract class EduVirtualFileListener(protected val project: Project) : BulkFileListener {
@@ -118,7 +117,6 @@ abstract class EduVirtualFileListener(protected val project: Project) : BulkFile
       val isAffected = oldPath == path || oldPath.isParentOf(path)
 
       if (isAffected) {
-        PlaceholderHighlightingManager.hidePlaceholders(project, taskFile.answerPlaceholders)
         var newPath = path.removePrefix("$oldParentPath/")
         if (newParentPath.isNotEmpty()) {
           newPath = "$newParentPath/$newPath"

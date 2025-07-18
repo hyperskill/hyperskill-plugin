@@ -45,10 +45,6 @@ fun TaskFile.revert(project: Project) {
     return
   }
 
-  answerPlaceholders.forEach { answerPlaceholder ->
-    answerPlaceholder.reset(true)
-  }
-
   val virtualFile = getVirtualFile(project)
   if (virtualFile != null) {
     WolfTheProblemSolver.getInstance(project).clearProblems(virtualFile)
@@ -57,20 +53,6 @@ fun TaskFile.revert(project: Project) {
     errorHighlightLevel = EduFileErrorHighlightLevel.TEMPORARY_SUPPRESSION
   }
   YamlFormatSynchronizer.saveItem(task)
-}
-
-fun TaskFile.getSolution(): String {
-  val fullAnswer = StringBuilder(contents.textualRepresentation)
-  val placeholders = answerPlaceholders.sortedBy { it.offset }.reversed()
-  for (placeholder in placeholders) {
-    placeholder.possibleAnswer
-    fullAnswer.replace(
-      placeholder.initialState.offset,
-      placeholder.initialState.offset + placeholder.initialState.length,
-      placeholder.possibleAnswer
-    )
-  }
-  return fullAnswer.toString()
 }
 
 /**

@@ -13,7 +13,6 @@ import com.jetbrains.edu.learning.yaml.format.CourseYamlMixin
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CONTENT
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.ENVIRONMENT
-import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.FEEDBACK_LINK
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.LANGUAGE
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.PROGRAMMING_LANGUAGE
@@ -33,7 +32,6 @@ class RemoteCourseBuilder(
   @JsonProperty(TYPE) courseType: String?,
   @JsonProperty(TITLE) title: String,
   @JsonProperty(SUMMARY) summary: String,
-  @JsonProperty(FEEDBACK_LINK) yamlFeedbackLink: String?,
   @JsonProperty(PROGRAMMING_LANGUAGE) displayProgrammingLanguageName: String,
   @JsonProperty(PROGRAMMING_LANGUAGE_VERSION) programmingLanguageVersion: String?,
   @JsonProperty(LANGUAGE) language: String,

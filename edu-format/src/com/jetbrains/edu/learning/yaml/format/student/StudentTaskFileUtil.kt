@@ -51,12 +51,11 @@ class StudentTaskFileBuilder(
   @JsonProperty(LEARNER_CREATED) val learnerCreated: Boolean = false,
   @JsonProperty(IS_BINARY) val isBinary: Boolean? = false,
   name: String?,
-  placeholders: List<AnswerPlaceholder> = mutableListOf(),
   visible: Boolean = true,
   editable: Boolean = true,
   propagatable: Boolean = true,
   @JsonProperty(HIGHLIGHT_LEVEL) errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.ALL_PROBLEMS
-) : TaskFileBuilder(name, placeholders, visible, editable, propagatable, errorHighlightLevel) {
+) : TaskFileBuilder(name, visible, editable, propagatable, errorHighlightLevel) {
   override fun setupTaskFile(taskFile: TaskFile) {
     super.setupTaskFile(taskFile)
 

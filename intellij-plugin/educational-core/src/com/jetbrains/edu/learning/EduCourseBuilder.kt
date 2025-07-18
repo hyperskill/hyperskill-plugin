@@ -85,7 +85,6 @@ interface EduCourseBuilder<Settings : EduProjectSettings> {
    * Can be `false` if parent item is [FrameworkLesson]
    *
    * @see OutputTask
-   * @see ChoiceTask
    * @see TheoryTask
    * @see IdeTask
    */
@@ -154,7 +153,7 @@ interface EduCourseBuilder<Settings : EduProjectSettings> {
         )
         getExecutableTaskTemplates(course, info, withSources) + outputTemplate + inputTemplate
       }
-      
+
       is TheoryTask -> getExecutableTaskTemplates(course, info, withSources)
       is IdeTask -> getExecutableTaskTemplates(course, info, withSources)
       else -> return

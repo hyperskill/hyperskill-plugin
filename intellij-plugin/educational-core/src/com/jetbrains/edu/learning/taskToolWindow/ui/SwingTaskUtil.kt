@@ -6,10 +6,7 @@ import com.intellij.ide.ui.UISettings
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.colors.FontPreferences
 import com.intellij.openapi.project.Project
-import com.intellij.ui.dsl.builder.Cell
-import com.intellij.ui.dsl.builder.Row
 import com.intellij.util.ui.HTMLEditorKitBuilder
-import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.isUnitTestMode
 import com.jetbrains.edu.learning.stepik.hyperskill.newProjectUI.notLoggedInPanel.getIconPath
@@ -17,10 +14,7 @@ import com.jetbrains.edu.learning.taskToolWindow.ui.styleManagers.StyleResources
 import com.jetbrains.edu.learning.xmlEscaped
 import org.jetbrains.annotations.VisibleForTesting
 import org.jsoup.nodes.Element
-import javax.swing.JPanel
 import javax.swing.JTextPane
-import javax.swing.JToggleButton
-import javax.swing.border.Border
 import javax.swing.text.html.HTMLEditorKit
 import kotlin.math.roundToInt
 
@@ -109,17 +103,3 @@ fun wrapHintSwing(project: Project, hintElement: Element, displayedHintNumber: S
   }
 }
 
-fun JPanel.addBorder(newBorder: Border?): JPanel {
-  return apply {
-    border = JBUI.Borders.compound(newBorder, border)
-  }
-}
-
-fun Row.createButton(isCheckbox: Boolean): Cell<JToggleButton> {
-  return if (isCheckbox) {
-    checkBox("")
-  }
-  else {
-    radioButton("")
-  }
-}

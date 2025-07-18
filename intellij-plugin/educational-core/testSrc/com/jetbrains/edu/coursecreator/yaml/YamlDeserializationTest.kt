@@ -9,14 +9,12 @@ import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.IdeTask
 import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask
 import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
-import com.jetbrains.edu.learning.format.doTestPlaceholderAndDependencyVisibility
 import com.jetbrains.edu.learning.yaml.YamlDeserializer.deserializeCourse
 import com.jetbrains.edu.learning.yaml.YamlDeserializer.deserializeLesson
 import com.jetbrains.edu.learning.yaml.YamlDeserializer.deserializeSection
 import com.jetbrains.edu.learning.yaml.YamlDeserializer.deserializeTask
 import com.jetbrains.edu.learning.yaml.YamlDeserializer.getCourseMode
 import com.jetbrains.edu.learning.yaml.YamlMapper.basicMapper
-import com.jetbrains.edu.learning.yaml.YamlMapper.studentMapper
 import com.jetbrains.edu.learning.yaml.YamlTestCase
 import com.jetbrains.edu.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
 import org.junit.Test
@@ -212,22 +210,6 @@ class YamlDeserializationTest : YamlTestCase() {
   }
 
   @Test
-  fun `test framework lesson with custom item names for student deserialization`() {
-    val customName = "This is custom name"
-    val yamlContent = """
-      |type: framework
-      |custom_name: $customName 
-      |content:
-      |- "Introduction Task"
-    """.trimMargin()
-    val lesson = studentMapper().deserializeLesson(yamlContent)
-    check(lesson is FrameworkLesson)
-    @Suppress("DEPRECATION")
-    assertEquals(customName, lesson.customPresentableName)
-  }
-
-
-  @Test
   fun `test output task`() {
     val yamlContent = """
     |type: output
@@ -253,47 +235,6 @@ class YamlDeserializationTest : YamlTestCase() {
     assertTrue(task is IdeTask)
     assertEquals(listOf("Test.java"), task.taskFiles.map { it.key })
     assertEquals(true, task.solutionHidden)
-  }
-
-  @Test
-  fun `test edu task`() {
-    val yamlContent = """
-    |type: edu
-    |files:
-    |- name: Test.java
-    |  placeholders:
-    |  - offset: 0
-    |    length: 3
-    |    placeholder_text: type here
-    |    dependency:
-    |      lesson: lesson1
-    |      task: task1
-    |      file: Test.java
-    |      placeholder: 1
-    |      is_visible: true
-    |""".trimMargin()
-    val task = basicMapper().deserializeTask(yamlContent)
-    assertTrue(task is EduTask)
-    val answerPlaceholder = task.taskFiles["Test.java"]!!.answerPlaceholders[0]
-    assertEquals(3, answerPlaceholder.length)
-    assertEquals("type here", answerPlaceholder.placeholderText)
-    assertEquals("lesson1#task1#Test.java#1", answerPlaceholder.placeholderDependency.toString())
-    assertNull(task.solutionHidden)
-  }
-
-  @Test
-  fun `test empty placeholders`() {
-    val yamlContent = """
-    |type: edu
-    |files:
-    |- name: Test.java
-    |  placeholders:
-    |  - 
-    |""".trimMargin()
-    val task = basicMapper().deserializeTask(yamlContent)
-    assertTrue(task is EduTask)
-    val answerPlaceholders = task.taskFiles["Test.java"]!!.answerPlaceholders
-    assertTrue(answerPlaceholders.isEmpty())
   }
 
   @Test
@@ -358,143 +299,6 @@ class YamlDeserializationTest : YamlTestCase() {
     assertEquals("", answerPlaceholder.placeholderText)
   }
 
-  @Test
-  fun `test placeholder starts with spaces`() {
-    val yamlContent = """
-    |type: edu
-    |files:
-    |- name: Test.java
-    |  placeholders:
-    |  - offset: 0
-    |    length: 3
-    |    placeholder_text: '   type here'
-    |    dependency:
-    |      lesson: lesson1
-    |      task: task1
-    |      file: Test.java
-    |      placeholder: 1
-    |      is_visible: true
-    |""".trimMargin()
-    val task = basicMapper().deserializeTask(yamlContent)
-    assertTrue(task is EduTask)
-    val answerPlaceholder = task.taskFiles["Test.java"]!!.answerPlaceholders[0]
-    assertEquals("   type here", answerPlaceholder.placeholderText)
-  }
-
-  @Test
-  fun `test placeholder ends with spaces`() {
-    val yamlContent = """
-    |type: edu
-    |files:
-    |- name: Test.java
-    |  placeholders:
-    |  - offset: 0
-    |    length: 3
-    |    placeholder_text: 'type here   '
-    |    dependency:
-    |      lesson: lesson1
-    |      task: task1
-    |      file: Test.java
-    |      placeholder: 1
-    |      is_visible: true
-    |""".trimMargin()
-    val task = basicMapper().deserializeTask(yamlContent)
-    assertTrue(task is EduTask)
-    val answerPlaceholder = task.taskFiles["Test.java"]!!.answerPlaceholders[0]
-    assertEquals("type here   ", answerPlaceholder.placeholderText)
-  }
-
-  @Test
-  fun `test placeholder with invisible dependency`() = doTestPlaceholderAndDependencyVisibility(
-    basicMapper().deserializeTask(
-      """
-        |type: edu
-        |files:
-        |- name: Test.java
-        |  placeholders:
-        |  - offset: 0
-        |    length: 3
-        |    placeholder_text: 'type here   '
-        |    dependency:
-        |      lesson: lesson1
-        |      task: task1
-        |      file: Test.java
-        |      placeholder: 1
-        |      is_visible: false
-    """.trimMargin()
-    ), expectedPlaceholderVisibility = false
-  )
-
-  @Test
-  fun `test invisible placeholder`() = doTestPlaceholderAndDependencyVisibility(
-    basicMapper().deserializeTask(
-      """
-        |type: edu
-        |files:
-        |- name: Test.java
-        |  placeholders:
-        |  - offset: 0
-        |    length: 3
-        |    placeholder_text: 'type here   '
-        |    is_visible: false
-    """.trimMargin()
-    ), expectedPlaceholderVisibility = false
-  )
-
-  @Test
-  fun `test visible placeholder and invisible dependency`() = doTestPlaceholderAndDependencyVisibility(
-    basicMapper().deserializeTask(
-      """
-        |type: edu
-        |files:
-        |- name: Test.java
-        |  placeholders:
-        |  - offset: 0
-        |    length: 3
-        |    placeholder_text: 'type here   '
-        |    dependency:
-        |      lesson: lesson1
-        |      task: task1
-        |      file: Test.java
-        |      placeholder: 1
-        |      is_visible: false
-        |    is_visible: true
-    """.trimMargin()
-    ), expectedPlaceholderVisibility = false
-  )
-
-  @Test
-  fun `test placeholder without visibility field in CC mode`() = doTestPlaceholderAndDependencyVisibility(
-    basicMapper().deserializeTask(
-      """
-        |type: edu
-        |files:
-        |- name: Test.java
-        |  placeholders:
-        |  - offset: 0
-        |    length: 3
-        |    placeholder_text: 'type here   '
-    """.trimMargin()
-    ), expectedPlaceholderVisibility = true
-  )
-
-  @Test
-  fun `test edu task without dependency`() {
-    val yamlContent = """
-    |type: edu
-    |files:
-    |- name: Test.java
-    |  placeholders:
-    |  - offset: 0
-    |    length: 3
-    |    placeholder_text: type here
-    |""".trimMargin()
-    val task = basicMapper().deserializeTask(yamlContent)
-    assertTrue(task is EduTask)
-    val answerPlaceholder = task.taskFiles["Test.java"]!!.answerPlaceholders[0]
-    assertEquals(3, answerPlaceholder.length)
-    assertEquals("type here", answerPlaceholder.placeholderText)
-  }
 
   @Test
   fun `test edu task with content tags`() {

@@ -5,10 +5,7 @@ object EduFormatNames {
   const val REST_PREFIX = "api"
   const val CODE_ARGUMENT = "code"
 
-  const val MARKETPLACE = "Marketplace"
-  const val COURSE_META_FILE = "course.json"
   const val COURSE_ICON_FILE = "courseIcon.svg"
-  const val COURSE_CONTENTS_FOLDER = "contents"
 
   const val COURSE = "course"
   const val SECTION = "section"
@@ -77,7 +74,6 @@ object EduFormatNames {
   const val PYTHON = "Python"
   const val SCALA = "Scala"
   const val JAVASCRIPT = "JavaScript"
-  const val RUST = "Rust"
   const val SHELL = "Shell Script"
 
   // Single `ObjectiveC` id is used both for `ObjectiveC` and `C/C++`

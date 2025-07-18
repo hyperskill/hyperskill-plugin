@@ -1,17 +1,12 @@
 package com.jetbrains.edu.learning
 
 import com.intellij.lang.Language
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.components.ComponentManagerEx
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerKeys
 import com.intellij.openapi.fileEditor.impl.PsiAwareFileEditorManagerImpl
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.platform.util.coroutines.childScope
@@ -28,13 +23,15 @@ import com.jetbrains.edu.learning.configuration.PlainTextConfigurator
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.configurators.FakeGradleConfigurator
 import com.jetbrains.edu.learning.configurators.FakeGradleHyperskillConfigurator
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL
+import com.jetbrains.edu.learning.courseFormat.Lesson
+import com.jetbrains.edu.learning.courseFormat.LessonContainer
 import com.jetbrains.edu.learning.courseFormat.ext.customContentPath
 import com.jetbrains.edu.learning.courseFormat.ext.getDir
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
@@ -50,7 +47,6 @@ import org.junit.Rule
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.io.IOException
-import java.util.regex.Pattern
 import kotlin.reflect.KMutableProperty0
 
 @RunWith(JUnit4::class)
@@ -117,50 +113,6 @@ abstract class EduTestCase : BasePlatformTestCase() {
     StudyTaskManager.getInstance(project).course = course
   }
 
-  @Throws(IOException::class)
-  protected fun createLesson(index: Int, taskCount: Int): Lesson {
-    val lesson = Lesson()
-    lesson.name = "lesson$index"
-    (1..taskCount)
-      .map { createTask(index, it) }
-      .forEach { lesson.addTask(it) }
-    lesson.index = index
-    return lesson
-  }
-
-  @Throws(IOException::class)
-  private fun createTask(lessonIndex: Int, taskIndex: Int): Task {
-    val task = EduTask()
-    task.name = "task$taskIndex"
-    task.index = taskIndex
-    createTaskFile(lessonIndex, task, "taskFile$taskIndex.txt")
-    return task
-  }
-
-  @Throws(IOException::class)
-  private fun createTaskFile(lessonIndex: Int, task: Task, taskFilePath: String) {
-    val taskFile = TaskFile()
-    taskFile.task = task
-    taskFile.name = taskFilePath
-    task.addTaskFile(taskFile)
-
-    val fileName = "lesson" + lessonIndex + "/" + task.name + "/" + taskFilePath
-    val file = myFixture.findFileInTempDir(fileName)
-    taskFile.text = VfsUtilCore.loadText(file)
-
-    FileEditorManager.getInstance(myFixture.project).openFile(file, true)
-    try {
-      val document = FileDocumentManager.getInstance().getDocument(file)!!
-      for (placeholder in getPlaceholders(document, true)) {
-        taskFile.addAnswerPlaceholder(placeholder)
-      }
-    }
-    finally {
-      FileEditorManager.getInstance(myFixture.project).closeFile(file)
-    }
-    taskFile.sortAnswerPlaceholders()
-  }
-
   /**
    * Be aware: this method overrides any selection in editor
    * because [com.intellij.testFramework.fixtures.CodeInsightTestFixture.configureFromExistingVirtualFile] loads selection and caret from markup in text
@@ -214,12 +166,6 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
   protected fun getCourse(): Course = StudyTaskManager.getInstance(project).course!!
 
-  protected fun findPlaceholder(lessonIndex: Int, taskIndex: Int, taskFile: String, placeholderIndex: Int): AnswerPlaceholder =
-    findTaskFile(lessonIndex, taskIndex, taskFile).answerPlaceholders[placeholderIndex]
-
-  protected fun findTaskFile(lessonIndex: Int, taskIndex: Int, taskFile: String): TaskFile =
-    getCourse().lessons[lessonIndex].taskList[taskIndex].taskFiles[taskFile]!!
-
   protected fun findTask(lessonIndex: Int, taskIndex: Int): Task = findLesson(lessonIndex).taskList[taskIndex]
 
   protected fun findTask(
@@ -242,15 +188,11 @@ abstract class EduTestCase : BasePlatformTestCase() {
   protected fun findFile(path: String): VirtualFile =
     LightPlatformTestCase.getSourceRoot().findFileByRelativePath(path) ?: error("Can't find `$path`")
 
-  protected fun Task.openTaskFileInEditor(taskFilePath: String, placeholderIndex: Int? = null) {
+  protected fun Task.openTaskFileInEditor(taskFilePath: String) {
     val taskFile = getTaskFile(taskFilePath) ?: error("Can't find task file `$taskFilePath` in `$name`")
     val file = taskFile.getVirtualFile(project) ?: error("Can't find virtual file for `${taskFile.name}` task")
     myFixture.openFileInEditor(file)
     TaskToolWindowView.getInstance(myFixture.project).currentTask = this
-    if (placeholderIndex != null) {
-      val placeholder = taskFile.answerPlaceholders[placeholderIndex]
-      myFixture.editor.selectionModel.setSelection(placeholder.offset, placeholder.endOffset)
-    }
   }
 
   protected fun Task.createTaskFileAndOpenInEditor(taskFilePath: String, text: String = "") {
@@ -275,54 +217,6 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
   companion object {
     const val TEST_DATA_ROOT = "testData"
-
-    fun getPlaceholders(document: Document, useLength: Boolean): List<AnswerPlaceholder> {
-      return WriteCommandAction.writeCommandAction(null).compute<List<AnswerPlaceholder>, RuntimeException> {
-        val placeholders = mutableListOf<AnswerPlaceholder>()
-        val openingTagRx = "<placeholder( taskText=\"(.+?)\")?( possibleAnswer=\"(.+?)\")?( hint=\"(.+?)\")?( hint2=\"(.+?)\")?>"
-        val closingTagRx = "</placeholder>"
-        val text = document.charsSequence
-        val openingMatcher = Pattern.compile(openingTagRx).matcher(text)
-        val closingMatcher = Pattern.compile(closingTagRx).matcher(text)
-        var pos = 0
-        while (openingMatcher.find(pos)) {
-          val answerPlaceholder = AnswerPlaceholder()
-          val taskText = openingMatcher.group(2)
-          if (taskText != null) {
-            answerPlaceholder.placeholderText = taskText
-            answerPlaceholder.length = taskText.length
-          }
-          var possibleAnswer = openingMatcher.group(4)
-          if (possibleAnswer != null) {
-            answerPlaceholder.possibleAnswer = possibleAnswer
-          }
-          answerPlaceholder.offset = openingMatcher.start()
-          if (!closingMatcher.find(openingMatcher.end())) {
-            LOG.error("No matching closing tag found")
-          }
-          var length: Int
-          if (useLength) {
-            answerPlaceholder.placeholderText = text.substring(openingMatcher.end(), closingMatcher.start())
-            answerPlaceholder.length = closingMatcher.start() - openingMatcher.end()
-            length = answerPlaceholder.length
-          }
-          else {
-            if (possibleAnswer == null) {
-              possibleAnswer = document.getText(TextRange.create(openingMatcher.end(), closingMatcher.start()))
-              answerPlaceholder.possibleAnswer = possibleAnswer
-              answerPlaceholder.length = possibleAnswer.length
-            }
-            length = answerPlaceholder.possibleAnswer.length
-          }
-          document.deleteString(closingMatcher.start(), closingMatcher.end())
-          document.deleteString(openingMatcher.start(), openingMatcher.end())
-          FileDocumentManager.getInstance().saveDocument(document)
-          placeholders.add(answerPlaceholder)
-          pos = answerPlaceholder.offset + length
-        }
-        placeholders
-      }
-    }
   }
 
   protected fun <T, V> withSettingsValue(property: KMutableProperty0<V>, value: V, action: () -> T): T {

@@ -16,8 +16,8 @@ class EduTaskFileNotificationProvider : EditorNotificationProvider {
   override fun collectNotificationData(project: Project, file: VirtualFile): Function<in FileEditor, out JComponent?>? {
     val taskFile = file.getTaskFile(project) ?: return null
     return Function { fileEditor ->
-      val text = (fileEditor as? TextEditor)?.editor?.document?.text ?: return@Function null
-      if (!taskFile.isValid(text)) {
+      (fileEditor as? TextEditor)?.editor?.document?.text ?: return@Function null
+      if (!taskFile.isValid()) {
         val panel = EditorNotificationPanel().text(EduCoreBundle.message("error.solution.cannot.be.loaded"))
         panel.createActionLabel(EduCoreBundle.message("action.Educational.RefreshTask.text"), "Educational.RefreshTask")
         panel

@@ -52,13 +52,13 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
   }
 
   private val StepikBasedSubmission.eduTaskFiles: Map<String, Solution>
-    get() = solutionFiles?.associate { it.name to Solution(it.text, it.isVisible, emptyList()) } ?: emptyMap()
+    get() = solutionFiles?.associate { it.name to Solution(it.text, it.isVisible) } ?: emptyMap()
 
   private fun StepikBasedSubmission.codeTaskFiles(task: CodeTask): Map<String, Solution> {
     val codeFromServer = (reply as? CodeTaskReply)?.code ?: return emptyMap()
     val configurator = task.course.configurator as? HyperskillConfigurator ?: return emptyMap()
     val taskFile = configurator.getCodeTaskFile(project, task) ?: return emptyMap()
-    return mapOf(taskFile.name to Solution(codeFromServer, true, emptyList()))
+    return mapOf(taskFile.name to Solution(codeFromServer, true))
   }
 
   override fun updateTasks(

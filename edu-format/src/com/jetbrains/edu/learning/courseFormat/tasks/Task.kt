@@ -42,11 +42,6 @@ abstract class Task : StudyItem {
   open var status: CheckStatus
     get() = checkStatus
     set(status) {
-      for (taskFile in _taskFiles.values) {
-        for (placeholder in taskFile.answerPlaceholders) {
-          placeholder.status = status
-        }
-      }
       if (checkStatus !== status) {
         feedback = null
       }
@@ -89,7 +84,7 @@ abstract class Task : StudyItem {
   override fun init(parentItem: ItemContainer, isRestarted: Boolean) {
     parent = parentItem
     for (taskFile in _taskFiles.values) {
-      taskFile.initTaskFile(this, isRestarted)
+      taskFile.initTaskFile(this)
     }
   }
 
@@ -132,6 +127,7 @@ abstract class Task : StudyItem {
   }
 
   //used for yaml deserialization
+  @Suppress("unused", "UNUSED_PARAMETER")
   private fun setTaskFileValues(taskFiles: List<TaskFile>) {
     _taskFiles.clear()
     for (taskFile in taskFiles) {
@@ -139,6 +135,8 @@ abstract class Task : StudyItem {
     }
   }
 
+  //used for yaml deserialization
+  @Suppress("unused", "UNUSED_PARAMETER")
   fun getTaskFileValues(): Collection<TaskFile> {
     return _taskFiles.values
   }

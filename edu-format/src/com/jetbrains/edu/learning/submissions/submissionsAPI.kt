@@ -2,7 +2,6 @@ package com.jetbrains.edu.learning.submissions
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.ID
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TIME
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_VISIBLE
@@ -33,7 +32,7 @@ class SolutionFile(
   @field:JsonProperty(NAME) var name: String,
   @field:JsonProperty(TEXT) var text: String,
   @field:JsonProperty(IS_VISIBLE) var isVisible: Boolean,
-  @field:JsonProperty(PLACEHOLDERS) var placeholders: List<AnswerPlaceholder>? = null
 ) {
+  @Suppress("unused")
   constructor() : this(name = "", text = "", isVisible = true)
 }

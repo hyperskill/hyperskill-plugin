@@ -74,7 +74,7 @@ class EduYamlSchemaProviderFactory : JsonSchemaProviderFactory {
     override fun isAvailable(file: VirtualFile): Boolean {
       // We need to exclude task types with specific Config Schema Provider
       // to make providers mapped one to one for every yaml file.
-      val task = file.getContainingTask(project) ?: return false
+      file.getContainingTask(project) ?: return false
       return super.isAvailable(file)
     }
 

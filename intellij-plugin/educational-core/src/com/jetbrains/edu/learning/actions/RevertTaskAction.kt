@@ -16,7 +16,6 @@ import com.jetbrains.edu.learning.courseFormat.ext.revertTaskParameters
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
-import com.jetbrains.edu.learning.placeholderDependencies.PlaceholderDependencyManager.updateDependentPlaceholders
 import com.jetbrains.edu.learning.projectView.ProgressUtil.updateCourseProgress
 import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector.Companion.revertTask
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
@@ -68,8 +67,6 @@ class RevertTaskAction : DumbAwareAction(), RightAlignedToolbarAction {
         revertTaskParameters()
         YamlFormatSynchronizer.saveItem(this)
       }
-
-      updateDependentPlaceholders(project, task)
 
       EP_NAME.forEachExtensionSafe {
         it.onTaskReversion(project, task)

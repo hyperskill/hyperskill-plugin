@@ -29,8 +29,7 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
 
   enum class TaskNavigationPlace {
     TASK_DESCRIPTION_TOOLBAR,
-    CHECK_PANEL,
-    UNRESOLVED_DEPENDENCY_NOTIFICATION
+    CHECK_PANEL
   }
 
   enum class LinkType {
@@ -103,7 +102,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
 
   companion object {
     private const val SOURCE = "source"
-    private const val SUCCESS = "success"
     private const val EVENT = "event"
     private const val TYPE = "type"
     private const val EDU_TAB = "tab"
@@ -227,11 +225,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
       COURSE_MODE_FIELD,
       ITEM_TYPE_FIELD
     )
-    private val CREATE_NEW_COURSE_CLICK_EVENT = GROUP.registerEvent(
-      "create.new.course.clicked",
-      "The event is recorded in case a user opens the Create Course dialog.",
-      enumField<CourseActionSource>(SOURCE)
-    )
     private val CREATE_NEW_FILE_IN_NON_TEMPLATE_BASED_FRAMEWORK_LESSON_BY_LEARNER =
       GROUP.registerEvent(
         "create.new.file.in.non.template.based.framework.lesson.by.learner",
@@ -281,8 +274,6 @@ class EduCounterUsageCollector : CounterUsagesCollector() {
     fun logOutSucceed(platform: String, place: AuthorizationPlace) = AUTHORIZATION_EVENT.log(LOG_OUT_SUCCEED, platform, place)
 
     fun fullOutputShown() = SHOW_FULL_OUTPUT_EVENT.log()
-
-    fun solutionPeeked() = PEEK_SOLUTION_EVENT.log()
 
     fun leaveFeedback() = LEAVE_FEEDBACK_EVENT.log()
 

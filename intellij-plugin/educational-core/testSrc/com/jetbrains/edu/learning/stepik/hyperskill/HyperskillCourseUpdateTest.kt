@@ -259,46 +259,7 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
       file("settings.gradle")
     }.assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)
   }
-
-  @Test
-  fun `test project with data problems updated`() {
-    val taskFileName = "Task.txt"
-    val oldText = "old text"
-    val newText = "new text"
-    val topic = "topic"
-
-    localCourse = hyperskillCourseWithFiles(projectId = null) {
-      section(HYPERSKILL_TOPICS) {
-        lesson(topic) {
-          dataTask(taskDescription = oldText) {
-            taskFile(taskFileName, oldText)
-          }
-        }
-      }
-    }
-
-    updateCourseWithProblems(localCourse.getTopicsSection()!!.getLesson(topic)!!.taskList.map {
-      it.toTaskUpdate {
-        descriptionText = newText
-        updateDate = Date(100)
-        getTaskFile(taskFileName)!!.text = newText
-      }
-    })
-
-    fileTree {
-      dir(HYPERSKILL_TOPICS) {
-        dir("topic") {
-          dir("task1") {
-            file(taskFileName, newText)
-            file("task.html", newText)
-          }
-        }
-      }
-      file("build.gradle")
-      file("settings.gradle")
-    }.assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)
-  }
-
+  
   @Test
   fun `test project with remote edu problems updated`() {
     val taskFileName = "Task.txt"

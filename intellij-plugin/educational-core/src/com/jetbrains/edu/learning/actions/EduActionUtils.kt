@@ -39,7 +39,7 @@ object EduActionUtils {
         indicator.fraction = fraction + (1 - fraction) * 0.2
       }
     }
-    catch (ignore: InterruptedException) {
+    catch (_: InterruptedException) {
       // if we remove catch block, exception will die inside pooled thread and logged, but this method can be used somewhere else
     }
   }
@@ -73,7 +73,7 @@ object EduActionUtils {
       catch (e: ExecutionException) {
         throw RuntimeException(e)
       }
-      catch (ignored: TimeoutException) {
+      catch (_: TimeoutException) {
       }
     }
   }

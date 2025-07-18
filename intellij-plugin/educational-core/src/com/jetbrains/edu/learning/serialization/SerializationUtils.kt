@@ -12,8 +12,6 @@ object SerializationUtils {
   const val SUBTASK_MARKER = "_subtask"
 
   object Json {
-    const val TASK_FILES = "task_files"
-    const val TASK_TEXTS = "task_texts"
     const val FILES = "files"
     const val TESTS = "test"
     const val TEXTS = "text"
@@ -37,7 +35,6 @@ object SerializationUtils {
     const val IS_VISIBLE = "is_visible"
     const val DEPENDENCY = "dependency"
     const val DEPENDENCY_FILE = "file"
-    const val TEST_FILES = "test_files"
     const val VERSION = "version"
   }
 }

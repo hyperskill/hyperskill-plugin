@@ -3,21 +3,14 @@ package com.jetbrains.edu.learning
 import com.intellij.ide.SaveAndSyncHandler
 import com.intellij.ide.lightEdit.LightEdit
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.PlatformUtils
-import com.intellij.util.TimeoutUtil
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.learning.courseFormat.AnswerPlaceholder
 import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
@@ -36,8 +29,6 @@ import org.intellij.markdown.parser.sequentialparsers.EmphasisLikeParser
 import org.intellij.markdown.parser.sequentialparsers.SequentialParser
 import org.intellij.markdown.parser.sequentialparsers.SequentialParserManager
 import org.intellij.markdown.parser.sequentialparsers.impl.*
-import java.util.concurrent.Callable
-import java.util.concurrent.ExecutionException
 
 object EduUtilsKt {
   fun DataContext.showPopup(htmlContent: String, position: Balloon.Position = Balloon.Position.above) {
@@ -107,39 +98,6 @@ object EduUtilsKt {
     else CourseMode.STUDENT == getCourseModeForNewlyCreatedProject(this)
   }
 
-  fun replaceAnswerPlaceholder(
-    document: Document,
-    answerPlaceholder: AnswerPlaceholder
-  ) {
-    CommandProcessor.getInstance().runUndoTransparentAction {
-      ApplicationManager.getApplication().runWriteAction {
-        document.replaceString(answerPlaceholder.offset, answerPlaceholder.endOffset, answerPlaceholder.placeholderText)
-        FileDocumentManager.getInstance().saveDocument(document)
-      }
-    }
-  }
-
-  // supposed to be called under progress
-  fun <T> execCancelable(callable: Callable<T>): T? {
-    val future = ApplicationManager.getApplication().executeOnPooledThread(callable)
-    while (!future.isCancelled && !future.isDone) {
-      ProgressManager.checkCanceled()
-      TimeoutUtil.sleep(500)
-    }
-    var result: T? = null
-    try {
-      result = future.get()
-    }
-    catch (e: InterruptedException) {
-      LOG.warn(e.message)
-    }
-    catch (e: ExecutionException) {
-      LOG.warn(e.message)
-    }
-    return result
-  }
-
-  private val LOG = logger<EduUtilsKt>()
 }
 
 // org.intellij.markdown.flavours.gfm.GFMFlavourDescriptor considers links starting

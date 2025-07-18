@@ -5,16 +5,14 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileVisitor
 import com.intellij.ui.EditorNotifications
-import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.jetbrains.edu.learning.FileInfo
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.Lesson
+import com.jetbrains.edu.learning.courseFormat.LessonContainer
+import com.jetbrains.edu.learning.courseFormat.StudyItem
+import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.framework.impl.visitFrameworkLessons
 import java.util.concurrent.ConcurrentHashMap
@@ -25,29 +23,16 @@ class SyncChangesStateManager(private val project: Project) : Disposable.Default
   private val taskStateStorage = ConcurrentHashMap<Task, SyncChangesTaskFileState>()
   private val lessonStateStorage = ConcurrentHashMap<Lesson, SyncChangesTaskFileState>()
 
-  private val dispatcher = MergingUpdateQueue(
-    "EduSyncChangesTracker",
-    syncChangesQueueDelay,
-    true,
-    null,
-    this,
-    null,
-    false
-  ).setRestartTimerOnAdd(true)
-
   fun getSyncChangesState(taskFile: TaskFile): SyncChangesTaskFileState? {
-    if (!isCCFrameworkLesson(taskFile.task.lesson)) return null
-    return taskFileStateStorage[taskFile]
+    return null
   }
 
   fun getSyncChangesState(task: Task): SyncChangesTaskFileState? {
-    if (!isCCFrameworkLesson(task.lesson)) return null
-    return taskStateStorage[task]
+    return null
   }
 
   fun getSyncChangesState(lesson: Lesson): SyncChangesTaskFileState? {
-    if (!isCCFrameworkLesson(lesson)) return null
-    return lessonStateStorage[lesson]
+    return null
   }
 
   fun taskFileChanged(taskFile: TaskFile) = queueUpdate(taskFile)
@@ -64,23 +49,6 @@ class SyncChangesStateManager(private val project: Project) : Disposable.Default
   fun taskDeleted(task: Task) = queueSyncChangesStateForFilesInPrevTask(task, null)
 
   fun fileMoved(file: VirtualFile, fileInfo: FileInfo.FileInTask, oldDirectoryInfo: FileInfo.FileInTask) {
-    val task = fileInfo.task
-    val oldTask = oldDirectoryInfo.task
-    if (!isCCFrameworkLesson(task.lesson) && !isCCFrameworkLesson(oldTask.lesson)) return
-
-    val (taskFiles, oldPaths) = if (file.isDirectory) {
-      collectMovedDataInfoOfDirectory(file, fileInfo, oldDirectoryInfo)
-    }
-    else {
-      collectMovedDataInfoOfSingleFile(file, fileInfo, oldDirectoryInfo)
-    }
-
-    if (oldTask.lesson is FrameworkLesson) {
-      filesDeleted(oldTask, oldPaths)
-    }
-    if (task.lesson is FrameworkLesson) {
-      processTaskFilesCreated(task, taskFiles)
-    }
   }
 
   fun updateSyncChangesState(lessonContainer: LessonContainer) {
@@ -92,13 +60,6 @@ class SyncChangesStateManager(private val project: Project) : Disposable.Default
    * Does not schedule anything but update ProjectView and notifications immediately
    */
   fun removeSyncChangesState(task: Task, taskFiles: List<TaskFile>) {
-    if (!isCCFrameworkLesson(task.lesson)) return
-    for (taskFile in taskFiles) {
-      taskFileStateStorage.remove(taskFile)
-    }
-    collectSyncChangesState(task)
-    collectSyncChangesState(task.lesson)
-    refreshUI()
   }
 
   fun updateSyncChangesState(task: Task) = queueUpdate(task)
@@ -153,77 +114,11 @@ class SyncChangesStateManager(private val project: Project) : Disposable.Default
   private fun queueUpdate(task: Task) = queueUpdate(task, task.taskFiles.values.toList())
 
   private fun queueUpdate(task: Task, taskFiles: List<TaskFile>) {
-    if (!isCCFrameworkLesson(task.lesson)) return
-    with(dispatcher) {
-      queue(TaskFilesSyncChangesUpdate(task, taskFiles.toSet()))
-      queue(TaskSyncChangesUpdate(task))
-      queue(LessonSyncChangesUpdate(task.lesson))
-      queue(ProjectSyncChangesUpdate())
-    }
+    return
   }
 
   private fun queueUpdate(lesson: Lesson) {
-    if (!isCCFrameworkLesson(lesson)) return
-    with(dispatcher) {
-      for (task in lesson.taskList) {
-        queue(TaskFilesSyncChangesUpdate(task, task.taskFiles.values.toSet()))
-        queue(TaskSyncChangesUpdate(task))
-      }
-      queue(LessonSyncChangesUpdate(lesson))
-      queue(ProjectSyncChangesUpdate())
-    }
-  }
-
-  /**
-   * Collects task files in a moved directory and returns a map of task files with their old paths.
-   *
-   * @return a map of task files with their old paths
-   */
-  private fun collectMovedDataInfoOfDirectory(
-    file: VirtualFile,
-    fileInfo: FileInfo.FileInTask,
-    oldDirectoryInfo: FileInfo.FileInTask
-  ): MovedDataInfo {
-    val task = fileInfo.task
-    val taskFiles = mutableListOf<TaskFile>()
-    val oldPaths = mutableListOf<String>()
-    VfsUtil.visitChildrenRecursively(file, object : VirtualFileVisitor<Any?>(NO_FOLLOW_SYMLINKS) {
-      override fun visitFile(childFile: VirtualFile): Boolean {
-        if (!childFile.isDirectory) {
-          val relativePath = VfsUtil.findRelativePath(file, childFile, VfsUtilCore.VFS_SEPARATOR_CHAR) ?: return true
-          var oldPath = file.name + VfsUtilCore.VFS_SEPARATOR_CHAR + relativePath
-          if (oldDirectoryInfo.pathInTask.isNotEmpty()) {
-            oldPath = oldDirectoryInfo.pathInTask + VfsUtilCore.VFS_SEPARATOR_CHAR + oldPath
-          }
-          val newPath = fileInfo.pathInTask + VfsUtilCore.VFS_SEPARATOR_CHAR + relativePath
-          val taskFile = task.taskFiles[newPath] ?: return true
-          taskFiles.add(taskFile)
-          oldPaths.add(oldPath)
-        }
-        return true
-      }
-    })
-
-    return MovedDataInfo(taskFiles, oldPaths)
-  }
-
-  private fun collectMovedDataInfoOfSingleFile(
-    file: VirtualFile,
-    fileInfo: FileInfo.FileInTask,
-    oldDirectoryInfo: FileInfo.FileInTask
-  ): MovedDataInfo {
-    val oldPath = if (oldDirectoryInfo.pathInTask.isNotEmpty()) {
-      oldDirectoryInfo.pathInTask + VfsUtilCore.VFS_SEPARATOR_CHAR + file.name
-    }
-    else {
-      file.name
-    }
-    val taskFile = fileInfo.task.taskFiles[fileInfo.pathInTask] ?: return MovedDataInfo()
-    return MovedDataInfo(taskFile, oldPath)
-  }
-
-  private fun isCCFrameworkLesson(lesson: Lesson): Boolean {
-    return false
+    return
   }
 
   // Process a batch of taskFiles in a certain task at once to minimize the number of accesses to the storage
@@ -355,8 +250,6 @@ class SyncChangesStateManager(private val project: Project) : Disposable.Default
   }
 
   companion object {
-    private val syncChangesQueueDelay = Registry.intValue("edu.course.creator.fl.sync.changes.merging.timespan")
-
     fun getInstance(project: Project): SyncChangesStateManager = project.service()
   }
 }

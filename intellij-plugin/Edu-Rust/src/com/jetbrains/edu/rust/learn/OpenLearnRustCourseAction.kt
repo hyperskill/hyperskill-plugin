@@ -5,8 +5,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.progress.currentThreadCoroutineScope
 import kotlinx.coroutines.launch
-import org.rust.cargo.toolchain.RsToolchainProvider
-import org.rust.cargo.toolchain.flavors.RsToolchainFlavor
 
 private const val COURSE_ID = 16631
 
@@ -26,9 +24,7 @@ class OpenLearnRustCourseAction : AnAction() {
 
   override fun actionPerformed(e: AnActionEvent) {
     currentThreadCoroutineScope().launch {
-      val path = RsToolchainFlavor.getApplicableFlavors().flatMap { it.suggestHomePaths() }.first()
-      val toolchain = RsToolchainProvider.getToolchain(path) ?: return@launch
-      RsOpenCourseHelper.openCourse(COURSE_ID, toolchain, null)
+      RsOpenCourseHelper.openCourse(COURSE_ID)
     }
   }
 }

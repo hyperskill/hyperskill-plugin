@@ -41,7 +41,7 @@ class AdditionalFilesMigratorTest(
         // make YAML files to be of version 1, when additional files are not in course-info.yaml
         createFile(
           "course-info.yaml", """
-          type: marketplace
+          type: hyperskill
           title: Test course
           language: English
           programming_language: Plain text

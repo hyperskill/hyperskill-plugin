@@ -26,7 +26,7 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
 
     withVirtualFileListener(course) {
       val task = course.findTask("lesson1", "task1")
-      task.openTaskFileInEditor("fizz.kt", 0)
+      task.openTaskFileInEditor("fizz.kt")
       myFixture.type("123")
       task.status = CheckStatus.Solved
       testAction(NextTaskAction.ACTION_ID)
@@ -108,13 +108,13 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val task = course.findTask("lesson1", "task1")
 
     withVirtualFileListener(course) {
-      task.openTaskFileInEditor("fizz.kt", 0)
+      task.openTaskFileInEditor("fizz.kt")
       myFixture.type("123")
       task.status = CheckStatus.Solved
       testAction(NextTaskAction.ACTION_ID)
 
       val task2 = course.findTask("lesson1", "task2")
-      task2.openTaskFileInEditor("buzz.kt", 0)
+      task2.openTaskFileInEditor("buzz.kt")
       myFixture.type("456")
       task2.status = CheckStatus.Solved
       testAction(NextTaskAction.ACTION_ID)
@@ -149,7 +149,7 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
 
     withVirtualFileListener(course) {
       val task = course.findTask("lesson1", "task1")
-      task.openTaskFileInEditor("fizz.kt", 0)
+      task.openTaskFileInEditor("fizz.kt")
       TaskToolWindowView.getInstance(myFixture.project).currentTask = task
       myFixture.type("123")
       task.status = CheckStatus.Solved
@@ -183,72 +183,12 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
   }
 
   @Test
-  fun `test correctly process placeholder offsets`() {
-    val course = courseWithFiles {
-      frameworkLesson {
-        eduTask {
-          taskFile(
-            "fizz.kt", """
-          fun fizzz() = <p>TODO()</p>
-          fun buzz() = <p>TODO()</p>
-        """
-          )
-        }
-        eduTask {
-          taskFile(
-            "fizz.kt", """
-          fun fizzz() = <p>TODO()</p>
-          fun buzz() = <p>TODO()</p>
-        """
-          ) {
-            placeholder(0, dependency = "lesson1#task1#fizz.kt#1")
-            placeholder(1, dependency = "lesson1#task1#fizz.kt#2")
-          }
-        }
-      }
-    }
-
-    withVirtualFileListener(course) {
-      val task = course.findTask("lesson1", "task1")
-      task.openTaskFileInEditor("fizz.kt", placeholderIndex = 0)
-      myFixture.type("12345678")
-      task.openTaskFileInEditor("fizz.kt", placeholderIndex = 1)
-      myFixture.type("90")
-      task.status = CheckStatus.Solved
-      testAction(NextTaskAction.ACTION_ID)
-
-      TaskToolWindowView.getInstance(myFixture.project).currentTask = myFixture.project.getCurrentTask()
-      testAction(PreviousTaskAction.ACTION_ID)
-    }
-
-    val fileTree = fileTree {
-      dir("lesson1") {
-        dir("task") {
-          file(
-            "fizz.kt", """
-            fun fizzz() = 12345678
-            fun buzz() = 90
-          """
-          )
-        }
-        dir("task1") {
-          file("task.md")
-        }
-        dir("task2") {
-          file("task.md")
-        }
-      }
-    }
-    fileTree.assertEquals(rootDir, myFixture)
-  }
-
-  @Test
   fun `test opened files`() {
     val course = createFrameworkCourse()
 
     withVirtualFileListener(course) {
       val task = course.findTask("lesson1", "task1")
-      task.openTaskFileInEditor("fizz.kt", 0)
+      task.openTaskFileInEditor("fizz.kt")
       myFixture.type("123")
       task.status = CheckStatus.Solved
       testAction(NextTaskAction.ACTION_ID)
@@ -266,11 +206,11 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val task1 = course.findTask("lesson1", "task1")
     withVirtualFileListener(course) {
       // go to the third task without solving prev tasks
-      task1.openTaskFileInEditor("fizz.kt", 0)
+      task1.openTaskFileInEditor("fizz.kt")
       testAction(NextTaskAction.ACTION_ID)
 
       val task2 = course.findTask("lesson1", "task2")
-      task2.openTaskFileInEditor("fizz.kt", 0)
+      task2.openTaskFileInEditor("fizz.kt")
       testAction(NextTaskAction.ACTION_ID)
     }
 
@@ -326,7 +266,7 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val course = createFrameworkCourse()
     val task = course.findTask("lesson1", "task1")
     withVirtualFileListener(course) {
-      task.openTaskFileInEditor("fizz.kt", 0)
+      task.openTaskFileInEditor("fizz.kt")
       myFixture.type("123")
       myFixture.editor.caretModel.moveToOffset(0)
       myFixture.type("fun foo() {}\n")
@@ -366,13 +306,13 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     val course = createFrameworkCourse()
     val task = course.findTask("lesson1", "task1")
     withVirtualFileListener(course) {
-      task.openTaskFileInEditor("fizz.kt", 0)
+      task.openTaskFileInEditor("fizz.kt")
       myFixture.type("123")
       task.status = CheckStatus.Solved
       testAction(NextTaskAction.ACTION_ID)
 
       val task2 = course.findTask("lesson1", "task2")
-      task2.openTaskFileInEditor("buzz.kt", 0)
+      task2.openTaskFileInEditor("buzz.kt")
       myFixture.type("456")
       myFixture.editor.caretModel.moveToOffset(0)
       myFixture.type("fun bar() {}\n")
@@ -574,7 +514,7 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
 
   @Test
   fun `test editable flag for files remain unchanged when navigating the course`() {
-    val course = createCourseWithNonEditableFiles(CourseMode.STUDENT)
+    val course = createCourseWithNonEditableFiles()
     val task1 = course.findTask("lesson", "task1")
     val task2 = course.findTask("lesson", "task2")
     val initialEditableFlags = course.lessons.first().taskList.associate { task ->
@@ -599,7 +539,7 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
 
   @Test
   fun `test non-editable flags when navigate tasks`() {
-    val course = createCourseWithNonEditableFiles(CourseMode.STUDENT)
+    val course = createCourseWithNonEditableFiles()
 
     val task1 = course.findTask("lesson", "task1")
     val task2 = course.findTask("lesson", "task2")
@@ -636,9 +576,7 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
           "fizz.kt", """
           fun fizz() = <p>TODO()</p>
         """
-        ) {
-          placeholder(0, dependency = "lesson1#task1#fizz.kt#1", isVisible = false)
-        }
+        )
         taskFile(
           "buzz.kt", """
           fun buzz() = <p>TODO()</p>
@@ -650,15 +588,12 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
           "fizzBuzz.kt", """
           fun fizzBuzz() = <p>TODO()</p> + <p>TODO()</p>
         """
-        ) {
-          placeholder(0, dependency = "lesson1#task2#fizz.kt#1")
-          placeholder(1, dependency = "lesson1#task2#buzz.kt#1")
-        }
+        )
       }
     }
   }
 
-  private fun createCourseWithNonEditableFiles(courseMode: CourseMode) = courseWithFiles(courseMode = courseMode) {
+  private fun createCourseWithNonEditableFiles() = courseWithFiles(courseMode = CourseMode.STUDENT) {
     frameworkLesson("lesson") {
       eduTask("task1") {
         taskFile(

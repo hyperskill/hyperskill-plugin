@@ -1,14 +1,11 @@
 package com.jetbrains.edu.learning.yaml.format
 
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.courseFormat.StudyItem
 import com.jetbrains.edu.learning.courseFormat.TaskFile
 import com.jetbrains.edu.learning.courseFormat.ext.project
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
-import com.jetbrains.edu.learning.getTaskFile
-import com.jetbrains.edu.learning.placeholder.PlaceholderHighlightingManager
 import com.jetbrains.edu.learning.yaml.YamlLoader.addItemAsNew
 import org.jetbrains.annotations.NonNls
 
@@ -29,14 +26,11 @@ open class TaskChangeApplier(val project: Project) : StudyItemChangeApplier<Task
     if (deserializedItem is TheoryTask && existingItem is TheoryTask) {
       existingItem.postSubmissionOnOpen = deserializedItem.postSubmissionOnOpen
     }
-    hideOldPlaceholdersForOpenedFiles(project, existingItem)
     existingItem.applyTaskFileChanges(deserializedItem)
-    paintPlaceholdersForOpenedFiles(project, existingItem)
   }
 
   open fun changeType(project: Project, existingItem: StudyItem, deserializedItem: Task) {
     val existingTask = existingItem as Task
-    hideOldPlaceholdersForOpenedFiles(project, existingTask)
 
     deserializedItem.name = existingItem.name
     deserializedItem.index = existingItem.index
@@ -58,7 +52,7 @@ open class TaskChangeApplier(val project: Project) : StudyItemChangeApplier<Task
         deserializedTaskFile
       }
       orderedTaskFiles[name] = taskFile
-      deserializedTaskFile.initTaskFile(this, false)
+      deserializedTaskFile.initTaskFile(this)
     }
     taskFiles = orderedTaskFiles
   }
@@ -67,28 +61,10 @@ open class TaskChangeApplier(val project: Project) : StudyItemChangeApplier<Task
     existingTaskFile: TaskFile,
     deserializedTaskFile: TaskFile
   ) {
-    existingTaskFile.applyPlaceholderChanges(deserializedTaskFile)
     existingTaskFile.isVisible = deserializedTaskFile.isVisible
     existingTaskFile.isEditable = deserializedTaskFile.isEditable
     existingTaskFile.isPropagatable = deserializedTaskFile.isPropagatable
     existingTaskFile.errorHighlightLevel = deserializedTaskFile.errorHighlightLevel
   }
 
-  private fun TaskFile.applyPlaceholderChanges(deserializedTaskFile: TaskFile) {
-    val oldPlaceholders = answerPlaceholders
-    answerPlaceholders = deserializedTaskFile.answerPlaceholders
-    PlaceholderHighlightingManager.hidePlaceholders(project, oldPlaceholders)
-  }
-
-  private fun paintPlaceholdersForOpenedFiles(project: Project, task: Task) {
-    getOpenedTaskFiles(project, task).forEach { PlaceholderHighlightingManager.showPlaceholders(project, it) }
-  }
-
-  private fun hideOldPlaceholdersForOpenedFiles(project: Project, task: Task) {
-    getOpenedTaskFiles(project, task).forEach { PlaceholderHighlightingManager.hidePlaceholders(project, it.answerPlaceholders) }
-  }
-
-  private fun getOpenedTaskFiles(project: Project, task: Task): List<TaskFile> {
-    return FileEditorManager.getInstance(project).openFiles.mapNotNull { it.getTaskFile(project) }.filter { it.task == task }
-  }
 }

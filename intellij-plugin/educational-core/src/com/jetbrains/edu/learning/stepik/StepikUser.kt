@@ -3,12 +3,8 @@ package com.jetbrains.edu.learning.stepik
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.edu.learning.authUtils.OAuthAccount
-import com.jetbrains.edu.learning.authUtils.TokenInfo
 
-class StepikUser : OAuthAccount<StepikUserInfo> {
-  private constructor()
-  constructor(tokenInfo: TokenInfo) : super(tokenInfo.expiresIn)
-
+class StepikUser : OAuthAccount<StepikUserInfo>() {
   @Suppress("UnstableApiUsage")
   override val servicePrefix: @NlsSafe String = StepikNames.STEPIK
 
@@ -33,10 +29,4 @@ class StepikUser : OAuthAccount<StepikUserInfo> {
   }
 
   override fun hashCode(): Int = userInfo.hashCode()
-
-  companion object {
-    fun createEmptyUser(): StepikUser {
-      return StepikUser()
-    }
-  }
 }
