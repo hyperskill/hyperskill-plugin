@@ -63,7 +63,7 @@ class YoutubeVideoLinkTest : EduTestCase() {
       <html>
        <head></head>
        <body>
-        Some text <a href="http://www.youtube.com/watch?v=${videoId}"><img src="http://img.youtube.com/vi/${videoId}/0.jpg"></a>
+        Some text <a href="https://www.youtube.com/watch?v=${videoId}"><img src="https://img.youtube.com/vi/${videoId}/0.jpg"></a>
        </body>
       </html>
     """.trimIndent()

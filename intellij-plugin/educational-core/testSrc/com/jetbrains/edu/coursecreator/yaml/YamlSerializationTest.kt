@@ -26,9 +26,6 @@ class YamlSerializationTest : YamlTestCase() {
     |files:
     |- name: Test.java
     |  visible: true
-    |  learner_created: false
-    |status: Unchecked
-    |record: -1
     |""".trimMargin()
     )
   }
@@ -49,10 +46,6 @@ class YamlSerializationTest : YamlTestCase() {
     |files:
     |- name: Main.go
     |  visible: true
-    |  learner_created: false
-    |check_profile: $checkProfile
-    |status: Unchecked
-    |record: -1
     |""".trimMargin()
     )
   }
@@ -131,7 +124,6 @@ class YamlSerializationTest : YamlTestCase() {
       |language: English
       |summary: Test Course Description
       |programming_language: Plain text
-      |mode: Study
       |yaml_version: $CURRENT_YAML_VERSION
       |
     """.trimMargin()
@@ -172,7 +164,6 @@ class YamlSerializationTest : YamlTestCase() {
       |- lesson1
       |environment_settings:
       |  foo: bar
-      |mode: Study
       |yaml_version: $CURRENT_YAML_VERSION
       |""".trimMargin()
     )

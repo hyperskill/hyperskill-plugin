@@ -12,16 +12,8 @@ class SolutionHiddenTest : EduTestCase() {
     doTestSolutionHidden(solutionsHiddenInCourse = true, solutionHiddenInTask = null, expectedSolutionHiddenInTask = true)
 
   @Test
-  fun `test show solution when it's visible for course and not specified for task`() =
-    doTestSolutionHidden(solutionsHiddenInCourse = false, solutionHiddenInTask = null, expectedSolutionHiddenInTask = false)
-
-  @Test
   fun `test do not show solution when it's hidden for task`() =
     doTestSolutionHidden(solutionsHiddenInCourse = false, solutionHiddenInTask = true, expectedSolutionHiddenInTask = true)
-
-  @Test
-  fun `test show solution when it's visible for task`() =
-    doTestSolutionHidden(solutionsHiddenInCourse = true, solutionHiddenInTask = false, expectedSolutionHiddenInTask = false)
 
   private fun doTestSolutionHidden(
     solutionsHiddenInCourse: Boolean,

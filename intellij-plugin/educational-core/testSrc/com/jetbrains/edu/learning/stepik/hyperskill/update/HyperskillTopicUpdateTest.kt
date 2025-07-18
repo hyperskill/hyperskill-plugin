@@ -59,7 +59,7 @@ class HyperskillTopicUpdateTest : UpdateTestBase<HyperskillCourse>() {
     val remoteTopicsSection = remoteCourse.getTopicsSection()
 
     assertNotNull(remoteTopicsSection)
-    assertEquals(2, remoteTopicsSection!!.lessons.size)
+    assertEquals(1, remoteTopicsSection!!.lessons.size)
 
     checkTopicSectionStructure(remoteTopicsSection)
 

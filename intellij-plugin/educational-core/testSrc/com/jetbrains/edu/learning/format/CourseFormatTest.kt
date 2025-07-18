@@ -10,6 +10,12 @@ import com.jetbrains.edu.learning.createCourseFromJson
 import org.junit.Test
 
 class CourseFormatTest : EduTestCase() {
+  @Test
+  fun testAdditionalMaterialsLesson() {
+    assertNotNull(courseFromJson.additionalFiles)
+    assertFalse(courseFromJson.additionalFiles.isEmpty())
+    assertEquals("test_helper.py", courseFromJson.additionalFiles[0].name)
+  }
 
   @Test
   fun testCourseWithSection() {
@@ -49,6 +55,16 @@ class CourseFormatTest : EduTestCase() {
   @Test
   fun testFeedbackLinks() {
     assertEquals("https://www.jetbrains.com/", firstEduTask.feedbackLink)
+  }
+
+  @Test
+  fun testCourseName() {
+    assertEquals("My Python Course", courseFromJson.name)
+  }
+
+  @Test
+  fun testCourseDescription() {
+    assertEquals("Best course ever", courseFromJson.description)
   }
 
   @Test

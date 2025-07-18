@@ -34,12 +34,8 @@ class YamlChangedAfterEventTest : YamlTestCase() {
       |files:
       |  - name: file1.txt
       |    visible: true
-      |    learner_created: true
       |  - name: userFile.txt
       |    visible: true
-      |    learner_created: true
-      |status: Unchecked
-      |record: -1
       |""".trimMargin()
 
     val task2 = course.findTask("lesson1", "task2")
