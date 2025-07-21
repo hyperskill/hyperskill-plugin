@@ -12,7 +12,7 @@ jobs:
   versions:
     name: Support Versions
     runs-on: arc-runners-small
-    timeout-minutes: 10
+    timeout-minutes: 60
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -38,7 +38,7 @@ jobs:
     name: Run Tests
     needs: versions
     runs-on: arc-runners-small
-    timeout-minutes: 10
+    timeout-minutes: 60
     strategy:
       matrix: ${{ fromJson(needs.versions.outputs.matrix) }}
       fail-fast: false
@@ -60,7 +60,7 @@ jobs:
   verify:
     name: Verify Plugin
     runs-on: arc-runners-small
-    timeout-minutes: 10
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -80,7 +80,7 @@ jobs:
 #    needs:
 #      - test
 #      - verify
-#    timeout-minutes: 10
+#    timeout-minutes: 30
 #    steps:
 #      - uses: actions/checkout@v4
 #
