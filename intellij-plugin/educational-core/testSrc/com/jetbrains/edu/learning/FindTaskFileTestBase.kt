@@ -8,20 +8,10 @@ import com.jetbrains.edu.learning.newproject.EduProjectSettings
 
 abstract class FindTaskFileTestBase<Settings : EduProjectSettings> : CourseGenerationTestBase<Settings>() {
 
-  protected fun doTestGetTaskDir(pathToCourseJson: String, filePath: String, taskDirPath: String) {
-    generateCourseStructure(pathToCourseJson)
-    doTestGetTaskDir(filePath, taskDirPath)
-  }
-
   protected fun doTestGetTaskDir(filePath: String, taskDirPath: String) {
     val file = findFile(filePath)
     val expectedTaskDir = findFile(taskDirPath)
     assertEquals(expectedTaskDir, file.getTaskDir(project))
-  }
-
-  protected fun doTestGetTaskForFile(pathToCourseJson: String, filePath: String, expectedTask: (Course) -> Task) {
-    val course = generateCourseStructure(pathToCourseJson)
-    doTestGetTaskForFile(course, filePath, expectedTask)
   }
 
   protected fun doTestGetTaskForFile(course: Course, filePath: String, expectedTask: (Course) -> Task) {
@@ -30,11 +20,6 @@ abstract class FindTaskFileTestBase<Settings : EduProjectSettings> : CourseGener
     val taskFromUtils = file.getContainingTask(project)
     assertEquals(course, StudyTaskManager.getInstance(project).course)
     assertEquals("tasks: " + task.name + " " + taskFromUtils!!.name, task, taskFromUtils)
-  }
-
-  protected fun doTestGetTaskFile(pathToCourseJson: String, filePath: String, expectedTaskFile: (Course) -> TaskFile) {
-    val course = generateCourseStructure(pathToCourseJson)
-    doTestGetTaskFile(course, filePath, expectedTaskFile)
   }
 
   protected fun doTestGetTaskFile(course: Course, filePath: String, expectedTaskFile: (Course) -> TaskFile) {
