@@ -2,7 +2,10 @@ package com.jetbrains.edu.learning.format
 
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
+import com.jetbrains.edu.learning.courseFormat.Lesson
+import com.jetbrains.edu.learning.courseFormat.Section
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
 import com.jetbrains.edu.learning.createCourseFromJson
 import org.junit.Test
@@ -59,7 +62,7 @@ class CourseFormatTest : EduTestCase() {
   private val courseFromJson: Course
     get() {
       val fileName = testFile
-      return createCourseFromJson(testDataPath + fileName, CourseMode.STUDENT)
+      return createCourseFromJson(testDataPath + fileName)
     }
 
   override fun getTestDataPath(): String = "${super.getTestDataPath()}/format/"

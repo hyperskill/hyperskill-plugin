@@ -84,5 +84,6 @@
   "programming_language_id" : "JAVA",
   "language" : "en",
   "version" : 18,
-  "additional_files" : [ ]
+  "additional_files" : [ ],
+  "course_type" : "PyCharm"
 }

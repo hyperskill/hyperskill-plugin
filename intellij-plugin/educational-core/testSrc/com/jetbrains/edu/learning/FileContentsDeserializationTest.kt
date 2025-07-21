@@ -1,7 +1,6 @@
 package com.jetbrains.edu.learning
 
 import com.jetbrains.edu.learning.courseFormat.BinaryContents
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.TextualContents
 import com.jetbrains.edu.learning.courseFormat.UndeterminedContents
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
@@ -16,7 +15,7 @@ class FileContentsDeserializationTest : EduTestCase() {
   fun `test reading file contents from course_dot_json version 16`() {
     // all file contents should be read as undefined
 
-    val course = createCourseFromJson("testData/fileContents/course archive 16.json", CourseMode.STUDENT)
+    val course = createCourseFromJson("testData/fileContents/course archive 16.json")
 
     val allEduFiles = course.allTasks[0].taskFiles.values + course.additionalFiles
     for (eduFile in allEduFiles) {
@@ -28,7 +27,7 @@ class FileContentsDeserializationTest : EduTestCase() {
   fun `test reading file contents from course_dot_json version 17`() {
     // all file contents should be read as either binary or textual
 
-    val course = createCourseFromJson("testData/fileContents/course archive 17.json", CourseMode.STUDENT)
+    val course = createCourseFromJson("testData/fileContents/course archive 17.json")
 
     val allEduFiles = course.allTasks[0].taskFiles.values + course.additionalFiles
 

@@ -24,7 +24,6 @@ import com.jetbrains.edu.learning.courseFormat.ext.canShowSolution
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.stepik.hyperskill.PostHyperskillProjectToGithub
 import com.jetbrains.edu.learning.taskToolWindow.addActionLinks
 import com.jetbrains.edu.learning.taskToolWindow.ui.LightColoredActionLink
@@ -149,7 +148,6 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
         CheckDetailsView.getInstance(project).showOutput(text)
         outputShown = true
         actionLink.text = EduCoreBundle.message("label.full.output.hide")
-        EduCounterUsageCollector.fullOutputShown()
       }
       else {
         CheckDetailsView.getInstance(project).clear()
@@ -161,10 +159,7 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
 
   class SwitchTaskTabAction(private val project: Project, private val index: Int) : DumbAwareAction(null as String?) {
     override fun actionPerformed(e: AnActionEvent) {
-      val tab = selectTab(project, index)
-      if (tab != null && index == 1) {
-        EduCounterUsageCollector.reviewStageTopics()
-      }
+      selectTab(project, index)
     }
   }
 

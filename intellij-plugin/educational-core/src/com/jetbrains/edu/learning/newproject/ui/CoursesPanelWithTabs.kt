@@ -11,7 +11,6 @@ import com.jetbrains.edu.learning.newproject.coursesStorage.CourseDeletedListene
 import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorageBase
 import com.jetbrains.edu.learning.newproject.ui.myCourses.MyCoursesProvider
 import com.jetbrains.edu.learning.newproject.ui.welcomeScreen.JBACourseFromStorage
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.awt.BorderLayout
@@ -60,7 +59,6 @@ class CoursesPanelWithTabs(private val scope: CoroutineScope, private val dispos
       val provider = node.userObject as? CoursesPlatformProvider ?: return
       val coursesProviderName = provider.name
       coursesTab.showPanel(coursesProviderName)
-      EduCounterUsageCollector.courseSelectionTabSelected(provider)
     }
   }
 

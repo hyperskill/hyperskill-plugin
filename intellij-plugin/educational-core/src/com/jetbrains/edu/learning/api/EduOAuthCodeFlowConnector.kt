@@ -13,7 +13,6 @@ import com.jetbrains.edu.learning.network.executeCall
 import com.jetbrains.edu.learning.network.executeHandlingExceptions
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.onError
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import io.netty.handler.codec.http.FullHttpRequest
 import io.netty.handler.codec.http.QueryStringDecoder
 import org.apache.commons.codec.binary.Base64
@@ -97,9 +96,6 @@ abstract class EduOAuthCodeFlowConnector<Account : OAuthAccount<*>, SpecificUser
       it.run()
     }
     submissionTabListener?.userLoggedIn()
-
-    val place = authorizationPlace ?: AuthorizationPlace.UNKNOWN
-    EduCounterUsageCollector.logInSucceed(platformName, place)
     authorizationPlace = null
   }
 
@@ -110,9 +106,6 @@ abstract class EduOAuthCodeFlowConnector<Account : OAuthAccount<*>, SpecificUser
   @Synchronized
   fun notifyUserLoggedOut() {
     submissionTabListener?.userLoggedOut()
-
-    val place = authorizationPlace ?: AuthorizationPlace.UNKNOWN
-    EduCounterUsageCollector.logOutSucceed(platformName, place)
     authorizationPlace = null
   }
 

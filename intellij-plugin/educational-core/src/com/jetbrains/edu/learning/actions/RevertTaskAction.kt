@@ -17,7 +17,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
 import com.jetbrains.edu.learning.projectView.ProgressUtil.updateCourseProgress
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector.Companion.revertTask
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 import org.jetbrains.annotations.NonNls
@@ -36,7 +35,6 @@ class RevertTaskAction : DumbAwareAction(), RightAlignedToolbarAction {
     ).ask(project)
     if (!result) return
     revert(project, task)
-    revertTask()
   }
 
   override fun update(e: AnActionEvent) {

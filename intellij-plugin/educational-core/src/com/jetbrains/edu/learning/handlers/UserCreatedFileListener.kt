@@ -3,9 +3,7 @@ package com.jetbrains.edu.learning.handlers
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.learning.FileInfo
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 
 class UserCreatedFileListener(project: Project) : EduVirtualFileListener(project) {
 
@@ -17,9 +15,5 @@ class UserCreatedFileListener(project: Project) : EduVirtualFileListener(project
   override fun taskFileCreated(taskFile: TaskFile, file: VirtualFile) {
     super.taskFileCreated(taskFile, file)
     taskFile.isLearnerCreated = true
-    val lesson = taskFile.task.lesson
-    if (lesson is FrameworkLesson && !lesson.isTemplateBased) {
-      EduCounterUsageCollector.createNewFileInNonTemplateBasedFrameworkLessonByLearner()
-    }
   }
 }

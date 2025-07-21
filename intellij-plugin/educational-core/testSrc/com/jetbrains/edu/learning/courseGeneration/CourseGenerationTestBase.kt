@@ -13,7 +13,10 @@ import com.intellij.testFramework.runInEdtAndWait
 import com.jetbrains.edu.learning.EduHeavyTestCase
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.assertContentsEqual
-import com.jetbrains.edu.learning.courseFormat.*
+import com.jetbrains.edu.learning.courseFormat.Course
+import com.jetbrains.edu.learning.courseFormat.FileContents
+import com.jetbrains.edu.learning.courseFormat.InMemoryBinaryContents
+import com.jetbrains.edu.learning.courseFormat.InMemoryTextualContents
 import com.jetbrains.edu.learning.courseFormat.ext.configurator
 import com.jetbrains.edu.learning.courseFormat.ext.disambiguateContents
 import com.jetbrains.edu.learning.createCourseFromJson
@@ -58,8 +61,8 @@ abstract class CourseGenerationTestBase<Settings : EduProjectSettings> : EduHeav
     }
   }
 
-  protected fun generateCourseStructure(pathToCourseJson: String, courseMode: CourseMode = CourseMode.STUDENT): Course {
-    val course = createCourseFromJson(pathToCourseJson, courseMode)
+  protected fun generateCourseStructure(pathToCourseJson: String): Course {
+    val course = createCourseFromJson(pathToCourseJson)
     createCourseStructure(course)
     return course
   }

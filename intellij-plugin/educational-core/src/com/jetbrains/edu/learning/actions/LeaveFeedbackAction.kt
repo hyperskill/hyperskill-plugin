@@ -9,7 +9,6 @@ import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import org.jetbrains.annotations.NonNls
 
 class LeaveFeedbackAction :
@@ -21,7 +20,6 @@ class LeaveFeedbackAction :
     val task = project.getCurrentTask() ?: return
     val link = task.feedbackLink ?: error("LeaveFeedbackAction is not supported")
     EduBrowser.getInstance().browse(link)
-    EduCounterUsageCollector.leaveFeedback()
   }
 
   override fun update(e: AnActionEvent) {

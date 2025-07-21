@@ -21,7 +21,6 @@ import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ALL_EXCEPT_IDEA_DIRECTORY
 import com.jetbrains.edu.learning.courseGeneration.macro.EduMacroUtils
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicReference
 
@@ -55,8 +54,6 @@ object GeneratorUtils {
     }
     indicator.text = EduCoreBundle.message("generate.additional.files.progress.text")
     unpackAdditionalFiles(holder, ALL_EXCEPT_IDEA_DIRECTORY)
-
-    EduCounterUsageCollector.studyItemCreatedCC(course)
   }
 
   @RequiresBlockingContext
@@ -76,7 +73,6 @@ object GeneratorUtils {
     for (lesson in item.lessons) {
       createLesson(holder, lesson, sectionDir)
     }
-    EduCounterUsageCollector.studyItemCreatedCC(item)
     return sectionDir
   }
 
@@ -98,7 +94,6 @@ object GeneratorUtils {
     for (task in taskList) {
       createTask(holder, task, lessonDir)
     }
-    EduCounterUsageCollector.studyItemCreatedCC(lesson)
     return lessonDir
   }
 
@@ -129,7 +124,6 @@ object GeneratorUtils {
     }
 
     createDescriptionFile(holder, configDir, task)
-    EduCounterUsageCollector.studyItemCreatedCC(task)
     return contentDir
   }
 

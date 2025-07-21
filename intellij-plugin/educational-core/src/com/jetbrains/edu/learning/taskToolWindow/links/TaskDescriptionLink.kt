@@ -5,11 +5,9 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.intellij.util.io.URLUtil
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 
 abstract class TaskDescriptionLink<T, R : T?>(
-  val link: String,
-  private val linkType: EduCounterUsageCollector.LinkType? = null
+  val link: String
 ) {
 
   /**
@@ -42,10 +40,6 @@ abstract class TaskDescriptionLink<T, R : T?>(
    * editor tab in IDE with the corresponding file in the case of [FileLink], etc.
    */
   fun open(project: Project) {
-    if (linkType != null) {
-      EduCounterUsageCollector.linkClicked(linkType)
-    }
-
     val resolved = runReadAction { resolve(project) } ?: return
     open(project, resolved)
   }

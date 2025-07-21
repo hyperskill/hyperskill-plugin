@@ -5,10 +5,9 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.navigation.ParsedInCourseLink
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector.LinkType.IN_COURSE
 
 @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-class CourseLink(link: String) : TaskDescriptionLink<ParsedInCourseLink<*>, ParsedInCourseLink<*>?>(link, IN_COURSE) {
+class CourseLink(link: String) : TaskDescriptionLink<ParsedInCourseLink<*>, ParsedInCourseLink<*>?>(link) {
 
   override fun resolve(project: Project): ParsedInCourseLink<*>? = ParsedInCourseLink.parse(project, linkPath)
 

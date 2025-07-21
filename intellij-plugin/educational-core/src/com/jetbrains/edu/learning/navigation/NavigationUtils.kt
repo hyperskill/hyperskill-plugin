@@ -165,7 +165,7 @@ object NavigationUtils {
 
   private fun getFirstTaskFile(taskDir: VirtualFile, task: Task): VirtualFile? {
     val taskFiles = task.taskFiles.values
-    val firstVisibleTaskFile = taskFiles.firstOrNull { it.isVisible } ?: return null
+    val firstVisibleTaskFile = taskFiles.sortedBy { it.name }.firstOrNull { it.isVisible } ?: return null
     return firstVisibleTaskFile.findTaskFileInDir(taskDir)
   }
 
@@ -226,7 +226,7 @@ object NavigationUtils {
       ProjectView.getInstance(project).select(selectingDir, selectingDir, false)
       return
     }
-    
+
     @Suppress("NAME_SHADOWING")
     var fileToActivate: VirtualFile? = fileToActivate
 

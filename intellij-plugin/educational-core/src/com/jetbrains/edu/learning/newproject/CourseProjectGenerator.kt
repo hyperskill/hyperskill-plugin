@@ -54,7 +54,6 @@ import com.jetbrains.edu.learning.featureManagement.EduFeatureManager
 import com.jetbrains.edu.learning.featureManagement.EduManagedFeature
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.navigation.NavigationUtils
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillCourseProjectGenerator
 import com.jetbrains.edu.learning.submissions.SubmissionSettings
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
@@ -280,7 +279,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
       val course = holder.course
       GeneratorUtils.createCourse(holder, indicator)
       createAdditionalFiles(holder)
-      EduCounterUsageCollector.eduProjectCreated(course)
     }
   }
 

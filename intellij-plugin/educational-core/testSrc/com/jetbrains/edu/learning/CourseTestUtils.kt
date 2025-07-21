@@ -21,7 +21,7 @@ import java.io.IOException
 import java.util.*
 
 @Throws(IOException::class)
-fun createCourseFromJson(pathToJson: String, courseMode: CourseMode, isEncrypted: Boolean = false): HyperskillCourse {
+fun createCourseFromJson(pathToJson: String): HyperskillCourse {
   val courseJson = File(pathToJson).readText()
   val courseMapper = getCourseMapper(object : FileContentsFactory {
     override fun createBinaryContents(file: EduFile) =
@@ -30,16 +30,16 @@ fun createCourseFromJson(pathToJson: String, courseMode: CourseMode, isEncrypted
     override fun createTextualContents(file: EduFile) =
       throw IllegalStateException("description of edu file ${file.pathInCourse} must contain the 'text' field")
   })
-  configureCourseMapper(courseMapper, isEncrypted)
+  configureCourseMapper(courseMapper)
   var objectNode = courseMapper.readTree(courseJson) as ObjectNode
   objectNode = migrate(objectNode)
   return courseMapper.treeToValue(objectNode, HyperskillCourse::class.java).apply {
-    this.courseMode = courseMode
+    this.courseMode = CourseMode.STUDENT
   }
 }
 
-private fun configureCourseMapper(courseMapper: ObjectMapper, isEncrypted: Boolean) {
-  courseMapper.configureCourseMapper(isEncrypted)
+private fun configureCourseMapper(courseMapper: ObjectMapper) {
+  courseMapper.configureCourseMapper()
   courseMapper.addMixIn(Section::class.java, TestRemoteSectionMixin::class.java)
   courseMapper.addMixIn(Lesson::class.java, TestRemoteLessonMixin::class.java)
   courseMapper.addMixIn(Task::class.java, TestRemoteTaskMixin::class.java)

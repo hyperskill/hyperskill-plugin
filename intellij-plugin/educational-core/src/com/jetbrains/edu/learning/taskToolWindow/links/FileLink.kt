@@ -5,10 +5,9 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 
 @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-open class FileLink(link: String) : TaskDescriptionLink<VirtualFile, VirtualFile?>(link, EduCounterUsageCollector.LinkType.FILE) {
+open class FileLink(link: String) : TaskDescriptionLink<VirtualFile, VirtualFile?>(link) {
   override fun resolve(project: Project): VirtualFile? {
     return rootDir(project)?.findFileByRelativePath(linkPath)
   }

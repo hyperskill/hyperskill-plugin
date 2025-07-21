@@ -22,7 +22,6 @@ import com.intellij.util.ui.JBUI
 import com.jetbrains.edu.learning.JavaUILibrary
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.taskToolWindow.links.SwingToolWindowLinkHandler
 import java.awt.BorderLayout
 import java.io.IOException
@@ -94,12 +93,10 @@ class SwingToolWindow(project: Project) : TaskToolWindow(project) {
           toggleArrowIcon(parent, document, CHEVRON_DOWN_HTML_BLOCK)
           val hintText = (sourceElement.attributes.getAttribute(HTML.Tag.A) as SimpleAttributeSet).getAttribute(HTML.Attribute.VALUE)
           document.insertBeforeEnd(parent.parentElement, String.format(HINT_TEXT_PATTERN, hintText))
-          EduCounterUsageCollector.hintExpanded()
         }
         else {
           toggleArrowIcon(parent, document, CHEVRON_RIGHT_HTML_BLOCK)
           document.removeElement(hintTextElement)
-          EduCounterUsageCollector.hintCollapsed()
         }
       }
       catch (e: BadLocationException) {

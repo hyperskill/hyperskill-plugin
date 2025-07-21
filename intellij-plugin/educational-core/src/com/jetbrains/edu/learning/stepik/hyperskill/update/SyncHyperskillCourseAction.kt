@@ -8,7 +8,6 @@ import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.notification.EduNotificationManager
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillSolutionLoader
 import org.jetbrains.annotations.NonNls
 
@@ -34,7 +33,6 @@ class SyncHyperskillCourseAction : SyncCourseAction(
       HyperskillSolutionLoader.getInstance(project).loadSolutionsInBackground()
     }
 
-    EduCounterUsageCollector.synchronizeCourse(course, EduCounterUsageCollector.SynchronizeCoursePlace.WIDGET)
   }
 
   override fun isAvailable(project: Project): Boolean {

@@ -6,7 +6,6 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.edu.learning.RemoteEnvHelper
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.newproject.ui.BrowseCoursesDialog
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector
 import org.jetbrains.annotations.NonNls
 
 class BrowseCoursesAction : DumbAwareAction(
@@ -22,7 +21,6 @@ class BrowseCoursesAction : DumbAwareAction(
   }
 
   override fun actionPerformed(e: AnActionEvent) {
-    EduCounterUsageCollector.courseSelectionViewOpened(e.place)
     BrowseCoursesDialog().show()
   }
 

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.json.encrypt.EncryptionModule
 import com.jetbrains.edu.learning.json.migration.*
 import com.jetbrains.edu.learning.json.mixins.*
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.VERSION
@@ -66,10 +65,7 @@ fun getCourseMapper(fileContentsFactory: FileContentsFactory): ObjectMapper {
     .build()
 }
 
-fun ObjectMapper.configureCourseMapper(isEncrypted: Boolean) {
-  if (isEncrypted) {
-    registerModule(EncryptionModule())
-  }
+fun ObjectMapper.configureCourseMapper() {
   val module = SimpleModule()
   module.addDeserializer(StudyItem::class.java, StudyItemDeserializer())
   module.addDeserializer(Course::class.java, CourseDeserializer())

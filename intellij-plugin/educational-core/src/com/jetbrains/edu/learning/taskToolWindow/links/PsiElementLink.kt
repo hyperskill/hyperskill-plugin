@@ -7,10 +7,9 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.NavigatablePsiElement
 import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.statistics.EduCounterUsageCollector.LinkType.PSI
 
 @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-class PsiElementLink(link: String) : TaskDescriptionLink<NavigatablePsiElement, NavigatablePsiElement?>(link, PSI) {
+class PsiElementLink(link: String) : TaskDescriptionLink<NavigatablePsiElement, NavigatablePsiElement?>(link) {
 
   override fun resolve(project: Project): NavigatablePsiElement? {
     val qualifiedName = linkPath
