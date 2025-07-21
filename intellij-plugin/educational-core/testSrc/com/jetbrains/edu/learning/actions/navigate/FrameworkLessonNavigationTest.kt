@@ -13,6 +13,7 @@ import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.fileTree
 import com.jetbrains.edu.learning.findTask
 import com.jetbrains.edu.learning.navigation.NavigationUtils
+import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.edu.learning.testAction
 import org.junit.Test
@@ -562,7 +563,7 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     }
   }
 
-  private fun createFrameworkCourse(courseMode: CourseMode = CourseMode.STUDENT): Course = courseWithFiles(courseMode = courseMode) {
+  private fun createFrameworkCourse(courseMode: CourseMode = CourseMode.STUDENT): Course = hyperskillCourseWithFiles {
     frameworkLesson {
       eduTask {
         taskFile(

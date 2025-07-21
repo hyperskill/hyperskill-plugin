@@ -35,12 +35,11 @@ fun EduTestCase.hyperskillCourseWithFiles(
   projectId: Int? = 1,
   name: String = TEST_HYPERSKILL_PROJECT_NAME,
   language: Language = FakeGradleBasedLanguage,
-  courseMode: CourseMode = CourseMode.STUDENT,
   completeStages: Boolean = false,
   buildCourse: CourseBuilder.() -> Unit
 ): HyperskillCourse {
   val course = courseWithFiles(
-    name = name, courseProducer = ::HyperskillCourse, courseMode = courseMode, language = language,
+    name = name, courseProducer = ::HyperskillCourse, courseMode = CourseMode.STUDENT, language = language,
     buildCourse = buildCourse
   ) as HyperskillCourse
   course.init(projectId, completeStages)

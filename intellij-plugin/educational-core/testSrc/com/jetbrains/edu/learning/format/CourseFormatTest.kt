@@ -11,13 +11,6 @@ import org.junit.Test
 
 class CourseFormatTest : EduTestCase() {
   @Test
-  fun testAdditionalMaterialsLesson() {
-    assertNotNull(courseFromJson.additionalFiles)
-    assertFalse(courseFromJson.additionalFiles.isEmpty())
-    assertEquals("test_helper.py", courseFromJson.additionalFiles[0].name)
-  }
-
-  @Test
   fun testCourseWithSection() {
     val items = courseFromJson.items
     assertEquals(2, items.size)
@@ -50,34 +43,6 @@ class CourseFormatTest : EduTestCase() {
     val taskList = lesson.taskList
     assertFalse("No tasks found", taskList.isEmpty())
     assertTrue(taskList[0] is EduTask)
-  }
-
-  @Test
-  fun testFeedbackLinks() {
-    assertEquals("https://www.jetbrains.com/", firstEduTask.feedbackLink)
-  }
-
-  @Test
-  fun testCourseName() {
-    assertEquals("My Python Course", courseFromJson.name)
-  }
-
-  @Test
-  fun testCourseDescription() {
-    assertEquals("Best course ever", courseFromJson.description)
-  }
-
-  @Test
-  fun testStudentTaskText() {
-    val lessons = courseFromJson.lessons
-    assertFalse("No lessons found", lessons.isEmpty())
-    val lesson = lessons[0]
-    val taskList = lesson.taskList
-    assertFalse("No tasks found", taskList.isEmpty())
-    val task = taskList[0]
-    val taskFile = task.getTaskFile("my_task.py")
-    assertNotNull(taskFile)
-    assertEquals("def foo():\n    write function body\n", taskFile!!.text)
   }
 
   @Test

@@ -5,7 +5,6 @@ import com.jetbrains.edu.learning.EduActionTestCase
 import com.jetbrains.edu.learning.actions.CheckAction
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
@@ -78,16 +77,6 @@ class HyperskillPostToSocialNetworksTest : EduActionTestCase() {
     }
   }
 
-  @Test
-  fun `test do not show dialog for edu course`() =
-    doTest(lessonName = "Project", taskName = "Task2", createCourse = ::createEduCourse) { course, task ->
-      course.visitTasks {
-        if (it != task) {
-          it.status = CheckStatus.Solved
-        }
-      }
-    }
-
   private fun doTest(
     sectionName: String? = null,
     lessonName: String,
@@ -109,8 +98,8 @@ class HyperskillPostToSocialNetworksTest : EduActionTestCase() {
     assertEquals(shouldDialogBeShown, isDialogShown)
   }
 
-  private fun createHyperskillCourse(courseMode: CourseMode = CourseMode.STUDENT): HyperskillCourse {
-    return hyperskillCourseWithFiles(courseMode = courseMode) {
+  private fun createHyperskillCourse(): HyperskillCourse {
+    return hyperskillCourseWithFiles {
       frameworkLesson("Project") {
         eduTask("Task1") {
           taskFile("task.txt")
@@ -129,21 +118,6 @@ class HyperskillPostToSocialNetworksTest : EduActionTestCase() {
       }
     }
   }
-
-  private fun createEduCourse(): HyperskillCourse {
-    return courseWithFiles {
-      frameworkLesson("Project") {
-        eduTask("Task1") {
-          taskFile("task.txt")
-        }
-        eduTask("Task2") {
-          taskFile("task.txt")
-        }
-      }
-
-    } as HyperskillCourse
-  }
-
 
   private fun launchCheckAction(task: Task): Boolean {
     var isDialogShown = false

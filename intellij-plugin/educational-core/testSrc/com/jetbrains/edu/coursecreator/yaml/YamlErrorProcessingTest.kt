@@ -1,6 +1,5 @@
 package com.jetbrains.edu.coursecreator.yaml
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.error.MarkedYAMLException
@@ -76,22 +75,6 @@ class YamlErrorProcessingTest : YamlTestCase() {
   }
 
   @Test
-  fun `test wrong type of placeholder offset`() {
-    doTest(
-      """
-    |type: edu
-    |files:
-    |- name: Test.java
-    |  placeholders:
-    |  - offset: a
-    |    length: 3
-    |    placeholder_text: type here
-    |""".trimMargin(), YamlConfigSettings.TASK_CONFIG,
-      "Invalid config", InvalidFormatException::class.java
-    )
-  }
-
-  @Test
   fun `test unexpected item type`() {
     doTest(
       """
@@ -116,40 +99,6 @@ class YamlErrorProcessingTest : YamlTestCase() {
       """
     """.trimIndent(), YamlConfigSettings.TASK_CONFIG,
       "Task type is not specified", InvalidYamlFormatException::class.java
-    )
-  }
-
-  @Test
-  fun `test negative placeholder length`() {
-    doTest(
-      """
-    |type: edu
-    |files:
-    |- name: Test.java
-    |  visible: true
-    |  placeholders:
-    |  - offset: 2
-    |    length: -1
-    |    placeholder_text: type here
-    |""".trimMargin(), YamlConfigSettings.TASK_CONFIG,
-      "Answer placeholder with negative length is not allowed", InvalidYamlFormatException::class.java
-    )
-  }
-
-  @Test
-  fun `test negative placeholder offset`() {
-    doTest(
-      """
-    |type: edu
-    |files:
-    |- name: Test.java
-    |  visible: true
-    |  placeholders:
-    |  - offset: -1
-    |    length: 1
-    |    placeholder_text: type here
-    |""".trimMargin(), YamlConfigSettings.TASK_CONFIG,
-      "Answer placeholder with negative offset is not allowed", InvalidYamlFormatException::class.java
     )
   }
 

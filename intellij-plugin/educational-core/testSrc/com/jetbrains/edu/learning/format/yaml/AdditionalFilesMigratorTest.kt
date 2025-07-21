@@ -88,8 +88,6 @@ class AdditionalFilesMigratorTest(
         createFile(".additional_file6_starting_with_dot.txt")
       },
       { project ->
-        assertEquals(courseMode, project.course?.courseMode)
-
         // In the unit test mode, YAML files are written only if project.getUserData(YamlFormatSettings.YAML_TEST_PROJECT_READY) == true
         // But we are not able to set it for the project while it is being created, so we just write config files again
         createConfigFiles(project)

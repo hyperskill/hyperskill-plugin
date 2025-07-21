@@ -102,13 +102,13 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
           }
         }
         dir("task1") {
-          file("task.md")
+          file("task.html")
         }
         dir("task2") {
-          file("task.md")
+          file("task.html")
         }
         dir("task3") {
-          file("task.md")
+          file("task.html")
         }
       }
       file("build.gradle")
@@ -524,10 +524,10 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
           }
         }
         dir("task1") {
-          file("task.md")
+          file("task.html")
         }
         dir("task2") {
-          file("task.md")
+          file("task.html")
         }
       }
     }

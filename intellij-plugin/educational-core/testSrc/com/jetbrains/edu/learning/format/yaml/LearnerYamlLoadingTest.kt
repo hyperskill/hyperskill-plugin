@@ -7,6 +7,7 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.StudyTaskManager
 import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
 import com.jetbrains.edu.learning.navigation.NavigationUtils
+import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
 import com.jetbrains.edu.learning.yaml.YamlDeepLoader
 import com.jetbrains.rd.util.first
 import org.junit.Test
@@ -56,7 +57,7 @@ class LearnerYamlLoadingTest : EduTestCase() {
   @Test
   fun `test non-existing files removed from framework lesson current task`() {
     val removedFileName = "file2.txt"
-    courseWithFiles {
+    hyperskillCourseWithFiles {
       frameworkLesson {
         eduTask {
           taskFile("file1.txt")

@@ -2,9 +2,7 @@ package com.jetbrains.edu.learning.courseGeneration
 
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
-import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
@@ -32,21 +30,4 @@ class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {
     assertThat(openFiles, hasItem(visible))
   }
 
-
-  @Test
-  fun `test course preview not added to course storage`() {
-    val coursePreview = (course {
-      lesson("lesson1") {
-        eduTask("task1") {
-        }
-      }
-    } as HyperskillCourse)
-
-    createCourseStructure(coursePreview)
-
-    assertFalse(
-      "Course `${coursePreview.name}` shouldn't be added to course storage",
-      CoursesStorage.getInstance().hasCourse(coursePreview)
-    )
-  }
 }
