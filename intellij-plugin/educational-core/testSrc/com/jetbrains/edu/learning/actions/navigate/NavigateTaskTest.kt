@@ -5,6 +5,7 @@ import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.actions.PreviousTaskAction
 import com.jetbrains.edu.learning.getTaskFile
+import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
 import com.jetbrains.edu.learning.testAction
 import org.junit.Test
 
@@ -88,7 +89,7 @@ class NavigateTaskTest : EduTestCase() {
 
   override fun createCourse() {
     val textWithPlaceholder = "a = <p>TODO()</p>"
-    courseWithFiles {
+    hyperskillCourseWithFiles {
       lesson {
         eduTask {
           taskFile("taskFile1.txt")

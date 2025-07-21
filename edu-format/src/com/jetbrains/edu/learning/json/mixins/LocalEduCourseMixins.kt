@@ -1,6 +1,3 @@
-@file:JvmName("LocalEduCourseMixins")
-@file:Suppress("unused")
-
 package com.jetbrains.edu.learning.json.mixins
 
 import com.fasterxml.jackson.annotation.JacksonInject
@@ -12,25 +9,17 @@ import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.util.StdConverter
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
 import com.jetbrains.edu.learning.courseFormat.tasks.*
 import com.jetbrains.edu.learning.json.encrypt.Encrypt
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ADDITIONAL_FILES
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.AUTHORS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CHOICE_OPTIONS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.COURSE_TYPE
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CUSTOM_CONTENT_PATH
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.CUSTOM_NAME
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DESCRIPTION_FORMAT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DESCRIPTION_TEXT
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.DISABLED_FEATURES
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ENVIRONMENT
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ENVIRONMENT_SETTINGS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FEEDBACK_LINK
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FILES
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.FRAMEWORK_TYPE
@@ -41,117 +30,25 @@ import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_MULTIPLE_CHOICE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.IS_VISIBLE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ITEMS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.ITEM_TYPE
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.LANGUAGE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.LESSON
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MAX_VERSION
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MESSAGE_CORRECT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MESSAGE_INCORRECT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.MIN_VERSION
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.NAME
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLUGINS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLUGIN_ID
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PLUGIN_NAME
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE_ID
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE_VERSION
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.QUIZ_HEADER
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.SECTION
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.SOLUTIONS_HIDDEN
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.SOLUTION_HIDDEN
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.STATUS
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.SUMMARY
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TAGS
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TASK_LIST
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TASK_TYPE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TEXT
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TITLE
 import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.TYPE
-import com.jetbrains.edu.learning.json.mixins.JsonMixinNames.VERSION
 
-private val LOG = logger<LocalEduCourseMixin>()
-
-@JsonPropertyOrder(
-  ENVIRONMENT, SUMMARY, TITLE, PROGRAMMING_LANGUAGE_ID, PROGRAMMING_LANGUAGE_VERSION, LANGUAGE,
-  COURSE_TYPE, SOLUTIONS_HIDDEN, PLUGINS, ITEMS, AUTHORS, TAGS, ADDITIONAL_FILES, CUSTOM_CONTENT_PATH, VERSION
-)
-abstract class LocalEduCourseMixin {
-  @JsonProperty(TITLE)
-  private lateinit var name: String
-
-  @JsonProperty(AUTHORS)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  @JsonSerialize(contentConverter = UserInfoToString::class)
-  private var authors: MutableList<UserInfo> = ArrayList()
-
-  @JsonProperty(SUMMARY)
-  private lateinit var description: String
-
-  @Suppress("SetterBackingFieldAssignment")
-  private var programmingLanguage: String? = null
-    @JsonProperty(PROGRAMMING_LANGUAGE)
-    set(value) {
-      if (formatVersion >= JSON_FORMAT_VERSION_WITH_NEW_LANGUAGE_VERSION || value.isNullOrEmpty()) return
-      value.split(" ").apply {
-        languageId = first()
-        languageVersion = getOrNull(1)
-      }
-    }
-
-  @JsonProperty(PROGRAMMING_LANGUAGE_ID)
-  private lateinit var languageId: String
-
-  @JsonProperty(PROGRAMMING_LANGUAGE_VERSION)
-  private var languageVersion: String? = null
-
-  @JsonProperty(LANGUAGE)
-  private lateinit var languageCode: String
-
-  @JsonProperty(ENVIRONMENT)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  lateinit var environment: String
-
-  @JsonProperty(ENVIRONMENT_SETTINGS)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  lateinit var environmentSettings: Map<String, String>
-
-  val itemType: String
-    @JsonProperty(COURSE_TYPE)
-    get() = throw NotImplementedInMixin()
-
-  @JsonProperty(ITEMS)
-  private lateinit var _items: List<StudyItem>
-
-  @JsonProperty(ADDITIONAL_FILES)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  private lateinit var additionalFiles: List<EduFile>
-
-  @JsonProperty(CUSTOM_CONTENT_PATH)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  lateinit var customContentPath: String
-
-  @JsonProperty(PLUGINS)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  private lateinit var pluginDependencies: List<PluginInfo>
-
-  @JsonProperty(SOLUTIONS_HIDDEN)
-  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-  private var solutionsHidden: Boolean = false
-
-  @JsonProperty(TAGS)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  private lateinit var contentTags: List<String>
-
-  @JsonProperty(VERSION)
-  private var formatVersion = JSON_FORMAT_VERSION
-
-  @JsonProperty(DISABLED_FEATURES)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  private lateinit var disabledFeatures: List<String>
-}
-
-private class UserInfoToString : StdConverter<UserInfo, String?>() {
-  override fun convert(value: UserInfo?): String? = value?.getFullName()
-}
 
 abstract class PluginInfoMixin : PluginInfo() {
   @JsonProperty(PLUGIN_ID)
@@ -331,6 +228,8 @@ class CourseDeserializer : StdDeserializer<Course>(Course::class.java) {
     return codec.treeToValue(jsonObject, HyperskillCourse::class.java)
   }
 }
+
+private val LOG = logger<StudyItemDeserializer>()
 
 class StudyItemDeserializer : StdDeserializer<StudyItem>(StudyItem::class.java) {
   override fun deserialize(jp: JsonParser, ctxt: DeserializationContext?): StudyItem? {
