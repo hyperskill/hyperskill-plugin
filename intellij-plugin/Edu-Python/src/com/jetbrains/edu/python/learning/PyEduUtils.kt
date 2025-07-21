@@ -61,13 +61,13 @@ internal fun pythonAttributesEvaluator(baseEvaluator: AttributesEvaluator): Attr
 
 fun installRequiredPackages(project: Project, sdk: Sdk) {
   for (module in ModuleManager.getInstance(project).modules) {
+    val requirements = runReadAction { PyPackageUtil.getRequirementsFromTxt(module) }
+    if (requirements.isNullOrEmpty()) {
+      continue
+    }
+
     val packageManager = PythonPackageManager.forSdk(project, sdk)
     runWithModalProgressBlocking(project, EduPythonBundle.message("installing.requirements.progress")) {
-      val requirements = runReadAction { PyPackageUtil.getRequirementsFromTxt(module) }
-      if (requirements.isNullOrEmpty()) {
-        return@runWithModalProgressBlocking
-      }
-
       reportSequentialProgress(requirements.size) { reporter ->
         installRequiredPackages(reporter, packageManager, requirements)
       }
