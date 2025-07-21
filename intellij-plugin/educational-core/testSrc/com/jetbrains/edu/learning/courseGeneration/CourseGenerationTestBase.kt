@@ -61,12 +61,6 @@ abstract class CourseGenerationTestBase<Settings : EduProjectSettings> : EduHeav
     }
   }
 
-  protected fun generateCourseStructure(pathToCourseJson: String): Course {
-    val course = createCourseFromJson(pathToCourseJson)
-    createCourseStructure(course)
-    return course
-  }
-
   /**
    * It intentionally does nothing to avoid project creation in [setUp].
    *
