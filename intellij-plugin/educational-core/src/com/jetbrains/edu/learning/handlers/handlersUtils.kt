@@ -39,16 +39,23 @@ fun isMoveForbidden(project: Project?, element: PsiElement?, target: PsiElement?
   if (project?.course == null) return false
   if (isRefactoringForbidden(project, element)) return true
   if (element is PsiFile) {
-    val sourceTaskDir = element.originalFile.virtualFile.getTaskDir(project) ?: return false
-    val targetDir = (target as? PsiDirectory)?.virtualFile ?: return false
-    val targetTaskDir = if (targetDir.isTaskDirectory(project)) {
-      targetDir
-    }
-    else {
-      targetDir.getTaskDir(project)
-    }
+    try {
+      val targetDir = (target as? PsiDirectory)?.virtualFile ?: return false
+      val targetTaskDir = if (targetDir.isTaskDirectory(project)) {
+        targetDir
+      }
+      else {
+        targetDir.getTaskDir(project)
+      }
+      val sourceTaskDir = element.originalFile.virtualFile.getTaskDir(project) ?: return false
 
-    if (sourceTaskDir != targetTaskDir) return true
+      if (sourceTaskDir != targetTaskDir) return true
+    } catch (e: Exception) {
+      // If we get an exception when trying to get the task directory,
+      // it's likely because the file belongs to a different project.
+      // In this case, we should forbid the move operation.
+      return true
+    }
   }
   return false
 }
