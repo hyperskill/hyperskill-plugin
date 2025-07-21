@@ -563,7 +563,7 @@ class FrameworkLessonNavigationTest : NavigationTestBase() {
     }
   }
 
-  private fun createFrameworkCourse(courseMode: CourseMode = CourseMode.STUDENT): Course = hyperskillCourseWithFiles {
+  private fun createFrameworkCourse(): Course = hyperskillCourseWithFiles {
     frameworkLesson {
       eduTask {
         taskFile(

@@ -1,11 +1,9 @@
 package com.jetbrains.edu.learning.format
 
-import com.intellij.testFramework.LightPlatformTestCase
 import com.jetbrains.edu.learning.EduTestCase
 import com.jetbrains.edu.learning.course
 import com.jetbrains.edu.learning.courseFormat.*
 import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.createCourseFiles
 import com.jetbrains.edu.learning.createCourseFromJson
 import org.junit.Test
 
@@ -68,18 +66,4 @@ class CourseFormatTest : EduTestCase() {
 
   private val testFile: String get() = "${getTestName(true)}.json"
 
-  private val firstEduTask: EduTask
-    get() {
-      val course = courseFromJson
-      course.init(false)
-      course.createCourseFiles(project, LightPlatformTestCase.getSourceRoot())
-      val lessons = course.lessons
-      assertFalse("No lessons found", lessons.isEmpty())
-      val lesson = lessons[0]
-      val taskList = lesson.taskList
-      assertFalse("No tasks found", taskList.isEmpty())
-      val task = taskList[0]
-      check(task is EduTask)
-      return task
-    }
 }

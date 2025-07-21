@@ -13,6 +13,7 @@ import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillAccount
 import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillUserInfo
 import com.jetbrains.edu.learning.stepik.hyperskill.settings.HyperskillSettings
+import org.jetbrains.annotations.TestOnly
 
 const val TEST_HYPERSKILL_PROJECT_NAME = "Test Hyperskill Project"
 
@@ -46,8 +47,8 @@ fun EduTestCase.hyperskillCourseWithFiles(
   return course
 }
 
-@Suppress("unused") // want this method to be available only in EduTestCase
-fun EduTestCase.hyperskillCourse(
+@TestOnly
+fun hyperskillCourse(
   projectId: Int? = 1,
   language: Language = FakeGradleBasedLanguage,
   completeStages: Boolean = false,
