@@ -2,7 +2,9 @@ package com.jetbrains.edu.learning.stepik.hyperskill
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
+import com.intellij.openapi.startup.ProjectActivity
+import com.intellij.platform.backend.observation.trackActivity
+import com.jetbrains.edu.learning.EduCourseConfigurationActivityKey
 import com.jetbrains.edu.learning.EduLogInListener
 import com.jetbrains.edu.learning.EduUtilsKt.isStudentProject
 import com.jetbrains.edu.learning.StudyTaskManager
@@ -16,14 +18,14 @@ import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType.SUBMISSIONS_TAB
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 
-class HyperskillStartupActivity : StartupActivity {
+class HyperskillStartupActivity : ProjectActivity {
 
-  override fun runActivity(project: Project) {
-    if (project.isDisposed || !project.isStudentProject() || isUnitTestMode) return
+  override suspend fun execute(project: Project) = project.trackActivity(EduCourseConfigurationActivityKey) {
+    if (project.isDisposed || !project.isStudentProject() || isUnitTestMode) return@trackActivity
 
-    val course = StudyTaskManager.getInstance(project).course as? HyperskillCourse ?: return
+    val course = StudyTaskManager.getInstance(project).course as? HyperskillCourse ?: return@trackActivity
     val submissionsManager = SubmissionsManager.getInstance(project)
-    if (!submissionsManager.submissionsSupported()) return
+    if (!submissionsManager.submissionsSupported()) return@trackActivity
 
     submissionsManager.prepareSubmissionsContentWhenLoggedIn {
       HyperskillSolutionLoader.getInstance(project).loadSolutionsInBackground()
@@ -45,12 +47,11 @@ class HyperskillStartupActivity : StartupActivity {
     HyperskillCourseUpdateChecker.getInstance(project).check()
   }
 
-  companion object {
-    fun synchronizeTopics(project: Project, hyperskillCourse: HyperskillCourse) {
-      ApplicationManager.getApplication().executeOnPooledThread {
-        HyperskillConnector.getInstance().fillTopics(project, hyperskillCourse)
-        YamlFormatSynchronizer.saveRemoteInfo(hyperskillCourse)
-      }
-    }
+}
+
+fun synchronizeTopics(project: Project, hyperskillCourse: HyperskillCourse) {
+  ApplicationManager.getApplication().executeOnPooledThread {
+    HyperskillConnector.getInstance().fillTopics(project, hyperskillCourse)
+    YamlFormatSynchronizer.saveRemoteInfo(hyperskillCourse)
   }
 }

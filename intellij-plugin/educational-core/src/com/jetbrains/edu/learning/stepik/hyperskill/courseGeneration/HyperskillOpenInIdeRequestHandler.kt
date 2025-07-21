@@ -364,6 +364,6 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
       return
     }
     HyperskillSolutionLoader.getInstance(project).loadSolutionsInBackground(course, tasks, true)
-    HyperskillStartupActivity.synchronizeTopics(project, course)
+    synchronizeTopics(project, course)
   }
 }
