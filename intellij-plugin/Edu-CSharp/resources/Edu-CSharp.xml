@@ -1,4 +1,4 @@
-<idea-plugin package="com.jetbrains.edu.csharp">
+<idea-plugin package="org.hyperskill.academy.csharp">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.intellij.modules.rider"/>
@@ -9,39 +9,39 @@
   <resource-bundle>messages.EduCoreBundle</resource-bundle>
 
   <actions>
-    <unregister id="Educational.LearnAndTeachFileMenu"/>
-    <group id="Educational.LearnAndTeachFileMenu"
-           class="com.jetbrains.edu.learning.newproject.LearnAndTeachFileMenuGroup"
+    <unregister id="HyperskillEducational.LearnAndTeachFileMenu"/>
+    <group id="HyperskillEducational.LearnAndTeachFileMenu"
+           class="org.hyperskill.academy.learning.newproject.LearnAndTeachFileMenuGroup"
            popup="true"
-           icon="com.jetbrains.edu.EducationalCoreIcons.Actions.EduCourse">
-      <reference ref="Educational.BrowseCourses"/>
+           icon="org.hyperskill.academy.EducationalCoreIcons.Actions.EduCourse">
+      <reference ref="HyperskillEducational.BrowseCourses"/>
       <add-to-group group-id="FileMenu" anchor="before" relative-to-action="RiderFileOpenGroup"/>
     </group>
   </actions>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator implementationClass="com.jetbrains.edu.csharp.CSharpConfigurator" language="C#"
+    <configurator implementationClass="org.hyperskill.academy.csharp.CSharpConfigurator" language="C#"
                   displayName="C#"/>
     <!-- currently, Unity support for macOS is disabled; hence we have 2 configurators - for linux and windows only -->
-    <configurator implementationClass="com.jetbrains.edu.csharp.hyperskill.CSharpHyperskillConfigurator" language="C#"
+    <configurator implementationClass="org.hyperskill.academy.csharp.hyperskill.CSharpHyperskillConfigurator" language="C#"
                   courseType="Hyperskill" os="linux"/>
-    <configurator implementationClass="com.jetbrains.edu.csharp.hyperskill.CSharpHyperskillConfigurator" language="C#"
+    <configurator implementationClass="org.hyperskill.academy.csharp.hyperskill.CSharpHyperskillConfigurator" language="C#"
                   courseType="Hyperskill" os="windows"/>
-    <courseViewPaneCustomization implementation="com.jetbrains.edu.csharp.CSharpCourseViewPaneCustomization"/>
-    <studyItemRefactoringHandler implementation="com.jetbrains.edu.csharp.refactoring.CSharpStudyItemRefactoringHandler"/>
-    <hyperskillCourseCreator implementation="com.jetbrains.edu.csharp.hyperskill.UnityHyperskillCourseCreator"/>
+    <courseViewPaneCustomization implementation="org.hyperskill.academy.csharp.CSharpCourseViewPaneCustomization"/>
+    <studyItemRefactoringHandler implementation="org.hyperskill.academy.csharp.refactoring.CSharpStudyItemRefactoringHandler"/>
+    <hyperskillCourseCreator implementation="org.hyperskill.academy.csharp.hyperskill.UnityHyperskillCourseCreator"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
     <experimentalFeature id="edu.course.csharp" percentOfUsers="100" internalFeature="true">
       <description>Enables support for C# courses</description>
     </experimentalFeature>
-    <postStartupActivity implementation="com.jetbrains.edu.csharp.CSharpProjectActivity"/>
-    <rdclient.priorityRenameHandler implementation="com.jetbrains.edu.csharp.refactoring.CSharpRenameHandler" order="first"/>
+    <postStartupActivity implementation="org.hyperskill.academy.csharp.CSharpProjectActivity"/>
+    <rdclient.priorityRenameHandler implementation="org.hyperskill.academy.csharp.refactoring.CSharpRenameHandler" order="first"/>
   </extensions>
 
   <projectListeners>
-    <listener class="com.jetbrains.edu.csharp.CSharpCourseSetListener"
-              topic="com.jetbrains.edu.learning.CourseSetListener"/>
+    <listener class="org.hyperskill.academy.csharp.CSharpCourseSetListener"
+              topic="org.hyperskill.academy.learning.CourseSetListener"/>
   </projectListeners>
 </idea-plugin>

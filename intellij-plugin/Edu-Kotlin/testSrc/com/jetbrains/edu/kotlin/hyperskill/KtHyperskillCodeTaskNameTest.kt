@@ -1,11 +1,11 @@
-package com.jetbrains.edu.kotlin.hyperskill
+package org.hyperskill.academy.kotlin.hyperskill
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.stepik.hyperskill.HyperskillConfigurator
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillConfigurator
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.junit.Test
 

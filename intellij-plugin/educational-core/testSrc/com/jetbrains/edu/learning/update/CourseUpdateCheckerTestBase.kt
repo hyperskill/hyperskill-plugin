@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.update
+package org.hyperskill.academy.learning.update
 
 import com.intellij.notification.Notification
 import com.intellij.notification.Notifications
@@ -7,13 +7,13 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.testFramework.PlatformTestUtil
-import com.jetbrains.edu.learning.MockResponseFactory
-import com.jetbrains.edu.learning.actions.EduActionUtils
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
 import okhttp3.mockwebserver.MockResponse
 import org.apache.http.HttpStatus
+import org.hyperskill.academy.learning.MockResponseFactory
+import org.hyperskill.academy.learning.actions.EduActionUtils
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
 
 abstract class CourseUpdateCheckerTestBase : CourseGenerationTestBase<EmptyProjectSettings>() {
   override val defaultSettings: EmptyProjectSettings get() = EmptyProjectSettings

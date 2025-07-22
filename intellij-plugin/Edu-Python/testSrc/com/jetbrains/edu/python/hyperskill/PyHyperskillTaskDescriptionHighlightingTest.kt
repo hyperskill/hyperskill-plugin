@@ -1,10 +1,10 @@
-package com.jetbrains.edu.python.hyperskill
+package org.hyperskill.academy.python.hyperskill
 
 import com.intellij.lang.Language
 import com.intellij.util.ThrowableRunnable
-import com.jetbrains.edu.learning.EduUtilsKt
-import com.jetbrains.edu.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
 import com.jetbrains.python.PythonLanguage
+import org.hyperskill.academy.learning.EduUtilsKt
+import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
 
 class PyHyperskillTaskDescriptionHighlightingTest : HyperskillTaskDescriptionHighlightingTest() {
 

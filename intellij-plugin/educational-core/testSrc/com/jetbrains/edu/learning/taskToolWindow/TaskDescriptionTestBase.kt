@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.taskToolWindow
+package org.hyperskill.academy.learning.taskToolWindow
 
 import com.intellij.openapi.fileTypes.PlainTextLanguage
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.JavaUILibrary
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindow
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.JavaUILibrary
+import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindow
 import org.intellij.lang.annotations.Language
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Comment

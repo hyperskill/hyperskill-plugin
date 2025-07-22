@@ -1,7 +1,7 @@
-package com.jetbrains.edu.kotlin.hyperskill
+package org.hyperskill.academy.kotlin.hyperskill
 
 import com.intellij.lang.Language
-import com.jetbrains.edu.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
+import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
 import org.jetbrains.kotlin.idea.KotlinLanguage
 
 class KtHyperskillTaskDescriptionHighlightingTest : HyperskillTaskDescriptionHighlightingTest() {

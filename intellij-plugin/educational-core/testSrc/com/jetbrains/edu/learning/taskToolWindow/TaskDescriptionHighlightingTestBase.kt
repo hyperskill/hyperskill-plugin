@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.taskToolWindow
+package org.hyperskill.academy.learning.taskToolWindow
 
 abstract class TaskDescriptionHighlightingTestBase : TaskDescriptionTestBase() {
 

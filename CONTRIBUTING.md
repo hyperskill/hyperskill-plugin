@@ -38,16 +38,16 @@ Sometimes there are not compatible changes in new platform version.
 To avoid creating several parallel vcs branches for each version, we have separate
 directories for each version to keep platform dependent code.
 
-For example, `com.jetbrains.edu.android.AndroidVersionsInfoKt#loadTargetVersions` function in `Edu-Android` module
+For example, `org.hyperskill.academy.android.AndroidVersionsInfoKt#loadTargetVersions` function in `Edu-Android` module
 should have separate implementations for 182 and 183 platforms.
 Then source code structure of the corresponding module will be
 
      +-- Edu-Android
      |   +-- branches/182/src
-     |       +-- com/jetbrains/edu/android
+     |       +-- org/hyperskill/academy/android
      |           +-- AndroidVersionsInfo.kt
      |   +-- branches/183/src
-     |       +-- com/jetbrains/edu/android
+     |       +-- org/hyperskill/academy/android
      |           +-- AndroidVersionsInfo.kt
      |   +-- src
      |       +-- other platfrom independent code

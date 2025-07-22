@@ -1,8 +1,8 @@
-package com.jetbrains.edu.cpp.coursecreator
+package org.hyperskill.academy.cpp.coursecreator
 
-import com.jetbrains.edu.coursecreator.archive.ExpectedCourseFileAttributes
-import com.jetbrains.edu.coursecreator.archive.FileAttributesTest
-import com.jetbrains.edu.cpp.CppConfigurator
+import org.hyperskill.academy.coursecreator.archive.ExpectedCourseFileAttributes
+import org.hyperskill.academy.coursecreator.archive.FileAttributesTest
+import org.hyperskill.academy.cpp.CppConfigurator
 import org.junit.runners.Parameterized.Parameters
 
 class CppFileAttributesTest(

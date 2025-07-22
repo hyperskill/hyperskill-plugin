@@ -1,8 +1,8 @@
-package com.jetbrains.edu.java.hyperskill
+package org.hyperskill.academy.java.hyperskill
 
 import com.intellij.lang.Language
 import com.intellij.lang.java.JavaLanguage
-import com.jetbrains.edu.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
+import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
 
 class JHyperskillTaskDescriptionHighlightingTest : HyperskillTaskDescriptionHighlightingTest() {
   override val codeSample: String get() = """class Main {}"""

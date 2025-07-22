@@ -1,6 +1,6 @@
-package com.jetbrains.edu.learning.checker
+package org.hyperskill.academy.learning.checker
 
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
 
 class PlaintTextCheckerFixture : EduCheckerFixture<EmptyProjectSettings>() {
   override val projectSettings: EmptyProjectSettings get() = EmptyProjectSettings

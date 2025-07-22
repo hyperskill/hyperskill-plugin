@@ -1,7 +1,7 @@
-package com.jetbrains.edu.rust.taskDescription
+package org.hyperskill.academy.rust.taskDescription
 
 import com.intellij.lang.Language
-import com.jetbrains.edu.learning.taskToolWindow.TaskDescriptionHighlightingTestBase
+import org.hyperskill.academy.learning.taskToolWindow.TaskDescriptionHighlightingTestBase
 import org.junit.Test
 import org.rust.lang.RsLanguage
 

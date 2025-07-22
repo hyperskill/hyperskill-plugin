@@ -1,10 +1,10 @@
-<idea-plugin package="com.jetbrains.edu.php">
+<idea-plugin package="org.hyperskill.academy.php">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.jetbrains.php"/>
   </dependencies>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator implementationClass="com.jetbrains.edu.php.PhpConfigurator" language="PHP" displayName="PHP"/>
+    <configurator implementationClass="org.hyperskill.academy.php.PhpConfigurator" language="PHP" displayName="PHP"/>
   </extensions>
 </idea-plugin>

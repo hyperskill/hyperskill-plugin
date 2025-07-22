@@ -1,11 +1,11 @@
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
 import com.intellij.database.dataSource.DataSourceStorage
 import com.intellij.database.dataSource.LocalDataSource
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.XCollection
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
 
 @Service(Service.Level.PROJECT)
 @State(name = "SqlInitializationState", storages = [Storage(StoragePathMacros.WORKSPACE_FILE, roamingType = RoamingType.DISABLED)])

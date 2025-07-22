@@ -1,13 +1,13 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.projectOpen
+package org.hyperskill.academy.learning.stepik.hyperskill.projectOpen
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.MockProjectOpener
-import com.jetbrains.edu.learning.courseGeneration.ProjectOpener
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.api.MockHyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourse
-import com.jetbrains.edu.learning.stepik.hyperskill.logInFakeHyperskillUser
-import com.jetbrains.edu.learning.stepik.hyperskill.logOutFakeHyperskillUser
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.MockProjectOpener
+import org.hyperskill.academy.learning.courseGeneration.ProjectOpener
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourse
+import org.hyperskill.academy.learning.stepik.hyperskill.logInFakeHyperskillUser
+import org.hyperskill.academy.learning.stepik.hyperskill.logOutFakeHyperskillUser
 
 abstract class HyperskillProjectOpenerTestBase : EduTestCase() {
   protected val mockConnector: MockHyperskillConnector get() = HyperskillConnector.getInstance() as MockHyperskillConnector

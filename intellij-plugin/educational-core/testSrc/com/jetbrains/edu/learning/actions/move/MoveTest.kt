@@ -1,9 +1,9 @@
-package com.jetbrains.edu.learning.actions.move
+package org.hyperskill.academy.learning.actions.move
 
-import com.jetbrains.edu.learning.EduTestDialog
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.withEduTestDialog
+import org.hyperskill.academy.learning.EduTestDialog
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
+import org.hyperskill.academy.learning.findTask
+import org.hyperskill.academy.learning.withEduTestDialog
 import org.junit.Test
 
 class MoveTest : MoveTestBase() {

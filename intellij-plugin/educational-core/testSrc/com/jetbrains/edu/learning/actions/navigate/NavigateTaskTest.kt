@@ -1,12 +1,12 @@
-package com.jetbrains.edu.learning.actions.navigate
+package org.hyperskill.academy.learning.actions.navigate
 
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.actions.PreviousTaskAction
-import com.jetbrains.edu.learning.getTaskFile
-import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
-import com.jetbrains.edu.learning.testAction
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.actions.NextTaskAction
+import org.hyperskill.academy.learning.actions.PreviousTaskAction
+import org.hyperskill.academy.learning.getTaskFile
+import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourseWithFiles
+import org.hyperskill.academy.learning.testAction
 import org.junit.Test
 
 class NavigateTaskTest : EduTestCase() {

@@ -1,4 +1,4 @@
-<idea-plugin package="com.jetbrains.edu.sql.core">
+<idea-plugin package="org.hyperskill.academy.sql.core">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.intellij.database"/>

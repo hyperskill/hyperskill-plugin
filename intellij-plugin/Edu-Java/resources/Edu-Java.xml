@@ -1,4 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.java">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy.java">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <!--suppress PluginXmlValidity -->
@@ -12,7 +12,7 @@
   <xi:include href="/META-INF/Hyperskill-Java.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator language="JAVA" implementationClass="com.jetbrains.edu.java.JConfigurator"/>
-    <mainFileProvider language="JAVA" implementationClass="com.jetbrains.edu.java.JMainFileProvider"/>
+    <configurator language="JAVA" implementationClass="org.hyperskill.academy.java.JConfigurator"/>
+    <mainFileProvider language="JAVA" implementationClass="org.hyperskill.academy.java.JMainFileProvider"/>
   </extensions>
 </idea-plugin>

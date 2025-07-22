@@ -1,6 +1,6 @@
 <!--suppress PluginXmlValidity -->
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu" allow-bundled-update="true">
-  <id>com.jetbrains.edu</id>
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy" allow-bundled-update="true">
+  <id>org.hyperskill.academy</id>
   <name>Hyperskill Academy</name>
   <vendor>JetBrains</vendor>
 

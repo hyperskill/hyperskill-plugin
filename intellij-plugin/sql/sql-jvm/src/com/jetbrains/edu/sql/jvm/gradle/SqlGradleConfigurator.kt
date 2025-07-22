@@ -1,13 +1,13 @@
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
-import com.jetbrains.edu.jvm.JdkProjectSettings
-import com.jetbrains.edu.jvm.gradle.GradleConfiguratorBase
-import com.jetbrains.edu.jvm.gradle.GradleCourseBuilderBase
-import com.jetbrains.edu.jvm.gradle.checker.GradleTaskCheckerProvider
-import com.jetbrains.edu.learning.checker.TaskCheckerProvider
-import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
-import com.jetbrains.edu.learning.configuration.attributesEvaluator.AttributesEvaluator
-import com.jetbrains.edu.sql.core.SqlConfiguratorBase
+import org.hyperskill.academy.jvm.JdkProjectSettings
+import org.hyperskill.academy.jvm.gradle.GradleConfiguratorBase
+import org.hyperskill.academy.jvm.gradle.GradleCourseBuilderBase
+import org.hyperskill.academy.jvm.gradle.checker.GradleTaskCheckerProvider
+import org.hyperskill.academy.learning.checker.TaskCheckerProvider
+import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
+import org.hyperskill.academy.learning.configuration.attributesEvaluator.AttributesEvaluator
+import org.hyperskill.academy.sql.core.SqlConfiguratorBase
 
 class SqlGradleConfigurator : GradleConfiguratorBase(), SqlConfiguratorBase<JdkProjectSettings> {
 

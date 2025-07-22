@@ -1,14 +1,14 @@
-package com.jetbrains.edu.learning.update
+package org.hyperskill.academy.learning.update
 
 import com.intellij.openapi.application.runReadAction
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.ext.getTaskText
-import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.fileTree
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.ext.getTaskText
+import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.fileTree
 import org.junit.Test
 import java.util.*
 

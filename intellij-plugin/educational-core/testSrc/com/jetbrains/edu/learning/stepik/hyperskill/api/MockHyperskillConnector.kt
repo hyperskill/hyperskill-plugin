@@ -1,27 +1,27 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.api
+package org.hyperskill.academy.learning.stepik.hyperskill.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.FRAMEWORK
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.stepik.BLOCK
-import com.jetbrains.edu.learning.stepik.PYCHARM
-import com.jetbrains.edu.learning.stepik.SOURCE
-import com.jetbrains.edu.learning.stepik.Step
-import com.jetbrains.edu.learning.stepik.api.MockStepikBasedConnector
-import com.jetbrains.edu.learning.stepik.api.OPTIONS
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.MockResponse
+import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.FRAMEWORK
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.ext.allTasks
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.stepik.BLOCK
+import org.hyperskill.academy.learning.stepik.PYCHARM
+import org.hyperskill.academy.learning.stepik.SOURCE
+import org.hyperskill.academy.learning.stepik.Step
+import org.hyperskill.academy.learning.stepik.api.MockStepikBasedConnector
+import org.hyperskill.academy.learning.stepik.api.OPTIONS
 
 class MockHyperskillConnector : HyperskillConnector(), MockStepikBasedConnector {
 

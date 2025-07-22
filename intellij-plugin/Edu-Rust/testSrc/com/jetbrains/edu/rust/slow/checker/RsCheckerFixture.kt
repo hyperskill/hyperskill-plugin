@@ -1,7 +1,7 @@
-package com.jetbrains.edu.rust.slow.checker
+package org.hyperskill.academy.rust.slow.checker
 
-import com.jetbrains.edu.learning.checker.EduCheckerFixture
-import com.jetbrains.edu.rust.RsProjectSettings
+import org.hyperskill.academy.learning.checker.EduCheckerFixture
+import org.hyperskill.academy.rust.RsProjectSettings
 import org.rust.cargo.toolchain.RsToolchainBase
 
 class RsCheckerFixture : EduCheckerFixture<RsProjectSettings>() {

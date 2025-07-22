@@ -1,4 +1,4 @@
-package com.jetbrains.edu.rules
+package org.hyperskill.academy.rules
 
 /**
  * Specify minimal platform version necessary for test execution

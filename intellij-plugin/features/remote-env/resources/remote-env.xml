@@ -1,15 +1,15 @@
-<idea-plugin package="com.jetbrains.edu.remote">
+<idea-plugin package="org.hyperskill.academy.remote">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.jetbrains.codeWithMe"/>
   </dependencies>
 
   <extensions defaultExtensionNs="com.intellij">
-    <projectService serviceImplementation="com.jetbrains.edu.remote.EduRemoteService" preload="true" client="remote"/>
-    <postStartupActivity implementation="com.jetbrains.edu.remote.EduRemoteStartupActivity"/>
+    <projectService serviceImplementation="org.hyperskill.academy.remote.EduRemoteService" preload="true" client="remote"/>
+    <postStartupActivity implementation="org.hyperskill.academy.remote.EduRemoteStartupActivity"/>
   </extensions>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <remoteEnvHelper implementation="com.jetbrains.edu.remote.RemoteEnvDefaultHelper"/>
+    <remoteEnvHelper implementation="org.hyperskill.academy.remote.RemoteEnvDefaultHelper"/>
   </extensions>
 </idea-plugin>

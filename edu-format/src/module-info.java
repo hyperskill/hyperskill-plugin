@@ -1,4 +1,4 @@
-open module com.jetbrains.edu.format {
+open module org.hyperskill.academy.format {
   requires com.fasterxml.jackson.core;
   requires com.fasterxml.jackson.databind;
   requires com.fasterxml.jackson.annotation;
@@ -13,12 +13,12 @@ open module com.jetbrains.edu.format {
   requires kotlin.stdlib;
   requires org.jetbrains.annotations;
 
-  exports com.jetbrains.edu.learning.courseFormat;
-  exports com.jetbrains.edu.learning.courseFormat.tasks;
-  exports com.jetbrains.edu.learning;
-  exports com.jetbrains.edu.learning.json;
-  exports com.jetbrains.edu.learning.json.mixins;
-  exports com.jetbrains.edu.learning.yaml;
-  exports com.jetbrains.edu.learning.yaml.errorHandling;
-  exports com.jetbrains.edu.learning.yaml.format;
+  exports org.hyperskill.academy.learning.courseFormat;
+  exports org.hyperskill.academy.learning.courseFormat.tasks;
+  exports org.hyperskill.academy.learning;
+  exports org.hyperskill.academy.learning.json;
+  exports org.hyperskill.academy.learning.json.mixins;
+  exports org.hyperskill.academy.learning.yaml;
+  exports org.hyperskill.academy.learning.yaml.errorHandling;
+  exports org.hyperskill.academy.learning.yaml.format;
 }

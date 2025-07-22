@@ -1,8 +1,8 @@
-package com.jetbrains.edu.javascript.hyperskill
+package org.hyperskill.academy.javascript.hyperskill
 
 import com.intellij.lang.Language
 import com.intellij.lang.javascript.JavascriptLanguage
-import com.jetbrains.edu.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
+import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
 
 class JsHyperskillTaskDescriptionHighlightingTest : HyperskillTaskDescriptionHighlightingTest() {
   override val language: Language

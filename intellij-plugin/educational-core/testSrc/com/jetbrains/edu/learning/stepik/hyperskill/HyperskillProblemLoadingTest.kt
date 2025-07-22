@@ -1,20 +1,20 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
 import com.intellij.openapi.fileTypes.PlainTextLanguage
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.EduFileErrorHighlightLevel
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.hasParams
-import com.jetbrains.edu.learning.pathWithoutPrams
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.api.MockHyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler.addProblemsWithTopicWithFiles
-import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler.getStepSource
-import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepWithProjectRequest
-import com.jetbrains.edu.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.StepInfo
-import com.jetbrains.edu.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.TopicInfo
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.EduFileErrorHighlightLevel
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.hasParams
+import org.hyperskill.academy.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler.addProblemsWithTopicWithFiles
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler.getStepSource
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepWithProjectRequest
+import org.hyperskill.academy.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.StepInfo
+import org.hyperskill.academy.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.TopicInfo
 import org.junit.Test
 
 class HyperskillProblemLoadingTest : EduTestCase() {

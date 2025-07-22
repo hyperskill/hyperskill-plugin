@@ -1,9 +1,9 @@
-package com.jetbrains.edu.learning.format.yaml
+package org.hyperskill.academy.learning.format.yaml
 
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.yaml.YamlTestCase
-import com.jetbrains.edu.learning.yaml.format.getChangeApplierForItem
+import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
+import org.hyperskill.academy.learning.yaml.YamlTestCase
+import org.hyperskill.academy.learning.yaml.format.getChangeApplierForItem
 import org.junit.Test
 
 class StudentChangeApplierTest : YamlTestCase() {

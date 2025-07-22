@@ -1,9 +1,9 @@
-package com.jetbrains.edu.cpp.actions.move
+package org.hyperskill.academy.cpp.actions.move
 
 import com.intellij.psi.PsiElement
 import com.jetbrains.cidr.lang.OCLanguage
-import com.jetbrains.edu.learning.actions.move.MoveHandlerTestBase
-import com.jetbrains.edu.learning.courseFormat.Course
+import org.hyperskill.academy.learning.actions.move.MoveHandlerTestBase
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 class CppMoveHandlerTest : MoveHandlerTestBase(OCLanguage.getInstance(), environment = "Catch") {

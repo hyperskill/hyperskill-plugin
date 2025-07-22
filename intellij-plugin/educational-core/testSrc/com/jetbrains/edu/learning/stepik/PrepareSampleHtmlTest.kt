@@ -1,6 +1,6 @@
-package com.jetbrains.edu.learning.stepik
+package org.hyperskill.academy.learning.stepik
 
-import com.jetbrains.edu.learning.stepik.StepikTaskBuilder.Companion.prepareSample
+import org.hyperskill.academy.learning.stepik.StepikTaskBuilder.Companion.prepareSample
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

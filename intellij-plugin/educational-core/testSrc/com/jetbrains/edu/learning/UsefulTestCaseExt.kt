@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.PluginManager
@@ -6,17 +6,17 @@ import com.intellij.lang.Language
 import com.intellij.openapi.components.ComponentManager
 import com.intellij.testFramework.UsefulTestCase
 import com.intellij.testFramework.replaceService
-import com.jetbrains.edu.learning.configuration.EduConfigurator
-import com.jetbrains.edu.learning.configuration.EducationalExtensionPoint
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMENT
 import io.mockk.spyk
+import org.hyperskill.academy.learning.configuration.EduConfigurator
+import org.hyperskill.academy.learning.configuration.EducationalExtensionPoint
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMENT
 
 // It's intentionally made as an extension property of `UsefulTestCase` to reduce the probability of incorrect usage
 // since a plugin descriptor doesn't make sense in some tests
 @Suppress("UnusedReceiverParameter")
 val UsefulTestCase.testPluginDescriptor: IdeaPluginDescriptor
-  get() = PluginManager.getPlugins().first { it.pluginId.idString.startsWith("com.jetbrains.edu") }
+  get() = PluginManager.getPlugins().first { it.pluginId.idString.startsWith("org.hyperskill.academy") }
 
 inline fun <reified T : EduConfigurator<*>> UsefulTestCase.registerConfigurator(
   language: Language,

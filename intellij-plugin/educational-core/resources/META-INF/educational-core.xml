@@ -9,206 +9,207 @@
   <resource-bundle>messages.EduCoreBundle</resource-bundle>
 
   <applicationListeners>
-    <listener class="com.jetbrains.edu.learning.EduDynamicPluginListener"
+    <listener class="org.hyperskill.academy.learning.EduDynamicPluginListener"
               topic="com.intellij.ide.plugins.DynamicPluginListener"/>
-    <listener class="com.jetbrains.edu.learning.InitializationListener" topic="com.intellij.ide.AppLifecycleListener"/>
-    <listener class="com.jetbrains.edu.learning.InitializationListener" topic="com.intellij.ide.plugins.DynamicPluginListener"/>
-    <listener class="com.jetbrains.edu.learning.RecentPreviewCourseListener"
+    <listener class="org.hyperskill.academy.learning.InitializationListener" topic="com.intellij.ide.AppLifecycleListener"/>
+    <listener class="org.hyperskill.academy.learning.InitializationListener" topic="com.intellij.ide.plugins.DynamicPluginListener"/>
+    <listener class="org.hyperskill.academy.learning.RecentPreviewCourseListener"
               topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    <listener class="com.jetbrains.edu.learning.RecentPreviewCourseListener"
+    <listener class="org.hyperskill.academy.learning.RecentPreviewCourseListener"
               topic="com.intellij.ide.AppLifecycleListener"/>
   </applicationListeners>
 
   <projectListeners>
-    <listener class="com.jetbrains.edu.learning.checker.FixModuleForRunConfigurationsListener"
+    <listener class="org.hyperskill.academy.learning.checker.FixModuleForRunConfigurationsListener"
               topic="com.intellij.execution.RunManagerListener"/>
-    <listener class="com.jetbrains.edu.learning.checker.PreventRunConfigurationsRenameListener"
+    <listener class="org.hyperskill.academy.learning.checker.PreventRunConfigurationsRenameListener"
               topic="com.intellij.execution.RunManagerListener"/>
-    <listener class="com.jetbrains.edu.learning.checker.FixModuleForRunConfigurationsListener"
+    <listener class="org.hyperskill.academy.learning.checker.FixModuleForRunConfigurationsListener"
               topic="com.intellij.openapi.roots.ModuleRootListener"/>
-    <listener class="com.jetbrains.edu.learning.yaml.YamlLoadingErrorManager$Listener"
-              topic="com.jetbrains.edu.learning.yaml.YamlListener"/>
-    <listener class="com.jetbrains.edu.learning.taskToolWindow.EduFileEditorManagerListener"
+    <listener class="org.hyperskill.academy.learning.yaml.YamlLoadingErrorManager$Listener"
+              topic="org.hyperskill.academy.learning.yaml.YamlListener"/>
+    <listener class="org.hyperskill.academy.learning.taskToolWindow.EduFileEditorManagerListener"
               topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
-    <listener class="com.jetbrains.edu.learning.taskToolWindow.EduFileEditorManagerListener"
+    <listener class="org.hyperskill.academy.learning.taskToolWindow.EduFileEditorManagerListener"
               topic="com.intellij.openapi.fileEditor.FileEditorManagerListener$Before"/>
-    <listener class="com.jetbrains.edu.learning.storage.LearningObjectsPersister"
-              topic="com.jetbrains.edu.learning.CourseSetListener"/>
+    <listener class="org.hyperskill.academy.learning.storage.LearningObjectsPersister"
+              topic="org.hyperskill.academy.learning.CourseSetListener"/>
   </projectListeners>
 
   <extensionPoints>
     <extensionPoint qualifiedName="HyperskillEducational.configurator"
-                    beanClass="com.jetbrains.edu.learning.configuration.EducationalExtensionPoint"
+                    beanClass="org.hyperskill.academy.learning.configuration.EducationalExtensionPoint"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.configuration.EduConfigurator"/>
+      <with attribute="implementationClass" implements="org.hyperskill.academy.learning.configuration.EduConfigurator"/>
     </extensionPoint>
     <extensionPoint qualifiedName="HyperskillEducational.compatibilityProvider"
-                    beanClass="com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderEP"
+                    beanClass="org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderEP"
                     dynamic="true">
-      <with attribute="implementationClass" implements="com.jetbrains.edu.learning.compatibility.CourseCompatibilityProvider"/>
+      <with attribute="implementationClass" implements="org.hyperskill.academy.learning.compatibility.CourseCompatibilityProvider"/>
     </extensionPoint>
 
     <extensionPoint qualifiedName="HyperskillEducational.remoteTaskChecker"
-                    interface="com.jetbrains.edu.learning.checker.remote.RemoteTaskChecker"
+                    interface="org.hyperskill.academy.learning.checker.remote.RemoteTaskChecker"
                     dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.checkListener"
-                    interface="com.jetbrains.edu.learning.checker.CheckListener"
+                    interface="org.hyperskill.academy.learning.checker.CheckListener"
                     dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.submissionsProvider"
-                    interface="com.jetbrains.edu.learning.submissions.provider.SubmissionsProvider"
+                    interface="org.hyperskill.academy.learning.submissions.provider.SubmissionsProvider"
                     dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.communitySubmissionsProvider"
-                    interface="com.jetbrains.edu.learning.submissions.provider.CommunitySubmissionsProvider"
+                    interface="org.hyperskill.academy.learning.submissions.provider.CommunitySubmissionsProvider"
                     dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.optionsProvider"
                     beanClass="com.intellij.openapi.options.ConfigurableEP"
                     dynamic="true">
-      <with attribute="instance" implements="com.jetbrains.edu.learning.settings.OptionsProvider"/>
+      <with attribute="instance" implements="org.hyperskill.academy.learning.settings.OptionsProvider"/>
     </extensionPoint>
 
     <extensionPoint qualifiedName="HyperskillEducational.coursesPlatformProviderFactory"
-                    interface="com.jetbrains.edu.learning.newproject.ui.CoursesPlatformProviderFactory"
+                    interface="org.hyperskill.academy.learning.newproject.ui.CoursesPlatformProviderFactory"
                     dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.pathMacroProvider"
-                    interface="com.jetbrains.edu.learning.courseGeneration.macro.EduMacroProvider"
+                    interface="org.hyperskill.academy.learning.courseGeneration.macro.EduMacroProvider"
                     dynamic="true"/>
 
     <extensionPoint qualifiedName="HyperskillEducational.postToGithub"
-                    interface="com.jetbrains.edu.learning.github.PostToGithubActionProvider"
+                    interface="org.hyperskill.academy.learning.github.PostToGithubActionProvider"
                     dynamic="true"/>
 
     <extensionPoint qualifiedName="HyperskillEducational.taskNavigationExtension"
-                    interface="com.jetbrains.edu.learning.navigation.TaskNavigationExtension"
+                    interface="org.hyperskill.academy.learning.navigation.TaskNavigationExtension"
                     dynamic="true"/>
 
     <extensionPoint qualifiedName="HyperskillEducational.revertTaskExtension"
-                    interface="com.jetbrains.edu.learning.actions.RevertTaskAction$RevertTaskExtension"
+                    interface="org.hyperskill.academy.learning.actions.RevertTaskAction$RevertTaskExtension"
                     dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.remoteEnvHelper"
-                    interface="com.jetbrains.edu.learning.RemoteEnvHelper"
+                    interface="org.hyperskill.academy.learning.RemoteEnvHelper"
                     dynamic="true"/>
 
     <extensionPoint qualifiedName="HyperskillEducational.courseViewPaneCustomization"
-                    interface="com.jetbrains.edu.learning.projectView.CourseViewPaneCustomization"
+                    interface="org.hyperskill.academy.learning.projectView.CourseViewPaneCustomization"
                     dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.studyItemRefactoringHandler"
-                    interface="com.jetbrains.edu.coursecreator.handlers.StudyItemRefactoringHandler"
+                    interface="org.hyperskill.academy.coursecreator.handlers.StudyItemRefactoringHandler"
                     dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.hyperskillCourseCreator"
-                    interface="com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillCourseCreator"
+                    interface="org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillCourseCreator"
                     dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.courseMetadataProcessor"
-                    interface="com.jetbrains.edu.learning.newproject.CourseMetadataProcessor"
+                    interface="org.hyperskill.academy.learning.newproject.CourseMetadataProcessor"
                     dynamic="true"/>
   </extensionPoints>
 
   <actions>
-    <action id="Educational.Check" class="com.jetbrains.edu.learning.actions.CheckAction"/>
-    <action id="Educational.Run"
-            class="com.jetbrains.edu.learning.actions.RunTaskAction"
+    <action id="HyperskillEducational.Check" class="org.hyperskill.academy.learning.actions.CheckAction"/>
+    <action id="HyperskillEducational.Run"
+            class="org.hyperskill.academy.learning.actions.RunTaskAction"
             icon="AllIcons.Actions.Execute"/>
-    <action id="Educational.AssignRunConfigurationToTask"
-            class="com.jetbrains.edu.learning.actions.AssignRunConfigurationToTask">
+    <action id="HyperskillEducational.AssignRunConfigurationToTask"
+            class="org.hyperskill.academy.learning.actions.AssignRunConfigurationToTask">
       <add-to-group group-id="RunConfiguration.Group" anchor="before" relative-to-action="DeleteRunConfiguration"/> <!-- top right -->
     </action>
-    <action id="Educational.Retry" class="com.jetbrains.edu.learning.actions.RetryAction"/>
-    <action id="Educational.PreviousTask"
-            class="com.jetbrains.edu.learning.actions.PreviousTaskAction"
+    <action id="HyperskillEducational.Retry" class="org.hyperskill.academy.learning.actions.RetryAction"/>
+    <action id="HyperskillEducational.PreviousTask"
+            class="org.hyperskill.academy.learning.actions.PreviousTaskAction"
             icon="AllIcons.Actions.Back"/>
-    <action id="Educational.NextTask"
-            class="com.jetbrains.edu.learning.actions.NextTaskAction"
+    <action id="HyperskillEducational.NextTask"
+            class="org.hyperskill.academy.learning.actions.NextTaskAction"
             icon="AllIcons.Actions.Forward"/>
-    <action id="Educational.RefreshTask"
-            class="com.jetbrains.edu.learning.actions.RevertTaskAction"
-            icon="com.jetbrains.edu.EducationalCoreIcons.Actions.ResetTask"/>
-    <action id="Educational.LeaveFeedbackAction"
-            class="com.jetbrains.edu.learning.actions.LeaveFeedbackAction"
-            icon="com.jetbrains.edu.EducationalCoreIcons.Actions.CommentTask"/>
-    <action id="Educational.OpenTaskOnSiteAction" class="com.jetbrains.edu.learning.actions.OpenTaskOnSiteAction"/>
-    <action id="Educational.CompareWithAnswer"
-            class="com.jetbrains.edu.learning.actions.CompareWithAnswerAction"
+    <action id="HyperskillEducational.RefreshTask"
+            class="org.hyperskill.academy.learning.actions.RevertTaskAction"
+            icon="org.hyperskill.academy.EducationalCoreIcons.Actions.ResetTask"/>
+    <action id="HyperskillEducational.LeaveFeedbackAction"
+            class="org.hyperskill.academy.learning.actions.LeaveFeedbackAction"
+            icon="org.hyperskill.academy.EducationalCoreIcons.Actions.CommentTask"/>
+    <action id="HyperskillEducational.OpenTaskOnSiteAction" class="org.hyperskill.academy.learning.actions.OpenTaskOnSiteAction"/>
+    <action id="HyperskillEducational.CompareWithAnswer"
+            class="org.hyperskill.academy.learning.actions.CompareWithAnswerAction"
             icon="AllIcons.Actions.Diff"/>
-    <action id="Educational.SwitchTaskDescriptionPanel" class="com.jetbrains.edu.learning.actions.SwitchTaskPanelAction">
+    <action id="HyperskillEducational.SwitchTaskDescriptionPanel" class="org.hyperskill.academy.learning.actions.SwitchTaskPanelAction">
     </action>
 
     <!-- IMPORTANT: don't change the action id, it's used in monorepo-->
-    <action id="Educational.BrowseCourses" class="com.jetbrains.edu.learning.newproject.BrowseCoursesAction"/>
+    <action id="HyperskillEducational.BrowseCourses" class="org.hyperskill.academy.learning.newproject.BrowseCoursesAction"/>
 
-    <action id="Educational.ToggleRestServices"
-            class="com.jetbrains.edu.learning.actions.ToggleRestServicesAction"
+    <action id="HyperskillEducational.ToggleRestServices"
+            class="org.hyperskill.academy.learning.actions.ToggleRestServicesAction"
             internal="true"/>
 
-    <action id="LessonCard-left" class="com.intellij.openapi.actionSystem.EmptyAction" use-shortcut-of="EditorLeft"/>
-    <action id="LessonCard-right" class="com.intellij.openapi.actionSystem.EmptyAction" use-shortcut-of="EditorRight"/>
+    <action id="HyperskillEducational.LessonCard-left" class="com.intellij.openapi.actionSystem.EmptyAction" use-shortcut-of="EditorLeft"/>
+    <action id="HyperskillEducational.LessonCard-right" class="com.intellij.openapi.actionSystem.EmptyAction"
+            use-shortcut-of="EditorRight"/>
 
-    <group id="Educational.LearnAndTeachFileMenu"
-           class="com.jetbrains.edu.learning.newproject.LearnAndTeachFileMenuGroup"
+    <group id="HyperskillEducational.LearnAndTeachFileMenu"
+           class="org.hyperskill.academy.learning.newproject.LearnAndTeachFileMenuGroup"
            popup="true"
-           icon="com.jetbrains.edu.EducationalCoreIcons.Actions.EduCourse">
-      <reference ref="Educational.BrowseCourses"/>
+           icon="org.hyperskill.academy.EducationalCoreIcons.Actions.EduCourse">
+      <reference ref="HyperskillEducational.BrowseCourses"/>
       <add-to-group group-id="FileOpenGroup" relative-to-action="OpenFile" anchor="after"/>
     </group>
-    <action id="Educational.Student.ApplyCode"
-            class="com.jetbrains.edu.learning.actions.ApplyCodeAction"
-            icon="com.jetbrains.edu.EducationalCoreIcons.Actions.ApplyCode">
+    <action id="HyperskillEducational.Student.ApplyCode"
+            class="org.hyperskill.academy.learning.actions.ApplyCodeAction"
+            icon="org.hyperskill.academy.EducationalCoreIcons.Actions.ApplyCode">
       <add-to-group group-id="Diff.ViewerToolbar"/>
       <keyboard-shortcut
           keymap="$default"
           first-keystroke="control alt shift A"
       />
     </action>
-    <action id="Educational.Educator.OpenEducatorHelp"
-            class="com.jetbrains.edu.coursecreator.ui.CCOpenEducatorHelp"/>
-    <group id="Educational.CourseView.SecondaryActions">
-      <action id="Educational.HideSolvedLessons"
-              class="com.jetbrains.edu.learning.projectView.CourseViewPane$HideSolvedLessonsAction"/>
+    <action id="HyperskillEducational.Educator.OpenEducatorHelp"
+            class="org.hyperskill.academy.coursecreator.ui.CCOpenEducatorHelp"/>
+    <group id="HyperskillEducational.CourseView.SecondaryActions">
+      <action id="HyperskillEducational.HideSolvedLessons"
+              class="org.hyperskill.academy.learning.projectView.CourseViewPane$HideSolvedLessonsAction"/>
     </group>
 
     <!-- Actions located in the right corner of the Course View header -->
-    <group id="Educational.CourseView.Header.Right">
-      <reference ref="Educational.Educator.OpenEducatorHelp"/>
+    <group id="HyperskillEducational.CourseView.Header.Right">
+      <reference ref="HyperskillEducational.Educator.OpenEducatorHelp"/>
     </group>
 
-    <group id="Educational.CheckPanel.Left">
-      <reference ref="Educational.Run"/>
+    <group id="HyperskillEducational.CheckPanel.Left">
+      <reference ref="HyperskillEducational.Run"/>
     </group>
 
-    <group id="Educational.CheckPanel.Right">
-      <reference ref="Educational.RefreshTask"/>
-      <reference ref="Educational.LeaveFeedbackAction"/>
+    <group id="HyperskillEducational.CheckPanel.Right">
+      <reference ref="HyperskillEducational.RefreshTask"/>
+      <reference ref="HyperskillEducational.LeaveFeedbackAction"/>
     </group>
 
     <!-- Actions located in the right corner of Task tool window -->
-    <group id="Educational.TaskToolWindowView.TitleActions">
-      <reference ref="Educational.PreviousTask"/>
-      <reference ref="Educational.NextTask"/>
+    <group id="HyperskillEducational.TaskToolWindowView.TitleActions">
+      <reference ref="HyperskillEducational.PreviousTask"/>
+      <reference ref="HyperskillEducational.NextTask"/>
     </group>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <applicationService serviceInterface="com.jetbrains.edu.learning.EduBrowser"
-                        serviceImplementation="com.jetbrains.edu.learning.EduBrowser"
-                        testServiceImplementation="com.jetbrains.edu.learning.MockEduBrowser"/>
+    <applicationService serviceInterface="org.hyperskill.academy.learning.EduBrowser"
+                        serviceImplementation="org.hyperskill.academy.learning.EduBrowser"
+                        testServiceImplementation="org.hyperskill.academy.learning.MockEduBrowser"/>
 
-    <applicationService serviceImplementation="com.jetbrains.edu.coursecreator.settings.CCSettings"/>
+    <applicationService serviceImplementation="org.hyperskill.academy.coursecreator.settings.CCSettings"/>
 
-    <applicationService serviceInterface="com.jetbrains.edu.learning.courseGeneration.ProjectOpener"
-                        serviceImplementation="com.jetbrains.edu.learning.courseGeneration.ProjectOpenerImpl"
-                        testServiceImplementation="com.jetbrains.edu.learning.MockProjectOpener"/>
+    <applicationService serviceInterface="org.hyperskill.academy.learning.courseGeneration.ProjectOpener"
+                        serviceImplementation="org.hyperskill.academy.learning.courseGeneration.ProjectOpenerImpl"
+                        testServiceImplementation="org.hyperskill.academy.learning.MockProjectOpener"/>
 
-    <projectService serviceInterface="com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView"
-                    serviceImplementation="com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowViewImpl"
-                    testServiceImplementation="com.jetbrains.edu.learning.taskToolWindow.ui.MockTaskToolWindowView"/>
-    <projectService serviceInterface="com.jetbrains.edu.learning.checker.details.CheckDetailsView"
-                    serviceImplementation="com.jetbrains.edu.learning.checker.details.CheckDetailsViewImpl"
-                    headlessImplementation="com.jetbrains.edu.learning.checker.details.MockCheckDetailsView"
-                    testServiceImplementation="com.jetbrains.edu.learning.checker.details.MockCheckDetailsView"/>
-    <projectService serviceInterface="com.jetbrains.edu.learning.framework.FrameworkLessonManager"
-                    serviceImplementation="com.jetbrains.edu.learning.framework.impl.FrameworkLessonManagerImpl"/>
+    <projectService serviceInterface="org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView"
+                    serviceImplementation="org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowViewImpl"
+                    testServiceImplementation="org.hyperskill.academy.learning.taskToolWindow.ui.MockTaskToolWindowView"/>
+    <projectService serviceInterface="org.hyperskill.academy.learning.checker.details.CheckDetailsView"
+                    serviceImplementation="org.hyperskill.academy.learning.checker.details.CheckDetailsViewImpl"
+                    headlessImplementation="org.hyperskill.academy.learning.checker.details.MockCheckDetailsView"
+                    testServiceImplementation="org.hyperskill.academy.learning.checker.details.MockCheckDetailsView"/>
+    <projectService serviceInterface="org.hyperskill.academy.learning.framework.FrameworkLessonManager"
+                    serviceImplementation="org.hyperskill.academy.learning.framework.impl.FrameworkLessonManagerImpl"/>
 
     <!-- Courseignore lang -->
     <fileType language="CourseIgnore" fileNames=".courseignore" fieldName="INSTANCE" name="CourseIgnore file"
-              implementationClass="com.jetbrains.edu.coursecreator.courseignore.CourseIgnoreFileType"/>
+              implementationClass="org.hyperskill.academy.coursecreator.courseignore.CourseIgnoreFileType"/>
     <lang.parserDefinition language="CourseIgnore"
                            implementationClass="com.intellij.openapi.vcs.changes.ignore.lang.IgnoreParserDefinition"/>
     <codeInsight.lineMarkerProvider language="CourseIgnore"
@@ -217,13 +218,13 @@
     <lang.commenter language="CourseIgnore" implementationClass="com.intellij.openapi.vcs.changes.ignore.lang.IgnoreCommenter"/>
     <!--END of Courseignore lang-->
 
-    <postStartupActivity implementation="com.jetbrains.edu.learning.EduProjectActivity"/>
+    <postStartupActivity implementation="org.hyperskill.academy.learning.EduProjectActivity"/>
 
     <registryKey key="edu.task.description.update.delay"
                  description="The delay in ms before loading page by Task Description view. \nRequires project reopening"
                  defaultValue="300"/>
 
-    <applicationConfigurable groupId="tools" instance="com.jetbrains.edu.learning.settings.EduConfigurable"
+    <applicationConfigurable groupId="tools" instance="org.hyperskill.academy.learning.settings.EduConfigurable"
                              id="Educational"
                              key="settings.education" bundle="messages.EduCoreBundle"/>
 
@@ -240,43 +241,43 @@
                  defaultValue="[SQLite*|YAML]"/>
 
     <toolWindow id="Task" anchor="right" order="first"
-                factoryClass="com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowFactory"
-                icon="com.jetbrains.edu.EducationalCoreIcons.TaskToolWindow.CourseToolWindow"/>
-    <toolWindow id="Educational.CheckDetails" anchor="bottom" canCloseContents="true" doNotActivateOnStart="true"
-                factoryClass="com.jetbrains.edu.learning.checker.details.CheckDetailsToolWindowFactory"
-                icon="com.jetbrains.edu.EducationalCoreIcons.CheckPanel.CheckDetailsToolWindow"/>
+                factoryClass="org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowFactory"
+                icon="org.hyperskill.academy.EducationalCoreIcons.TaskToolWindow.CourseToolWindow"/>
+    <toolWindow id="HyperskillEducational.CheckDetails" anchor="bottom" canCloseContents="true" doNotActivateOnStart="true"
+                factoryClass="org.hyperskill.academy.learning.checker.details.CheckDetailsToolWindowFactory"
+                icon="org.hyperskill.academy.EducationalCoreIcons.CheckPanel.CheckDetailsToolWindow"/>
 
     <!-- placeholders -->
-    <editorFactoryListener implementation="com.jetbrains.edu.learning.editor.EduEditorFactoryListener"/>
+    <editorFactoryListener implementation="org.hyperskill.academy.learning.editor.EduEditorFactoryListener"/>
     <additionalTextAttributes scheme="Default" file="colorScheme/EduDefault.xml"/>
     <additionalTextAttributes scheme="Darcula" file="colorScheme/EduDarcula.xml"/>
     <registryKey key="edu.placeholder.highlighting.pass" defaultValue="false" restartRequired="true"
                  description="Render answer placeholders in Hyperskill Academy courses using highlighting API"/>
 
     <!-- should be last, otherwise project tree will be changed with GradleTreeStructureProvider -->
-    <highlightErrorFilter implementation="com.jetbrains.edu.learning.editor.EduHighlightErrorFilter"/>
+    <highlightErrorFilter implementation="org.hyperskill.academy.learning.editor.EduHighlightErrorFilter"/>
 
     <!-- Rename -->
-    <renamePsiElementProcessor implementation="com.jetbrains.edu.learning.handlers.rename.SectionRenameProcessor" order="first"/>
-    <renamePsiElementProcessor implementation="com.jetbrains.edu.learning.handlers.rename.LessonRenameProcessor" order="first"/>
-    <renamePsiElementProcessor implementation="com.jetbrains.edu.learning.handlers.rename.TaskRenameProcessor" order="first"/>
-    <renamePsiElementProcessor implementation="com.jetbrains.edu.learning.handlers.rename.EduTaskFileRenameProcessor" order="first"/>
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.learning.handlers.rename.SectionRenameProcessor" order="first"/>
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.learning.handlers.rename.LessonRenameProcessor" order="first"/>
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.learning.handlers.rename.TaskRenameProcessor" order="first"/>
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.learning.handlers.rename.EduTaskFileRenameProcessor" order="first"/>
 
     <!-- Move -->
-    <refactoring.moveHandler implementation="com.jetbrains.edu.learning.handlers.EduMoveDelegate" order="first"/>
+    <refactoring.moveHandler implementation="org.hyperskill.academy.learning.handlers.EduMoveDelegate" order="first"/>
 
     <!-- Notifications   -->
-    <editorNotificationProvider implementation="com.jetbrains.edu.learning.stepik.UpdateCourseNotificationProvider"/>
-    <editorNotificationProvider implementation="com.jetbrains.edu.learning.editor.EduTaskFileNotificationProvider"/>
-    <editorNotificationProvider implementation="com.jetbrains.edu.learning.yaml.YamlConfigNotificationProvider"/>
+    <editorNotificationProvider implementation="org.hyperskill.academy.learning.stepik.UpdateCourseNotificationProvider"/>
+    <editorNotificationProvider implementation="org.hyperskill.academy.learning.editor.EduTaskFileNotificationProvider"/>
+    <editorNotificationProvider implementation="org.hyperskill.academy.learning.yaml.YamlConfigNotificationProvider"/>
 
-    <!-- com.jetbrains.edu.learning.notification.EduNotificationManager.JETBRAINS_ACADEMY_GROUP_ID -->
+    <!-- org.hyperskill.academy.learning.notification.EduNotificationManager.JETBRAINS_ACADEMY_GROUP_ID -->
     <notificationGroup id="Hyperskill Academy" displayType="BALLOON"
                        bundle="messages.EduCoreBundle" key="notification.group.edu.tools"/>
 
     <!--suppress PluginXmlValidity -->
-    <applicationService serviceImplementation="com.jetbrains.edu.learning.EduSettings"/>
-    <httpRequestHandler implementation="com.jetbrains.edu.learning.taskToolWindow.ui.EduToolsResourcesRequestHandler"/>
+    <applicationService serviceImplementation="org.hyperskill.academy.learning.EduSettings"/>
+    <httpRequestHandler implementation="org.hyperskill.academy.learning.taskToolWindow.ui.EduToolsResourcesRequestHandler"/>
 
     <registryKey key="edu.course.update.check.interval"
                  description="Sets is course up to date check interval in seconds"
@@ -284,34 +285,34 @@
 
     <!--for educators-->
     <xml.xmlSuppressionProvider
-        implementation="com.jetbrains.edu.coursecreator.taskDescription.ShortcutInTaskDescriptionSuppressionProvider"/>
+        implementation="org.hyperskill.academy.coursecreator.taskDescription.ShortcutInTaskDescriptionSuppressionProvider"/>
 
     <!-- Rename -->
-    <renamePsiElementProcessor implementation="com.jetbrains.edu.coursecreator.handlers.rename.CCDescriptionFileRenameProcessor"
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.coursecreator.handlers.rename.CCDescriptionFileRenameProcessor"
                                order="first"/>
 
     <!-- Move -->
-    <refactoring.moveHandler implementation="com.jetbrains.edu.coursecreator.handlers.move.CCSectionMoveHandlerDelegate"
+    <refactoring.moveHandler implementation="org.hyperskill.academy.coursecreator.handlers.move.CCSectionMoveHandlerDelegate"
                              order="first"/>
-    <refactoring.moveHandler implementation="com.jetbrains.edu.coursecreator.handlers.move.CCLessonMoveHandlerDelegate"
+    <refactoring.moveHandler implementation="org.hyperskill.academy.coursecreator.handlers.move.CCLessonMoveHandlerDelegate"
                              order="first"/>
-    <refactoring.moveHandler implementation="com.jetbrains.edu.coursecreator.handlers.move.CCTaskMoveHandlerDelegate"
+    <refactoring.moveHandler implementation="org.hyperskill.academy.coursecreator.handlers.move.CCTaskMoveHandlerDelegate"
                              order="first"/>
 
-    <highlightErrorFilter implementation="com.jetbrains.edu.coursecreator.CCHighlightErrorFilter"/>
+    <highlightErrorFilter implementation="org.hyperskill.academy.coursecreator.CCHighlightErrorFilter"/>
 
-    <projectViewPane implementation="com.jetbrains.edu.learning.projectView.CourseViewPane"/>
+    <projectViewPane implementation="org.hyperskill.academy.learning.projectView.CourseViewPane"/>
 
     <experimentalFeature id="edu.course.creator.split.editor" percentOfUsers="100" internalFeature="true">
       <description>Enables previous task view for guided projects</description>
     </experimentalFeature>
     <defaultLiveTemplates file="liveTemplates/hint.xml"/>
-    <editorNotificationProvider implementation="com.jetbrains.edu.learning.yaml.GeneratedRemoteInfoNotificationProvider"/>
+    <editorNotificationProvider implementation="org.hyperskill.academy.learning.yaml.GeneratedRemoteInfoNotificationProvider"/>
     <registryKey key="edu.course.creator.solve.all"
                  description="Enables `Solve All Tasks Before` action"
                  defaultValue="false"/>
 
-    <writingAccessProvider implementation="com.jetbrains.edu.learning.editor.EditableFileProvider"/>
+    <writingAccessProvider implementation="org.hyperskill.academy.learning.editor.EditableFileProvider"/>
 
     <experimentalFeature id="edu.course.sql" percentOfUsers="100" internalFeature="true">
       <description>Enables support for SQL courses</description>
@@ -330,7 +331,8 @@
     <iconMapper mappingFile="EduToolsIconMappings.json"/>
     <themeMetadataProvider path="JetBrainsAcademyPlugin.themeMetadata.json"/>
 
-    <coursesStorageProvider implementation="com.jetbrains.edu.learning.newproject.coursesStorage.JetBrainsAcademyCoursesStorageProvider"/>
+    <coursesStorageProvider
+        implementation="org.hyperskill.academy.learning.newproject.coursesStorage.JetBrainsAcademyCoursesStorageProvider"/>
 
     <registryKey key="edu.network.request.assertion.policy"
                  description="Assertion policy for network requests from EDT in Hyperskill Academy plugin"
@@ -339,56 +341,56 @@
 
   <extensions defaultExtensionNs="HyperskillEducational">
     <!-- Only for development purposes -->
-    <configurator language="TEXT" implementationClass="com.jetbrains.edu.learning.configuration.PlainTextConfigurator"/>
+    <configurator language="TEXT" implementationClass="org.hyperskill.academy.learning.configuration.PlainTextConfigurator"/>
     <configurator language="TEXT" courseType="Hyperskill"
-                  implementationClass="com.jetbrains.edu.learning.stepik.hyperskill.PlainTextHyperskillConfigurator"/>
+                  implementationClass="org.hyperskill.academy.learning.stepik.hyperskill.PlainTextHyperskillConfigurator"/>
 
-    <checkListener implementation="com.jetbrains.edu.coursecreator.validation.ValidationCheckListener"/>
+    <checkListener implementation="org.hyperskill.academy.coursecreator.validation.ValidationCheckListener"/>
     <coursesPlatformProviderFactory id="JetBrainsAcademy" order="first"
-                                    implementation="com.jetbrains.edu.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProviderFactory"/>
+                                    implementation="org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProviderFactory"/>
 
     <!-- Course compatibility providers   -->
     <compatibilityProvider language="JAVA"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.JCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.JCourseCompatibilityProvider"/>
     <compatibilityProvider language="kotlin"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.KtCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.KtCourseCompatibilityProvider"/>
     <compatibilityProvider language="Scala"
                            environment="Gradle"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.ScalaGradleCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.ScalaGradleCourseCompatibilityProvider"/>
     <!--need to register without environment to work with Hyperskill courses-->
     <compatibilityProvider language="Scala"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.ScalaGradleCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.ScalaGradleCourseCompatibilityProvider"/>
     <compatibilityProvider language="Scala"
                            environment="sbt"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.ScalaSbtCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.ScalaSbtCourseCompatibilityProvider"/>
     <compatibilityProvider language="kotlin"
                            environment="Android"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.AndroidCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.AndroidCourseCompatibilityProvider"/>
     <compatibilityProvider language="Python"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.PyCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.PyCourseCompatibilityProvider"/>
     <compatibilityProvider language="Python"
                            environment="unittest"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.PyCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.PyCourseCompatibilityProvider"/>
     <compatibilityProvider language="JavaScript"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.JsCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.JsCourseCompatibilityProvider"/>
     <compatibilityProvider language="Rust"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.RsCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.RsCourseCompatibilityProvider"/>
     <compatibilityProvider language="go"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.GoCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.GoCourseCompatibilityProvider"/>
     <compatibilityProvider language="PHP"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.PhpCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.PhpCourseCompatibilityProvider"/>
     <compatibilityProvider language="SQL"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.SqlGradleCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.SqlGradleCourseCompatibilityProvider"/>
     <compatibilityProvider language="Shell Script"
-                           implementationClass="com.jetbrains.edu.learning.compatibility.ShellCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.learning.compatibility.ShellCourseCompatibilityProvider"/>
 
     <!--educator-->
-    <optionsProvider instance="com.jetbrains.edu.coursecreator.settings.CCOptions"/>
+    <optionsProvider instance="org.hyperskill.academy.coursecreator.settings.CCOptions"/>
 
-    <pathMacroProvider implementation="com.jetbrains.edu.learning.checker.TaskRunConfigurationPathMacroProvider"/>
+    <pathMacroProvider implementation="org.hyperskill.academy.learning.checker.TaskRunConfigurationPathMacroProvider"/>
 
-    <courseMetadataProcessor implementation="com.jetbrains.edu.learning.statistics.metadata.CoursePageExperimentMetadataProcessor"/>
-    <courseMetadataProcessor implementation="com.jetbrains.edu.learning.statistics.metadata.EntryPointMetadataProcessor"/>
+    <courseMetadataProcessor implementation="org.hyperskill.academy.learning.statistics.metadata.CoursePageExperimentMetadataProcessor"/>
+    <courseMetadataProcessor implementation="org.hyperskill.academy.learning.statistics.metadata.EntryPointMetadataProcessor"/>
   </extensions>
 
   <xi:include href="/META-INF/Hyperskill.xml" xpointer="xpointer(/idea-plugin/*)"/>

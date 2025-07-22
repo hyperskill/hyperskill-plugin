@@ -1,9 +1,9 @@
-package com.jetbrains.edu.learning.taskToolWindow.links
+package org.hyperskill.academy.learning.taskToolWindow.links
 
 import com.intellij.testFramework.PlatformTestUtil
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseView.CourseViewHeavyTestBase
-import com.jetbrains.edu.learning.projectView.CourseViewPane
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseView.CourseViewHeavyTestBase
+import org.hyperskill.academy.learning.projectView.CourseViewPane
 import org.junit.Test
 
 class InCourseLinksCourseViewTest : CourseViewHeavyTestBase() {

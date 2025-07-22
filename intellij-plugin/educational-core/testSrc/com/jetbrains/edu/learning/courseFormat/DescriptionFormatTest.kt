@@ -1,7 +1,7 @@
-package com.jetbrains.edu.learning.courseFormat
+package org.hyperskill.academy.learning.courseFormat
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.EduUtilsKt
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.EduUtilsKt
 import org.junit.Test
 
 class DescriptionFormatTest : EduTestCase() {

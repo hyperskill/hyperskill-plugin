@@ -1,8 +1,8 @@
-package com.jetbrains.edu.java.courseView
+package org.hyperskill.academy.java.courseView
 
 import com.intellij.ide.projectView.impl.ProjectViewState
 import com.intellij.lang.java.JavaLanguage
-import com.jetbrains.edu.learning.courseView.CourseViewTestBase
+import org.hyperskill.academy.learning.courseView.CourseViewTestBase
 import org.junit.Test
 
 class JNodesTests : CourseViewTestBase() {

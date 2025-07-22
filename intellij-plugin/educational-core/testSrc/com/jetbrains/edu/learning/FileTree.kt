@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.vfs.VfsUtil

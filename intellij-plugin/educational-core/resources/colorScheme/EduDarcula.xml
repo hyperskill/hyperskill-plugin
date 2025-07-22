@@ -1,24 +1,24 @@
 <?xml version='1.0'?>
 <list>
-  <option name="com.jetbrains.edu.PLACEHOLDER_UNCHECKED">
+  <option name="org.hyperskill.academy.PLACEHOLDER_UNCHECKED">
     <value>
       <option name="EFFECT_COLOR" value="444D58"/>
       <option name="EFFECT_TYPE" value="0"/>
     </value>
   </option>
-  <option name="com.jetbrains.edu.PLACEHOLDER_UNCHECKED_INVISIBLE">
+  <option name="org.hyperskill.academy.PLACEHOLDER_UNCHECKED_INVISIBLE">
     <value>
       <option name="EFFECT_COLOR" value="444D58"/>
       <option name="EFFECT_TYPE" value="0"/>
     </value>
   </option>
-  <option name="com.jetbrains.edu.PLACEHOLDER_SOLVED">
+  <option name="org.hyperskill.academy.PLACEHOLDER_SOLVED">
     <value>
       <option name="EFFECT_COLOR" value="2D5734"/>
       <option name="EFFECT_TYPE" value="0"/>
     </value>
   </option>
-  <option name="com.jetbrains.edu.PLACEHOLDER_FAILED">
+  <option name="org.hyperskill.academy.PLACEHOLDER_FAILED">
     <value>
       <option name="EFFECT_COLOR" value="6F3D3D"/>
       <option name="EFFECT_TYPE" value="0"/>

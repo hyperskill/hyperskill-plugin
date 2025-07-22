@@ -1,11 +1,11 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.update
+package org.hyperskill.academy.learning.stepik.hyperskill.update
 
 import com.intellij.util.Time
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.stepik.hyperskill.init
-import com.jetbrains.edu.learning.update.UpdatesAvailableTestBase
 import kotlinx.coroutines.runBlocking
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.stepik.hyperskill.init
+import org.hyperskill.academy.learning.update.UpdatesAvailableTestBase
 import org.junit.Test
 import java.util.*
 

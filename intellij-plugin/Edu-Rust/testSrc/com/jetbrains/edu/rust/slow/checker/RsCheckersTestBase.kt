@@ -1,8 +1,8 @@
-package com.jetbrains.edu.rust.slow.checker
+package org.hyperskill.academy.rust.slow.checker
 
-import com.jetbrains.edu.learning.checker.CheckersTestBase
-import com.jetbrains.edu.learning.checker.EduCheckerFixture
-import com.jetbrains.edu.rust.RsProjectSettings
+import org.hyperskill.academy.learning.checker.CheckersTestBase
+import org.hyperskill.academy.learning.checker.EduCheckerFixture
+import org.hyperskill.academy.rust.RsProjectSettings
 
 // This test runs only when Rust toolchain is found.
 abstract class RsCheckersTestBase : CheckersTestBase<RsProjectSettings>() {

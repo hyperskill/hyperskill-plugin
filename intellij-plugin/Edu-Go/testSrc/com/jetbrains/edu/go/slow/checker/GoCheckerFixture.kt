@@ -1,11 +1,11 @@
-package com.jetbrains.edu.go.slow.checker
+package org.hyperskill.academy.go.slow.checker
 
 import com.goide.sdk.GoSdk
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.registry.Registry
-import com.jetbrains.edu.go.GoProjectSettings
-import com.jetbrains.edu.go.checker.GoEduTaskChecker
-import com.jetbrains.edu.learning.checker.EduCheckerFixture
+import org.hyperskill.academy.go.GoProjectSettings
+import org.hyperskill.academy.go.checker.GoEduTaskChecker
+import org.hyperskill.academy.learning.checker.EduCheckerFixture
 import java.nio.file.Paths
 
 /**

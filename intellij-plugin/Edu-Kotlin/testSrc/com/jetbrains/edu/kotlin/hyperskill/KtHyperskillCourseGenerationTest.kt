@@ -1,13 +1,13 @@
-package com.jetbrains.edu.kotlin.hyperskill
+package org.hyperskill.academy.kotlin.hyperskill
 
 import com.intellij.util.ThrowableRunnable
-import com.jetbrains.edu.jvm.gradle.GradleCourseBuilderBase.Companion.HYPERSKILL_SETTINGS_GRADLE_TEMPLATE_NAME
-import com.jetbrains.edu.jvm.gradle.GradleCourseBuilderBase.Companion.getKotlinTemplateVariables
-import com.jetbrains.edu.kotlin.hyperskill.KtHyperskillConfigurator.Companion.KOTLIN_HYPERSKILL_BUILD_GRADLE_TEMPLATE_NAME
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.learning.document
+import org.hyperskill.academy.jvm.gradle.GradleCourseBuilderBase.Companion.HYPERSKILL_SETTINGS_GRADLE_TEMPLATE_NAME
+import org.hyperskill.academy.jvm.gradle.GradleCourseBuilderBase.Companion.getKotlinTemplateVariables
+import org.hyperskill.academy.kotlin.hyperskill.KtHyperskillConfigurator.Companion.KOTLIN_HYPERSKILL_BUILD_GRADLE_TEMPLATE_NAME
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
+import org.hyperskill.academy.learning.document
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.plugins.gradle.util.GradleConstants.DEFAULT_SCRIPT_NAME
 import org.jetbrains.plugins.gradle.util.GradleConstants.SETTINGS_FILE_NAME

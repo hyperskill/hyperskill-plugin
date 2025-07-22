@@ -1,14 +1,14 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
-import com.jetbrains.edu.learning.checker.CheckUtils.CONGRATULATIONS
-import com.jetbrains.edu.learning.checker.TestsOutputParser
-import com.jetbrains.edu.learning.checker.TestsOutputParser.Companion.CONGRATS_MESSAGE
-import com.jetbrains.edu.learning.checker.TestsOutputParser.Companion.STUDY_PREFIX
-import com.jetbrains.edu.learning.checker.TestsOutputParser.Companion.TEST_FAILED
-import com.jetbrains.edu.learning.checker.TestsOutputParser.Companion.TEST_OK
-import com.jetbrains.edu.learning.courseFormat.CheckResult
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.checker.CheckUtils.CONGRATULATIONS
+import org.hyperskill.academy.learning.checker.TestsOutputParser
+import org.hyperskill.academy.learning.checker.TestsOutputParser.Companion.CONGRATS_MESSAGE
+import org.hyperskill.academy.learning.checker.TestsOutputParser.Companion.STUDY_PREFIX
+import org.hyperskill.academy.learning.checker.TestsOutputParser.Companion.TEST_FAILED
+import org.hyperskill.academy.learning.checker.TestsOutputParser.Companion.TEST_OK
+import org.hyperskill.academy.learning.courseFormat.CheckResult
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

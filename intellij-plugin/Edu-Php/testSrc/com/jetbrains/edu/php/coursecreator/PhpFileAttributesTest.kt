@@ -1,10 +1,10 @@
-package com.jetbrains.edu.php.coursecreator
+package org.hyperskill.academy.php.coursecreator
 
-import com.jetbrains.edu.coursecreator.archive.ExpectedCourseFileAttributes
-import com.jetbrains.edu.coursecreator.archive.FileAttributesTest
-import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
-import com.jetbrains.edu.learning.configuration.EduConfigurator
-import com.jetbrains.edu.php.PhpConfigurator
+import org.hyperskill.academy.coursecreator.archive.ExpectedCourseFileAttributes
+import org.hyperskill.academy.coursecreator.archive.FileAttributesTest
+import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
+import org.hyperskill.academy.learning.configuration.EduConfigurator
+import org.hyperskill.academy.php.PhpConfigurator
 import org.junit.runners.Parameterized.Parameters
 
 class PhpFileAttributesTest(

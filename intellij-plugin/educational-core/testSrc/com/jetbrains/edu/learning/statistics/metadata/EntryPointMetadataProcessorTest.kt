@@ -1,6 +1,6 @@
-package com.jetbrains.edu.learning.statistics.metadata
+package org.hyperskill.academy.learning.statistics.metadata
 
-import com.jetbrains.edu.learning.newproject.CourseMetadataProcessorTestBase
+import org.hyperskill.academy.learning.newproject.CourseMetadataProcessorTestBase
 import org.junit.Test
 
 class EntryPointMetadataProcessorTest : CourseMetadataProcessorTestBase() {

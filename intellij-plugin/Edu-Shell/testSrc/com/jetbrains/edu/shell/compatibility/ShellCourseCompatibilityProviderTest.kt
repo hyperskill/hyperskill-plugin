@@ -1,6 +1,6 @@
-package com.jetbrains.edu.shell.compatibility
+package org.hyperskill.academy.shell.compatibility
 
-import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderTestBase
-import com.jetbrains.edu.learning.compatibility.ShellCourseCompatibilityProvider
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderTestBase
+import org.hyperskill.academy.learning.compatibility.ShellCourseCompatibilityProvider
 
 class ShellCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(ShellCourseCompatibilityProvider::class)

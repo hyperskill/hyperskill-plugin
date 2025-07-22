@@ -1,15 +1,15 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
-import com.jetbrains.edu.learning.MockResponseFactory
-import com.jetbrains.edu.learning.checker.CheckActionListener
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.CORRECT
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.WRONG
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.stepik.SubmissionsTestBase
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.api.MockHyperskillConnector
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import org.hyperskill.academy.learning.MockResponseFactory
+import org.hyperskill.academy.learning.checker.CheckActionListener
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.CORRECT
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.WRONG
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.stepik.SubmissionsTestBase
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 

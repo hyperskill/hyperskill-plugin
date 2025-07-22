@@ -1,11 +1,11 @@
-package com.jetbrains.edu.learning.stepik
+package org.hyperskill.academy.learning.stepik
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.actions.CheckAction
-import com.jetbrains.edu.learning.navigation.NavigationUtils
-import com.jetbrains.edu.learning.submissions.SubmissionsManager
-import com.jetbrains.edu.learning.testAction
-import com.jetbrains.edu.learning.ui.getUICheckLabel
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.actions.CheckAction
+import org.hyperskill.academy.learning.navigation.NavigationUtils
+import org.hyperskill.academy.learning.submissions.SubmissionsManager
+import org.hyperskill.academy.learning.testAction
+import org.hyperskill.academy.learning.ui.getUICheckLabel
 import java.util.concurrent.CompletableFuture
 
 abstract class SubmissionsTestBase : EduTestCase() {

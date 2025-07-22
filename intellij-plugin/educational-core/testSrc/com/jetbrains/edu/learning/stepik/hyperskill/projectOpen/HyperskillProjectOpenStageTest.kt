@@ -1,13 +1,13 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.projectOpen
+package org.hyperskill.academy.learning.stepik.hyperskill.projectOpen
 
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
-import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.learning.stepik.hyperskill.TEST_HYPERSKILL_PROJECT_NAME
-import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
-import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenProjectStageRequest
-import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
-import com.jetbrains.edu.learning.stepik.hyperskill.testStageName
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
+import org.hyperskill.academy.learning.fileTree
+import org.hyperskill.academy.learning.stepik.hyperskill.TEST_HYPERSKILL_PROJECT_NAME
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenProjectStageRequest
+import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourseWithFiles
+import org.hyperskill.academy.learning.stepik.hyperskill.testStageName
 import org.junit.Test
 
 

@@ -1,7 +1,7 @@
-package com.jetbrains.edu.rust.actions
+package org.hyperskill.academy.rust.actions
 
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.learning.EduActionTestCase
+import org.hyperskill.academy.learning.EduActionTestCase
 import org.intellij.lang.annotations.Language
 import org.rust.cargo.CargoConstants
 

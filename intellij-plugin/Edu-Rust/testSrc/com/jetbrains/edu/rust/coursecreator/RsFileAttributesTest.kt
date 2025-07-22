@@ -1,10 +1,10 @@
-package com.jetbrains.edu.rust.coursecreator
+package org.hyperskill.academy.rust.coursecreator
 
-import com.jetbrains.edu.coursecreator.archive.ExpectedCourseFileAttributes
-import com.jetbrains.edu.coursecreator.archive.FileAttributesTest
-import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
-import com.jetbrains.edu.learning.configuration.EduConfigurator
-import com.jetbrains.edu.rust.RsConfigurator
+import org.hyperskill.academy.coursecreator.archive.ExpectedCourseFileAttributes
+import org.hyperskill.academy.coursecreator.archive.FileAttributesTest
+import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
+import org.hyperskill.academy.learning.configuration.EduConfigurator
+import org.hyperskill.academy.rust.RsConfigurator
 import org.junit.runners.Parameterized.Parameters
 import org.rust.cargo.CargoConstants
 

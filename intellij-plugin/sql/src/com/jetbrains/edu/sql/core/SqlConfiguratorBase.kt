@@ -1,10 +1,10 @@
-package com.jetbrains.edu.sql.core
+package org.hyperskill.academy.sql.core
 
-import com.jetbrains.edu.learning.EduExperimentalFeatures
-import com.jetbrains.edu.learning.configuration.EduConfigurator
-import com.jetbrains.edu.learning.isFeatureEnabled
-import com.jetbrains.edu.learning.newproject.EduProjectSettings
 import icons.DatabaseIcons
+import org.hyperskill.academy.learning.EduExperimentalFeatures
+import org.hyperskill.academy.learning.configuration.EduConfigurator
+import org.hyperskill.academy.learning.isFeatureEnabled
+import org.hyperskill.academy.learning.newproject.EduProjectSettings
 import javax.swing.Icon
 
 interface SqlConfiguratorBase<Settings : EduProjectSettings> : EduConfigurator<Settings> {

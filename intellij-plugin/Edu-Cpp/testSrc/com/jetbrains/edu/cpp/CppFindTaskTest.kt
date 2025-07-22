@@ -1,9 +1,9 @@
-package com.jetbrains.edu.cpp
+package org.hyperskill.academy.cpp
 
 import com.jetbrains.cidr.lang.OCLanguage
-import com.jetbrains.edu.learning.FindTaskFileTestBase
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.Course
+import org.hyperskill.academy.learning.FindTaskFileTestBase
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 class CppFindTaskTest : FindTaskFileTestBase<CppProjectSettings>() {

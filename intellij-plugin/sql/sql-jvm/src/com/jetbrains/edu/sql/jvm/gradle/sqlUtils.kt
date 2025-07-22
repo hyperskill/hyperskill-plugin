@@ -1,6 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
 import com.intellij.database.access.DatabaseCredentials
 import com.intellij.database.autoconfig.DataSourceConfigUtil
@@ -32,19 +32,19 @@ import com.intellij.sql.SqlFileType
 import com.intellij.sql.dialects.SqlDialectMappings
 import com.intellij.sql.dialects.h2.H2Dialect
 import com.intellij.util.containers.addIfNotNull
-import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.checker.CheckUtils
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
-import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.sql.core.EduSqlBundle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
+import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.checker.CheckUtils
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.ext.getDir
+import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.sql.core.EduSqlBundle
 import org.jetbrains.annotations.VisibleForTesting
 
-private val LOG = Logger.getInstance("#com.jetbrains.edu.sql.jvm.gradle.SqlUtils")
+private val LOG = Logger.getInstance("#org.hyperskill.academy.sql.jvm.gradle.SqlUtils")
 
 fun Task.findDataSource(project: Project): LocalDataSource? {
   val url = databaseUrl(project)

@@ -1,6 +1,6 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
-import com.jetbrains.edu.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.CourseMode
 import org.junit.Test
 
 class CourseWithCustomContentPathTest : EduTestCase() {

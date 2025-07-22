@@ -1,4 +1,4 @@
-package com.jetbrains.edu.rules
+package org.hyperskill.academy.rules
 
 /**
  * Sets custom value for a experimental feature during test execution

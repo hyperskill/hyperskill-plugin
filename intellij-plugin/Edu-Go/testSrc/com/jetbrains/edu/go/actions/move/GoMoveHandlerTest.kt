@@ -1,9 +1,9 @@
-package com.jetbrains.edu.go.actions.move
+package org.hyperskill.academy.go.actions.move
 
 import com.goide.GoLanguage
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.learning.actions.move.MoveHandlerTestBase
-import com.jetbrains.edu.learning.courseFormat.Course
+import org.hyperskill.academy.learning.actions.move.MoveHandlerTestBase
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 class GoMoveHandlerTest : MoveHandlerTestBase(GoLanguage.INSTANCE) {

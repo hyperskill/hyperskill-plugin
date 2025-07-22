@@ -1,11 +1,11 @@
-package com.jetbrains.edu.java.actions.move
+package org.hyperskill.academy.java.actions.move
 
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.jetbrains.edu.learning.actions.move.MoveHandlerTestBase
-import com.jetbrains.edu.learning.courseFormat.Course
+import org.hyperskill.academy.learning.actions.move.MoveHandlerTestBase
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 class JMoveHandlerTest : MoveHandlerTestBase(JavaLanguage.INSTANCE) {

@@ -1,16 +1,16 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.courseSelection
+package org.hyperskill.academy.learning.stepik.hyperskill.courseSelection
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.MockResponseFactory
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
-import com.jetbrains.edu.learning.pathWithoutPrams
-import com.jetbrains.edu.learning.stepik.hyperskill.api.*
-import com.jetbrains.edu.learning.stepik.hyperskill.defaultHyperskillCourse
-import com.jetbrains.edu.learning.stepik.hyperskill.logInFakeHyperskillUser
-import com.jetbrains.edu.learning.stepik.hyperskill.logOutFakeHyperskillUser
-import com.jetbrains.edu.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProvider
 import kotlinx.coroutines.runBlocking
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.MockResponseFactory
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage
+import org.hyperskill.academy.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.stepik.hyperskill.api.*
+import org.hyperskill.academy.learning.stepik.hyperskill.defaultHyperskillCourse
+import org.hyperskill.academy.learning.stepik.hyperskill.logInFakeHyperskillUser
+import org.hyperskill.academy.learning.stepik.hyperskill.logOutFakeHyperskillUser
+import org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProvider
 import org.junit.Test
 
 class HyperskillPlatformProviderTest : EduTestCase() {

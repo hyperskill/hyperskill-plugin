@@ -1,4 +1,4 @@
-package com.jetbrains.edu.jvm.slow.checker
+package org.hyperskill.academy.jvm.slow.checker
 
 import com.intellij.openapi.projectRoots.JavaSdk
 import com.intellij.openapi.projectRoots.ProjectJdkTable
@@ -9,9 +9,9 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.testFramework.IdeaTestUtil
-import com.jetbrains.edu.jvm.JdkProjectSettings
-import com.jetbrains.edu.learning.checker.EduCheckerFixture
-import com.jetbrains.edu.learning.isTeamCity
+import org.hyperskill.academy.jvm.JdkProjectSettings
+import org.hyperskill.academy.learning.checker.EduCheckerFixture
+import org.hyperskill.academy.learning.isTeamCity
 import java.io.File
 
 class JdkCheckerFixture : EduCheckerFixture<JdkProjectSettings>() {

@@ -1,7 +1,7 @@
-package com.jetbrains.edu.coursecreator.framework.impl
+package org.hyperskill.academy.coursecreator.framework.impl
 
-import com.jetbrains.edu.coursecreator.framework.diff.SimpleConflictResolveStrategy
-import com.jetbrains.edu.learning.EduTestCase
+import org.hyperskill.academy.coursecreator.framework.diff.SimpleConflictResolveStrategy
+import org.hyperskill.academy.learning.EduTestCase
 import org.junit.Test
 
 class SimpleConflictResolveStrategyTest : EduTestCase() {

@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.compatibility
+package org.hyperskill.academy.learning.compatibility
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.lang.Language
 import com.intellij.openapi.extensions.PluginId
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.configuration.EduConfiguratorManager
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.configuration.EduConfiguratorManager
 import org.junit.Test
 import kotlin.reflect.KClass
 

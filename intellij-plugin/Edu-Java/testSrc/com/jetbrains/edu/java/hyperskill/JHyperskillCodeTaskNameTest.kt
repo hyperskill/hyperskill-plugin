@@ -1,4 +1,4 @@
-package com.jetbrains.edu.java.hyperskill
+package org.hyperskill.academy.java.hyperskill
 
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.projectRoots.JavaSdk
@@ -8,12 +8,12 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.testFramework.IdeaTestUtil
 import com.intellij.testFramework.LightProjectDescriptor
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.stepik.hyperskill.HyperskillConfigurator
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillConfigurator
 import org.junit.Test
 import java.io.File
 

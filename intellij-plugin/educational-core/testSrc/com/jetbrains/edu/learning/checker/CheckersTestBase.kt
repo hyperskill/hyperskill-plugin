@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.checker
+package org.hyperskill.academy.learning.checker
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -9,16 +9,16 @@ import com.intellij.openapi.ui.TestDialog
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ThrowableRunnable
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.actions.CheckAction
-import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.newproject.EduProjectSettings
-import com.jetbrains.edu.learning.ui.getUICheckLabel
+import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.actions.CheckAction
+import org.hyperskill.academy.learning.actions.NextTaskAction
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.newproject.EduProjectSettings
+import org.hyperskill.academy.learning.ui.getUICheckLabel
 import org.junit.ComparisonFailure
 
 abstract class CheckersTestBase<Settings : EduProjectSettings> : EduHeavyTestCase() {

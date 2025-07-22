@@ -1,15 +1,15 @@
-package com.jetbrains.edu.learning.actions
+package org.hyperskill.academy.learning.actions
 
 import com.intellij.diff.editor.ChainDiffVirtualFile
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.ui.TestDialog
 import com.intellij.openapi.vfs.readText
-import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
-import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.rd.util.first
+import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.courseFormat.ext.allTasks
+import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
+import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.junit.Test
 
 class ApplyCodeActionTest : EduActionTestCase() {

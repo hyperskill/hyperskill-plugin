@@ -1,10 +1,10 @@
-package com.jetbrains.edu.scala.coursecreator
+package org.hyperskill.academy.scala.coursecreator
 
-import com.jetbrains.edu.coursecreator.archive.ExpectedCourseFileAttributes
-import com.jetbrains.edu.coursecreator.archive.FileAttributesTest
-import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
-import com.jetbrains.edu.learning.configuration.EduConfigurator
-import com.jetbrains.edu.scala.sbt.ScalaSbtConfigurator
+import org.hyperskill.academy.coursecreator.archive.ExpectedCourseFileAttributes
+import org.hyperskill.academy.coursecreator.archive.FileAttributesTest
+import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
+import org.hyperskill.academy.learning.configuration.EduConfigurator
+import org.hyperskill.academy.scala.sbt.ScalaSbtConfigurator
 import org.junit.runners.Parameterized.Parameters
 
 class ScalaSbtFileAttributesTest(

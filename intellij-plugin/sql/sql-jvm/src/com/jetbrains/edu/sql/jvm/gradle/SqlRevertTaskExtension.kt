@@ -1,14 +1,14 @@
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
 import com.intellij.database.dataSource.LocalDataSourceManager
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.jetbrains.edu.learning.actions.RevertTaskAction
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.sql.core.SqlConfiguratorBase
+import org.hyperskill.academy.learning.actions.RevertTaskAction
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.sql.core.SqlConfiguratorBase
 import java.io.IOException
 
 class SqlRevertTaskExtension : RevertTaskAction.RevertTaskExtension {

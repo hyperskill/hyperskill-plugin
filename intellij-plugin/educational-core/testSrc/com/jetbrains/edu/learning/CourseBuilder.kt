@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.progress.ProgressManager
@@ -6,16 +6,16 @@ import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.learning.configuration.PlainTextTaskCheckerProvider.Companion.CHECK_RESULT_FILE
-import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.LESSON
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.SECTION
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.*
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ONLY_IDEA_DIRECTORY
+import org.hyperskill.academy.learning.configuration.PlainTextTaskCheckerProvider.Companion.CHECK_RESULT_FILE
+import org.hyperskill.academy.learning.courseFormat.*
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.LESSON
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.SECTION
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.TASK
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.tasks.*
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ONLY_IDEA_DIRECTORY
 import org.intellij.lang.annotations.Language
 import java.util.*
 

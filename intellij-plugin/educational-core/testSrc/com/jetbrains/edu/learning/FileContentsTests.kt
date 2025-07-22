@@ -1,9 +1,9 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
-import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.storage.debugString
-import com.jetbrains.edu.learning.storage.wrapWithDiagnostics
 import junit.framework.TestCase.assertEquals
+import org.hyperskill.academy.learning.courseFormat.*
+import org.hyperskill.academy.learning.storage.debugString
+import org.hyperskill.academy.learning.storage.wrapWithDiagnostics
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized

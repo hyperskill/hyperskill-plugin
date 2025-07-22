@@ -1,17 +1,17 @@
-package com.jetbrains.edu.learning.checker
+package org.hyperskill.academy.learning.checker
 
-import com.jetbrains.edu.learning.EduUtilsKt
-import com.jetbrains.edu.learning.configuration.PlainTextTaskCheckerProvider.Companion.CHECK_RESULT_FILE
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask
-import com.jetbrains.edu.learning.courseFormat.tasks.TheoryTask
-import com.jetbrains.edu.learning.document
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
+import org.hyperskill.academy.learning.EduUtilsKt
+import org.hyperskill.academy.learning.configuration.PlainTextTaskCheckerProvider.Companion.CHECK_RESULT_FILE
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseDir
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.ext.allTasks
+import org.hyperskill.academy.learning.courseFormat.ext.getDir
+import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
+import org.hyperskill.academy.learning.courseFormat.tasks.OutputTask
+import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
+import org.hyperskill.academy.learning.document
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
 import org.junit.Test
 
 class PlainTextCheckerTest : CheckersTestBase<EmptyProjectSettings>() {

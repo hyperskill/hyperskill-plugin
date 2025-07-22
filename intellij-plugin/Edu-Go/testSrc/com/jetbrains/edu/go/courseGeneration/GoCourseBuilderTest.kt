@@ -1,11 +1,11 @@
-package com.jetbrains.edu.go.courseGeneration
+package org.hyperskill.academy.go.courseGeneration
 
 import com.goide.GoLanguage
 import com.goide.sdk.GoSdk
-import com.jetbrains.edu.go.GoProjectSettings
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.fileTree
+import org.hyperskill.academy.go.GoProjectSettings
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.fileTree
 import org.junit.Test
 
 class GoCourseBuilderTest : CourseGenerationTestBase<GoProjectSettings>() {

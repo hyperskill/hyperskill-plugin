@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.checker
+package org.hyperskill.academy.learning.stepik.hyperskill.checker
 
-import com.jetbrains.edu.learning.EduActionTestCase
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.api.MockHyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.logInFakeHyperskillUser
-import com.jetbrains.edu.learning.stepik.hyperskill.logOutFakeHyperskillUser
+import org.hyperskill.academy.learning.EduActionTestCase
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.logInFakeHyperskillUser
+import org.hyperskill.academy.learning.stepik.hyperskill.logOutFakeHyperskillUser
 
 abstract class HyperskillActionTestBase : EduActionTestCase() {
   protected val mockConnector: MockHyperskillConnector

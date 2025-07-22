@@ -1,10 +1,10 @@
-package com.jetbrains.edu.go.slow.checker
+package org.hyperskill.academy.go.slow.checker
 
 import com.goide.GoLanguage
-import com.jetbrains.edu.learning.checker.CheckActionListener
-import com.jetbrains.edu.learning.checker.CheckUtils
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.Course
+import org.hyperskill.academy.learning.checker.CheckActionListener
+import org.hyperskill.academy.learning.checker.CheckUtils
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 class GoCheckerTest : GoCheckersTestBase() {

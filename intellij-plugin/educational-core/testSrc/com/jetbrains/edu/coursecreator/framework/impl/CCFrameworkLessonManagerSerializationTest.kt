@@ -1,7 +1,7 @@
-package com.jetbrains.edu.coursecreator.framework.impl
+package org.hyperskill.academy.coursecreator.framework.impl
 
-import com.jetbrains.edu.coursecreator.framework.CCFrameworkLessonManager
-import com.jetbrains.edu.learning.EduSettingsServiceTestBase
+import org.hyperskill.academy.coursecreator.framework.CCFrameworkLessonManager
+import org.hyperskill.academy.learning.EduSettingsServiceTestBase
 import org.junit.Test
 
 class CCFrameworkLessonManagerSerializationTest : EduSettingsServiceTestBase() {

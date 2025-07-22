@@ -1,14 +1,14 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.common.ThreadLeakTracker
-import com.jetbrains.edu.learning.network.USER_AGENT
-import com.jetbrains.edu.learning.network.eduToolsUserAgent
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.hyperskill.academy.learning.network.USER_AGENT
+import org.hyperskill.academy.learning.network.eduToolsUserAgent
 import org.junit.Assert.assertEquals
 
 typealias ResponseHandler = (RecordedRequest, String) -> MockResponse?
@@ -47,7 +47,7 @@ class MockWebServerHelper(parentDisposable: Disposable) {
     Disposer.register(disposable) { handlers -= handler }
   }
 
-  // DownloadUtil.downloadAtomically(), used in com.jetbrains.edu.learning.marketplace.api.MarketplaceConnector.loadCourseStructure(),
+  // DownloadUtil.downloadAtomically(), used in org.hyperskill.academy.learning.marketplace.api.MarketplaceConnector.loadCourseStructure(),
   // sets product name as user agent, so such requests are not expected to contain eduToolsUserAgent
   private fun expectEduToolsUserAgent(request: RecordedRequest): Boolean = !request.pathWithoutPrams.contains("plugin")
 }

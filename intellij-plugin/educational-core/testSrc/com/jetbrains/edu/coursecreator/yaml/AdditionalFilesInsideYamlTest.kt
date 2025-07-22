@@ -1,11 +1,11 @@
-package com.jetbrains.edu.coursecreator.yaml
+package org.hyperskill.academy.coursecreator.yaml
 
-import com.jetbrains.edu.coursecreator.AdditionalFilesUtils.collectAdditionalFiles
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.StudyTaskManager
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.coursecreator.AdditionalFilesUtils.collectAdditionalFiles
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.StudyTaskManager
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.junit.Test
 import kotlin.test.assertContentEquals
 

@@ -1,18 +1,18 @@
-package com.jetbrains.edu.coursecreator.courseignore
+package org.hyperskill.academy.coursecreator.courseignore
 
 import com.intellij.ide.highlighter.HtmlFileType
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.fileTypes.ExactFileNameMatcher
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.testFramework.runInEdtAndWait
-import com.jetbrains.edu.coursecreator.AdditionalFilesUtils
-import com.jetbrains.edu.learning.EduNames.COURSE_IGNORE
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.newproject.EduProjectSettings
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
+import org.hyperskill.academy.coursecreator.AdditionalFilesUtils
+import org.hyperskill.academy.learning.EduNames.COURSE_IGNORE
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseDir
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.newproject.EduProjectSettings
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
 import org.junit.Test
 import kotlin.test.DefaultAsserter.assertNotEquals
 

@@ -1,15 +1,15 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
 import com.intellij.openapi.fileTypes.PlainTextLanguage
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.MockResponseFactory
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
-import com.jetbrains.edu.learning.navigation.NavigationUtils
-import com.jetbrains.edu.learning.pathWithoutPrams
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.api.MockHyperskillConnector
 import okhttp3.mockwebserver.MockResponse
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.MockResponseFactory
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
+import org.hyperskill.academy.learning.navigation.NavigationUtils
+import org.hyperskill.academy.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
 import org.junit.Test
 
 class HyperskillCompleteTheoryTaskTest : EduTestCase() {

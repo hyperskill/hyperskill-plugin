@@ -1,15 +1,15 @@
-package com.jetbrains.edu.learning.taskToolWindow
+package org.hyperskill.academy.learning.taskToolWindow
 
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.testFramework.executeSomeCoroutineTasksAndDispatchAllInvocationEvents
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowFactory.Companion.STUDY_TOOL_WINDOW
-import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.findTask
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowFactory.Companion.STUDY_TOOL_WINDOW
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
 import org.junit.Test
 
 class TaskToolWindowStateTest : EduTestCase() {

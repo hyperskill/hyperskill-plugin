@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.diff.DiffContentFactory
 import com.intellij.diff.chains.SimpleDiffRequestChain
@@ -21,17 +21,17 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.testFramework.IndexingTestUtil
 import com.intellij.testFramework.TestActionEvent
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.coursecreator.handlers.CCVirtualFileListener
-import com.jetbrains.edu.learning.actions.CheckAction
-import com.jetbrains.edu.learning.courseFormat.*
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.handlers.UserCreatedFileListener
-import com.jetbrains.edu.learning.storage.LearningObjectStorageType
-import com.jetbrains.edu.learning.storage.getDefaultLearningObjectsStorageType
-import com.jetbrains.edu.learning.storage.pathInStorage
-import com.jetbrains.edu.learning.storage.setDefaultLearningObjectsStorageType
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
+import org.hyperskill.academy.coursecreator.handlers.CCVirtualFileListener
+import org.hyperskill.academy.learning.actions.CheckAction
+import org.hyperskill.academy.learning.courseFormat.*
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.handlers.UserCreatedFileListener
+import org.hyperskill.academy.learning.storage.LearningObjectStorageType
+import org.hyperskill.academy.learning.storage.getDefaultLearningObjectsStorageType
+import org.hyperskill.academy.learning.storage.pathInStorage
+import org.hyperskill.academy.learning.storage.setDefaultLearningObjectsStorageType
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import kotlin.test.assertIs

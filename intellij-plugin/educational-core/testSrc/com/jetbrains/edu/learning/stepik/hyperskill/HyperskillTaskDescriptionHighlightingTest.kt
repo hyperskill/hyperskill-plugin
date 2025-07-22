@@ -1,8 +1,8 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.taskToolWindow.TaskDescriptionHighlightingTestBase
+import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.taskToolWindow.TaskDescriptionHighlightingTestBase
 import org.junit.Test
 
 abstract class HyperskillTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() {

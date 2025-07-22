@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.metrics
+package org.hyperskill.academy.learning.stepik.hyperskill.metrics
 
 class MockHyperskillMetricsService : HyperskillMetricsService() {
 

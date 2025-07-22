@@ -1,6 +1,6 @@
-package com.jetbrains.edu.java.compatibility
+package org.hyperskill.academy.java.compatibility
 
-import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderTestBase
-import com.jetbrains.edu.learning.compatibility.JCourseCompatibilityProvider
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderTestBase
+import org.hyperskill.academy.learning.compatibility.JCourseCompatibilityProvider
 
 class JCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(JCourseCompatibilityProvider::class)

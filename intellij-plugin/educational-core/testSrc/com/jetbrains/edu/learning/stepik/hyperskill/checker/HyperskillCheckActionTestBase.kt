@@ -1,12 +1,12 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.checker
+package org.hyperskill.academy.learning.stepik.hyperskill.checker
 
-import com.jetbrains.edu.learning.actions.CheckAction
-import com.jetbrains.edu.learning.checker.CheckActionListener
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.navigation.NavigationUtils
-import com.jetbrains.edu.learning.testAction
-import com.jetbrains.edu.learning.ui.getUICheckLabel
+import org.hyperskill.academy.learning.actions.CheckAction
+import org.hyperskill.academy.learning.checker.CheckActionListener
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.navigation.NavigationUtils
+import org.hyperskill.academy.learning.testAction
+import org.hyperskill.academy.learning.ui.getUICheckLabel
 
 abstract class HyperskillCheckActionTestBase : HyperskillActionTestBase() {
 

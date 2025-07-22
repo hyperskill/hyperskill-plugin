@@ -1,8 +1,8 @@
-package com.jetbrains.edu.learning.taskToolWindow.links
+package org.hyperskill.academy.learning.taskToolWindow.links
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
-import com.jetbrains.edu.learning.navigation.NavigationUtils
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
+import org.hyperskill.academy.learning.navigation.NavigationUtils
 import org.junit.Test
 
 class JCefUtilsTest : EduTestCase() {

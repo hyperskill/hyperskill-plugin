@@ -1,7 +1,7 @@
-package com.jetbrains.edu.kotlin.taskDescription
+package org.hyperskill.academy.kotlin.taskDescription
 
 import com.intellij.openapi.fileTypes.FileType
-import com.jetbrains.edu.learning.taskToolWindow.links.TaskDescriptionPsiLinksTestBase
+import org.hyperskill.academy.learning.taskToolWindow.links.TaskDescriptionPsiLinksTestBase
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.junit.Test
 

@@ -1,11 +1,11 @@
-package com.jetbrains.edu.coursecreator.taskDescription
+package org.hyperskill.academy.coursecreator.taskDescription
 
 import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.vfs.VfsUtil
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 

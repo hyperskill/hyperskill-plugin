@@ -1,11 +1,11 @@
-package com.jetbrains.edu.coursecreator.validation
+package org.hyperskill.academy.coursecreator.validation
 
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.testFramework.IndexingTestUtil
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
 import kotlinx.coroutines.runBlocking
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 class CourseValidationTest : EduTestCase() {

@@ -1,7 +1,7 @@
-package com.jetbrains.edu.scala.taskDescription
+package org.hyperskill.academy.scala.taskDescription
 
 import com.intellij.openapi.fileTypes.FileType
-import com.jetbrains.edu.learning.taskToolWindow.links.TaskDescriptionPsiLinksTestBase
+import org.hyperskill.academy.learning.taskToolWindow.links.TaskDescriptionPsiLinksTestBase
 import org.jetbrains.plugins.scala.ScalaFileType
 import org.junit.Test
 

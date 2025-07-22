@@ -1,4 +1,4 @@
-package com.jetbrains.edu.sql.jvm.gradle.courseGeneration
+package org.hyperskill.academy.sql.jvm.gradle.courseGeneration
 
 import com.intellij.database.console.JdbcConsoleProvider
 import com.intellij.openapi.application.runWriteAction
@@ -7,18 +7,18 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.sql.SqlFileType
 import com.intellij.testFramework.PlatformTestUtil
-import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.actions.PreviousTaskAction
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.getTaskFile
-import com.jetbrains.edu.learning.testAction
-import com.jetbrains.edu.learning.withVirtualFileListener
-import com.jetbrains.edu.sql.jvm.gradle.SqlCourseGenerationTestBase
-import com.jetbrains.edu.sql.jvm.gradle.SqlGradleCourseBuilder.Companion.INIT_SQL
-import com.jetbrains.edu.sql.jvm.gradle.findDataSource
-import com.jetbrains.edu.sql.jvm.gradle.sqlCourse
+import org.hyperskill.academy.learning.actions.NextTaskAction
+import org.hyperskill.academy.learning.actions.PreviousTaskAction
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.findTask
+import org.hyperskill.academy.learning.getTaskFile
+import org.hyperskill.academy.learning.testAction
+import org.hyperskill.academy.learning.withVirtualFileListener
+import org.hyperskill.academy.sql.jvm.gradle.SqlCourseGenerationTestBase
+import org.hyperskill.academy.sql.jvm.gradle.SqlGradleCourseBuilder.Companion.INIT_SQL
+import org.hyperskill.academy.sql.jvm.gradle.findDataSource
+import org.hyperskill.academy.sql.jvm.gradle.sqlCourse
 import org.junit.Test
 import kotlin.test.assertNotNull
 

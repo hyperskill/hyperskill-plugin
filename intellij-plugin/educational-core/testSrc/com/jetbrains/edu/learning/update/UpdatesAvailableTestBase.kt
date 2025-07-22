@@ -1,8 +1,8 @@
-package com.jetbrains.edu.learning.update
+package org.hyperskill.academy.learning.update
 
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
 
 abstract class UpdatesAvailableTestBase<T : Course> : CourseGenerationTestBase<EmptyProjectSettings>() {
   protected lateinit var localCourse: T

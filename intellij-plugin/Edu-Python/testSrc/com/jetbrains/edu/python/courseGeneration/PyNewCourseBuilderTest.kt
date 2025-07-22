@@ -1,13 +1,13 @@
-package com.jetbrains.edu.python.courseGeneration
+package org.hyperskill.academy.python.courseGeneration
 
-import com.jetbrains.edu.learning.CourseBuilder
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.python.learning.newproject.PyProjectSettings
 import com.jetbrains.python.PythonLanguage
+import org.hyperskill.academy.learning.CourseBuilder
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.fileTree
+import org.hyperskill.academy.python.learning.newproject.PyProjectSettings
 import org.junit.Test
 
 class PyNewCourseBuilderTest : CourseGenerationTestBase<PyProjectSettings>() {

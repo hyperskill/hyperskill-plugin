@@ -1,8 +1,8 @@
-package com.jetbrains.edu.java.taskDescription
+package org.hyperskill.academy.java.taskDescription
 
 import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.openapi.fileTypes.FileType
-import com.jetbrains.edu.learning.taskToolWindow.links.TaskDescriptionPsiLinksTestBase
+import org.hyperskill.academy.learning.taskToolWindow.links.TaskDescriptionPsiLinksTestBase
 import org.junit.Test
 
 class JTaskDescriptionPsiLinksTest : TaskDescriptionPsiLinksTestBase() {

@@ -1,15 +1,15 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.update
+package org.hyperskill.academy.learning.stepik.hyperskill.update
 
-import com.jetbrains.edu.learning.CourseBuilder
-import com.jetbrains.edu.learning.SectionBuilder
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-import com.jetbrains.edu.learning.courseFormat.Lesson
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.learning.update.LessonUpdateTestBase
+import org.hyperskill.academy.learning.CourseBuilder
+import org.hyperskill.academy.learning.SectionBuilder
+import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.courseFormat.Lesson
+import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
+import org.hyperskill.academy.learning.fileTree
+import org.hyperskill.academy.learning.update.LessonUpdateTestBase
 import org.junit.Test
 
 class HyperskillLessonUpdateTest : LessonUpdateTestBase<HyperskillCourse>() {

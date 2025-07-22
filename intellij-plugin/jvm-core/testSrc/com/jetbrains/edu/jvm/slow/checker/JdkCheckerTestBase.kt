@@ -1,11 +1,11 @@
-package com.jetbrains.edu.jvm.slow.checker
+package org.hyperskill.academy.jvm.slow.checker
 
-import com.jetbrains.edu.jvm.JdkProjectSettings
-import com.jetbrains.edu.learning.checker.CheckersTestBase
-import com.jetbrains.edu.learning.checker.EduCheckerFixture
-import com.jetbrains.edu.learning.courseFormat.CheckResultDiff
-import com.jetbrains.edu.learning.courseFormat.EduTestInfo
 import org.hamcrest.Matcher
+import org.hyperskill.academy.jvm.JdkProjectSettings
+import org.hyperskill.academy.learning.checker.CheckersTestBase
+import org.hyperskill.academy.learning.checker.EduCheckerFixture
+import org.hyperskill.academy.learning.courseFormat.CheckResultDiff
+import org.hyperskill.academy.learning.courseFormat.EduTestInfo
 
 abstract class JdkCheckerTestBase : CheckersTestBase<JdkProjectSettings>() {
   override fun createCheckerFixture(): EduCheckerFixture<JdkProjectSettings> = JdkCheckerFixture()

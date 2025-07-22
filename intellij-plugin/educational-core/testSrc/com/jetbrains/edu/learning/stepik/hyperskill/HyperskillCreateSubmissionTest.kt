@@ -1,20 +1,20 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.checker.CheckUtils.CONGRATULATIONS
-import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.JSON_FORMAT_VERSION
-import com.jetbrains.edu.learning.courseFormat.attempts.Attempt
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.RemoteEduTask
-import com.jetbrains.edu.learning.stepik.api.StepikBasedSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createCodeTaskSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createEduTaskSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createRemoteEduTaskSubmission
-import com.jetbrains.edu.learning.submissions.getSolutionFiles
-import com.jetbrains.edu.learning.yaml.YamlMapper
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.checker.CheckUtils.CONGRATULATIONS
+import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.JSON_FORMAT_VERSION
+import org.hyperskill.academy.learning.courseFormat.attempts.Attempt
+import org.hyperskill.academy.learning.courseFormat.ext.allTasks
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask
+import org.hyperskill.academy.learning.stepik.api.StepikBasedSubmission
+import org.hyperskill.academy.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createCodeTaskSubmission
+import org.hyperskill.academy.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createEduTaskSubmission
+import org.hyperskill.academy.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory.createRemoteEduTaskSubmission
+import org.hyperskill.academy.learning.submissions.getSolutionFiles
+import org.hyperskill.academy.learning.yaml.YamlMapper
 import org.junit.Test
 
 class HyperskillCreateSubmissionTest : EduTestCase() {

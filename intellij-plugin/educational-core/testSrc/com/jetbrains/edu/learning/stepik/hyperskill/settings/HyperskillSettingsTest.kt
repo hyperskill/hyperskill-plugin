@@ -1,6 +1,6 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.settings
+package org.hyperskill.academy.learning.stepik.hyperskill.settings
 
-import com.jetbrains.edu.learning.EduSettingsServiceTestBase
+import org.hyperskill.academy.learning.EduSettingsServiceTestBase
 import org.junit.Test
 
 class HyperskillSettingsTest : EduSettingsServiceTestBase() {

@@ -1,8 +1,8 @@
-package com.jetbrains.edu.learning.taskToolWindow.links
+package org.hyperskill.academy.learning.taskToolWindow.links
 
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.selectedVirtualFile
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.selectedVirtualFile
 import org.junit.Test
 
 class TaskDescriptionInCourseLinksTest : TaskDescriptionLinksTestBase() {

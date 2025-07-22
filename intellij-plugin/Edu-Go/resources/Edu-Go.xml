@@ -1,14 +1,14 @@
-<idea-plugin package="com.jetbrains.edu.go">
+<idea-plugin package="org.hyperskill.academy.go">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="org.jetbrains.plugins.go"/>
   </dependencies>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator language="go" implementationClass="com.jetbrains.edu.go.GoConfigurator"/>
+    <configurator language="go" implementationClass="org.hyperskill.academy.go.GoConfigurator"/>
 
     <!-- Hyperskill -->
-    <configurator implementationClass="com.jetbrains.edu.go.stepik.hyperskill.GoHyperskillConfigurator" language="go"
+    <configurator implementationClass="org.hyperskill.academy.go.stepik.hyperskill.GoHyperskillConfigurator" language="go"
                   courseType="Hyperskill"/>
   </extensions>
 </idea-plugin>

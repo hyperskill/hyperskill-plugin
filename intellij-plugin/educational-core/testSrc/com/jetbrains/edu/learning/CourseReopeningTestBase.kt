@@ -1,14 +1,14 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.testFramework.runInEdtAndWait
-import com.jetbrains.edu.coursecreator.yaml.createConfigFiles
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.newproject.EduProjectSettings
+import org.hyperskill.academy.coursecreator.yaml.createConfigFiles
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.newproject.EduProjectSettings
 
 abstract class CourseReopeningTestBase<Settings : EduProjectSettings> : CourseGenerationTestBase<Settings>() {
 

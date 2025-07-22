@@ -1,12 +1,12 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.submissions.getSolutionFiles
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.findTask
+import org.hyperskill.academy.learning.submissions.getSolutionFiles
 import org.junit.Test
 
 class HyperskillUploadingTest : EduTestCase() {

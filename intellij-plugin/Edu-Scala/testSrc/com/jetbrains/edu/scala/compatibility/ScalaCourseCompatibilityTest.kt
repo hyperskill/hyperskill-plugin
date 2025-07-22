@@ -1,8 +1,8 @@
-package com.jetbrains.edu.scala.compatibility
+package org.hyperskill.academy.scala.compatibility
 
-import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderTestBase
-import com.jetbrains.edu.learning.compatibility.ScalaGradleCourseCompatibilityProvider
-import com.jetbrains.edu.learning.compatibility.ScalaSbtCourseCompatibilityProvider
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderTestBase
+import org.hyperskill.academy.learning.compatibility.ScalaGradleCourseCompatibilityProvider
+import org.hyperskill.academy.learning.compatibility.ScalaSbtCourseCompatibilityProvider
 
 class ScalaGradleCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(ScalaGradleCourseCompatibilityProvider::class)
 class ScalaSbtCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(ScalaSbtCourseCompatibilityProvider::class)

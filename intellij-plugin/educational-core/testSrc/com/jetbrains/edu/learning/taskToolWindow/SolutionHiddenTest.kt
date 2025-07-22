@@ -1,9 +1,9 @@
-package com.jetbrains.edu.learning.taskToolWindow
+package org.hyperskill.academy.learning.taskToolWindow
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.ext.canShowSolution
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.ext.canShowSolution
 import org.junit.Test
 
 class SolutionHiddenTest : EduTestCase() {

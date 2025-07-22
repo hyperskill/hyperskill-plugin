@@ -1,6 +1,6 @@
-package com.jetbrains.edu.learning.taskToolWindow
+package org.hyperskill.academy.learning.taskToolWindow
 
-import com.jetbrains.edu.learning.taskToolWindow.ui.JsEventData
+import org.hyperskill.academy.learning.taskToolWindow.ui.JsEventData
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized

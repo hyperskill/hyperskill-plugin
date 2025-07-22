@@ -1,12 +1,12 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.api
+package org.hyperskill.academy.learning.stepik.hyperskill.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.intellij.openapi.util.io.FileUtil
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.stepik.api.CodeTaskReply
-import com.jetbrains.edu.learning.stepik.api.EduTaskReply
-import com.jetbrains.edu.learning.stepik.api.Reply
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.stepik.api.CodeTaskReply
+import org.hyperskill.academy.learning.stepik.api.EduTaskReply
+import org.hyperskill.academy.learning.stepik.api.Reply
 import org.junit.Test
 import java.io.File
 import java.io.IOException

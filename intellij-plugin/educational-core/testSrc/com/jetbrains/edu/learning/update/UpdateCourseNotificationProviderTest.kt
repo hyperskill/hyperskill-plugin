@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.update
+package org.hyperskill.academy.learning.update
 
-import com.jetbrains.edu.learning.NotificationsTestBase
-import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.navigation.NavigationUtils.getFirstTask
-import com.jetbrains.edu.learning.stepik.UpdateCourseNotificationProvider
+import org.hyperskill.academy.learning.NotificationsTestBase
+import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.navigation.NavigationUtils.getFirstTask
+import org.hyperskill.academy.learning.stepik.UpdateCourseNotificationProvider
 import org.junit.Test
 
 class UpdateCourseNotificationProviderTest : NotificationsTestBase() {

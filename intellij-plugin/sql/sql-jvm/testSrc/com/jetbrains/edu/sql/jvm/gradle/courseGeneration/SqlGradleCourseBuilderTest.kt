@@ -1,11 +1,11 @@
-package com.jetbrains.edu.sql.jvm.gradle.courseGeneration
+package org.hyperskill.academy.sql.jvm.gradle.courseGeneration
 
 import com.intellij.sql.psi.SqlLanguage
-import com.jetbrains.edu.jvm.courseGeneration.JvmCourseGenerationTestBase
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.sql.jvm.gradle.SqlGradleStartupActivity
-import com.jetbrains.edu.sql.jvm.gradle.sqlCourse
+import org.hyperskill.academy.jvm.courseGeneration.JvmCourseGenerationTestBase
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.fileTree
+import org.hyperskill.academy.sql.jvm.gradle.SqlGradleStartupActivity
+import org.hyperskill.academy.sql.jvm.gradle.sqlCourse
 import org.junit.Test
 
 class SqlGradleCourseBuilderTest : JvmCourseGenerationTestBase() {

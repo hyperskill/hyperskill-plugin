@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.handlers
+package org.hyperskill.academy.learning.handlers
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -8,15 +8,15 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.FileCheck
-import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.learning.findTask
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.FileCheck
+import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
+import org.hyperskill.academy.learning.courseDir
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.ext.getDir
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
+import org.hyperskill.academy.learning.findTask
 
 abstract class VirtualFileListenerTestBase : EduTestCase() {
   protected abstract val courseMode: CourseMode

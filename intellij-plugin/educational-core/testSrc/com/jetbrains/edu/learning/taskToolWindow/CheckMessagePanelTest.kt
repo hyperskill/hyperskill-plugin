@@ -1,6 +1,6 @@
-package com.jetbrains.edu.learning.taskToolWindow
+package org.hyperskill.academy.learning.taskToolWindow
 
-import com.jetbrains.edu.learning.taskToolWindow.ui.check.CheckMessagePanel.Companion.prepareHtmlText
+import org.hyperskill.academy.learning.taskToolWindow.ui.check.CheckMessagePanel.Companion.prepareHtmlText
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

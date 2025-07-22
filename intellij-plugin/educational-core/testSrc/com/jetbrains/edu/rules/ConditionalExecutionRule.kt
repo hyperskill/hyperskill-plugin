@@ -1,4 +1,4 @@
-package com.jetbrains.edu.rules
+package org.hyperskill.academy.rules
 
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.util.BuildNumber

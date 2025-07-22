@@ -1,6 +1,6 @@
-package com.jetbrains.edu.coursecreator.settings
+package org.hyperskill.academy.coursecreator.settings
 
-import com.jetbrains.edu.learning.EduSettingsServiceTestBase
+import org.hyperskill.academy.learning.EduSettingsServiceTestBase
 import org.junit.Test
 
 class CCSettingsTest : EduSettingsServiceTestBase() {

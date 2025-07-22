@@ -1,4 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.python">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy.python">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.intellij.modules.python"/>
@@ -7,18 +7,18 @@
   <xi:include href="/META-INF/Hyperskill-Python.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <extensions defaultExtensionNs="com.intellij">
-    <configurationType implementation="com.jetbrains.edu.python.learning.run.PyRunTestsConfigurationType"/>
-    <runConfigurationProducer implementation="com.jetbrains.edu.python.learning.run.PyRunTestsConfigurationProducer"/>
+    <configurationType implementation="org.hyperskill.academy.python.learning.run.PyRunTestsConfigurationType"/>
+    <runConfigurationProducer implementation="org.hyperskill.academy.python.learning.run.PyRunTestsConfigurationProducer"/>
   </extensions>
 
   <extensions defaultExtensionNs="Pythonid">
-    <inspectionExtension implementation="com.jetbrains.edu.python.learning.highlighting.PyEduInspectionExtension"/>
-    <importResolver implementation="com.jetbrains.edu.python.learning.PyEduImportResolver"/>
+    <inspectionExtension implementation="org.hyperskill.academy.python.learning.highlighting.PyEduInspectionExtension"/>
+    <importResolver implementation="org.hyperskill.academy.python.learning.PyEduImportResolver"/>
   </extensions>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator implementationClass="com.jetbrains.edu.python.learning.PyConfigurator" language="Python"/>
-    <configurator implementationClass="com.jetbrains.edu.python.learning.PyNewConfigurator"
+    <configurator implementationClass="org.hyperskill.academy.python.learning.PyConfigurator" language="Python"/>
+    <configurator implementationClass="org.hyperskill.academy.python.learning.PyNewConfigurator"
                   language="Python"
                   environment="unittest"
                   displayName="Python"/>
@@ -26,7 +26,7 @@
 
   <actions resource-bundle="messages.EduPythonBundle">
     <action
-        id="Educational.Python.InstallDependenciesWorkaround"
-        class="com.jetbrains.edu.python.learning.InstallDependenciesWorkaroundAction"/>
+        id="HyperskillEducational.Python.InstallDependenciesWorkaround"
+        class="org.hyperskill.academy.python.learning.InstallDependenciesWorkaroundAction"/>
   </actions>
 </idea-plugin>

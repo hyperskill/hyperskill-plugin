@@ -1,10 +1,10 @@
-<idea-plugin package="com.jetbrains.edu.cpp.classic">
+<idea-plugin package="org.hyperskill.academy.cpp.classic">
   <dependencies>
     <plugin id="com.intellij.cidr.lang"/>
     <!--suppress PluginXmlValidity -->
     <module name="Edu-Cpp"/>
   </dependencies>
   <extensions defaultExtensionNs="HyperskillEducational">
-    <cppRunConfigurationHelper implementation="com.jetbrains.edu.cpp.classic.checker.ClassicCppRunConfigurationHelper"/>
+    <cppRunConfigurationHelper implementation="org.hyperskill.academy.cpp.classic.checker.ClassicCppRunConfigurationHelper"/>
   </extensions>
 </idea-plugin>

@@ -1,11 +1,11 @@
-package com.jetbrains.edu.rust.actions
+package org.hyperskill.academy.rust.actions
 
 import com.intellij.openapi.actionSystem.IdeActions
-import com.jetbrains.edu.learning.EduTestDialog
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.testAction
-import com.jetbrains.edu.learning.withEduTestDialog
+import org.hyperskill.academy.learning.EduTestDialog
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.testAction
+import org.hyperskill.academy.learning.withEduTestDialog
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 import org.rust.lang.RsLanguage

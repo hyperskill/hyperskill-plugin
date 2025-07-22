@@ -1,6 +1,6 @@
-package com.jetbrains.edu.cpp.compatibility
+package org.hyperskill.academy.cpp.compatibility
 
-import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderTestBase
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderTestBase
 
 class CppGTestCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(CppGTestCourseCompatibilityProvider::class)
 class CppCatchCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(CppCatchCourseCompatibilityProvider::class)

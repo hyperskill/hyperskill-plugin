@@ -1,18 +1,18 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
 import com.intellij.openapi.ui.Messages
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
-import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.actions.PreviousTaskAction
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillSolutionLoader
-import com.jetbrains.edu.learning.stepik.hyperskill.api.MockHyperskillConnector
-import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
+import org.hyperskill.academy.learning.actions.NextTaskAction
+import org.hyperskill.academy.learning.actions.PreviousTaskAction
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
+import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillSolutionLoader
+import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
 import org.junit.Test
 
 class HyperskillLoadingTest : SolutionLoadingTestBase() {

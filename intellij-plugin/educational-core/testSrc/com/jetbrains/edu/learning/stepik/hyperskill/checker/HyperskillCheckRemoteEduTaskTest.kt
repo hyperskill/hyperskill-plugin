@@ -1,16 +1,16 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.checker
+package org.hyperskill.academy.learning.stepik.hyperskill.checker
 
-import com.jetbrains.edu.learning.MockResponseFactory
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.pathWithoutPrams
-import com.jetbrains.edu.learning.stepik.StepikTestUtils.format
-import com.jetbrains.edu.learning.stepik.hyperskill.MockWebSocketState
-import com.jetbrains.edu.learning.stepik.hyperskill.confirmConnection
-import com.jetbrains.edu.learning.stepik.hyperskill.confirmSubscription
-import com.jetbrains.edu.learning.stepik.hyperskill.webSocketConfiguration
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import org.hyperskill.academy.learning.MockResponseFactory
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.stepik.StepikTestUtils.format
+import org.hyperskill.academy.learning.stepik.hyperskill.MockWebSocketState
+import org.hyperskill.academy.learning.stepik.hyperskill.confirmConnection
+import org.hyperskill.academy.learning.stepik.hyperskill.confirmSubscription
+import org.hyperskill.academy.learning.stepik.hyperskill.webSocketConfiguration
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 import java.util.*

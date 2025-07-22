@@ -31,7 +31,7 @@ version = "$pluginVersion-$platformVersion-$buildNumber"
 intellijPlatform {
   projectName = "JetBrainsAcademy"
   pluginConfiguration {
-    id = "com.jetbrains.edu"
+    id = "org.hyperskill.academy"
     name = "Hyperskill Academy"
     version = "$pluginVersion-$platformVersion-$buildNumber"
     changeNotes = provider { file("changes.html").readText() }
@@ -157,7 +157,7 @@ tasks {
     // Generates event scheme for Hyperskill Academy plugin FUS events to `build/eventScheme.json`
     runIde.register("buildEventsScheme") {
       task {
-        args("buildEventsScheme", "--outputFile=${buildDir()}/eventScheme.json", "--pluginId=com.jetbrains.edu")
+        args("buildEventsScheme", "--outputFile=${buildDir()}/eventScheme.json", "--pluginId=org.hyperskill.academy")
         // Force headless mode to be able to run command on CI
         systemProperty("java.awt.headless", "true")
         // BACKCOMPAT: 2025.1. Update value to 252 and this comment

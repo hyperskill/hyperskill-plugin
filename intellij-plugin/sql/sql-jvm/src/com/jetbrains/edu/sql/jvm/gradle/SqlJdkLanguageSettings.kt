@@ -1,4 +1,4 @@
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.observable.util.whenItemSelected
@@ -8,10 +8,10 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.UserDataHolder
-import com.jetbrains.edu.jvm.JdkLanguageSettings
-import com.jetbrains.edu.jvm.JdkProjectSettings
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.sql.core.EduSqlBundle
+import org.hyperskill.academy.jvm.JdkLanguageSettings
+import org.hyperskill.academy.jvm.JdkProjectSettings
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.sql.core.EduSqlBundle
 import java.awt.BorderLayout
 import java.awt.Component
 import java.util.*

@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.taskToolWindow
+package org.hyperskill.academy.learning.taskToolWindow
 
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.ui.laf.darcula.DarculaLaf
@@ -8,13 +8,13 @@ import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.openapi.keymap.impl.KeymapManagerImpl
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.ui.AppUIUtil
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-import com.jetbrains.edu.learning.courseFormat.ext.getFormattedTaskText
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.taskToolWindow.ui.JCEFToolWindow
-import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.courseFormat.ext.getFormattedTaskText
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.taskToolWindow.ui.JCEFToolWindow
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
 import org.jsoup.Jsoup
 import org.junit.Test
 import java.awt.event.InputEvent

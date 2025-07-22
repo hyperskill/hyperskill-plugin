@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.checker
+package org.hyperskill.academy.learning.checker
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.learning.courseFormat.CheckResult
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseFormat.CheckResult
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 

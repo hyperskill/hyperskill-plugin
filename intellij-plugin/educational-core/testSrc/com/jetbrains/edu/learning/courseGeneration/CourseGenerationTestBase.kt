@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.courseGeneration
+package org.hyperskill.academy.learning.courseGeneration
 
 import com.intellij.diagnostic.dumpCoroutines
 import com.intellij.openapi.application.ApplicationManager
@@ -10,19 +10,19 @@ import com.intellij.platform.backend.observation.Observation
 import com.intellij.testFramework.IndexingTestUtil
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.runInEdtAndWait
-import com.jetbrains.edu.learning.EduHeavyTestCase
-import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
-import com.jetbrains.edu.learning.assertContentsEqual
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.FileContents
-import com.jetbrains.edu.learning.courseFormat.InMemoryBinaryContents
-import com.jetbrains.edu.learning.courseFormat.InMemoryTextualContents
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.ext.disambiguateContents
-import com.jetbrains.edu.learning.newproject.EduProjectSettings
-import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
+import org.hyperskill.academy.learning.EduHeavyTestCase
+import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
+import org.hyperskill.academy.learning.assertContentsEqual
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.FileContents
+import org.hyperskill.academy.learning.courseFormat.InMemoryBinaryContents
+import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.courseFormat.ext.disambiguateContents
+import org.hyperskill.academy.learning.newproject.EduProjectSettings
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
 import kotlin.time.Duration.Companion.minutes
 
 @Suppress("UnstableApiUsage")

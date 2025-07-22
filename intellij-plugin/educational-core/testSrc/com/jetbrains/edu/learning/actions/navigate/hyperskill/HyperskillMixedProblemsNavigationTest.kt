@@ -1,11 +1,11 @@
-package com.jetbrains.edu.learning.actions.navigate.hyperskill
+package org.hyperskill.academy.learning.actions.navigate.hyperskill
 
-import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.actions.PreviousTaskAction
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_PROBLEMS
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.findTask
+import org.hyperskill.academy.learning.actions.NextTaskAction
+import org.hyperskill.academy.learning.actions.PreviousTaskAction
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROBLEMS
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.findTask
 import org.junit.Test
 
 class HyperskillMixedProblemsNavigationTest : HyperskillNavigateInCourseTestBase() {

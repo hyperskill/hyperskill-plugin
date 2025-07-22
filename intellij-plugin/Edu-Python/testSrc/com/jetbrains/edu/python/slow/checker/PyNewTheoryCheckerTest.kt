@@ -1,13 +1,13 @@
-package com.jetbrains.edu.python.slow.checker
+package org.hyperskill.academy.python.slow.checker
 
-import com.jetbrains.edu.learning.checker.CheckActionListener
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.python.PythonLanguage
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hyperskill.academy.learning.checker.CheckActionListener
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 @Suppress("PyInterpreter", "PyUnresolvedReferences")

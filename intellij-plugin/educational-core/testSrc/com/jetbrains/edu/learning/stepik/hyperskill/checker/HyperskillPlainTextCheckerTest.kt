@@ -1,19 +1,19 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.checker
+package org.hyperskill.academy.learning.stepik.hyperskill.checker
 
-import com.jetbrains.edu.learning.actions.EduActionUtils.getCurrentTask
-import com.jetbrains.edu.learning.checker.*
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
-import com.jetbrains.edu.learning.stepik.hyperskill.markStageAsCompleted
-import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
+import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
+import org.hyperskill.academy.learning.checker.*
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
+import org.hyperskill.academy.learning.stepik.hyperskill.markStageAsCompleted
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
 import org.junit.Test
 
 class HyperskillPlainTextCheckerTest : CheckersTestBase<EmptyProjectSettings>() {

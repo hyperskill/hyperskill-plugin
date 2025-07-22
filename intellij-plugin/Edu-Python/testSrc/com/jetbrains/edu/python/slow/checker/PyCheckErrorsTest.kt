@@ -1,21 +1,21 @@
-package com.jetbrains.edu.python.slow.checker
+package org.hyperskill.academy.python.slow.checker
 
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil.setDirectoryProjectSdk
-import com.jetbrains.edu.learning.checker.CheckActionListener
-import com.jetbrains.edu.learning.checker.CheckResultDiffMatcher
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.CheckResultDiff
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames
-import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.messages.EduFormatBundle
-import com.jetbrains.edu.learning.nullValue
 import com.jetbrains.python.PythonLanguage
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
+import org.hyperskill.academy.learning.checker.CheckActionListener
+import org.hyperskill.academy.learning.checker.CheckResultDiffMatcher
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.CheckResultDiff
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames
+import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.messages.EduFormatBundle
+import org.hyperskill.academy.learning.nullValue
 import org.junit.Test
 
 @Suppress("PyInterpreter", "PyUnresolvedReferences")
@@ -35,7 +35,7 @@ class PyCheckErrorsTest : PyCheckersTestBase() {
         eduTask("SyntaxError") {
           /**
            * We do not have test_helper.py here because it is generated automatically
-           * @see com.jetbrains.edu.python.learning.newproject.PyCourseProjectGenerator.createAdditionalFiles
+           * @see org.hyperskill.academy.python.learning.newproject.PyCourseProjectGenerator.createAdditionalFiles
            * */
           @Suppress("PyStatementEffect")
           pythonTaskFile("hello_world.py", """This is not Python code""")

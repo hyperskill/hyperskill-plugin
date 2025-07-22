@@ -1,9 +1,9 @@
-package com.jetbrains.edu.rules
+package org.hyperskill.academy.rules
 
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.registry.RegistryValue
-import com.jetbrains.edu.learning.isFeatureEnabled
-import com.jetbrains.edu.learning.setFeatureEnabled
+import org.hyperskill.academy.learning.isFeatureEnabled
+import org.hyperskill.academy.learning.setFeatureEnabled
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement

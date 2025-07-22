@@ -1,17 +1,17 @@
-package com.jetbrains.edu.learning.actions.navigate.hyperskill
+package org.hyperskill.academy.learning.actions.navigate.hyperskill
 
-import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.actions.PreviousTaskAction
-import com.jetbrains.edu.learning.actions.navigate.NavigationTestBase
-import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
-import com.jetbrains.edu.learning.testAction
+import org.hyperskill.academy.learning.actions.NextTaskAction
+import org.hyperskill.academy.learning.actions.PreviousTaskAction
+import org.hyperskill.academy.learning.actions.navigate.NavigationTestBase
+import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.fileTree
+import org.hyperskill.academy.learning.findTask
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
+import org.hyperskill.academy.learning.testAction
 import org.junit.Test
 
 class HyperskillTemplateBasedNavigationTest : NavigationTestBase() {

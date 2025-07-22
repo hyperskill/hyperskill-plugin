@@ -1,12 +1,12 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.Err
-import com.jetbrains.edu.learning.messages.EduFormatBundle
-import com.jetbrains.edu.learning.stepik.api.StepikBasedSubmission
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.api.MockHyperskillConnector
 import okhttp3.mockwebserver.MockResponse
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.Err
+import org.hyperskill.academy.learning.messages.EduFormatBundle
+import org.hyperskill.academy.learning.stepik.api.StepikBasedSubmission
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
 import org.junit.Test
 import java.net.HttpURLConnection.*
 

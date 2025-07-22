@@ -1,5 +1,5 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu">
-  <id>com.jetbrains.edu.sql.jvm</id>
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy">
+  <id>org.hyperskill.academy.sql.jvm</id>
   <xi:include href="/META-INF/educational-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <!--suppress PluginXmlValidity -->

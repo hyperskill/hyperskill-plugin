@@ -1,10 +1,10 @@
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
 import com.intellij.sql.psi.SqlLanguage
-import com.jetbrains.edu.learning.CourseBuilder
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.CourseBuilder
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 
 fun sqlCourse(
   courseMode: CourseMode = CourseMode.STUDENT,

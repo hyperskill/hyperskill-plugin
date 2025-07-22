@@ -1,10 +1,10 @@
 // Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
-package com.jetbrains.edu.learning.courseView
+package org.hyperskill.academy.learning.courseView
 
-import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.junit.Test
 
 class NodesTest : CourseViewTestBase() {

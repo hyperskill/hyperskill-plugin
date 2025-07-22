@@ -1,16 +1,16 @@
-package com.jetbrains.edu.sql.jvm.gradle.action
+package org.hyperskill.academy.sql.jvm.gradle.action
 
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.sql.dialects.SqlDialectMappings
 import com.intellij.sql.dialects.h2.H2Dialect
-import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.actions.RevertTaskAction
-import com.jetbrains.edu.learning.checker.CheckUtils
-import com.jetbrains.edu.sql.jvm.gradle.SqlCourseGenerationTestBase
-import com.jetbrains.edu.sql.jvm.gradle.SqlGradleCourseBuilder.Companion.INIT_SQL
-import com.jetbrains.edu.sql.jvm.gradle.createDatabaseScriptConfiguration
-import com.jetbrains.edu.sql.jvm.gradle.sqlCourse
+import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.actions.RevertTaskAction
+import org.hyperskill.academy.learning.checker.CheckUtils
+import org.hyperskill.academy.sql.jvm.gradle.SqlCourseGenerationTestBase
+import org.hyperskill.academy.sql.jvm.gradle.SqlGradleCourseBuilder.Companion.INIT_SQL
+import org.hyperskill.academy.sql.jvm.gradle.createDatabaseScriptConfiguration
+import org.hyperskill.academy.sql.jvm.gradle.sqlCourse
 import org.junit.Test
 
 class SqlRevertTaskActionTest : SqlCourseGenerationTestBase() {
@@ -45,7 +45,7 @@ class SqlRevertTaskActionTest : SqlCourseGenerationTestBase() {
 
     val sqlFile = findFile("lesson1/task1/src/task.sql")
     // Needed only not to fail on `Application#assertReadAccessAllowed` during script execution.
-    // The same as in `com.jetbrains.edu.sql.jvm.gradle.SqlUtilsKt.setSqlMappingForInitScripts`
+    // The same as in `org.hyperskill.academy.sql.jvm.gradle.SqlUtilsKt.setSqlMappingForInitScripts`
     SqlDialectMappings.getInstance(project).setMapping(sqlFile, H2Dialect.INSTANCE)
 
     val configuration = task.createDatabaseScriptConfiguration(project, sqlFile)

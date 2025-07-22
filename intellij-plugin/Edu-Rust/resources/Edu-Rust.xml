@@ -1,4 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.rust">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy.rust">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.jetbrains.rust"/>
@@ -9,14 +9,14 @@
   <xi:include href="/Edu-Rust-platform.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator language="Rust" implementationClass="com.jetbrains.edu.rust.RsConfigurator"/>
+    <configurator language="Rust" implementationClass="org.hyperskill.academy.rust.RsConfigurator"/>
   </extensions>
 
   <actions>
     <!-- Temporary internal action to check Learn Rust course creation like in RustRover banner -->
     <!-- https://youtrack.jetbrains.com/issue/EDU-8189 -->
-    <action id="OpenLearnRustCourseAction"
-            class="com.jetbrains.edu.rust.learn.OpenLearnRustCourseAction"
+    <action id="HyperskillEducational.OpenLearnRustCourseAction"
+            class="org.hyperskill.academy.rust.learn.OpenLearnRustCourseAction"
             text="Open Learn Rust"
             internal="true"/>
   </actions>

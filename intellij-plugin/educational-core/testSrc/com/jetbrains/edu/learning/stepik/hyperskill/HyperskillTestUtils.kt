@@ -1,18 +1,18 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
 import com.intellij.lang.Language
-import com.jetbrains.edu.learning.CourseBuilder
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.authUtils.TokenInfo
-import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillAccount
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillUserInfo
-import com.jetbrains.edu.learning.stepik.hyperskill.settings.HyperskillSettings
+import org.hyperskill.academy.learning.CourseBuilder
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.authUtils.TokenInfo
+import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillAccount
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillUserInfo
+import org.hyperskill.academy.learning.stepik.hyperskill.settings.HyperskillSettings
 import org.jetbrains.annotations.TestOnly
 
 const val TEST_HYPERSKILL_PROJECT_NAME = "Test Hyperskill Project"

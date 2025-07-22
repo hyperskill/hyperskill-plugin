@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.configurators.FakeGradleHyperskillConfigurator
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.tasks.CodeTask
-import com.jetbrains.edu.learning.findTask
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.configurators.FakeGradleHyperskillConfigurator
+import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
+import org.hyperskill.academy.learning.findTask
 import org.junit.Test
 
 class HyperskillFindCodeTaskFileTest : EduTestCase() {

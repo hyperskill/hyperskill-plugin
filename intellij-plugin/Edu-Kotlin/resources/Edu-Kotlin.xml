@@ -1,4 +1,4 @@
-<idea-plugin package="com.jetbrains.edu.kotlin">
+<idea-plugin package="org.hyperskill.academy.kotlin">
   <dependencies>
     <!--suppress PluginXmlValidity -->
     <module name="jvm-core"/>
@@ -13,11 +13,11 @@
   </extensions>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator implementationClass="com.jetbrains.edu.kotlin.KtConfigurator" language="kotlin"/>
-    <mainFileProvider language="kotlin" implementationClass="com.jetbrains.edu.kotlin.KtMainFileProvider"/>
+    <configurator implementationClass="org.hyperskill.academy.kotlin.KtConfigurator" language="kotlin"/>
+    <mainFileProvider language="kotlin" implementationClass="org.hyperskill.academy.kotlin.KtMainFileProvider"/>
 
     <!-- Hyperskill -->
-    <configurator implementationClass="com.jetbrains.edu.kotlin.hyperskill.KtHyperskillConfigurator" language="kotlin"
+    <configurator implementationClass="org.hyperskill.academy.kotlin.hyperskill.KtHyperskillConfigurator" language="kotlin"
                   courseType="Hyperskill"/>
   </extensions>
 </idea-plugin>

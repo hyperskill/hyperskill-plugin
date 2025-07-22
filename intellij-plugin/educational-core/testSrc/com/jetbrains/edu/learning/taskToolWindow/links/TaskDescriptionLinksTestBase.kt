@@ -1,7 +1,7 @@
-package com.jetbrains.edu.learning.taskToolWindow.links
+package org.hyperskill.academy.learning.taskToolWindow.links
 
 import com.intellij.testFramework.PlatformTestUtil
-import com.jetbrains.edu.learning.EduTestCase
+import org.hyperskill.academy.learning.EduTestCase
 
 abstract class TaskDescriptionLinksTestBase : EduTestCase() {
 

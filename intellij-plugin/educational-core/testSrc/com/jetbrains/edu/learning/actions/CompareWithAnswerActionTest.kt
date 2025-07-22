@@ -1,18 +1,18 @@
-package com.jetbrains.edu.learning.actions
+package org.hyperskill.academy.learning.actions
 
 import com.intellij.diff.chains.SimpleDiffRequestChain
 import com.intellij.diff.chains.SimpleDiffRequestChain.DiffRequestProducerWrapper
 import com.intellij.diff.contents.DocumentContent
 import com.intellij.diff.requests.SimpleDiffRequest
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.learning.EduActionTestCase
-import com.jetbrains.edu.learning.EduBrowser
-import com.jetbrains.edu.learning.MockEduBrowser
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.stepik.hyperskill.HYPERSKILL_SOLUTIONS_ANCHOR
-import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
-import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillTaskLink
-import com.jetbrains.edu.learning.testAction
+import org.hyperskill.academy.learning.EduActionTestCase
+import org.hyperskill.academy.learning.EduBrowser
+import org.hyperskill.academy.learning.MockEduBrowser
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.stepik.hyperskill.HYPERSKILL_SOLUTIONS_ANCHOR
+import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourseWithFiles
+import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillTaskLink
+import org.hyperskill.academy.learning.testAction
 import org.junit.Test
 
 class CompareWithAnswerActionTest : EduActionTestCase() {

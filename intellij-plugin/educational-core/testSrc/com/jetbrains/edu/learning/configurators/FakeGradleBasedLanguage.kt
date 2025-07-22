@@ -1,25 +1,25 @@
 @file:Suppress("HardCodedStringLiteral")
 
-package com.jetbrains.edu.learning.configurators
+package org.hyperskill.academy.learning.configurators
 
 import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.checker.TaskChecker
-import com.jetbrains.edu.learning.checker.TaskCheckerProvider
-import com.jetbrains.edu.learning.configuration.EduConfigurator
-import com.jetbrains.edu.learning.courseFormat.CheckResult
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.EduFile
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.gradle.GradleConstants.BUILD_GRADLE
-import com.jetbrains.edu.learning.gradle.GradleConstants.SETTINGS_GRADLE
-import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
-import com.jetbrains.edu.learning.stepik.hyperskill.HyperskillConfigurator
+import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.checker.TaskChecker
+import org.hyperskill.academy.learning.checker.TaskCheckerProvider
+import org.hyperskill.academy.learning.configuration.EduConfigurator
+import org.hyperskill.academy.learning.courseFormat.CheckResult
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.EduFile
+import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
+import org.hyperskill.academy.learning.gradle.GradleConstants.BUILD_GRADLE
+import org.hyperskill.academy.learning.gradle.GradleConstants.SETTINGS_GRADLE
+import org.hyperskill.academy.learning.newproject.CourseProjectGenerator
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
+import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillConfigurator
 import javax.swing.Icon
 
 object FakeGradleBasedLanguage : Language("FakeGradleBasedLanguage")

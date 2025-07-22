@@ -1,20 +1,20 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.projectOpen
+package org.hyperskill.academy.learning.stepik.hyperskill.projectOpen
 
 import com.intellij.openapi.application.ApplicationNamesInfo
-import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
-import com.jetbrains.edu.learning.courseFormat.ext.CourseValidationResult
-import com.jetbrains.edu.learning.courseFormat.ext.PluginsRequired
-import com.jetbrains.edu.learning.hasParams
-import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.onError
-import com.jetbrains.edu.learning.pathWithoutPrams
-import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
-import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepRequest
-import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepWithProjectRequest
-import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourse
-import com.jetbrains.edu.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.StepInfo
-import com.jetbrains.edu.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.TopicInfo
+import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
+import org.hyperskill.academy.learning.courseFormat.ext.CourseValidationResult
+import org.hyperskill.academy.learning.courseFormat.ext.PluginsRequired
+import org.hyperskill.academy.learning.hasParams
+import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.onError
+import org.hyperskill.academy.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepRequest
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepWithProjectRequest
+import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourse
+import org.hyperskill.academy.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.StepInfo
+import org.hyperskill.academy.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.TopicInfo
 import org.junit.Test
 
 

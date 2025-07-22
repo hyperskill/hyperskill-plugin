@@ -1,6 +1,6 @@
-package com.jetbrains.edu.learning.format
+package org.hyperskill.academy.learning.format
 
-import com.jetbrains.edu.learning.courseFormat.messageMethod
+import org.hyperskill.academy.learning.courseFormat.messageMethod
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

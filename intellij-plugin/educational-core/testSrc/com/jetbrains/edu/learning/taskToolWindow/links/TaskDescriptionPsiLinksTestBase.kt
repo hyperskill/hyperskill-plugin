@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.taskToolWindow.links
+package org.hyperskill.academy.learning.taskToolWindow.links
 
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.learning.FileTreeBuilder
-import com.jetbrains.edu.learning.fileTree
+import org.hyperskill.academy.learning.FileTreeBuilder
+import org.hyperskill.academy.learning.fileTree
 
 abstract class TaskDescriptionPsiLinksTestBase : TaskDescriptionLinksTestBase() {
 

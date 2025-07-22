@@ -1,12 +1,12 @@
-package com.jetbrains.edu.javascript.courseGeneration
+package org.hyperskill.academy.javascript.courseGeneration
 
 import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterManager
 import com.intellij.lang.javascript.JavascriptLanguage
 import com.intellij.openapi.project.ProjectManager
-import com.jetbrains.edu.javascript.learning.JsNewProjectSettings
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.fileTree
+import org.hyperskill.academy.javascript.learning.JsNewProjectSettings
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.fileTree
 import org.junit.Test
 
 class JsCourseBuilderTest : CourseGenerationTestBase<JsNewProjectSettings>() {

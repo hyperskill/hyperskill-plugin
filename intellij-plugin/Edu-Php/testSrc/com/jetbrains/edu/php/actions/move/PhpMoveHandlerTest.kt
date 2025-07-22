@@ -1,9 +1,9 @@
-package com.jetbrains.edu.php.actions.move
+package org.hyperskill.academy.php.actions.move
 
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.learning.actions.move.MoveHandlerTestBase
-import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.php.lang.PhpLanguage
+import org.hyperskill.academy.learning.actions.move.MoveHandlerTestBase
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 class PhpMoveHandlerTest : MoveHandlerTestBase(PhpLanguage.INSTANCE) {

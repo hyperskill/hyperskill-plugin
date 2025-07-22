@@ -1,11 +1,11 @@
-package com.jetbrains.edu.rust.slow.checker
+package org.hyperskill.academy.rust.slow.checker
 
-import com.jetbrains.edu.learning.checker.CheckActionListener
-import com.jetbrains.edu.learning.checker.CheckUtils
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.courseFormat.tasks.OutputTask
+import org.hyperskill.academy.learning.checker.CheckActionListener
+import org.hyperskill.academy.learning.checker.CheckUtils
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
+import org.hyperskill.academy.learning.courseFormat.tasks.OutputTask
 import org.junit.Test
 import org.rust.lang.RsLanguage
 

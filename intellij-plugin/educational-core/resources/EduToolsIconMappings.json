@@ -5,59 +5,59 @@
         "edu" : {
           "expui" : {
             "actions" : {
-              "applyCode.svg" : "icons/com/jetbrains/edu/learning/applyCode.svg",
-              "commentTask.svg" : "icons/com/jetbrains/edu/learning/commentTask.svg",
-              "eduCourse.svg" : "icons/com/jetbrains/edu/eduCourseAction.svg",
-              "loggedInUser.svg" : "icons/com/jetbrains/edu/learning/loggedInUser.svg",
-              "rateCourse.svg" : "icons/com/jetbrains/edu/learning/rateCourse.svg",
-              "resetTask.svg" : "icons/com/jetbrains/edu/learning/resetTask.svg",
-              "syncChanges.svg" : "icons/com/jetbrains/edu/syncFiles.svg"
+              "applyCode.svg" : "icons/org/hyperskill/academy/learning/applyCode.svg",
+              "commentTask.svg" : "icons/org/hyperskill/academy/learning/commentTask.svg",
+              "eduCourse.svg" : "icons/org/hyperskill/academy/eduCourseAction.svg",
+              "loggedInUser.svg" : "icons/org/hyperskill/academy/learning/loggedInUser.svg",
+              "rateCourse.svg" : "icons/org/hyperskill/academy/learning/rateCourse.svg",
+              "resetTask.svg" : "icons/org/hyperskill/academy/learning/resetTask.svg",
+              "syncChanges.svg" : "icons/org/hyperskill/academy/syncFiles.svg"
             },
             "checkPanel" : {
-              "checkDetails.svg" : "icons/com/jetbrains/edu/learning/checkDetailsToolWindow.svg",
-              "resultCorrect.svg" : "icons/com/jetbrains/edu/learning/resultCorrect.svg",
-              "resultIncorrect.svg" : "icons/com/jetbrains/edu/learning/resultIncorrect.svg"
+              "checkDetails.svg" : "icons/org/hyperskill/academy/learning/checkDetailsToolWindow.svg",
+              "resultCorrect.svg" : "icons/org/hyperskill/academy/learning/resultCorrect.svg",
+              "resultIncorrect.svg" : "icons/org/hyperskill/academy/learning/resultIncorrect.svg"
             },
             "courseView" : {
-              "eduCourseTree.svg" : "icons/com/jetbrains/edu/eduCourseTree.svg",
-              "eduLessonDefault.svg" : "icons/com/jetbrains/edu/eduLessonDefault.svg",
-              "eduLessonDone.svg" : "icons/com/jetbrains/edu/eduLessonDone.svg",
-              "eduSectionDefault.svg" : "icons/com/jetbrains/edu/eduSectionDefault.svg",
-              "eduSectionDone.svg" : "icons/com/jetbrains/edu/eduSectionDone.svg",
-              "eduTaskDefault.svg" : "icons/com/jetbrains/edu/eduTaskDefault.svg",
-              "eduTaskDone.svg" : "icons/com/jetbrains/edu/eduTaskDone.svg",
-              "eduTaskFailed.svg" : "icons/com/jetbrains/edu/eduTaskFailed.svg",
-              "eduTaskIdeDefault.svg" : "icons/com/jetbrains/edu/eduTaskIdeDefault.svg",
-              "eduTaskIdeDone.svg" : "icons/com/jetbrains/edu/eduTaskIdeDone.svg",
+              "eduCourseTree.svg" : "icons/org/hyperskill/academy/eduCourseTree.svg",
+              "eduLessonDefault.svg" : "icons/org/hyperskill/academy/eduLessonDefault.svg",
+              "eduLessonDone.svg" : "icons/org/hyperskill/academy/eduLessonDone.svg",
+              "eduSectionDefault.svg" : "icons/org/hyperskill/academy/eduSectionDefault.svg",
+              "eduSectionDone.svg" : "icons/org/hyperskill/academy/eduSectionDone.svg",
+              "eduTaskDefault.svg" : "icons/org/hyperskill/academy/eduTaskDefault.svg",
+              "eduTaskDone.svg" : "icons/org/hyperskill/academy/eduTaskDone.svg",
+              "eduTaskFailed.svg" : "icons/org/hyperskill/academy/eduTaskFailed.svg",
+              "eduTaskIdeDefault.svg" : "icons/org/hyperskill/academy/eduTaskIdeDefault.svg",
+              "eduTaskIdeDone.svg" : "icons/org/hyperskill/academy/eduTaskIdeDone.svg",
               "eduTaskTheoryDefault.svg" : [
-                "icons/com/jetbrains/edu/eduTaskTheoryDefault.svg",
-                "icons/com/jetbrains/edu/eduNavigationMapTheoryTask.svg"
+                "icons/org/hyperskill/academy/eduTaskTheoryDefault.svg",
+                "icons/org/hyperskill/academy/eduNavigationMapTheoryTask.svg"
               ],
-              "eduTaskTheoryDone.svg" : "icons/com/jetbrains/edu/eduTaskTheoryDone.svg",
-              "usersNumber.svg" : "icons/com/jetbrains/edu/usersNumber.svg"
+              "eduTaskTheoryDone.svg" : "icons/org/hyperskill/academy/eduTaskTheoryDone.svg",
+              "usersNumber.svg" : "icons/org/hyperskill/academy/usersNumber.svg"
             },
             "language" : {
-              "logoAndroid.svg" : "icons/com/jetbrains/edu/learning/AndroidLogo.svg",
-              "logoCAndC++.svg" : "icons/com/jetbrains/edu/learning/CAndC++Logo.svg",
-              "logoGo.svg" : "icons/com/jetbrains/edu/learning/GoLogo.svg",
-              "logoJava.svg" : "icons/com/jetbrains/edu/learning/JavaLogo.svg",
-              "logoJavaScript.svg" : "icons/com/jetbrains/edu/learning/JavaScriptLogo.svg",
-              "logoKotlin.svg" : "icons/com/jetbrains/edu/learning/KotlinLogo.svg",
-              "logoPHP.svg" : "icons/com/jetbrains/edu/learning/PhpLogo.svg",
-              "logoPython.svg" : "icons/com/jetbrains/edu/learning/PythonLogo.svg",
-              "logoRust.svg" : "icons/com/jetbrains/edu/learning/RustLogo.svg",
-              "logoScala.svg" : "icons/com/jetbrains/edu/learning/ScalaLogo.svg",
-              "logoShell.svg" : "icons/com/jetbrains/edu/learning/ShellLogo.svg"
+              "logoAndroid.svg" : "icons/org/hyperskill/academy/learning/AndroidLogo.svg",
+              "logoCAndC++.svg" : "icons/org/hyperskill/academy/learning/CAndC++Logo.svg",
+              "logoGo.svg" : "icons/org/hyperskill/academy/learning/GoLogo.svg",
+              "logoJava.svg" : "icons/org/hyperskill/academy/learning/JavaLogo.svg",
+              "logoJavaScript.svg" : "icons/org/hyperskill/academy/learning/JavaScriptLogo.svg",
+              "logoKotlin.svg" : "icons/org/hyperskill/academy/learning/KotlinLogo.svg",
+              "logoPHP.svg" : "icons/org/hyperskill/academy/learning/PhpLogo.svg",
+              "logoPython.svg" : "icons/org/hyperskill/academy/learning/PythonLogo.svg",
+              "logoRust.svg" : "icons/org/hyperskill/academy/learning/RustLogo.svg",
+              "logoScala.svg" : "icons/org/hyperskill/academy/learning/ScalaLogo.svg",
+              "logoShell.svg" : "icons/org/hyperskill/academy/learning/ShellLogo.svg"
             },
             "platform" : {
-              "jetBrainsAcademy@24x24.svg" : "icons/com/jetbrains/edu/learning/JB_academy_course_tab.svg",
-              "hyperskill.svg" : "icons/com/jetbrains/edu/learning/JB_academy.svg"
+              "jetBrainsAcademy@24x24.svg" : "icons/org/hyperskill/academy/learning/JB_academy_course_tab.svg",
+              "hyperskill.svg" : "icons/org/hyperskill/academy/learning/JB_academy.svg"
             },
             "taskToolWindow" : {
-              "clock.svg" : "icons/com/jetbrains/edu/learning/clock.svg",
-              "courseToolWindow.svg" : "icons/com/jetbrains/edu/eduCourseTask.svg",
-              "moveDown.svg" : "icons/com/jetbrains/edu/learning/moveDown.svg",
-              "moveUp.svg" : "icons/com/jetbrains/edu/learning/moveUp.svg"
+              "clock.svg" : "icons/org/hyperskill/academy/learning/clock.svg",
+              "courseToolWindow.svg" : "icons/org/hyperskill/academy/eduCourseTask.svg",
+              "moveDown.svg" : "icons/org/hyperskill/academy/learning/moveDown.svg",
+              "moveUp.svg" : "icons/org/hyperskill/academy/learning/moveUp.svg"
             }
           }
         }

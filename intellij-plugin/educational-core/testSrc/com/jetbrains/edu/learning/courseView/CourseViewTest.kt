@@ -1,19 +1,19 @@
 // Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
-package com.jetbrains.edu.learning.courseView
+package org.hyperskill.academy.learning.courseView
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.util.ui.tree.TreeUtil
-import com.jetbrains.edu.learning.EduTestDialog
-import com.jetbrains.edu.learning.actions.CheckAction
-import com.jetbrains.edu.learning.actions.RevertTaskAction
-import com.jetbrains.edu.learning.projectView.CourseViewPane
-import com.jetbrains.edu.learning.projectView.FrameworkLessonNode
-import com.jetbrains.edu.learning.testAction
-import com.jetbrains.edu.learning.ui.getUICheckLabel
-import com.jetbrains.edu.learning.withEduTestDialog
+import org.hyperskill.academy.learning.EduTestDialog
+import org.hyperskill.academy.learning.actions.CheckAction
+import org.hyperskill.academy.learning.actions.RevertTaskAction
+import org.hyperskill.academy.learning.projectView.CourseViewPane
+import org.hyperskill.academy.learning.projectView.FrameworkLessonNode
+import org.hyperskill.academy.learning.testAction
+import org.hyperskill.academy.learning.ui.getUICheckLabel
+import org.hyperskill.academy.learning.withEduTestDialog
 import org.junit.Test
 import javax.swing.tree.DefaultMutableTreeNode
 

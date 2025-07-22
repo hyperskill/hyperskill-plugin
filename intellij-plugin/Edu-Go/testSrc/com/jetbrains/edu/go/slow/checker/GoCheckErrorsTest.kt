@@ -1,16 +1,16 @@
-package com.jetbrains.edu.go.slow.checker
+package org.hyperskill.academy.go.slow.checker
 
 import com.goide.GoLanguage
-import com.jetbrains.edu.learning.checker.CheckActionListener
-import com.jetbrains.edu.learning.checker.CheckResultDiffMatcher
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.CheckResultDiff
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.nullValue
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hyperskill.academy.learning.checker.CheckActionListener
+import org.hyperskill.academy.learning.checker.CheckResultDiffMatcher
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.CheckResultDiff
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.nullValue
 import org.junit.Test
 
 class GoCheckErrorsTest : GoCheckersTestBase() {

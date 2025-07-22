@@ -1,11 +1,11 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.newvfs.NewVirtualFile
-import com.jetbrains.edu.learning.actions.navigate.NavigationTestBase
-import com.jetbrains.edu.learning.newproject.CourseProjectGenerator
+import org.hyperskill.academy.learning.actions.navigate.NavigationTestBase
+import org.hyperskill.academy.learning.newproject.CourseProjectGenerator
 
 abstract class SolutionLoadingTestBase : NavigationTestBase() {
   override fun setUp() {

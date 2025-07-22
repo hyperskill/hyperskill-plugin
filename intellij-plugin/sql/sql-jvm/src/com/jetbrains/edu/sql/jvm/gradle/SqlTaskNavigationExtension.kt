@@ -1,9 +1,9 @@
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.navigation.TaskNavigationExtension
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.navigation.TaskNavigationExtension
 
 class SqlTaskNavigationExtension : TaskNavigationExtension {
   override fun onTaskNavigation(project: Project, task: Task, fromTask: Task?) {

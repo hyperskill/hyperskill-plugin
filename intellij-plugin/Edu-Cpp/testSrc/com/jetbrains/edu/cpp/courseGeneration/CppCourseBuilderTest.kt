@@ -1,10 +1,10 @@
-package com.jetbrains.edu.cpp.courseGeneration
+package org.hyperskill.academy.cpp.courseGeneration
 
 import com.jetbrains.cidr.lang.OCLanguage
-import com.jetbrains.edu.cpp.CppProjectSettings
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.fileTree
+import org.hyperskill.academy.cpp.CppProjectSettings
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.fileTree
 import org.junit.Test
 
 class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {

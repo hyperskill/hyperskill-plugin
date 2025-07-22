@@ -1,9 +1,9 @@
-package com.jetbrains.edu.learning.actions.taskFile
+package org.hyperskill.academy.learning.actions.taskFile
 
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.ReadOnlyModificationException
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.document
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.document
 import org.junit.Test
 
 class ChangeFileEditableTest : EduTestCase() {

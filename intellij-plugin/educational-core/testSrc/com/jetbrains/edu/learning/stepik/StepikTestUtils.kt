@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.stepik
+package org.hyperskill.academy.learning.stepik
 
 import java.text.SimpleDateFormat
 import java.util.*

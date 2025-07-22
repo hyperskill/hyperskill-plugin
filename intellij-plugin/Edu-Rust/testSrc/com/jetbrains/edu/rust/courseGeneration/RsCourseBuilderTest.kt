@@ -1,9 +1,9 @@
-package com.jetbrains.edu.rust.courseGeneration
+package org.hyperskill.academy.rust.courseGeneration
 
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.rust.RsProjectSettings
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.fileTree
+import org.hyperskill.academy.rust.RsProjectSettings
 import org.junit.Test
 import org.rust.lang.RsLanguage
 

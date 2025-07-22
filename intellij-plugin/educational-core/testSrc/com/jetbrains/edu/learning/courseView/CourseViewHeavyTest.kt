@@ -1,15 +1,15 @@
-package com.jetbrains.edu.learning.courseView
+package org.hyperskill.academy.learning.courseView
 
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.util.BuildNumber
 import com.intellij.testFramework.PlatformTestUtil
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.getContainingTask
-import com.jetbrains.edu.learning.navigation.NavigationUtils
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
-import com.jetbrains.edu.learning.projectView.CourseViewPane
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.getContainingTask
+import org.hyperskill.academy.learning.navigation.NavigationUtils
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
+import org.hyperskill.academy.learning.projectView.CourseViewPane
 import org.junit.Test
 import javax.swing.JTree
 

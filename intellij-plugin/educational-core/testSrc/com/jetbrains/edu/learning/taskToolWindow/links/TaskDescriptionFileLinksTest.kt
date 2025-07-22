@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.taskToolWindow.links
+package org.hyperskill.academy.learning.taskToolWindow.links
 
 import com.intellij.openapi.fileEditor.FileEditorManager
 import org.junit.Test

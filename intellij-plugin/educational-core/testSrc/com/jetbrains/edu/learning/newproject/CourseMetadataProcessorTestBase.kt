@@ -1,7 +1,7 @@
-package com.jetbrains.edu.learning.newproject
+package org.hyperskill.academy.learning.newproject
 
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
 
 abstract class CourseMetadataProcessorTestBase : CourseGenerationTestBase<EmptyProjectSettings>() {
   override val defaultSettings: EmptyProjectSettings get() = EmptyProjectSettings

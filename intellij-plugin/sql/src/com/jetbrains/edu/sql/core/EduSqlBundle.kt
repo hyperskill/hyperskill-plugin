@@ -1,6 +1,6 @@
-package com.jetbrains.edu.sql.core
+package org.hyperskill.academy.sql.core
 
-import com.jetbrains.edu.learning.messages.EduBundle
+import org.hyperskill.academy.learning.messages.EduBundle
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 

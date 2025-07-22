@@ -1,9 +1,9 @@
-package com.jetbrains.edu.cpp
+package org.hyperskill.academy.cpp
 
 import com.jetbrains.cmake.CMakeListsFileType
-import com.jetbrains.edu.learning.EduTestCase
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.text.IsEqualIgnoringCase
+import org.hyperskill.academy.learning.EduTestCase
 import org.junit.Test
 
 class CppUtilTest : EduTestCase() {

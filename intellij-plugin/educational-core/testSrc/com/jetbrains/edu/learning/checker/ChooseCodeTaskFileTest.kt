@@ -1,9 +1,9 @@
-package com.jetbrains.edu.learning.checker
+package org.hyperskill.academy.learning.checker
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.ext.getCodeTaskFile
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.findTask
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.ext.getCodeTaskFile
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.findTask
 import org.junit.Test
 
 class ChooseCodeTaskFileTest : EduTestCase() {

@@ -1,16 +1,16 @@
-package com.jetbrains.edu.learning.stepik.hyperskill
+package org.hyperskill.academy.learning.stepik.hyperskill
 
-import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.actions.PreviousTaskAction
-import com.jetbrains.edu.learning.actions.navigate.NavigationTestBase
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillConnector
-import com.jetbrains.edu.learning.stepik.hyperskill.api.HyperskillSolutionLoader
-import com.jetbrains.edu.learning.stepik.hyperskill.api.MockHyperskillConnector
+import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.actions.NextTaskAction
+import org.hyperskill.academy.learning.actions.PreviousTaskAction
+import org.hyperskill.academy.learning.actions.navigate.NavigationTestBase
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
+import org.hyperskill.academy.learning.courseFormat.ext.allTasks
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillSolutionLoader
+import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 
@@ -156,7 +156,7 @@ class HyperskillConsideringTestFilesTest : NavigationTestBase() {
           }
           dir(EduNames.TEST) {
             // Not updated because file inside EduNames.TEST and this folder is specified at
-            // com.jetbrains.edu.learning.configurators.FakeGradleConfigurator.getTestDirs
+            // org.hyperskill.academy.learning.configurators.FakeGradleConfigurator.getTestDirs
             file(USER_VISIBLE_TEST_FILE_NAME, "fun myTest() {}")
           }
           // Not updated

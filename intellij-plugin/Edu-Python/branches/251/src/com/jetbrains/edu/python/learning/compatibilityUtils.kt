@@ -1,4 +1,4 @@
-package com.jetbrains.edu.python.learning
+package org.hyperskill.academy.python.learning
 
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.projectRoots.Sdk

@@ -1,9 +1,9 @@
-package com.jetbrains.edu.javascript.actions.move
+package org.hyperskill.academy.javascript.actions.move
 
 import com.intellij.lang.javascript.JavascriptLanguage
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.learning.actions.move.MoveHandlerTestBase
-import com.jetbrains.edu.learning.courseFormat.Course
+import org.hyperskill.academy.learning.actions.move.MoveHandlerTestBase
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 class JsMoveHandlerTest : MoveHandlerTestBase(JavascriptLanguage) {

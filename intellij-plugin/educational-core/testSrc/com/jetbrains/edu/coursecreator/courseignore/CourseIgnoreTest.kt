@@ -1,9 +1,9 @@
-package com.jetbrains.edu.coursecreator.courseignore
+package org.hyperskill.academy.coursecreator.courseignore
 
-import com.jetbrains.edu.coursecreator.AdditionalFilesUtils
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.findTask
+import org.hyperskill.academy.coursecreator.AdditionalFilesUtils
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.findTask
 import org.junit.Test
 
 

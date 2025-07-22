@@ -1,8 +1,8 @@
-package com.jetbrains.edu.learning.update
+package org.hyperskill.academy.learning.update
 
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.fileTree
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.fileTree
 import org.junit.Test
 
 abstract class LessonUpdateTestBase<T : Course> : UpdateTestBase<T>() {

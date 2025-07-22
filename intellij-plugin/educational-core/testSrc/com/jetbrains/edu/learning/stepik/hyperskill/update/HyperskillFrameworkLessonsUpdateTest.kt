@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.update
+package org.hyperskill.academy.learning.stepik.hyperskill.update
 
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.update.CourseUpdater
-import com.jetbrains.edu.learning.update.FrameworkLessonsUpdateTest
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.update.CourseUpdater
+import org.hyperskill.academy.learning.update.FrameworkLessonsUpdateTest
 
 class HyperskillFrameworkLessonsUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>() {
 

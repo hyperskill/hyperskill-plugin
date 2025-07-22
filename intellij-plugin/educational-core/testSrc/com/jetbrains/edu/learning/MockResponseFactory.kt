@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import okhttp3.mockwebserver.MockResponse
 import okio.Buffer

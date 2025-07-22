@@ -1,12 +1,12 @@
-package com.jetbrains.edu.learning.framework.impl.migration
+package org.hyperskill.academy.learning.framework.impl.migration
 
 import com.intellij.openapi.util.Disposer
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.framework.impl.Change
-import com.jetbrains.edu.learning.framework.impl.FrameworkLessonManagerImpl
-import com.jetbrains.edu.learning.framework.impl.FrameworkStorage
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.framework.impl.Change
+import org.hyperskill.academy.learning.framework.impl.FrameworkLessonManagerImpl
+import org.hyperskill.academy.learning.framework.impl.FrameworkStorage
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
 import org.junit.Test
 
 class FrameworkStorageMigrationTest : CourseGenerationTestBase<EmptyProjectSettings>() {

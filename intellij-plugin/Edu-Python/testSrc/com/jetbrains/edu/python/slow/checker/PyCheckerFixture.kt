@@ -1,14 +1,14 @@
-package com.jetbrains.edu.python.slow.checker
+package org.hyperskill.academy.python.slow.checker
 
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.testFramework.runInEdtAndWait
-import com.jetbrains.edu.learning.checker.EduCheckerFixture
-import com.jetbrains.edu.python.learning.newproject.PyProjectSettings
-import com.jetbrains.edu.python.learning.newproject.PySdkToCreateVirtualEnv
 import com.jetbrains.python.sdk.PythonSdkType
 import com.jetbrains.python.sdk.flavors.PythonSdkFlavor
+import org.hyperskill.academy.learning.checker.EduCheckerFixture
+import org.hyperskill.academy.python.learning.newproject.PyProjectSettings
+import org.hyperskill.academy.python.learning.newproject.PySdkToCreateVirtualEnv
 import java.nio.file.Paths
 
 class PyCheckerFixture : EduCheckerFixture<PyProjectSettings>() {

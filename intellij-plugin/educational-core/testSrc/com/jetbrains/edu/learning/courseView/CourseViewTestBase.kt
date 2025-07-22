@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning.courseView
+package org.hyperskill.academy.learning.courseView
 
 import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.util.ui.tree.TreeUtil
-import com.jetbrains.edu.learning.EduActionTestCase
-import com.jetbrains.edu.learning.projectView.CourseViewPane
+import org.hyperskill.academy.learning.EduActionTestCase
+import org.hyperskill.academy.learning.projectView.CourseViewPane
 
 abstract class CourseViewTestBase : EduActionTestCase() {
   protected fun assertCourseView(structure: String) {

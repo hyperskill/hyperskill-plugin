@@ -1,13 +1,13 @@
-package com.jetbrains.edu.learning.courseView
+package org.hyperskill.academy.learning.courseView
 
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.ProjectViewTestUtil
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.navigation.NavigationUtils
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
-import com.jetbrains.edu.learning.projectView.CourseViewPane
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.navigation.NavigationUtils
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
+import org.hyperskill.academy.learning.projectView.CourseViewPane
 
 abstract class CourseViewHeavyTestBase : CourseGenerationTestBase<EmptyProjectSettings>() {
 

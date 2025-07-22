@@ -1,8 +1,8 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.testFramework.HeavyPlatformTestCase
-import com.jetbrains.edu.rules.CustomValuesRule
 import io.mockk.clearAllMocks
+import org.hyperskill.academy.rules.CustomValuesRule
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4

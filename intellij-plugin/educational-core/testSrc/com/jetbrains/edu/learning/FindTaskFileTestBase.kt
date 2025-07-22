@@ -1,10 +1,10 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.newproject.EduProjectSettings
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.newproject.EduProjectSettings
 
 abstract class FindTaskFileTestBase<Settings : EduProjectSettings> : CourseGenerationTestBase<Settings>() {
 

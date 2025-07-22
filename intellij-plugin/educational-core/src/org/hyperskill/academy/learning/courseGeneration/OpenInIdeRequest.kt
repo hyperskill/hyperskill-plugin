@@ -1,0 +1,3 @@
+package org.hyperskill.academy.learning.courseGeneration
+
+interface OpenInIdeRequest

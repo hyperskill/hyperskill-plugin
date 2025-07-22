@@ -1,8 +1,8 @@
-package com.jetbrains.edu.go.slow.checker
+package org.hyperskill.academy.go.slow.checker
 
-import com.jetbrains.edu.go.GoProjectSettings
-import com.jetbrains.edu.learning.checker.CheckersTestBase
-import com.jetbrains.edu.learning.checker.EduCheckerFixture
+import org.hyperskill.academy.go.GoProjectSettings
+import org.hyperskill.academy.learning.checker.CheckersTestBase
+import org.hyperskill.academy.learning.checker.EduCheckerFixture
 
 // This test runs only when GO_SDK environment variable is defined and points to the valid Go SDK.
 abstract class GoCheckersTestBase : CheckersTestBase<GoProjectSettings>() {

@@ -1,8 +1,8 @@
-package com.jetbrains.edu.kotlin.actions.move
+package org.hyperskill.academy.kotlin.actions.move
 
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.learning.actions.move.MoveHandlerTestBase
-import com.jetbrains.edu.learning.courseFormat.Course
+import org.hyperskill.academy.learning.actions.move.MoveHandlerTestBase
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.junit.Test
 

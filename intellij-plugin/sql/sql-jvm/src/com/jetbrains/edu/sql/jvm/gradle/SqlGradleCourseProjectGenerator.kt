@@ -1,9 +1,9 @@
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
-import com.jetbrains.edu.jvm.JdkProjectSettings
-import com.jetbrains.edu.jvm.gradle.GradleCourseBuilderBase
-import com.jetbrains.edu.jvm.gradle.generation.GradleCourseProjectGenerator
-import com.jetbrains.edu.learning.courseFormat.Course
+import org.hyperskill.academy.jvm.JdkProjectSettings
+import org.hyperskill.academy.jvm.gradle.GradleCourseBuilderBase
+import org.hyperskill.academy.jvm.gradle.generation.GradleCourseProjectGenerator
+import org.hyperskill.academy.learning.courseFormat.Course
 
 class SqlGradleCourseProjectGenerator(
   builder: GradleCourseBuilderBase,

@@ -1029,11 +1029,12 @@ The version is not written in other YAMLs: `section-info.yaml`,`lesson-info.yaml
 are also versioned and may have different schemas for different versions.
 Their version is the same as the version written in the `course-info.yaml`.
 
-**Notes for developers**: to update a YAML version, implement `com.jetbrains.edu.learning.yaml.migrate.YamlMigrationStep` and list it in
-`com.jetbrains.edu.learning.yaml.migrate.YamlMigrator#migrationSteps`.
+**Notes for developers**: to update a YAML version, implement `org.hyperskill.academy.learning.yaml.migrate.YamlMigrationStep` and list it
+in
+`org.hyperskill.academy.learning.yaml.migrate.YamlMigrator#migrationSteps`.
 To pass some data to migrator, unavailable in the `edu-format` module, use
-`com.jetbrains.edu.learning.yaml.EduInjectableValuesKt#setEduValue` inside the method
-`com.jetbrains.edu.learning.yaml.YamlDeepLoader#setupForMigration`.
+`org.hyperskill.academy.learning.yaml.EduInjectableValuesKt#setEduValue` inside the method
+`org.hyperskill.academy.learning.yaml.YamlDeepLoader#setupForMigration`.
 
 0. In the old versions of the plugin there was no `yaml_version` field. Such YAMLs are considered to have version 0.
 1. The `yaml_version` field MUST be present:

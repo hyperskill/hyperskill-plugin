@@ -1,14 +1,14 @@
-package com.jetbrains.edu.learning.actions.rename
+package org.hyperskill.academy.learning.actions.rename
 
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.testAction
+import org.hyperskill.academy.learning.actions.NextTaskAction
+import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
+import org.hyperskill.academy.learning.findTask
+import org.hyperskill.academy.learning.testAction
 import org.junit.Test
 
 class RenameTest : RenameTestBase() {

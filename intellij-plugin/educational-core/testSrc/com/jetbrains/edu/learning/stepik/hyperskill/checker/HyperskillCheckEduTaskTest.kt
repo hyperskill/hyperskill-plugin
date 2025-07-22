@@ -1,11 +1,11 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.checker
+package org.hyperskill.academy.learning.stepik.hyperskill.checker
 
-import com.jetbrains.edu.learning.MockResponseFactory
-import com.jetbrains.edu.learning.checker.CheckUtils
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.MockResponseFactory
+import org.hyperskill.academy.learning.checker.CheckUtils
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.ext.allTasks
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.pathWithoutPrams
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 

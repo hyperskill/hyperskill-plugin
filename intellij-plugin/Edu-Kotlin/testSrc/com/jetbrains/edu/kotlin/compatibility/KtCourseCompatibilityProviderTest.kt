@@ -1,6 +1,6 @@
-package com.jetbrains.edu.kotlin.compatibility
+package org.hyperskill.academy.kotlin.compatibility
 
-import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderTestBase
-import com.jetbrains.edu.learning.compatibility.KtCourseCompatibilityProvider
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderTestBase
+import org.hyperskill.academy.learning.compatibility.KtCourseCompatibilityProvider
 
 class KtCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(KtCourseCompatibilityProvider::class)

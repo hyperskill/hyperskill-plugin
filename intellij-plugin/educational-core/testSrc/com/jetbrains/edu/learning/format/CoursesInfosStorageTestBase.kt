@@ -1,17 +1,17 @@
-package com.jetbrains.edu.learning.format
+package org.hyperskill.academy.learning.format
 
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.util.JDOMUtil
 import com.intellij.util.xmlb.XmlSerializer
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.learning.messages.EduCoreBundle
-import com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage
-import com.jetbrains.edu.learning.newproject.coursesStorage.UserCoursesState
-import com.jetbrains.edu.learning.stepik.hyperskill.PlainTextHyperskillConfigurator
-import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourse
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage
+import org.hyperskill.academy.learning.newproject.coursesStorage.UserCoursesState
+import org.hyperskill.academy.learning.stepik.hyperskill.PlainTextHyperskillConfigurator
+import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourse
 import org.jdom.Element
 import org.junit.Test
 import java.nio.file.Paths

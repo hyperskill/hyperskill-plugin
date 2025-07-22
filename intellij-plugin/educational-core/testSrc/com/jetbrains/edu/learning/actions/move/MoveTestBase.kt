@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.actions.move
+package org.hyperskill.academy.learning.actions.move
 
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.IdeActions
@@ -9,14 +9,14 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.jetbrains.edu.coursecreator.StudyItemType
-import com.jetbrains.edu.coursecreator.handlers.move.MoveStudyItemUI
-import com.jetbrains.edu.coursecreator.handlers.move.withMockMoveStudyItemUI
-import com.jetbrains.edu.coursecreator.ui.CCItemPositionPanel.Companion.AFTER_DELTA
-import com.jetbrains.edu.coursecreator.ui.CCItemPositionPanel.Companion.BEFORE_DELTA
-import com.jetbrains.edu.learning.EduActionTestCase
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.testAction
+import org.hyperskill.academy.coursecreator.StudyItemType
+import org.hyperskill.academy.coursecreator.handlers.move.MoveStudyItemUI
+import org.hyperskill.academy.coursecreator.handlers.move.withMockMoveStudyItemUI
+import org.hyperskill.academy.coursecreator.ui.CCItemPositionPanel.Companion.AFTER_DELTA
+import org.hyperskill.academy.coursecreator.ui.CCItemPositionPanel.Companion.BEFORE_DELTA
+import org.hyperskill.academy.learning.EduActionTestCase
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.testAction
 
 abstract class MoveTestBase : EduActionTestCase() {
 

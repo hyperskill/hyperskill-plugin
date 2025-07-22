@@ -1,6 +1,6 @@
 /*font-family properties are commented intentionally */
 /*font-sizes properties are commented intentionally as well for IDE adjustment */
-/* see @com.jetbrains.edu.learning.ui.taskToolWindow.styleManagers.StyleResourcesManager */
+/* see @org.hyperskill.academy.learning.ui.taskToolWindow.styleManagers.StyleResourcesManager */
 
 @media print {
     div.print-content article.node .node-blog .clearfix div.item-body p a {

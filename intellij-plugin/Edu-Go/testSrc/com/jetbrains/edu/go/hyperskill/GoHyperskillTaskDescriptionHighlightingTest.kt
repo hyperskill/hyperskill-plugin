@@ -1,8 +1,8 @@
-package com.jetbrains.edu.go.hyperskill
+package org.hyperskill.academy.go.hyperskill
 
 import com.goide.GoLanguage
 import com.intellij.lang.Language
-import com.jetbrains.edu.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
+import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillTaskDescriptionHighlightingTest
 
 class GoHyperskillTaskDescriptionHighlightingTest : HyperskillTaskDescriptionHighlightingTest() {
   override val language: Language

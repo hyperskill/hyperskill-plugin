@@ -1,13 +1,13 @@
-package com.jetbrains.edu.learning.format
+package org.hyperskill.academy.learning.format
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
-import com.jetbrains.edu.learning.courseFormat.Lesson
-import com.jetbrains.edu.learning.courseFormat.Section
-import com.jetbrains.edu.learning.courseFormat.tasks.EduTask
-import com.jetbrains.edu.learning.createCourseFromJson
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.Lesson
+import org.hyperskill.academy.learning.courseFormat.Section
+import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
+import org.hyperskill.academy.learning.createCourseFromJson
 import org.junit.Test
 
 class CourseFormatTest : EduTestCase() {

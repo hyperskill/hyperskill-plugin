@@ -1,14 +1,14 @@
-package com.jetbrains.edu.php
+package org.hyperskill.academy.php
 
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseGeneration.CourseGenerationTestBase
-import com.jetbrains.edu.learning.fileTree
-import com.jetbrains.edu.php.PhpConfigurator.Companion.TASK_PHP
-import com.jetbrains.edu.php.PhpConfigurator.Companion.TEST_PHP
 import com.jetbrains.php.composer.ComposerUtils
 import com.jetbrains.php.config.interpreters.PhpInterpreter
 import com.jetbrains.php.config.interpreters.PhpInterpretersManagerImpl
 import com.jetbrains.php.lang.PhpLanguage
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
+import org.hyperskill.academy.learning.fileTree
+import org.hyperskill.academy.php.PhpConfigurator.Companion.TASK_PHP
+import org.hyperskill.academy.php.PhpConfigurator.Companion.TEST_PHP
 import org.junit.Test
 
 class PhpCourseBuilderTest : CourseGenerationTestBase<PhpProjectSettings>() {

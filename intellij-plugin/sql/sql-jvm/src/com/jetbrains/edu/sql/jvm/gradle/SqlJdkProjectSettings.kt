@@ -1,8 +1,8 @@
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel
-import com.jetbrains.edu.jvm.JdkProjectSettings
+import org.hyperskill.academy.jvm.JdkProjectSettings
 
 class SqlJdkProjectSettings(
   model: ProjectSdksModel,

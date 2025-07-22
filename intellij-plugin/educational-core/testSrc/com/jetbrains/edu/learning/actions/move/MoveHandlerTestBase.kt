@@ -1,19 +1,19 @@
-package com.jetbrains.edu.learning.actions.move
+package org.hyperskill.academy.learning.actions.move
 
 import com.intellij.lang.Language
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.psi.PsiElement
 import com.intellij.refactoring.move.MoveHandlerDelegate
 import com.intellij.testFramework.EditorTestUtil
-import com.jetbrains.edu.learning.StudyTaskManager
-import com.jetbrains.edu.learning.TaskBuilder
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.ext.getText
-import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
-import com.jetbrains.edu.learning.createCourseFiles
+import org.hyperskill.academy.learning.StudyTaskManager
+import org.hyperskill.academy.learning.TaskBuilder
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.ext.allTasks
+import org.hyperskill.academy.learning.courseFormat.ext.getText
+import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
+import org.hyperskill.academy.learning.createCourseFiles
 
 abstract class MoveHandlerTestBase(
   private val language: Language,
@@ -63,7 +63,7 @@ abstract class MoveHandlerTestBase(
     val target = findTarget(course)
     val context = dataContext(element).withTarget(target)
 
-    val eduHandlers = MoveHandlerDelegate.EP_NAME.extensionList.filter { it.javaClass.packageName.startsWith("com.jetbrains.edu") }
+    val eduHandlers = MoveHandlerDelegate.EP_NAME.extensionList.filter { it.javaClass.packageName.startsWith("org.hyperskill.academy") }
 
     // Check Move is not forbidden without course in the project
     eduHandlers.checkMoveIsNotForbidden(element, target, context)

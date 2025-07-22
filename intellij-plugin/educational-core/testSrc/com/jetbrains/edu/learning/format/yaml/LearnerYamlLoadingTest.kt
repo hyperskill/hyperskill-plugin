@@ -1,13 +1,13 @@
-package com.jetbrains.edu.learning.format.yaml
+package org.hyperskill.academy.learning.format.yaml
 
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.coursecreator.yaml.createConfigFiles
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.StudyTaskManager
-import com.jetbrains.edu.learning.courseFormat.ext.getVirtualFile
-import com.jetbrains.edu.learning.yaml.YamlDeepLoader
 import com.jetbrains.rd.util.first
+import org.hyperskill.academy.coursecreator.yaml.createConfigFiles
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.StudyTaskManager
+import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
+import org.hyperskill.academy.learning.yaml.YamlDeepLoader
 import org.junit.Test
 
 class LearnerYamlLoadingTest : EduTestCase() {

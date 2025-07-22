@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.stepik.hyperskill.metrics
+package org.hyperskill.academy.learning.stepik.hyperskill.metrics
 
 import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.application.ApplicationManager
@@ -8,16 +8,16 @@ import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.ui.BalloonLayout
 import com.intellij.util.xmlb.XmlSerializer
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.MockResponseFactory
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.EduFormatNames.HYPERSKILL_PROBLEMS
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
-import com.jetbrains.edu.learning.findTask
-import com.jetbrains.edu.learning.pathWithoutPrams
-import com.jetbrains.edu.learning.stepik.hyperskill.api.*
-import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
-import com.jetbrains.edu.learning.stepik.hyperskill.metrics.HyperskillMetricsService.Companion.getRoute
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.MockResponseFactory
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROBLEMS
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.findTask
+import org.hyperskill.academy.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.stepik.hyperskill.api.*
+import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourseWithFiles
+import org.hyperskill.academy.learning.stepik.hyperskill.metrics.HyperskillMetricsService.Companion.getRoute
 import org.junit.Test
 import java.awt.Rectangle
 import java.nio.file.Paths

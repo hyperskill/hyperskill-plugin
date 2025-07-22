@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.actions.rename
+package org.hyperskill.academy.learning.actions.rename
 
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.IdeActions
@@ -8,11 +8,11 @@ import com.intellij.psi.PsiElement
 import com.intellij.refactoring.rename.PsiElementRenameHandler
 import com.intellij.refactoring.rename.RenameHandlerRegistry
 import com.intellij.testFramework.LightPlatformTestCase
-import com.jetbrains.edu.learning.EduActionTestCase
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.handlers.rename.MockRenameDialogFactory
-import com.jetbrains.edu.learning.handlers.rename.withMockRenameDialogFactory
-import com.jetbrains.edu.learning.testAction
+import org.hyperskill.academy.learning.EduActionTestCase
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.handlers.rename.MockRenameDialogFactory
+import org.hyperskill.academy.learning.handlers.rename.withMockRenameDialogFactory
+import org.hyperskill.academy.learning.testAction
 
 abstract class RenameTestBase : EduActionTestCase() {
 

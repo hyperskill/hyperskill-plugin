@@ -1,6 +1,6 @@
-package com.jetbrains.edu.javascript.compatibility
+package org.hyperskill.academy.javascript.compatibility
 
-import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderTestBase
-import com.jetbrains.edu.learning.compatibility.JsCourseCompatibilityProvider
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderTestBase
+import org.hyperskill.academy.learning.compatibility.JsCourseCompatibilityProvider
 
 class JsCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(JsCourseCompatibilityProvider::class)

@@ -1,6 +1,6 @@
-package com.jetbrains.edu.coursecreator.framework.impl
+package org.hyperskill.academy.coursecreator.framework.impl
 
-import com.jetbrains.edu.coursecreator.framework.diff.equalsTrimTrailingWhitespacesAndTrailingBlankLines
+import org.hyperskill.academy.coursecreator.framework.diff.equalsTrimTrailingWhitespacesAndTrailingBlankLines
 import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

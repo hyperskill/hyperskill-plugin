@@ -1,19 +1,19 @@
-package com.jetbrains.edu.learning.actions.navigate.hyperskill
+package org.hyperskill.academy.learning.actions.navigate.hyperskill
 
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.ui.Messages
-import com.jetbrains.edu.learning.*
-import com.jetbrains.edu.learning.actions.NextTaskAction
-import com.jetbrains.edu.learning.actions.PreviousTaskAction
-import com.jetbrains.edu.learning.actions.navigate.NavigationTestBase
-import com.jetbrains.edu.learning.courseFormat.CheckStatus
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
-import com.jetbrains.edu.learning.framework.FrameworkLessonManager
-import com.jetbrains.edu.learning.stepik.hyperskill.hyperskillCourseWithFiles
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
+import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.actions.NextTaskAction
+import org.hyperskill.academy.learning.actions.PreviousTaskAction
+import org.hyperskill.academy.learning.actions.navigate.NavigationTestBase
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
+import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourseWithFiles
 import org.junit.Test
 
 class HyperskillNavigationTest : NavigationTestBase() {

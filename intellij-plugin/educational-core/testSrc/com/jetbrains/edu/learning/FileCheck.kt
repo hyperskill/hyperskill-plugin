@@ -1,7 +1,7 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
-import com.jetbrains.edu.learning.courseFormat.TaskFile
-import com.jetbrains.edu.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
 
 data class FileCheck(
   val task: Task,

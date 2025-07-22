@@ -1,4 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.cpp">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy.cpp">
   <!-- BACKCOMPAT: 2025.1. Inline it. -->
   <xi:include href="/Edu-Cpp-platform.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <!--suppress PluginXmlValidity -->
@@ -12,24 +12,24 @@
 
   <extensionPoints>
     <extensionPoint qualifiedName="HyperskillEducational.cppRunConfigurationHelper"
-                    interface="com.jetbrains.edu.cpp.checker.CppRunConfigurationHelper"
+                    interface="org.hyperskill.academy.cpp.checker.CppRunConfigurationHelper"
                     dynamic="true"/>
   </extensionPoints>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator language="ObjectiveC" implementationClass="com.jetbrains.edu.cpp.CppGTestConfigurator"
+    <configurator language="ObjectiveC" implementationClass="org.hyperskill.academy.cpp.CppGTestConfigurator"
                   displayName="C++ (Google Test)" environment="GoogleTest"/>
-    <configurator language="ObjectiveC" implementationClass="com.jetbrains.edu.cpp.CppCatchConfigurator"
+    <configurator language="ObjectiveC" implementationClass="org.hyperskill.academy.cpp.CppCatchConfigurator"
                   displayName="C++ (Catch 2.0)" environment="Catch"/>
-    <configurator language="ObjectiveC" implementationClass="com.jetbrains.edu.cpp.CppConfigurator"
+    <configurator language="ObjectiveC" implementationClass="org.hyperskill.academy.cpp.CppConfigurator"
                   courseType="Stepik"/>
 
     <compatibilityProvider language="ObjectiveC"
                            environment="GoogleTest"
-                           implementationClass="com.jetbrains.edu.cpp.compatibility.CppGTestCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.cpp.compatibility.CppGTestCourseCompatibilityProvider"/>
     <compatibilityProvider language="ObjectiveC"
                            environment="Catch"
-                           implementationClass="com.jetbrains.edu.cpp.compatibility.CppCatchCourseCompatibilityProvider"/>
+                           implementationClass="org.hyperskill.academy.cpp.compatibility.CppCatchCourseCompatibilityProvider"/>
 
   </extensions>
 

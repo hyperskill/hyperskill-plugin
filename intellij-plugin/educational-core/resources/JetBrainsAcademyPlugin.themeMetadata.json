@@ -6,13 +6,13 @@
       "key" : "SelectCourse.CourseCard.hoverBackground",
       "description" : "The background color for a hovered CourseCardComponent in Select Course dialog",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.CourseCardComponent"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.CourseCardComponent"
     },
     {
       "key" : "SelectCourse.CourseCard.hoverBackground",
       "description" : "The background color for a selected CourseCardComponent in Select Course dialog",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.CourseCardComponent"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.CourseCardComponent"
     },
     {
       "key" : "SelectCourse.foregroundColor",
@@ -28,181 +28,181 @@
       "key" : "SelectCourse.backgroundColor",
       "description" : "The default background color for Select Course dialog",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.BrowseCoursesDialog"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.BrowseCoursesDialog"
     },
     {
       "key" : "SelectCourse.Button.fillForeground",
       "description" : "The foreground color for an opaque button",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.coursePanel.CourseButtonBase"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.coursePanel.CourseButtonBase"
     },
     {
       "key" : "SelectCourse.Button.fillBackground",
       "description" : "The background color for an opaque button",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.coursePanel.CourseButtonBase"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.coursePanel.CourseButtonBase"
     },
     {
       "key" : "SelectCourse.Button.foregroundColor",
       "description" : "The foreground color for a transparent button",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.coursePanel.CourseButtonBase"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.coursePanel.CourseButtonBase"
     },
     {
       "key" : "SelectCourse.Button.focusedBackground",
       "description" : "The background color for a focused button",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.coursePanel.CourseButtonBase"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.coursePanel.CourseButtonBase"
     },
     {
       "key" : "SelectCourse.Button.border",
       "description" : "The border color for a button",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.coursePanel.CourseButtonBase"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.coursePanel.CourseButtonBase"
     },
     {
       "key" : "SelectCourse.CoursesGroup.backgroundColor",
       "description" : "The background for CoursesGroup header",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.coursePanel.groups.CoursesGroupPanel"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.coursePanel.groups.CoursesGroupPanel"
     },
     {
       "key" : "SelectCourse.CoursesGroup.foregroundColor",
       "description" : "The background for CoursesGroup header",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.coursePanel.groups.CoursesGroupPanel"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.coursePanel.groups.CoursesGroupPanel"
     },
     {
       "key" : "SelectCourse.Hyperskill.HyperskillNotLoggedInPanel.backgroundColor",
       "description" : "Background color for the main panel for Hyperskill tab",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.stepik.hyperskill.newProjectUI.HyperskillNotLoggedInPanel"
+      "source" : "org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.HyperskillNotLoggedInPanel"
     },
     {
       "key" : "SelectCourse.Hyperskill.HyperskillNotLoggedInPanel.LoginBanner.backgroundColor",
       "description" : "Background color for login panel for Hyperskill tab",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.stepik.hyperskill.newProjectUI.HyperskillNotLoggedInPanel"
+      "source" : "org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.HyperskillNotLoggedInPanel"
     },
     {
       "key" : "SelectCourse.LoginPanel.backgroundColor",
       "description" : "Background color for login panel above courses list",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.newproject.ui.LoginPanel"
+      "source" : "org.hyperskill.academy.learning.newproject.ui.LoginPanel"
     },
     {
       "key" : "Submissions.CorrectLabel.foregroundColor",
       "description" : "A foreground for a correctly solved submission name",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "Component.errorForeground",
       "description" : "Foreground for error messages in different components",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "Component.warningForeground",
       "description" : "Foreground for warning messages in different components",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "NavigationMap.icon.not.selected.border",
       "description" : "Border color for not selected icons on the NavigationMap panel",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "NavigationMap.icon.selected.border",
       "description" : "Border color for selected icons on the NavigationMap panel",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "NavigationMap.icon.solved.border",
       "description" : "Border color for solved icons on the NavigationMap panel",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "NavigationMap.disabledIconBackground",
       "description" : "Background for NavigationMap disabled icon",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "NavigationMap.disabledIconForeground",
       "description" : "Foreground for NavigationMap disabled icon",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "AIGetHint.highlighterColor",
       "description" : "Specifies the highlighter color",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "AIGetHint.inlineBannersBackgroundColor",
       "description" : "Specifies the background color of inline banners used for showing AI hints",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "AIGetHint.inlineBannersBorderColor",
       "description" : "Specifies the border color of inline banners used for showing AI hints",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "TaskToolWindow.lessonNameForeground",
       "description" : "Lesson name label foreground",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "LessonCard.Background",
       "description" : "Background for lesson card",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "LessonCard.BorderColor",
       "description" : "Border color for lesson card",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "LessonCard.focusedBorderColor",
       "description" : "Focused border color for lesson card",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "LessonCard.foreground",
       "description" : "Foreground for lesson card",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "LessonCard.secondaryForeground",
       "description" : "Secondary foreground for lesson card",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "LessonCard.selectedBackground",
       "description" : "Background for selected lesson card",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     },
     {
       "key" : "LessonCard.selectedBorderColor",
       "description" : "Border color for selected lesson card",
       "deprecated" : false,
-      "source" : "com.jetbrains.edu.learning.ui.EduColors"
+      "source" : "org.hyperskill.academy.learning.ui.EduColors"
     }
   ]
 }

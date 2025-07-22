@@ -1,6 +1,6 @@
-package com.jetbrains.edu.go.compatibility
+package org.hyperskill.academy.go.compatibility
 
-import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderTestBase
-import com.jetbrains.edu.learning.compatibility.GoCourseCompatibilityProvider
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderTestBase
+import org.hyperskill.academy.learning.compatibility.GoCourseCompatibilityProvider
 
 class GoCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(GoCourseCompatibilityProvider::class)

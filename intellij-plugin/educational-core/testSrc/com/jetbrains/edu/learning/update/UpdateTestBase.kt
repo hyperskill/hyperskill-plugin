@@ -1,16 +1,16 @@
-package com.jetbrains.edu.learning.update
+package org.hyperskill.academy.learning.update
 
-import com.jetbrains.edu.learning.CourseBuilder
-import com.jetbrains.edu.learning.actions.navigate.NavigationTestBase
-import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.StudyItem
-import com.jetbrains.edu.learning.courseFormat.copy
-import com.jetbrains.edu.learning.courseFormat.copyFileContents
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillProject
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillStage
 import kotlinx.coroutines.runBlocking
+import org.hyperskill.academy.learning.CourseBuilder
+import org.hyperskill.academy.learning.actions.navigate.NavigationTestBase
+import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.StudyItem
+import org.hyperskill.academy.learning.courseFormat.copy
+import org.hyperskill.academy.learning.courseFormat.copyFileContents
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
 
 abstract class UpdateTestBase<T : Course> : NavigationTestBase() {
   protected lateinit var localCourse: T

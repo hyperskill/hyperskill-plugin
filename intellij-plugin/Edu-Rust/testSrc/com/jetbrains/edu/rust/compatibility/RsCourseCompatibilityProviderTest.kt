@@ -1,6 +1,6 @@
-package com.jetbrains.edu.rust.compatibility
+package org.hyperskill.academy.rust.compatibility
 
-import com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderTestBase
-import com.jetbrains.edu.learning.compatibility.RsCourseCompatibilityProvider
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderTestBase
+import org.hyperskill.academy.learning.compatibility.RsCourseCompatibilityProvider
 
 class RsCourseCompatibilityProviderTest : CourseCompatibilityProviderTestBase(RsCourseCompatibilityProvider::class)

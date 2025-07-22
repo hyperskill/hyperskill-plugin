@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning.ui
+package org.hyperskill.academy.learning.ui
 
 import com.intellij.ide.ui.IconMapLoader
 import com.intellij.ide.ui.IconMapperBean
@@ -6,9 +6,9 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.icons.CachedImageIcon
-import com.jetbrains.edu.EducationalCoreIcons
-import com.jetbrains.edu.learning.EduTestCase
 import kotlinx.coroutines.runBlocking
+import org.hyperskill.academy.EducationalCoreIcons
+import org.hyperskill.academy.learning.EduTestCase
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,7 +50,7 @@ class EducationalCoreIconsTest(
 
   private fun getMappings(project: Project): Map<String, String> {
     val pluginClassLoader = IconMapperBean.EP_NAME.filterableLazySequence()
-      .first { it.pluginDescriptor.name == "com.jetbrains.edu.core" }
+      .first { it.pluginDescriptor.name == "org.hyperskill.academy.core" }
       .pluginDescriptor
       .pluginClassLoader
 

@@ -1,12 +1,12 @@
-package com.jetbrains.edu.python.coursecreator
+package org.hyperskill.academy.python.coursecreator
 
-import com.jetbrains.edu.coursecreator.archive.ExpectedCourseFileAttributes
-import com.jetbrains.edu.coursecreator.archive.FileAttributesTest
-import com.jetbrains.edu.coursecreator.archive.FileAttributesTest.Companion.expected
-import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
-import com.jetbrains.edu.learning.configuration.EduConfigurator
-import com.jetbrains.edu.python.learning.PyConfigurator
-import com.jetbrains.edu.python.learning.PyNewConfigurator
+import org.hyperskill.academy.coursecreator.archive.ExpectedCourseFileAttributes
+import org.hyperskill.academy.coursecreator.archive.FileAttributesTest
+import org.hyperskill.academy.coursecreator.archive.FileAttributesTest.Companion.expected
+import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
+import org.hyperskill.academy.learning.configuration.EduConfigurator
+import org.hyperskill.academy.python.learning.PyConfigurator
+import org.hyperskill.academy.python.learning.PyNewConfigurator
 import org.junit.runners.Parameterized.Parameters
 
 private fun pyData(): Collection<Array<Any>> {

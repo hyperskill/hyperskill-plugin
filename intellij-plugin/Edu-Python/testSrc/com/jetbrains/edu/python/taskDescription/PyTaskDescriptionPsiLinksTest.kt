@@ -1,8 +1,8 @@
-package com.jetbrains.edu.python.taskDescription
+package org.hyperskill.academy.python.taskDescription
 
 import com.intellij.openapi.fileTypes.FileType
-import com.jetbrains.edu.learning.taskToolWindow.links.TaskDescriptionPsiLinksTestBase
 import com.jetbrains.python.PythonFileType
+import org.hyperskill.academy.learning.taskToolWindow.links.TaskDescriptionPsiLinksTestBase
 import org.junit.Test
 
 @Suppress("PyInterpreter", "PyUnresolvedReferences")

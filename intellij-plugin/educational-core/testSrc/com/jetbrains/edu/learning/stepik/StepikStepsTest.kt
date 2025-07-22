@@ -1,9 +1,9 @@
-package com.jetbrains.edu.learning.stepik
+package org.hyperskill.academy.learning.stepik
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-import com.jetbrains.edu.learning.courseFormat.hyperskill.HyperskillCourse
-import com.jetbrains.edu.learning.findTask
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.findTask
 import org.junit.Test
 
 class StepikStepsTest : EduTestCase() {

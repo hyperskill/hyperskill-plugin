@@ -1,7 +1,7 @@
 <idea-plugin>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator implementationClass="com.jetbrains.edu.cpp.hyperskill.CppHyperskillConfigurator" language="ObjectiveC"
+    <configurator implementationClass="org.hyperskill.academy.cpp.hyperskill.CppHyperskillConfigurator" language="ObjectiveC"
                   courseType="Hyperskill"/>
   </extensions>
 

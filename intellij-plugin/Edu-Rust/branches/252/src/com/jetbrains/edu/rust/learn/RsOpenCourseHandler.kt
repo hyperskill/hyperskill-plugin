@@ -1,4 +1,4 @@
-package com.jetbrains.edu.rust.learn
+package org.hyperskill.academy.rust.learn
 
 import org.rust.cargo.toolchain.RsToolchainBase
 import org.rust.ide.learn.OpenCourseHandler

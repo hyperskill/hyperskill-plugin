@@ -1,4 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu.scala">
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy.scala">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <!--suppress PluginXmlValidity -->
@@ -13,9 +13,9 @@
 
   <xi:include href="/META-INF/Hyperskill-Scala.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <extensions defaultExtensionNs="HyperskillEducational">
-    <configurator language="Scala" implementationClass="com.jetbrains.edu.scala.gradle.ScalaGradleConfigurator" environment="Gradle"/>
-    <configurator language="Scala" implementationClass="com.jetbrains.edu.scala.sbt.ScalaSbtConfigurator" environment="sbt"/>
-    <configurator language="Scala" implementationClass="com.jetbrains.edu.scala.gradle.ScalaGradleConfigurator" courseType="Stepik"/>
-    <mainFileProvider language="Scala" implementationClass="com.jetbrains.edu.scala.gradle.ScalaMainFileProvider"/>
+    <configurator language="Scala" implementationClass="org.hyperskill.academy.scala.gradle.ScalaGradleConfigurator" environment="Gradle"/>
+    <configurator language="Scala" implementationClass="org.hyperskill.academy.scala.sbt.ScalaSbtConfigurator" environment="sbt"/>
+    <configurator language="Scala" implementationClass="org.hyperskill.academy.scala.gradle.ScalaGradleConfigurator" courseType="Stepik"/>
+    <mainFileProvider language="Scala" implementationClass="org.hyperskill.academy.scala.gradle.ScalaMainFileProvider"/>
   </extensions>
 </idea-plugin>

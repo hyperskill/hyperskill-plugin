@@ -1,11 +1,11 @@
-package com.jetbrains.edu.coursecreator.archive
+package org.hyperskill.academy.coursecreator.archive
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
-import com.jetbrains.edu.learning.configuration.CourseFileAttributes
-import com.jetbrains.edu.learning.configuration.EduConfigurator
-import com.jetbrains.edu.learning.configuration.PlainTextConfigurator
 import junit.framework.TestCase.assertEquals
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
+import org.hyperskill.academy.learning.configuration.CourseFileAttributes
+import org.hyperskill.academy.learning.configuration.EduConfigurator
+import org.hyperskill.academy.learning.configuration.PlainTextConfigurator
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized

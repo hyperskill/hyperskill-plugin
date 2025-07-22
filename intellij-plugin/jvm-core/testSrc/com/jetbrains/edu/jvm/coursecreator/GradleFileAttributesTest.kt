@@ -1,8 +1,8 @@
-package com.jetbrains.edu.jvm.coursecreator
+package org.hyperskill.academy.jvm.coursecreator
 
-import com.jetbrains.edu.coursecreator.archive.ExpectedCourseFileAttributes
-import com.jetbrains.edu.coursecreator.archive.FileAttributesTest
-import com.jetbrains.edu.learning.configuration.ArchiveInclusionPolicy
+import org.hyperskill.academy.coursecreator.archive.ExpectedCourseFileAttributes
+import org.hyperskill.academy.coursecreator.archive.FileAttributesTest
+import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
 
 abstract class GradleFileAttributesTest(
   filePath: String,

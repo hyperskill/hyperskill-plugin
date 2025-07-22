@@ -1,7 +1,7 @@
-package com.jetbrains.edu.learning.courseGeneration
+package org.hyperskill.academy.learning.courseGeneration
 
-import com.jetbrains.edu.learning.EduTestCase
-import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.convertToValidName
+import org.hyperskill.academy.learning.EduTestCase
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.convertToValidName
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized

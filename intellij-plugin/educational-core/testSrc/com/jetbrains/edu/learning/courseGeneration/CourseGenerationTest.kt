@@ -1,11 +1,11 @@
-package com.jetbrains.edu.learning.courseGeneration
+package org.hyperskill.academy.learning.courseGeneration
 
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.jetbrains.edu.learning.course
-import com.jetbrains.edu.learning.newproject.EmptyProjectSettings
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.newproject.EmptyProjectSettings
 import org.junit.Test
 
 class CourseGenerationTest : CourseGenerationTestBase<EmptyProjectSettings>() {

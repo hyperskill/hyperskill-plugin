@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow

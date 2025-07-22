@@ -1,4 +1,4 @@
-package com.jetbrains.edu.learning
+package org.hyperskill.academy.learning
 
 import com.intellij.ide.plugins.ContainerDescriptor
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl
@@ -13,7 +13,7 @@ import io.github.classgraph.ClassGraph
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.system.measureTimeMillis
 
-private const val BASE_PACKAGE = "com.jetbrains.edu"
+private const val BASE_PACKAGE = "org.hyperskill.academy"
 
 /**
  * Helps manage state of services marked with [EduTestAware] between tests cases
@@ -206,33 +206,33 @@ private class HardcodedServiceCollector : TestAwareServiceCollector {
 
   companion object {
     private val applicationServices = listOf(
-      "com.jetbrains.edu.learning.EduBrowser",
-      "com.jetbrains.edu.learning.agreement.UserAgreementSettings",
-      "com.jetbrains.edu.learning.newproject.coursesStorage.CoursesStorage",
-      "com.jetbrains.edu.learning.stepik.hyperskill.metrics.HyperskillMetricsService",
-      "com.jetbrains.edu.socialMedia.x.XSettings",
+      "org.hyperskill.academy.learning.EduBrowser",
+      "org.hyperskill.academy.learning.agreement.UserAgreementSettings",
+      "org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage",
+      "org.hyperskill.academy.learning.stepik.hyperskill.metrics.HyperskillMetricsService",
+      "org.hyperskill.academy.socialMedia.x.XSettings",
     )
 
     private val projectServices = listOf(
-      "com.jetbrains.edu.aiHints.core.HintStateManager",
-      "com.jetbrains.edu.aiHints.core.context.TaskHintsDataHolder",
-      "com.jetbrains.edu.coursecreator.framework.CCFrameworkLessonManager",
-      "com.jetbrains.edu.learning.StudyTaskManager",
-      "com.jetbrains.edu.learning.ai.TranslationProjectSettings",
-      "com.jetbrains.edu.learning.ai.terms.TermsProjectSettings",
-      "com.jetbrains.edu.learning.featureManagement.EduFeatureManager",
-      "com.jetbrains.edu.learning.framework.FrameworkLessonManager",
-      "com.jetbrains.edu.learning.marketplace.update.MarketplaceUpdateChecker",
-      "com.jetbrains.edu.learning.statistics.metadata.CourseMetadataManager",
+      "org.hyperskill.academy.aiHints.core.HintStateManager",
+      "org.hyperskill.academy.aiHints.core.context.TaskHintsDataHolder",
+      "org.hyperskill.academy.coursecreator.framework.CCFrameworkLessonManager",
+      "org.hyperskill.academy.learning.StudyTaskManager",
+      "org.hyperskill.academy.learning.ai.TranslationProjectSettings",
+      "org.hyperskill.academy.learning.ai.terms.TermsProjectSettings",
+      "org.hyperskill.academy.learning.featureManagement.EduFeatureManager",
+      "org.hyperskill.academy.learning.framework.FrameworkLessonManager",
+      "org.hyperskill.academy.learning.marketplace.update.MarketplaceUpdateChecker",
+      "org.hyperskill.academy.learning.statistics.metadata.CourseMetadataManager",
       // BACKCOMPAT: 2025.1. Drop `CoursePageExperimentManager` line together with the corresponding service
-      "com.jetbrains.edu.learning.statistics.metadata.CoursePageExperimentManager",
+      "org.hyperskill.academy.learning.statistics.metadata.CoursePageExperimentManager",
       // BACKCOMPAT: 2025.1. Drop `EntryPointManager` line together with the corresponding service
-      "com.jetbrains.edu.learning.statistics.metadata.EntryPointManager",
-      "com.jetbrains.edu.learning.stepik.hyperskill.update.HyperskillCourseUpdateChecker",
-      "com.jetbrains.edu.learning.storage.LearningObjectsStorageManager",
-      "com.jetbrains.edu.learning.submissions.SubmissionsManager",
-      "com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView",
-      "com.jetbrains.edu.learning.yaml.YamlLoadingErrorManager",
+      "org.hyperskill.academy.learning.statistics.metadata.EntryPointManager",
+      "org.hyperskill.academy.learning.stepik.hyperskill.update.HyperskillCourseUpdateChecker",
+      "org.hyperskill.academy.learning.storage.LearningObjectsStorageManager",
+      "org.hyperskill.academy.learning.submissions.SubmissionsManager",
+      "org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView",
+      "org.hyperskill.academy.learning.yaml.YamlLoadingErrorManager",
     )
   }
 }

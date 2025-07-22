@@ -1,12 +1,12 @@
-package com.jetbrains.edu.sql.jvm.gradle
+package org.hyperskill.academy.sql.jvm.gradle
 
 import com.intellij.database.dataSource.LocalDataSourceManager
 import com.intellij.openapi.project.Project
-import com.jetbrains.edu.learning.CourseUpdateListener
-import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.ext.allTasks
-import com.jetbrains.edu.learning.courseFormat.ext.configurator
-import com.jetbrains.edu.sql.core.SqlConfiguratorBase
+import org.hyperskill.academy.learning.CourseUpdateListener
+import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.ext.allTasks
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
+import org.hyperskill.academy.sql.core.SqlConfiguratorBase
 
 class SqlCourseUpdateListener : CourseUpdateListener {
   override fun courseUpdated(project: Project, course: Course) {

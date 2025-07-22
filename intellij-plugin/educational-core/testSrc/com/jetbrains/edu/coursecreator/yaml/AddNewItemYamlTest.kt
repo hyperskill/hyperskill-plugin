@@ -1,18 +1,18 @@
-package com.jetbrains.edu.coursecreator.yaml
+package org.hyperskill.academy.coursecreator.yaml
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.edu.learning.StudyTaskManager
-import com.jetbrains.edu.learning.courseDir
-import com.jetbrains.edu.learning.courseFormat.CourseMode
-import com.jetbrains.edu.learning.courseFormat.ItemContainer
-import com.jetbrains.edu.learning.courseFormat.Lesson
-import com.jetbrains.edu.learning.courseFormat.StudyItem
-import com.jetbrains.edu.learning.courseFormat.ext.getDir
-import com.jetbrains.edu.learning.yaml.YamlConfigSettings.configFileName
-import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
-import com.jetbrains.edu.learning.yaml.YamlLoader
-import com.jetbrains.edu.learning.yaml.YamlTestCase
+import org.hyperskill.academy.learning.StudyTaskManager
+import org.hyperskill.academy.learning.courseDir
+import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.ItemContainer
+import org.hyperskill.academy.learning.courseFormat.Lesson
+import org.hyperskill.academy.learning.courseFormat.StudyItem
+import org.hyperskill.academy.learning.courseFormat.ext.getDir
+import org.hyperskill.academy.learning.yaml.YamlConfigSettings.configFileName
+import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
+import org.hyperskill.academy.learning.yaml.YamlLoader
+import org.hyperskill.academy.learning.yaml.YamlTestCase
 import org.junit.Test
 
 class AddNewItemYamlTest : YamlTestCase() {

@@ -1,11 +1,11 @@
 @file:Suppress("PyInterpreter")
 
-package com.jetbrains.edu.python.actions.move
+package org.hyperskill.academy.python.actions.move
 
 import com.intellij.psi.PsiElement
-import com.jetbrains.edu.learning.actions.move.MoveHandlerTestBase
-import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.python.PythonLanguage
+import org.hyperskill.academy.learning.actions.move.MoveHandlerTestBase
+import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
 class PyMoveHandlerTest : MoveHandlerTestBase(PythonLanguage.INSTANCE) {

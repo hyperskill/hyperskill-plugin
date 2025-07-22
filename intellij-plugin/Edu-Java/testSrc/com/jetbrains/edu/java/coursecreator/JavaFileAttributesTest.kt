@@ -1,9 +1,9 @@
-package com.jetbrains.edu.java.coursecreator
+package org.hyperskill.academy.java.coursecreator
 
-import com.jetbrains.edu.coursecreator.archive.ExpectedCourseFileAttributes
-import com.jetbrains.edu.java.JConfigurator
-import com.jetbrains.edu.jvm.coursecreator.GradleFileAttributesTest
-import com.jetbrains.edu.learning.configuration.EduConfigurator
+import org.hyperskill.academy.coursecreator.archive.ExpectedCourseFileAttributes
+import org.hyperskill.academy.java.JConfigurator
+import org.hyperskill.academy.jvm.coursecreator.GradleFileAttributesTest
+import org.hyperskill.academy.learning.configuration.EduConfigurator
 import org.junit.runners.Parameterized.Parameters
 
 class JavaFileAttributesTest(
