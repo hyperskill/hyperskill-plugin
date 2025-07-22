@@ -10,14 +10,11 @@ import com.intellij.ui.jcef.JCEFHtmlPanel
 import org.hyperskill.academy.learning.JavaUILibrary
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.taskToolWindow.links.JCefToolWindowLinkHandler
-import org.hyperskill.academy.learning.taskToolWindow.ui.jcefSpecificQueries.TermsQueryManager
-import org.hyperskill.academy.learning.taskToolWindow.ui.jcefSpecificQueries.TermsQueryManager.Companion.getTermsQueryManager
 import org.jetbrains.annotations.TestOnly
 import javax.swing.JComponent
 
 class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
   private val taskInfoJBCefBrowser = JCEFHtmlPanel(true, JBCefApp.getInstance().createClient(), null)
-  private var termsQueryManager: TermsQueryManager? = null
 
   private val taskSpecificJBCefBrowser = JCEFHtmlPanel(true, JBCefApp.getInstance().createClient(), null)
 
@@ -56,15 +53,6 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     taskInfoJBCefBrowser.component.isVisible = false
 
     val taskDescription = getTaskDescription(project, task, uiMode)
-
-    // Dispose termsQueryManager manually because this disposes existing JSQueries and removes them from JS_QUERY_POOL
-    termsQueryManager?.let {
-      Disposer.dispose(it)
-    }
-
-    termsQueryManager = getTermsQueryManager(project, task, taskInfoJBCefBrowser)?.also {
-      Disposer.register(this, it)
-    }
 
     taskInfoJBCefBrowser.loadHTML(taskDescription)
     taskInfoJBCefBrowser.component.isVisible = true

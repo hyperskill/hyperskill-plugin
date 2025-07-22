@@ -13,7 +13,7 @@ fun getDefaultLearningObjectsStorageType(): LearningObjectStorageType {
     val selectedOption = Registry.get(REGISTRY_KEY).selectedOption
     LearningObjectStorageType.safeValueOf(selectedOption)
   }
-  catch (e: MissingResourceException) {
+  catch (_: MissingResourceException) {
     null
   }
 

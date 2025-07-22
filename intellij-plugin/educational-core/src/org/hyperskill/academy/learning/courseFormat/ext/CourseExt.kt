@@ -45,8 +45,6 @@ val Course.project: Project?
     return null
   }
 
-val Course.hasSections: Boolean get() = sections.isNotEmpty()
-
 val Course.allTasks: List<Task>
   get() {
     val allTasks = mutableListOf<Task>()

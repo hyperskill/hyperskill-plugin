@@ -41,9 +41,4 @@ class DataTaskAttempt : AttemptBase {
     return result
   }
 
-  companion object {
-    fun Attempt.toDataTaskAttempt(): DataTaskAttempt {
-      return DataTaskAttempt(this)
-    }
-  }
 }

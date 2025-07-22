@@ -11,7 +11,6 @@ import org.hyperskill.academy.learning.EduBrowser
 import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
 import org.hyperskill.academy.learning.courseFormat.ext.canShowSolution
-import org.hyperskill.academy.learning.eduState
 import org.hyperskill.academy.learning.stepik.hyperskill.HYPERSKILL_SOLUTIONS_ANCHOR
 import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillTaskLink
 import org.jetbrains.annotations.NonNls

@@ -167,35 +167,11 @@ class SyncChangesStateManager(private val project: Project) : Disposable.Default
     return taskFile.name !in nextTask.taskFiles
   }
 
-  /**
-   * Represents information about task files that have been moved.
-   * Contains a list of task files and their corresponding old paths.
-   */
-  private data class MovedDataInfo(val taskFiles: List<TaskFile> = emptyList(), val oldPaths: List<String> = emptyList()) {
-    constructor(taskFile: TaskFile, oldPath: String) : this(listOf(taskFile), listOf(oldPath))
-  }
-
 
   /**
    * Base class for sync changes updates.
    */
   private sealed class SyncChangesUpdate(priority: Int) : Update(Any(), false, priority)
-
-  /**
-   * Class for updating state for a list of task files in a given task
-   * High priority, since all task files updates must be executed earlier than study item state updates
-   */
-  private inner class TaskFilesSyncChangesUpdate(val task: Task, val taskFiles: Set<TaskFile>) : SyncChangesUpdate(HIGH_PRIORITY) {
-    override fun canEat(update: Update): Boolean {
-      if (super.canEat(update)) return true
-      if (update !is TaskFilesSyncChangesUpdate) return false
-      return task == update.task && taskFiles.containsAll(update.taskFiles)
-    }
-
-    override fun run() {
-      recalcSyncChangesState(task, taskFiles.toList())
-    }
-  }
 
   /**
    * Base class for updating sync changes state for a given study item
@@ -215,37 +191,6 @@ class SyncChangesStateManager(private val project: Project) : Disposable.Default
 
     override fun run() {
       collectSyncChangesState(item)
-    }
-  }
-
-  /**
-   * Class for updating state for a given lesson
-   * The priority is lower than [TaskSyncChangesUpdate], since all events must be executed later than [TaskSyncChangesUpdate]
-   */
-  private inner class LessonSyncChangesUpdate(lesson: Lesson) : StudyItemSyncChangesUpdate<Lesson>(LOW_PRIORITY + 1, lesson) {
-    override fun canEat(update: Update): Boolean {
-      if (super.canEat(update)) return true
-      if (update !is LessonSyncChangesUpdate) return false
-      return item == update.item
-    }
-
-    override fun run() {
-      collectSyncChangesState(item)
-    }
-  }
-
-  /**
-   * Base class for updating project UI for sync changes state
-   * Lowest priority, since all other updates must be executed
-   */
-  private inner class ProjectSyncChangesUpdate : SyncChangesUpdate(LOW_PRIORITY + 2) {
-    override fun canEat(update: Update): Boolean {
-      if (super.canEat(update)) return true
-      return update is ProjectSyncChangesUpdate
-    }
-
-    override fun run() {
-      refreshUI()
     }
   }
 

@@ -23,7 +23,6 @@ import org.hyperskill.academy.learning.courseFormat.ext.project
 import org.hyperskill.academy.learning.newproject.ui.errors.SettingsValidationResult
 import org.hyperskill.academy.learning.newproject.ui.errors.ValidationMessage
 import org.hyperskill.academy.learning.runInBackground
-import org.jetbrains.annotations.VisibleForTesting
 import java.awt.BorderLayout
 import java.io.File
 import javax.swing.JComponent
@@ -42,11 +41,6 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
   }
 
   protected open fun setupProjectSdksModel(model: ProjectSdksModel) {}
-
-  @VisibleForTesting
-  fun selectJdk(jdk: Sdk?) {
-    this.jdk = jdk
-  }
 
   override fun getLanguageSettingsComponents(
     course: Course,

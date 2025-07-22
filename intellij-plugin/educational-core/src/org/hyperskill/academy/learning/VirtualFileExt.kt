@@ -180,16 +180,6 @@ fun VirtualFile.belongsToTask(project: Project): Boolean {
   return task.getTaskFile(relativePath) != null
 }
 
-fun VirtualFile.canBelongToCourse(project: Project): Boolean {
-  if (isSectionDirectory(project) || isLessonDirectory(project) || isTaskDirectory(project)) return true
-  return if (isDirectory) {
-    getContainingTask(project) != null
-  }
-  else {
-    belongsToTask(project)
-  }
-}
-
 fun VirtualFile.pathRelativeToTask(project: Project): String {
   return pathRelativeToTask(project.toCourseInfoHolder())
 }

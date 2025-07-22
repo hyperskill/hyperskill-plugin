@@ -50,9 +50,6 @@ interface HyperskillEndpoints {
   @GET("api/projects/{id}")
   fun project(@Path("id") projectId: Int): Call<ProjectsList>
 
-  @GET("api/solutions")
-  fun solutions(@Query("step") step: Int): Call<SolutionsList>
-
   @GET("api/users/{id}")
   fun user(@Path("id") id: Int): Call<UsersList>
 

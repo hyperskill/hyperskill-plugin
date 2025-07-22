@@ -24,17 +24,5 @@ interface EduOAuthEndpoints {
     @Field("refresh_token") refreshToken: String
   ): Call<TokenInfo>
 
-  // remove it when LinkedIn secret removed
-  @POST
-  @FormUrlEncoded
-  fun getTokensWithSecret(
-    @Url url: String,
-    @Field("client_id") clientId: String,
-    @Field("client_secret") clientSecret: String,
-    @Field("redirect_uri") redirectUri: String,
-    @Field("code") code: String,
-    @Field("grant_type") grantType: String,
-    @FieldMap codeVerifier: Map<String, String>
-  ): Call<TokenInfo>
 }
 

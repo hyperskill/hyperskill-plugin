@@ -16,13 +16,6 @@ data class CheckFeedback(
     get() = field ?: failedTestInfo?.checkResultDiff?.actual
 
   // backward compatibility
-  constructor(message: String, time: Date? = null, expected: String? = null, actual: String? = null) : this(time = time) {
-    this.message = message
-    this.expected = expected
-    this.actual = actual
-  }
-
-  // backward compatibility
   constructor(time: Date, checkResult: CheckResult) : this(checkResult.executedTestsInfo.firstOrNull(), time) {
     this.expected = checkResult.diff?.expected
     this.actual = checkResult.diff?.actual

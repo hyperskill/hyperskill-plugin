@@ -99,11 +99,6 @@ class CourseGroupModel {
     return ComponentUtil.getParentOfType(CourseCardComponent::class.java, event.component)
   }
 
-  fun removeSelection() {
-    selectedCard?.setSelection(false)
-    selectedCard = null
-  }
-
 
   private inner class ClickMouseHandler : MouseAdapter() {
     override fun mouseClicked(event: MouseEvent) {

@@ -15,7 +15,6 @@ import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.*
 import org.hyperskill.academy.learning.json.encrypt.Encrypt
-import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.CHOICE_OPTIONS
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.COURSE_TYPE
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.CUSTOM_NAME
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.DESCRIPTION_FORMAT
@@ -26,19 +25,15 @@ import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.FRAMEWORK_TYPE
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.HIGHLIGHT_LEVEL
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.IS_BINARY
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.IS_EDITABLE
-import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.IS_MULTIPLE_CHOICE
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.IS_VISIBLE
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.ITEMS
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.ITEM_TYPE
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.LESSON
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.MAX_VERSION
-import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.MESSAGE_CORRECT
-import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.MESSAGE_INCORRECT
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.MIN_VERSION
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.NAME
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.PLUGIN_ID
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.PLUGIN_NAME
-import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.QUIZ_HEADER
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.SECTION
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.SOLUTION_HIDDEN
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.STATUS
@@ -147,32 +142,6 @@ abstract class LocalTaskMixin {
   private lateinit var contentTags: List<String>
 }
 
-@JsonPropertyOrder(
-  CHOICE_OPTIONS, IS_MULTIPLE_CHOICE, MESSAGE_CORRECT, MESSAGE_INCORRECT, QUIZ_HEADER,
-  NAME, CUSTOM_NAME, TAGS, FILES, DESCRIPTION_TEXT, DESCRIPTION_FORMAT, FEEDBACK_LINK, SOLUTION_HIDDEN, TASK_TYPE
-)
-abstract class ChoiceTaskLocalMixin : LocalTaskMixin() {
-
-  @JsonProperty
-  private var isMultipleChoice: Boolean = false
-
-  @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = FeedbackCorrectFilter::class)
-  @JsonProperty
-  private lateinit var messageCorrect: String
-
-  @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = FeedbackIncorrectFilter::class)
-  @JsonProperty
-  private lateinit var messageIncorrect: String
-
-  @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = QuizHeaderFilter::class)
-  @JsonProperty
-  private lateinit var quizHeader: String
-}
-
-abstract class ChoiceOptionLocalMixin {
-  @JsonProperty
-  private var text: String = ""
-}
 
 @JsonPropertyOrder(NAME, IS_VISIBLE, TEXT, IS_BINARY, IS_EDITABLE, HIGHLIGHT_LEVEL)
 @JsonDeserialize(builder = EduFileBuilder::class)

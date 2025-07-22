@@ -55,7 +55,6 @@ val Project.tomlPlugin: String get() = "org.toml.lang"
 val Project.goPlugin: String by Properties
 val Project.sqlPlugin: String get() = "com.intellij.database"
 val Project.shellScriptPlugin: String get() = "com.jetbrains.sh"
-val Project.markdownPlugin: String get() = "org.intellij.plugins.markdown"
 val Project.githubPlugin: String get() = "org.jetbrains.plugins.github"
 val Project.psiViewerPlugin: String by Properties
 val Project.phpPlugin: String by Properties

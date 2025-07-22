@@ -273,7 +273,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
     indicator: ProgressIndicator
   ) {
     measureTimeAndLog("Course content generation") {
-      val course = holder.course
       GeneratorUtils.createCourse(holder, indicator)
       createAdditionalFiles(holder)
     }

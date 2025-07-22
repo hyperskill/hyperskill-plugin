@@ -2,7 +2,6 @@ package org.hyperskill.academy.learning.authUtils
 
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
 
 object ConnectorUtils {
   fun createMapper(): ObjectMapper {
@@ -18,9 +17,4 @@ object ConnectorUtils {
       .build()
   }
 
-  fun createRegisteredMapper(module: SimpleModule): ObjectMapper {
-    val objectMapper = createMapper()
-    objectMapper.registerModule(module)
-    return objectMapper
-  }
 }

@@ -52,17 +52,6 @@ abstract class Course : LessonContainer() {
 
   open var languageCode: String = "en"
 
-  @Suppress("SetterBackingFieldAssignment")
-  @Deprecated("Use languageId and languageVersion instead")
-  private var programmingLanguage: String? = null
-    set(value) {
-      if (value.isNullOrEmpty()) return
-      value.split(" ").apply {
-        languageId = first()
-        languageVersion = getOrNull(1)
-      }
-    }
-
   /**
    * Specifies the path to sections/lessons relative to the course
    */

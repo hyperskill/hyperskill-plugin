@@ -18,12 +18,6 @@ abstract class LessonContainer : ItemContainer() {
     return lessons.firstOrNull { check(it) }
   }
 
-  fun addLessons(lessons: List<Lesson>) {
-    for (lesson in lessons) {
-      addItem(lesson)
-    }
-  }
-
   fun addLesson(lesson: Lesson) {
     addItem(lesson)
   }

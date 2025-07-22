@@ -69,7 +69,7 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
   private fun updateChildren(deserializedItem: T, existingItem: T) {
     val existingChildren = existingItem.items
     val preservedChildren = mutableListOf<StudyItem>()
-    val mapper = existingItem.course.mapper()
+    val mapper = mapper()
     for (titledItem in deserializedItem.items) {
       val child = existingChildren.find { it.name == titledItem.name }
       if (child != null) {

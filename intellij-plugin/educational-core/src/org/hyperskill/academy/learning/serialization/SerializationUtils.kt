@@ -6,7 +6,6 @@ object SerializationUtils {
   const val HINT = "hint"
   const val ADDITIONAL_HINTS = "additional_hints"
   const val OFFSET = "offset"
-  const val COURSE = "course"
   const val ID = "id"
   const val STATUS = "status"
   const val SUBTASK_MARKER = "_subtask"
@@ -35,6 +34,5 @@ object SerializationUtils {
     const val IS_VISIBLE = "is_visible"
     const val DEPENDENCY = "dependency"
     const val DEPENDENCY_FILE = "file"
-    const val VERSION = "version"
   }
 }

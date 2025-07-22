@@ -6,7 +6,6 @@ import io.netty.handler.codec.http.FullHttpRequest
 import io.netty.handler.codec.http.HttpMethod
 import io.netty.handler.codec.http.HttpRequest
 import org.hyperskill.academy.learning.authUtils.OAuthUtils.getErrorPageContent
-import org.hyperskill.academy.learning.authUtils.OAuthUtils.getOkPageContent
 import org.jetbrains.ide.RestService
 import org.jetbrains.io.send
 import java.io.IOException
@@ -23,19 +22,6 @@ abstract class OAuthRestService(protected val platformName: String) : RestServic
     LOG.warn("$platformName: $errorMessage")
     showErrorPage(request, context, errorMessage)
     return errorMessage
-  }
-
-  @Throws(IOException::class)
-  protected fun sendOkResponse(request: HttpRequest, context: ChannelHandlerContext): String? {
-    LOG.info("$platformName: Successful authorization")
-    showOkPage(request, context)
-    return null
-  }
-
-  @Throws(IOException::class)
-  protected fun showOkPage(request: HttpRequest, context: ChannelHandlerContext) {
-    val pageContent = getOkPageContent(platformName)
-    createResponse(pageContent).send(context.channel(), request)
   }
 
   @Throws(IOException::class)

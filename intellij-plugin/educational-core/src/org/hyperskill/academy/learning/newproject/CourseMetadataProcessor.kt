@@ -47,5 +47,4 @@ interface CourseMetadataProcessor<T> {
 enum class CourseProjectState {
   CREATED_PROJECT,
   OPENED_PROJECT,
-  FOCUSED_OPEN_PROJECT
 }

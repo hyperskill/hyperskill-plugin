@@ -6,7 +6,6 @@ import org.hyperskill.academy.learning.courseFormat.UserInfo
 import org.hyperskill.academy.learning.stepik.api.FIRST_NAME
 import org.hyperskill.academy.learning.stepik.api.IS_GUEST
 import org.hyperskill.academy.learning.stepik.api.LAST_NAME
-import org.jetbrains.annotations.TestOnly
 
 class StepikUserInfo private constructor() : UserInfo {
   @JsonProperty(EduFormatNames.ID)
@@ -20,18 +19,6 @@ class StepikUserInfo private constructor() : UserInfo {
 
   @JsonProperty(IS_GUEST)
   var isGuest = false
-
-  @TestOnly
-  constructor(fullName: String) : this() {
-    val firstLast = fullName.split(" ").toMutableList()
-    if (firstLast.isEmpty()) {
-      return
-    }
-    firstName = firstLast.removeFirst()
-    if (firstLast.isNotEmpty()) {
-      lastName = firstLast.joinToString(" ")
-    }
-  }
 
   override fun getFullName(): String = if (lastName.isNotEmpty()) "$firstName $lastName" else firstName
 

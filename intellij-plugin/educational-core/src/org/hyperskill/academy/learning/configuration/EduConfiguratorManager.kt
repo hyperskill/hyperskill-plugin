@@ -35,20 +35,10 @@ object EduConfiguratorManager {
   fun allExtensions(): List<EducationalExtensionPoint<EduConfigurator<*>>> =
     EducationalExtensionPoint.EP_NAME.extensions.filter { it.instance.isEnabled }
 
-  /**
-   * Returns all languages with enabled [EduConfigurator] for [PYCHARM] course type
-   */
-  val supportedEduLanguages: List<String>
-    get() {
-      return allExtensions().filter { it.courseType == PYCHARM }.map { it.language }
-    }
-
   private val compatibleCourseTypes: List<String> = listOf(HYPERSKILL)
 
   private fun compatibleCourseType(extension: EducationalExtensionPoint<EduConfigurator<*>>, courseType: String): Boolean {
     return extension.courseType == PYCHARM && courseType in compatibleCourseTypes
   }
 
-  fun supportedEnvironments(language: Language): List<String> =
-    allExtensions().filter { it.language == language.id && it.courseType == PYCHARM }.map { it.environment }.distinct()
 }

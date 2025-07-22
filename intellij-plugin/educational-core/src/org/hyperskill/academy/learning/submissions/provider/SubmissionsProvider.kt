@@ -1,7 +1,6 @@
 package org.hyperskill.academy.learning.submissions.provider
 
 import com.intellij.openapi.extensions.ExtensionPointName
-import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.submissions.Submission
@@ -16,8 +15,6 @@ interface SubmissionsProvider {
   fun loadAllSubmissions(course: Course): SubmissionsData
 
   fun loadSubmissions(tasks: List<Task>, courseId: Int): SubmissionsData
-
-  fun loadCourseStateOnClose(project: Project, course: Course): Map<Int, Submission> = mapOf()
 
   fun areSubmissionsAvailable(course: Course): Boolean
 

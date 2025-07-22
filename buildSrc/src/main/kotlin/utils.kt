@@ -59,9 +59,3 @@ fun <T : ModuleDependency> T.excludeKotlinDeps() {
   exclude(module = "kotlinx-coroutines-jdk8")
   exclude(module = "kotlinx-coroutines-slf4j")
 }
-
-fun <T : ModuleDependency> T.excludeKotlinSerializationDeps() {
-  // Kotlin serialization
-  exclude(module = "kotlinx-serialization-core-jvm")
-  exclude(module = "kotlinx-serialization-json")
-}

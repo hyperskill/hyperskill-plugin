@@ -4,7 +4,6 @@ import com.intellij.openapi.keymap.KeymapUtil
 import org.hyperskill.academy.coursecreator.StudyItemType.*
 import org.hyperskill.academy.learning.messages.EduCoreBundle.message
 import org.jetbrains.annotations.Nls
-import org.jetbrains.annotations.NonNls
 import java.awt.event.KeyEvent
 import javax.swing.KeyStroke
 
@@ -73,11 +72,3 @@ val StudyItemType.moveItemMessage: String
     TASK_TYPE -> message("dialog.title.move.task")
   }
 
-@Nls(capitalization = Nls.Capitalization.Sentence)
-fun StudyItemType.failedToFindItemMessage(@NonNls itemName: String): String =
-  when (this) {
-    COURSE_TYPE -> message("item.failed.to.find.course", itemName)
-    SECTION_TYPE -> message("item.failed.to.find.section", itemName)
-    LESSON_TYPE -> message("item.failed.to.find.lesson", itemName)
-    TASK_TYPE -> message("item.failed.to.find.task", itemName)
-  }

@@ -87,10 +87,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
     project.messageBus.syncPublisher(TOPIC).submissionsChanged()
   }
 
-  private fun notifySharedSolutionsUnchanged() {
-    project.messageBus.syncPublisher(SHARED_SOLUTIONS_TOPIC).sharedSolutionsUnchanged()
-  }
-
   fun containsCorrectSubmission(stepId: Int): Boolean {
     return getSubmissionsFromMemory(setOf(stepId)).any { it.status == CORRECT }
   }

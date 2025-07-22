@@ -1,7 +1,6 @@
 package org.hyperskill.academy.learning.courseFormat
 
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.FAILED_TO_CHECK_URL
-import org.hyperskill.academy.learning.courseFormat.EduFormatNames.LOGIN_NEEDED_MESSAGE
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.NO_TESTS_URL
 import org.hyperskill.academy.learning.courseFormat.EduTestInfo.Companion.firstFailed
 import org.jetbrains.annotations.Nls
@@ -45,11 +44,8 @@ data class CheckResult(
 
   companion object {
     val NO_LOCAL_CHECK = CheckResult(CheckStatus.Unchecked, message("check.result.local.check.unavailable"))
-    val LOGIN_NEEDED = CheckResult(CheckStatus.Unchecked, LOGIN_NEEDED_MESSAGE)
-    val CONNECTION_FAILED = CheckResult(CheckStatus.Unchecked, message("check.result.connection.failed"))
     val SOLVED = CheckResult(CheckStatus.Solved)
     val CANCELED = CheckResult(CheckStatus.Unchecked, message("check.result.canceled"))
-    val UNCHECKED = CheckResult(CheckStatus.Unchecked)
 
     val noTestsRun: CheckResult
       get() = CheckResult(

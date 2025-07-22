@@ -52,7 +52,7 @@ object YamlDeepLoader {
     val needMigration = YamlMigrator(initialMapper).needMigration()
 
     // this mapper already respects course mode, it will be used to deserialize all other course items
-    val mapper = deserializedCourse.mapper()
+    val mapper = mapper()
     mapper.setupForMigration(project)
     mapper.setEduValue(YAML_VERSION_MAPPER_KEY, initialMapper.getEduValue(YAML_VERSION_MAPPER_KEY))
 

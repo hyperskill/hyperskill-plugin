@@ -14,6 +14,3 @@ fun unsupportedItemTypeMessage(itemType: String, itemName: String = EduFormatNam
 
 fun unnamedItemAtMessage(position: Int): String = message("yaml.editor.invalid.format.unnamed.item", position)
 
-fun negativeLengthNotAllowedMessage(): String = message("yaml.editor.invalid.format.placeholders.negative.length")
-
-fun negativeOffsetNotAllowedMessage(): String = message("yaml.editor.invalid.format.placeholders.negative.offset")

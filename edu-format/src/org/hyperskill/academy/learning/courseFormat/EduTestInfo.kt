@@ -1,7 +1,5 @@
 package org.hyperskill.academy.learning.courseFormat
 
-import org.jetbrains.annotations.TestOnly
-
 data class EduTestInfo(
   val name: String,
   val status: Int,
@@ -28,9 +26,6 @@ data class EduTestInfo(
     isFinishedSuccessfully: Boolean? = null,
     checkResultDiff: CheckResultDiff? = null
   ) : this(name, status.value, message, details, isFinishedSuccessfully, checkResultDiff)
-
-  @TestOnly
-  constructor(name: String, presentableStatus: PresentableStatus) : this(name, presentableStatus, message = "")
 
   override fun toString(): String = "[${PresentableStatus.getPresentableStatus(status)}] $name"
 
