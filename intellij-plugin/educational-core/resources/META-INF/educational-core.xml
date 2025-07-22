@@ -57,9 +57,6 @@
     <extensionPoint qualifiedName="HyperskillEducational.submissionsProvider"
                     interface="org.hyperskill.academy.learning.submissions.provider.SubmissionsProvider"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="HyperskillEducational.communitySubmissionsProvider"
-                    interface="org.hyperskill.academy.learning.submissions.provider.CommunitySubmissionsProvider"
-                    dynamic="true"/>
     <extensionPoint qualifiedName="HyperskillEducational.optionsProvider"
                     beanClass="com.intellij.openapi.options.ConfigurableEP"
                     dynamic="true">
