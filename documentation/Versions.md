@@ -1014,11 +1014,6 @@ After:
     ```json
        "custom_content_path": "some/path/to"
      ```
-21. Introduced "disabled_features" field, represented by a list of strings. This field should allow course authors to control which IDE
-    features should be available to students.
-    ```json
-    "disabled_features": ["ai-hints", "theory-lookup"]
-     ```
 
 ### Yaml format version
 

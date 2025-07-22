@@ -50,8 +50,6 @@ import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ONLY_IDEA_DIRECTORY
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.createChildFile
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils.unpackAdditionalFiles
-import com.jetbrains.edu.learning.featureManagement.EduFeatureManager
-import com.jetbrains.edu.learning.featureManagement.EduManagedFeature
 import com.jetbrains.edu.learning.messages.EduCoreBundle
 import com.jetbrains.edu.learning.navigation.NavigationUtils
 import com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillCourseProjectGenerator
@@ -89,7 +87,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
     statusBarWidgetsManager.updateAllWidgets()
 
     setUpPluginDependencies(project, course)
-    initializeFeatureManagement(project, course)
 
     if (!SubmissionSettings.getInstance(project).stateOnClose) {
       NavigationUtils.openFirstTask(course, project)
@@ -280,14 +277,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
       GeneratorUtils.createCourse(holder, indicator)
       createAdditionalFiles(holder)
     }
-  }
-
-  private fun initializeFeatureManagement(project: Project, course: Course) {
-    val featureManager = project.service<EduFeatureManager>()
-    val features = course.disabledFeatures.mapNotNull { EduManagedFeature.forKey(it) }.toSet()
-    featureManager.updateManagerState(features)
-    // Disabled features should not be persisted into the course-info.yaml file, the state is stored in the service
-    course.disabledFeatures = emptyList()
   }
 
   private fun addAdditionalFile(eduFile: EduFile) {

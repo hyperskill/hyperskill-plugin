@@ -20,7 +20,6 @@ import com.jetbrains.edu.learning.EduUtilsKt.convertToHtml
 import com.jetbrains.edu.learning.courseDir
 import com.jetbrains.edu.learning.courseFormat.CheckStatus
 import com.jetbrains.edu.learning.courseFormat.DescriptionFormat
-import com.jetbrains.edu.learning.courseFormat.DescriptionFormat.Companion.TASK_DESCRIPTION_PREFIX
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.TASK
 import com.jetbrains.edu.learning.courseFormat.FrameworkLesson
 import com.jetbrains.edu.learning.courseFormat.TaskFile
@@ -36,7 +35,6 @@ import com.jetbrains.edu.learning.taskToolWindow.removeHyperskillTags
 import com.jetbrains.edu.learning.taskToolWindow.replaceActionIDsWithShortcuts
 import com.jetbrains.edu.learning.yaml.YamlFormatSynchronizer
 import com.jetbrains.edu.learning.yaml.errorHandling.loadingError
-import com.jetbrains.educational.core.format.enum.TranslationLanguage
 import java.io.IOException
 
 val Task.project: Project? get() = course.project
@@ -107,23 +105,9 @@ fun Task.saveStudentAnswersIfNeeded(project: Project) {
 @RequiresReadLock
 fun Task.getDescriptionFile(
   project: Project,
-  translationLanguage: TranslationLanguage? = null,
   guessFormat: Boolean = false
 ): VirtualFile? {
   val taskDirectory = getTaskDirectory(project) ?: return null
-
-  if (translationLanguage != null) {
-    val translatedFile = if (guessFormat) {
-      val translatedFileNameHTML = DescriptionFormat.HTML.fileNameWithTranslation(translationLanguage)
-      val translatedFileNameMD = DescriptionFormat.MD.fileNameWithTranslation(translationLanguage)
-      taskDirectory.run { findChild(translatedFileNameHTML) ?: findChild(translatedFileNameMD) }
-    }
-    else {
-      val translatedFileName = descriptionFormat.fileNameWithTranslation(translationLanguage)
-      taskDirectory.findChild(translatedFileName)
-    }
-    return translatedFile
-  }
 
   val file = if (guessFormat) {
     taskDirectory.run { findChild(DescriptionFormat.HTML.fileName) ?: findChild(DescriptionFormat.MD.fileName) }
@@ -136,9 +120,6 @@ fun Task.getDescriptionFile(
   }
   return file
 }
-
-fun DescriptionFormat.fileNameWithTranslation(translationLanguage: TranslationLanguage): String =
-  "${TASK_DESCRIPTION_PREFIX}_${translationLanguage.code}.$extension"
 
 fun Task.canShowSolution(): Boolean {
   return hasSolutions() && status == CheckStatus.Solved
@@ -204,8 +185,8 @@ private fun VirtualFile.toDescriptionFormat(): DescriptionFormat =
   ?: loadingError(EduCoreBundle.message("yaml.editor.invalid.description"))
 
 @RequiresReadLock
-fun Task.getFormattedTaskText(project: Project, translationLanguage: TranslationLanguage? = null): String? {
-  var text = getTaskText(project, translationLanguage) ?: return null
+fun Task.getFormattedTaskText(project: Project): String? {
+  var text = getTaskText(project) ?: return null
   text = StringUtil.replace(text, "%IDE_NAME%", ApplicationNamesInfo.getInstance().fullProductName)
   val textBuffer = StringBuffer(text)
   replaceActionIDsWithShortcuts(textBuffer)
@@ -235,8 +216,8 @@ fun Task.getTaskDirectory(project: Project): VirtualFile? {
 }
 
 @RequiresReadLock
-fun Task.getTaskText(project: Project, translationLanguage: TranslationLanguage? = null): String? {
-  val taskTextFile = getDescriptionFile(project, translationLanguage, guessFormat = true) ?: return null
+fun Task.getTaskText(project: Project): String? {
+  val taskTextFile = getDescriptionFile(project, guessFormat = true) ?: return null
   val taskDescription = taskTextFile.getTextFromTaskTextFile() ?: return descriptionText
 
   if (taskTextFile.extension == DescriptionFormat.MD.extension) {

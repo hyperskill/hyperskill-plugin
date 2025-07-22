@@ -33,6 +33,5 @@
 
     <!-- feature modules -->
     <module name="github"/>
-    <module name="social-media"/>
   </content>
 </idea-plugin>

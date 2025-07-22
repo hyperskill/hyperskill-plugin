@@ -29,7 +29,6 @@ include(
   "intellij-plugin:sql:sql-jvm",
   "intellij-plugin:localization",
   "intellij-plugin:features:github",
-  "intellij-plugin:features:social-media",
 )
 
 // BACKCOMPAT: Temporarily exclude for 2025.2 as it doesn't compile
