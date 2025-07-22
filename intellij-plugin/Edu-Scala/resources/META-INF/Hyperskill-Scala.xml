@@ -1,5 +1,5 @@
 <idea-plugin>
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <configurator language="Scala" implementationClass="com.jetbrains.edu.scala.hyperskill.ScalaHyperskillConfigurator"
                   courseType="Hyperskill"/>
   </extensions>

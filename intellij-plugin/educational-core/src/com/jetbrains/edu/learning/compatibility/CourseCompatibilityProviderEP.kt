@@ -21,7 +21,8 @@ class CourseCompatibilityProviderEP : BaseKeyedLazyInstance<CourseCompatibilityP
   override fun getImplementationClassName(): String? = implementationClass
 
   companion object {
-    val EP_NAME: ExtensionPointName<CourseCompatibilityProviderEP> = ExtensionPointName.create("Educational.compatibilityProvider")
+    val EP_NAME: ExtensionPointName<CourseCompatibilityProviderEP> =
+      ExtensionPointName.create("HyperskillEducational.compatibilityProvider")
 
     fun find(languageId: String, environment: String): CourseCompatibilityProvider? {
       return EP_NAME.extensions.find { it.language == languageId && it.environment == environment }?.instance

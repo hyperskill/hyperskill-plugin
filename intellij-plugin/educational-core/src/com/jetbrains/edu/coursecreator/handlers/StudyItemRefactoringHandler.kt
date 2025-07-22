@@ -15,7 +15,7 @@ interface StudyItemRefactoringHandler {
   fun processReferences(references: MutableCollection<PsiReference>): MutableCollection<PsiReference>
 
   companion object {
-    val EP_NAME = ExtensionPointName.create<StudyItemRefactoringHandler>("Educational.studyItemRefactoringHandler")
+    val EP_NAME = ExtensionPointName.create<StudyItemRefactoringHandler>("HyperskillEducational.studyItemRefactoringHandler")
 
     fun processBeforeTaskMovement(project: Project, task: Task, newParent: VirtualFile) {
       EP_NAME.extensionsIfPointIsRegistered.firstOrNull()?.beforeMoveTask(project, task, newParent)

@@ -10,6 +10,6 @@ interface CheckListener {
   fun afterCheck(project: Project, task: Task, result: CheckResult) {}
 
   companion object {
-    val EP_NAME: ExtensionPointName<CheckListener> = ExtensionPointName.create("Educational.checkListener")
+    val EP_NAME: ExtensionPointName<CheckListener> = ExtensionPointName.create("HyperskillEducational.checkListener")
   }
 }

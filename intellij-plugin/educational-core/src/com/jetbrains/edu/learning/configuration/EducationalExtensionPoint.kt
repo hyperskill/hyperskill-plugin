@@ -27,6 +27,7 @@ class EducationalExtensionPoint<T> : BaseKeyedLazyInstance<T>() {
   override fun getImplementationClassName(): String? = implementationClass
 
   companion object {
-    val EP_NAME: ExtensionPointName<EducationalExtensionPoint<EduConfigurator<*>>> = ExtensionPointName.create("Educational.configurator")
+    val EP_NAME: ExtensionPointName<EducationalExtensionPoint<EduConfigurator<*>>> =
+      ExtensionPointName.create("HyperskillEducational.configurator")
   }
 }

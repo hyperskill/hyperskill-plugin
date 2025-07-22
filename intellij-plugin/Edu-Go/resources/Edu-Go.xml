@@ -4,7 +4,7 @@
     <plugin id="org.jetbrains.plugins.go"/>
   </dependencies>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <configurator language="go" implementationClass="com.jetbrains.edu.go.GoConfigurator"/>
 
     <!-- Hyperskill -->

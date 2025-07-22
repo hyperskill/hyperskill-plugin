@@ -22,7 +22,7 @@ interface CourseMetadataProcessor<T> {
   fun processMetadata(project: Project, course: Course, metadata: T, courseProjectState: CourseProjectState)
 
   companion object {
-    val EP_NAME = ExtensionPointName.create<CourseMetadataProcessor<*>>("Educational.courseMetadataProcessor")
+    val EP_NAME = ExtensionPointName.create<CourseMetadataProcessor<*>>("HyperskillEducational.courseMetadataProcessor")
 
     private fun <T> CourseMetadataProcessor<T>.process(
       project: Project,

@@ -13,7 +13,7 @@ interface MainFileProvider {
   fun findMainPsi(project: Project, file: VirtualFile): PsiElement?
 
   companion object {
-    private val EP_NAME = LanguageExtension<MainFileProvider>("Educational.mainFileProvider")
+    private val EP_NAME = LanguageExtension<MainFileProvider>("HyperskillEducational.mainFileProvider")
 
     fun getMainClassName(project: Project, file: VirtualFile, language: Language): String? {
       ApplicationManager.getApplication().assertReadAccessAllowed()

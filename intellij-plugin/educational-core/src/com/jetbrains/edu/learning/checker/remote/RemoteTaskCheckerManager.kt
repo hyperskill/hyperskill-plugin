@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 
 object RemoteTaskCheckerManager {
-  private val EP_NAME = ExtensionPointName.create<RemoteTaskChecker>("Educational.remoteTaskChecker")
+  private val EP_NAME = ExtensionPointName.create<RemoteTaskChecker>("HyperskillEducational.remoteTaskChecker")
 
   fun remoteCheckerForTask(project: Project, task: Task): RemoteTaskChecker? {
     val checkers = EP_NAME.extensionList.filter { it.canCheck(project, task) }

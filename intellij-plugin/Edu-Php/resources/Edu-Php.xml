@@ -4,7 +4,7 @@
     <plugin id="com.jetbrains.php"/>
   </dependencies>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <configurator implementationClass="com.jetbrains.edu.php.PhpConfigurator" language="PHP" displayName="PHP"/>
   </extensions>
 </idea-plugin>

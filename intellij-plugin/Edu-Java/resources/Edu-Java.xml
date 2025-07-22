@@ -11,7 +11,7 @@
 
   <xi:include href="/META-INF/Hyperskill-Java.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <configurator language="JAVA" implementationClass="com.jetbrains.edu.java.JConfigurator"/>
     <mainFileProvider language="JAVA" implementationClass="com.jetbrains.edu.java.JMainFileProvider"/>
   </extensions>

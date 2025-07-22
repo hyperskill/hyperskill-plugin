@@ -17,7 +17,7 @@ interface HyperskillCourseCreator {
   ): HyperskillCourse
 
   companion object {
-    val EP_NAME = ExtensionPointName.create<HyperskillCourseCreator>("Educational.hyperskillCourseCreator")
+    val EP_NAME = ExtensionPointName.create<HyperskillCourseCreator>("HyperskillEducational.hyperskillCourseCreator")
 
     fun createHyperskillCourse(
       hyperskillProject: HyperskillProject,

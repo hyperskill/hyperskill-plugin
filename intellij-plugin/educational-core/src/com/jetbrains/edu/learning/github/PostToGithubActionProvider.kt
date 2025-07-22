@@ -9,7 +9,7 @@ interface PostToGithubActionProvider {
   fun postToGitHub(project: Project, file: VirtualFile)
 
   companion object {
-    val EP_NAME: ExtensionPointName<PostToGithubActionProvider> = ExtensionPointName.create("Educational.postToGithub")
+    val EP_NAME: ExtensionPointName<PostToGithubActionProvider> = ExtensionPointName.create("HyperskillEducational.postToGithub")
 
     fun first(): PostToGithubActionProvider? = EP_NAME.extensionList.firstOrNull()
   }

@@ -8,6 +8,6 @@ interface OptionsProvider : Configurable {
   fun isAvailable(): Boolean = true
 
   companion object {
-    val EP_NAME: ExtensionPointName<ConfigurableEP<OptionsProvider>> = ExtensionPointName.create("Educational.optionsProvider")
+    val EP_NAME: ExtensionPointName<ConfigurableEP<OptionsProvider>> = ExtensionPointName.create("HyperskillEducational.optionsProvider")
   }
 }

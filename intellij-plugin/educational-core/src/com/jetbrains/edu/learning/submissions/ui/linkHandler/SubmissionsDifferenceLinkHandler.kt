@@ -40,19 +40,6 @@ class SubmissionsDifferenceLinkHandler(
       }
 
       startsWith(SHOW_MORE_SOLUTIONS) -> {
-        val taskId = task.id
-        val communitySolutionsIds = submissionsManager.getCommunitySubmissionsFromMemory(taskId)?.mapNotNull { it.id }
-        if (communitySolutionsIds.isNullOrEmpty()) {
-          ApplicationManager.getApplication().executeOnPooledThread {
-            submissionsManager.loadCommunitySubmissions(task)
-          }
-          return true
-        }
-        val latest = communitySolutionsIds.first()
-        val oldest = communitySolutionsIds.last()
-        ApplicationManager.getApplication().executeOnPooledThread {
-          submissionsManager.loadMoreCommunitySubmissions(task, latest, oldest)
-        }
         return true
       }
     }

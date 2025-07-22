@@ -4,7 +4,7 @@
     <!--suppress PluginXmlValidity -->
     <module name="Edu-Cpp"/>
   </dependencies>
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <cppRunConfigurationHelper implementation="com.jetbrains.edu.cpp.radler.checker.RadlerCppRunConfigurationHelper"/>
   </extensions>
 </idea-plugin>

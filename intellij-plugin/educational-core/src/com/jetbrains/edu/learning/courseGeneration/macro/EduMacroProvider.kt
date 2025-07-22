@@ -15,6 +15,6 @@ interface EduMacroProvider {
   fun provideMacro(holder: CourseInfoHolder<out Course?>, file: VirtualFile): EduMacro?
 
   companion object {
-    val EP_NAME: ExtensionPointName<EduMacroProvider> = ExtensionPointName.create("Educational.pathMacroProvider")
+    val EP_NAME: ExtensionPointName<EduMacroProvider> = ExtensionPointName.create("HyperskillEducational.pathMacroProvider")
   }
 }

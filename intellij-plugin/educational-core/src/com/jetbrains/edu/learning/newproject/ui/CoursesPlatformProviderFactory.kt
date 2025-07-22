@@ -11,7 +11,7 @@ interface CoursesPlatformProviderFactory {
   fun getProviders(): List<CoursesPlatformProvider>
 
   companion object {
-    private val EP_NAME = ExtensionPointName.create<CoursesPlatformProviderFactory>("Educational.coursesPlatformProviderFactory")
+    private val EP_NAME = ExtensionPointName.create<CoursesPlatformProviderFactory>("HyperskillEducational.coursesPlatformProviderFactory")
 
     val allProviders: List<CoursesPlatformProvider> get() = EP_NAME.extensionList.flatMap { it.getProviders() }
   }

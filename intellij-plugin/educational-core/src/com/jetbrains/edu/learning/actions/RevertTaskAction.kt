@@ -56,7 +56,7 @@ class RevertTaskAction : DumbAwareAction(), RightAlignedToolbarAction {
     @NonNls
     const val ACTION_ID: String = "Educational.RefreshTask"
 
-    val EP_NAME: ExtensionPointName<RevertTaskExtension> = ExtensionPointName.create("Educational.revertTaskExtension")
+    val EP_NAME: ExtensionPointName<RevertTaskExtension> = ExtensionPointName.create("HyperskillEducational.revertTaskExtension")
 
     @VisibleForTesting
     fun revert(project: Project, task: Task) {

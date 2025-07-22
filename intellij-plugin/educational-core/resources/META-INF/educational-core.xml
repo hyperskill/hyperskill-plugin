@@ -37,67 +37,67 @@
   </projectListeners>
 
   <extensionPoints>
-    <extensionPoint qualifiedName="Educational.configurator"
+    <extensionPoint qualifiedName="HyperskillEducational.configurator"
                     beanClass="com.jetbrains.edu.learning.configuration.EducationalExtensionPoint"
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.learning.configuration.EduConfigurator"/>
     </extensionPoint>
-    <extensionPoint qualifiedName="Educational.compatibilityProvider"
+    <extensionPoint qualifiedName="HyperskillEducational.compatibilityProvider"
                     beanClass="com.jetbrains.edu.learning.compatibility.CourseCompatibilityProviderEP"
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.learning.compatibility.CourseCompatibilityProvider"/>
     </extensionPoint>
 
-    <extensionPoint qualifiedName="Educational.remoteTaskChecker"
+    <extensionPoint qualifiedName="HyperskillEducational.remoteTaskChecker"
                     interface="com.jetbrains.edu.learning.checker.remote.RemoteTaskChecker"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.checkListener"
+    <extensionPoint qualifiedName="HyperskillEducational.checkListener"
                     interface="com.jetbrains.edu.learning.checker.CheckListener"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.submissionsProvider"
+    <extensionPoint qualifiedName="HyperskillEducational.submissionsProvider"
                     interface="com.jetbrains.edu.learning.submissions.provider.SubmissionsProvider"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.communitySubmissionsProvider"
+    <extensionPoint qualifiedName="HyperskillEducational.communitySubmissionsProvider"
                     interface="com.jetbrains.edu.learning.submissions.provider.CommunitySubmissionsProvider"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.optionsProvider"
+    <extensionPoint qualifiedName="HyperskillEducational.optionsProvider"
                     beanClass="com.intellij.openapi.options.ConfigurableEP"
                     dynamic="true">
       <with attribute="instance" implements="com.jetbrains.edu.learning.settings.OptionsProvider"/>
     </extensionPoint>
 
-    <extensionPoint qualifiedName="Educational.coursesPlatformProviderFactory"
+    <extensionPoint qualifiedName="HyperskillEducational.coursesPlatformProviderFactory"
                     interface="com.jetbrains.edu.learning.newproject.ui.CoursesPlatformProviderFactory"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.pathMacroProvider"
+    <extensionPoint qualifiedName="HyperskillEducational.pathMacroProvider"
                     interface="com.jetbrains.edu.learning.courseGeneration.macro.EduMacroProvider"
                     dynamic="true"/>
 
-    <extensionPoint qualifiedName="Educational.postToGithub"
+    <extensionPoint qualifiedName="HyperskillEducational.postToGithub"
                     interface="com.jetbrains.edu.learning.github.PostToGithubActionProvider"
                     dynamic="true"/>
 
-    <extensionPoint qualifiedName="Educational.taskNavigationExtension"
+    <extensionPoint qualifiedName="HyperskillEducational.taskNavigationExtension"
                     interface="com.jetbrains.edu.learning.navigation.TaskNavigationExtension"
                     dynamic="true"/>
 
-    <extensionPoint qualifiedName="Educational.revertTaskExtension"
+    <extensionPoint qualifiedName="HyperskillEducational.revertTaskExtension"
                     interface="com.jetbrains.edu.learning.actions.RevertTaskAction$RevertTaskExtension"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.remoteEnvHelper"
+    <extensionPoint qualifiedName="HyperskillEducational.remoteEnvHelper"
                     interface="com.jetbrains.edu.learning.RemoteEnvHelper"
                     dynamic="true"/>
 
-    <extensionPoint qualifiedName="Educational.courseViewPaneCustomization"
+    <extensionPoint qualifiedName="HyperskillEducational.courseViewPaneCustomization"
                     interface="com.jetbrains.edu.learning.projectView.CourseViewPaneCustomization"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.studyItemRefactoringHandler"
+    <extensionPoint qualifiedName="HyperskillEducational.studyItemRefactoringHandler"
                     interface="com.jetbrains.edu.coursecreator.handlers.StudyItemRefactoringHandler"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.hyperskillCourseCreator"
+    <extensionPoint qualifiedName="HyperskillEducational.hyperskillCourseCreator"
                     interface="com.jetbrains.edu.learning.stepik.hyperskill.courseGeneration.HyperskillCourseCreator"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.courseMetadataProcessor"
+    <extensionPoint qualifiedName="HyperskillEducational.courseMetadataProcessor"
                     interface="com.jetbrains.edu.learning.newproject.CourseMetadataProcessor"
                     dynamic="true"/>
   </extensionPoints>
@@ -337,7 +337,7 @@
                  defaultValue="[OFF|LOG_ERROR*|EXCEPTION]"/>
   </extensions>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <!-- Only for development purposes -->
     <configurator language="TEXT" implementationClass="com.jetbrains.edu.learning.configuration.PlainTextConfigurator"/>
     <configurator language="TEXT" courseType="Hyperskill"

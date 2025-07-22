@@ -8,7 +8,7 @@
   <!-- BACKCOMPAT: 2025.1. Inline it -->
   <xi:include href="/Edu-Rust-platform.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <configurator language="Rust" implementationClass="com.jetbrains.edu.rust.RsConfigurator"/>
   </extensions>
 

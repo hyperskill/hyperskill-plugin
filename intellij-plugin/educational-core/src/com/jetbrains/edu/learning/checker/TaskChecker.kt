@@ -25,7 +25,7 @@ open class TaskChecker<out T : Task>(val task: T, val project: Project) {
   open fun clearState() {}
 
   companion object {
-    const val EP_NAME = "Educational.taskChecker"
+    const val EP_NAME = "HyperskillEducational.taskChecker"
 
     val LOG = Logger.getInstance(TaskChecker::class.java)
   }

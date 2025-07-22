@@ -28,7 +28,7 @@ interface SubmissionsProvider {
   fun doAuthorize(vararg postLoginActions: Runnable)
 
   companion object {
-    private val EP_NAME = ExtensionPointName.create<SubmissionsProvider>("Educational.submissionsProvider")
+    private val EP_NAME = ExtensionPointName.create<SubmissionsProvider>("HyperskillEducational.submissionsProvider")
 
     fun getSubmissionsProviderForCourse(course: Course): SubmissionsProvider? {
       val submissionsProviders = EP_NAME.extensionList.filter { it.areSubmissionsAvailable(course) }

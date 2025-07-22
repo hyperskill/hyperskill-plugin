@@ -4,7 +4,7 @@
     <plugin id="org.jetbrains.plugins.github"/>
   </dependencies>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <postToGithub implementation="com.jetbrains.edu.github.PostToGithubProviderImpl"/>
   </extensions>
 

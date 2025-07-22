@@ -8,7 +8,7 @@
 
   <xi:include href="/META-INF/Hyperskill-JavaScript.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <configurator implementationClass="com.jetbrains.edu.javascript.learning.JsConfigurator" language="JavaScript"/>
   </extensions>
 </idea-plugin>

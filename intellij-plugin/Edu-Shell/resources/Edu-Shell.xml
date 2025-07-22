@@ -4,7 +4,7 @@
     <plugin id="com.jetbrains.sh"/>
   </dependencies>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <!-- Hyperskill -->
     <configurator implementationClass="com.jetbrains.edu.shell.hyperskill.ShellHyperskillConfigurator" language="Shell Script"
                   courseType="Hyperskill"/>

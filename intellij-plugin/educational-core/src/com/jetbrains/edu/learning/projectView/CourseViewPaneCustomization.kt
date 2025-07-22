@@ -7,7 +7,7 @@ interface CourseViewPaneCustomization {
   fun customize(tree: JTree)
 
   companion object {
-    val EP_NAME = ExtensionPointName.create<CourseViewPaneCustomization>("Educational.courseViewPaneCustomization")
+    val EP_NAME = ExtensionPointName.create<CourseViewPaneCustomization>("HyperskillEducational.courseViewPaneCustomization")
     fun customize(tree: JTree) {
       EP_NAME.computeSafeIfAny { it.customize(tree) }
     }

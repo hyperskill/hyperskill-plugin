@@ -18,7 +18,7 @@
     <postStartupActivity implementation="com.jetbrains.edu.sql.jvm.gradle.SqlGradleStartupActivity"/>
   </extensions>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <configurator language="SQL" implementationClass="com.jetbrains.edu.sql.jvm.gradle.SqlGradleConfigurator"/>
     <taskNavigationExtension implementation="com.jetbrains.edu.sql.jvm.gradle.SqlTaskNavigationExtension"/>
     <revertTaskExtension implementation="com.jetbrains.edu.sql.jvm.gradle.SqlRevertTaskExtension"/>

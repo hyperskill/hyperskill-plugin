@@ -12,12 +12,8 @@ import com.jetbrains.edu.learning.courseFormat.Course
 import com.jetbrains.edu.learning.courseFormat.EduFormatNames.CORRECT
 import com.jetbrains.edu.learning.courseFormat.tasks.Task
 import com.jetbrains.edu.learning.createTopic
-import com.jetbrains.edu.learning.invokeLater
-import com.jetbrains.edu.learning.submissions.provider.CommunitySubmissionsProvider
-import com.jetbrains.edu.learning.submissions.provider.CommunitySubmissionsProvider.Companion.getCommunitySubmissionsProvider
 import com.jetbrains.edu.learning.submissions.provider.SubmissionsProvider
 import com.jetbrains.edu.learning.taskToolWindow.ui.TaskToolWindowView
-import com.jetbrains.edu.learning.taskToolWindow.ui.tab.TabType
 import org.jetbrains.annotations.TestOnly
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -33,21 +29,11 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
 
   private val submissions = ConcurrentHashMap<Int, List<Submission>>()
 
-  private val communitySubmissions = ConcurrentHashMap<Int, TaskCommunitySubmissions>()
-
   var course: Course? = project.course
     @TestOnly set
 
   fun getSubmissionsFromMemory(taskIds: Set<Int>): List<Submission> {
     return taskIds.mapNotNull { submissions[it] }.flatten().sortedByDescending { it.time }
-  }
-
-  fun getCommunitySubmissionsFromMemory(taskId: Int): List<Submission>? {
-    return communitySubmissions[taskId]?.submissions?.sortedByDescending { it.time }
-  }
-
-  private fun getCommunitySubmissionFromMemory(taskId: Int, submissionId: Int): Submission? {
-    return communitySubmissions[taskId]?.submissions?.find { it.id == submissionId }
   }
 
   fun getOrLoadSubmissions(tasks: List<Task>): List<Submission> {
@@ -66,9 +52,7 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
 
 
   fun getSubmissionWithSolutionText(task: Task, submissionId: Int): Submission? {
-    val submission = getOrLoadSubmissions(task).find { it.id == submissionId }
-                     ?: getCommunitySubmissionFromMemory(task.id, submissionId)
-                     ?: return null
+    val submission = getOrLoadSubmissions(task).find { it.id == submissionId } ?: return null
 
     return submission
   }
@@ -127,7 +111,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
   fun prepareSubmissionsContentWhenLoggedIn(loadSolutions: () -> Unit = {}) {
     val course = course
     val submissionsProvider = course?.getSubmissionsProvider() ?: return
-    val communitySubmissionsProvider = course.getCommunitySubmissionsProvider()
 
     CompletableFuture.runAsync({
       if (!isLoggedIn()) return@runAsync
@@ -136,67 +119,9 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
 
       taskToolWindowView.showLoadingSubmissionsPanel(platformName)
       loadSubmissionsContent(course, submissionsProvider, loadSolutions)
-      communitySubmissionsProvider?.loadCommunityContent(course)
 
       notifySubmissionsChanged()
     }, ProcessIOExecutorService.INSTANCE)
-  }
-
-  fun loadCommunitySubmissions(task: Task) {
-    val course = course
-    val submissionsProvider = course?.getSubmissionsProvider() ?: return
-    val communitySubmissionsProvider = course.getCommunitySubmissionsProvider() ?: return
-
-    submissionsProvider.isLoggedInAsync().thenApply { isLoggedIn ->
-      if (!isLoggedIn) return@thenApply
-
-      val taskToolWindowView = TaskToolWindowView.getInstance(project)
-      val taskId = task.id
-      val result = communitySubmissionsProvider.loadCommunitySubmissions(course, task)
-      if (result == null) {
-        communitySubmissions[taskId]?.hasMore = false
-        return@thenApply taskToolWindowView.updateSubmissionsTab()
-      }
-      val (sharedSubmissions, hasMore) = result
-      communitySubmissions[taskId] = TaskCommunitySubmissions(sharedSubmissions.toMutableList(), hasMore)
-      notifySubmissionsChanged()
-    }
-  }
-
-  fun loadMoreCommunitySubmissions(task: Task, latest: Int, oldest: Int) {
-    val course = course
-    val submissionsProvider = course?.getSubmissionsProvider() ?: return
-    val communitySubmissionsProvider = course.getCommunitySubmissionsProvider() ?: return
-
-    submissionsProvider.isLoggedInAsync().thenApply { isLoggedIn ->
-      if (!isLoggedIn) return@thenApply
-
-      val taskToolWindowView = TaskToolWindowView.getInstance(project)
-      val taskId = task.id
-      val result = communitySubmissionsProvider.loadMoreCommunitySubmissions(course, task, latest, oldest)
-      if (result == null) {
-        notifySharedSolutionsUnchanged()
-        communitySubmissions[taskId]?.hasMore = false
-        return@thenApply taskToolWindowView.updateSubmissionsTab()
-      }
-      communitySubmissions[taskId]?.let {
-        it.submissions.addAll(result.submissions)
-        it.hasMore = result.hasMore
-      } ?: run {
-        communitySubmissions[taskId] = result
-      }
-      notifySubmissionsChanged()
-    }
-  }
-
-  private fun SubmissionsProvider.isLoggedInAsync(): CompletableFuture<Boolean> = CompletableFuture.supplyAsync({
-    isLoggedIn()
-  }, ProcessIOExecutorService.INSTANCE)
-
-  private fun TaskToolWindowView.updateSubmissionsTab() {
-    project.invokeLater {
-      updateTab(TabType.SUBMISSIONS_TAB)
-    }
   }
 
   fun isLoggedIn(): Boolean = course?.getSubmissionsProvider()?.isLoggedIn() ?: false
@@ -208,13 +133,6 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
   private fun loadSubmissionsContent(course: Course, submissionsProvider: SubmissionsProvider, loadSolutions: () -> Unit) {
     submissions.putAll(submissionsProvider.loadAllSubmissions(course))
     loadSolutions()
-  }
-
-  private fun CommunitySubmissionsProvider.loadCommunityContent(course: Course) {
-    val courseSharedSolutions = loadCommunitySubmissions(course)
-    courseSharedSolutions.forEach { (taskId, sharedSolutions) ->
-      communitySubmissions[taskId] = TaskCommunitySubmissions(sharedSolutions.toMutableList(), hasMore = true)
-    }
   }
 
   private fun Course.getSubmissionsProvider(): SubmissionsProvider? {

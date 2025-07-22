@@ -1,5 +1,5 @@
 <idea-plugin>
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <configurator implementationClass="com.jetbrains.edu.python.learning.stepik.hyperskill.PyHyperskillConfigurator"
                   language="Python" courseType="Hyperskill"/>
     <configurator implementationClass="com.jetbrains.edu.python.learning.stepik.hyperskill.PyUnittestHyperskillConfigurator"

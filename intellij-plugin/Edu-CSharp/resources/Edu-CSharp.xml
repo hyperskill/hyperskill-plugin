@@ -19,7 +19,7 @@
     </group>
   </actions>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <configurator implementationClass="com.jetbrains.edu.csharp.CSharpConfigurator" language="C#"
                   displayName="C#"/>
     <!-- currently, Unity support for macOS is disabled; hence we have 2 configurators - for linux and windows only -->

@@ -15,7 +15,7 @@ interface RemoteEnvHelper {
   fun getUserUidToken(): String?
 
   companion object {
-    val EP_NAME: ExtensionPointName<RemoteEnvHelper> = ExtensionPointName.create("Educational.remoteEnvHelper")
+    val EP_NAME: ExtensionPointName<RemoteEnvHelper> = ExtensionPointName.create("HyperskillEducational.remoteEnvHelper")
 
     fun isRemoteDevServer(): Boolean = EP_NAME.computeSafeIfAny { it.isRemoteServer() } == true
 

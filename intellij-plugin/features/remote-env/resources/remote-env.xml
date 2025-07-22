@@ -9,7 +9,7 @@
     <postStartupActivity implementation="com.jetbrains.edu.remote.EduRemoteStartupActivity"/>
   </extensions>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <remoteEnvHelper implementation="com.jetbrains.edu.remote.RemoteEnvDefaultHelper"/>
   </extensions>
 </idea-plugin>

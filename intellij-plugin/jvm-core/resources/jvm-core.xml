@@ -7,10 +7,10 @@
   </dependencies>
 
   <extensionPoints>
-    <extensionPoint qualifiedName="Educational.gradleRefresher"
+    <extensionPoint qualifiedName="HyperskillEducational.gradleRefresher"
                     interface="com.jetbrains.edu.jvm.gradle.GradleCourseRefresher"
                     dynamic="true"/>
-    <extensionPoint qualifiedName="Educational.mainFileProvider"
+    <extensionPoint qualifiedName="HyperskillEducational.mainFileProvider"
                     beanClass="com.intellij.lang.LanguageExtensionPoint"
                     dynamic="true">
       <with attribute="implementationClass" implements="com.jetbrains.edu.jvm.MainFileProvider"/>
@@ -21,7 +21,7 @@
     <postStartupActivity implementation="com.jetbrains.edu.jvm.gradle.GradleStartupActivity"/>
   </extensions>
 
-  <extensions defaultExtensionNs="Educational">
+  <extensions defaultExtensionNs="HyperskillEducational">
     <gradleRefresher implementation="com.jetbrains.edu.jvm.gradle.IdeaGradleCourseRefresher"/>
     <pathMacroProvider implementation="com.jetbrains.edu.jvm.gradle.generation.macro.GradleCommandMacroProvider"/>
   </extensions>

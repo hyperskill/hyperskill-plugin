@@ -11,6 +11,6 @@ interface TaskNavigationExtension {
   fun onTaskNavigation(project: Project, task: Task, fromTask: Task?)
 
   companion object {
-    val EP: ExtensionPointName<TaskNavigationExtension> = ExtensionPointName.create("Educational.taskNavigationExtension")
+    val EP: ExtensionPointName<TaskNavigationExtension> = ExtensionPointName.create("HyperskillEducational.taskNavigationExtension")
   }
 }
