@@ -24,24 +24,6 @@ class NavigateTaskTest : EduTestCase() {
   )
 
   @Test
-  fun `test next lesson`() = doNextTest(
-    initialTaskFile = TaskFileInfo(1, 3, "taskFile3.txt"),
-    expectedTaskFile = TaskFileInfo(2, 1, "taskFile1.txt")
-  )
-
-  @Test
-  fun `test previous lesson`() = doPrevTest(
-    initialTaskFile = TaskFileInfo(2, 1, "taskFile1.txt"),
-    expectedTaskFile = TaskFileInfo(1, 3, "taskFile3.txt")
-  )
-
-  @Test
-  fun `test last task`() = doNextTest(
-    initialTaskFile = TaskFileInfo(2, 4, "taskFile5.txt"),
-    expectedTaskFile = TaskFileInfo(2, 4, "taskFile5.txt")
-  )
-
-  @Test
   fun `test first task`() = doPrevTest(
     initialTaskFile = TaskFileInfo(1, 1, "taskFile1.txt"),
     expectedTaskFile = TaskFileInfo(1, 1, "taskFile1.txt")

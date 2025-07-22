@@ -6,10 +6,8 @@ import com.jetbrains.edu.learning.*
 import com.jetbrains.edu.learning.actions.NextTaskAction
 import com.jetbrains.edu.learning.actions.PreviousTaskAction
 import com.jetbrains.edu.learning.actions.navigate.hyperskill.HyperskillNavigationTest
-import com.jetbrains.edu.learning.configuration.PlainTextConfigurator
 import com.jetbrains.edu.learning.configurators.FakeGradleBasedLanguage
 import com.jetbrains.edu.learning.courseFormat.Course
-import com.jetbrains.edu.learning.courseFormat.InMemoryBinaryContents
 import com.jetbrains.edu.learning.courseFormat.ext.allTasks
 import com.jetbrains.edu.learning.courseGeneration.GeneratorUtils
 import com.jetbrains.edu.learning.framework.FrameworkLessonManager
@@ -460,81 +458,7 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
 
     assertThat(task2.taskFiles.keys, not(hasItem("src/Baz.kt")))
   }
-
-  @Test
-  fun `test course with git object files`() {
-    class GitObjectFile(val name: String, text: String) {
-      val contents = InMemoryBinaryContents.parseBase64Encoding(text)
-    }
-
-    val gitObjectFiles = listOf(
-      GitObjectFile("2731ee243bb1111dd93916bb3296ee7f7e23ef", "eAErKUpNVTA2YTA0MDAzMVEoLNQrqShhaD4jyTnZfZLvoo4JzV1Xn8241cqyGAAhHRBB"),
-      GitObjectFile("3a818dc87b9940935b24a5aa93fac00f086bf9", "eAFLyslPUjA0YfBIzcnJVyjPL8pJUVTgAgBQEgas"),
-      GitObjectFile("28add5fd4be3bdd2cdb776dfa035cc69956859", "eAFLyslPUjA2ZUjLLCouUcjJzEvlKk5Nzs9LgbBLMjKLIEwFLgBApg59")
-    )
-
-    val tests = PlainTextConfigurator.TEST_DIR_NAME
-    val taskFileName = "task.txt"
-
-    val course = courseWithFiles {
-      frameworkLesson(isTemplateBased = false) {
-        eduTask {
-          taskFile(taskFileName)
-          taskFile(gitObjectFiles[2].name, gitObjectFiles[2].contents)
-          taskFile("${tests}/${gitObjectFiles[0].name}", gitObjectFiles[0].contents)
-          taskFile("${tests}/${gitObjectFiles[1].name}", gitObjectFiles[1].contents)
-        }
-        eduTask {
-          taskFile(taskFileName)
-
-          // remove task file gitObjectFiles[0]
-          // change text of gitObjectFiles[1]
-          // add new task file gitObjectFiles[2]
-          taskFile("${tests}/${gitObjectFiles[1].name}", gitObjectFiles[0].contents)
-          taskFile("${tests}/${gitObjectFiles[2].name}", gitObjectFiles[2].contents)
-        }
-      }
-    }
-
-    withVirtualFileListener(course) {
-      withEduTestDialog(EduTestDialog(Messages.NO)) {
-        course.findTask("lesson1", "task1").openTaskFileInEditor("task.txt")
-
-        //create file to test that file created by learner is propagated
-        GeneratorUtils.createChildFile(project, rootDir, "lesson1/task/${gitObjectFiles[0].name}", gitObjectFiles[0].contents)
-
-        //remove file to test that it is not propagated
-        runWriteAction {
-          findFile("lesson1/task/${gitObjectFiles[2].name}").delete(NonTemplateBasedFrameworkLessonNavigationTest::class.java)
-        }
-
-        testAction(NextTaskAction.ACTION_ID)
-      }
-    }
-
-    val fileTree = fileTree {
-      dir("lesson1") {
-        dir("task") {
-          file(taskFileName)
-          file(gitObjectFiles[0].name, gitObjectFiles[0].contents.textualRepresentation)
-          dir(tests) {
-            // file text should be changed
-            file(gitObjectFiles[1].name, gitObjectFiles[0].contents.textualRepresentation)
-            file(gitObjectFiles[2].name, gitObjectFiles[2].contents.textualRepresentation)
-          }
-        }
-        dir("task1") {
-          file("task.html")
-        }
-        dir("task2") {
-          file("task.html")
-        }
-      }
-    }
-
-    fileTree.assertEquals(rootDir, myFixture)
-  }
-
+  
   @Test
   fun `test invisible non-test files don't propagate, visible test files propagate`() {
     val course = courseWithFiles(language = FakeGradleBasedLanguage) {

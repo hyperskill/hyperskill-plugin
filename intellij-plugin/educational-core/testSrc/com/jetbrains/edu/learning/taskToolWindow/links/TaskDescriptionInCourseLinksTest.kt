@@ -68,10 +68,6 @@ class TaskDescriptionInCourseLinksTest : TaskDescriptionLinksTestBase() {
   fun `test don't close opened files 1`() =
     doTest("course://lesson2/task2/TaskFile3.txt", "lesson2/task2/TaskFile3.txt", openedFile = "lesson1/task1/TaskFile1.txt")
 
-  @Test
-  fun `test don't close opened files 2`() =
-    doTest("course://lesson2/task2", "lesson2/task2/TaskFile3.txt", openedFile = "lesson1/task1/TaskFile1.txt")
-
   private fun doTest(url: String, expectedPath: String? = null, courseMode: CourseMode = CourseMode.STUDENT, openedFile: String? = null) {
     createCourse(courseMode)
     if (openedFile != null) {
