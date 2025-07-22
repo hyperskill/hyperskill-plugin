@@ -51,7 +51,7 @@ class LearnerYamlLoadingTest : EduTestCase() {
     loadFromYaml()
     assertEquals(2, findTask(0, 1).taskFiles.size)
   }
-  
+
   @Test
   fun `test editable file`() {
     courseWithFiles {

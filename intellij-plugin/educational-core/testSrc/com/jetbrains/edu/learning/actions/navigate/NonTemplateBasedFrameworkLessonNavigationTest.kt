@@ -458,7 +458,7 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
 
     assertThat(task2.taskFiles.keys, not(hasItem("src/Baz.kt")))
   }
-  
+
   @Test
   fun `test invisible non-test files don't propagate, visible test files propagate`() {
     val course = courseWithFiles(language = FakeGradleBasedLanguage) {

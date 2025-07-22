@@ -305,38 +305,40 @@
 Before:
 
   ```xml
-  <ChoiceTask>
-    <option name="choiceVariants">
-      <list>
-        <option value="1995"/>
-        <option value="2004"/>
-        <option value="1987"/>
-      </list>
-    </option>
-  </ChoiceTask>
+
+<ChoiceTask>
+  <option name="choiceVariants">
+    <list>
+      <option value="1995"/>
+      <option value="2004"/>
+      <option value="1987"/>
+    </list>
+  </option>
+</ChoiceTask>
   ```
 
 After:
 
  ```xml
- <ChoiceTask>
-   <option name="choiceOptions">
-     <list>
-       <ChoiceOption>
-         <option name="text" value="1995" />
-         <option name="status" value="INCORRECT" />
-       </ChoiceOption>
-       <ChoiceOption>
-         <option name="text" value="2004" />
-         <option name="status" value="CORRECT" />
-       </ChoiceOption>
-       <ChoiceOption>
-         <option name="text" value="1987" />
-         <option name="status" value="UNKNOWN" />
-       </ChoiceOption>
-     </list>
-   </option>
- </ChoiceTask>
+
+<ChoiceTask>
+  <option name="choiceOptions">
+    <list>
+      <ChoiceOption>
+        <option name="text" value="1995"/>
+        <option name="status" value="INCORRECT"/>
+      </ChoiceOption>
+      <ChoiceOption>
+        <option name="text" value="2004"/>
+        <option name="status" value="CORRECT"/>
+      </ChoiceOption>
+      <ChoiceOption>
+        <option name="text" value="1987"/>
+        <option name="status" value="UNKNOWN"/>
+      </ChoiceOption>
+    </list>
+  </option>
+</ChoiceTask>
  ```
 
 - Scala now has 2 environments: sbt and Gradle. Empty environment now named Gradle

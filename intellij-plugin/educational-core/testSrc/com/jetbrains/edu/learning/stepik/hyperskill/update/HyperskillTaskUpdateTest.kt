@@ -207,7 +207,7 @@ class HyperskillTaskUpdateTest : TaskUpdateTestBase<HyperskillCourse>() {
     }
     expectedStructure.assertEquals(rootDir)
   }
-  
+
   @Test
   fun `test task type has been updated from unsupported to supported`() {
     localCourse = createBasicHyperskillCourse {

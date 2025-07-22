@@ -41,7 +41,7 @@ class StudentChangeApplierTest : YamlTestCase() {
 
     assertEquals(deserializedItem.record, existingItem.record)
   }
-  
+
   @Test
   fun `test task file fields applied`() {
     val existingItem = courseWithFiles {

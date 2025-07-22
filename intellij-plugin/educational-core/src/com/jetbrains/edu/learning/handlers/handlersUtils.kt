@@ -50,7 +50,8 @@ fun isMoveForbidden(project: Project?, element: PsiElement?, target: PsiElement?
       val sourceTaskDir = element.originalFile.virtualFile.getTaskDir(project) ?: return false
 
       if (sourceTaskDir != targetTaskDir) return true
-    } catch (e: Exception) {
+    }
+    catch (e: Exception) {
       // If we get an exception when trying to get the task directory,
       // it's likely because the file belongs to a different project.
       // In this case, we should forbid the move operation.

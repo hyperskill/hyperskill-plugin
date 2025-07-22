@@ -259,7 +259,7 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
       file("settings.gradle")
     }.assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)
   }
-  
+
   @Test
   fun `test project with remote edu problems updated`() {
     val taskFileName = "Task.txt"
