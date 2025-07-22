@@ -309,9 +309,6 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
     return withTokenRefreshIfFailed { hyperskillEndpoints.attempt(Attempt(task.id)).executeAndExtractFirst(AttemptsList::attempts) }
   }
 
-  fun markTheoryCompleted(step: Int): Result<Any, String> =
-    withTokenRefreshIfFailed { hyperskillEndpoints.completeStep(step).executeParsingErrors(true) }
-
   fun getWebSocketConfiguration(): Result<WebSocketConfiguration, String> {
     return withTokenRefreshIfFailed { hyperskillEndpoints.websocket().executeAndExtractFromBody() }
   }

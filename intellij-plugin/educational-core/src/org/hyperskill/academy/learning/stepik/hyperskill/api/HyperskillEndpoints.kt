@@ -67,9 +67,6 @@ interface HyperskillEndpoints {
   @POST("api/attempts")
   fun attempt(@Body attempt: Attempt): Call<AttemptsList>
 
-  @POST("api/steps/{id}/complete")
-  fun completeStep(@Path("id") id: Int): Call<Any>
-
   @POST("api/submissions")
   fun submission(@Body submission: StepikBasedSubmission): Call<SubmissionsList>
 

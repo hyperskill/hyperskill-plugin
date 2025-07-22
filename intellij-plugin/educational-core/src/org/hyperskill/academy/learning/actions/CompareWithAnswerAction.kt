@@ -1,16 +1,13 @@
 package org.hyperskill.academy.learning.actions
 
-import com.intellij.diff.DiffDialogHints
-import com.intellij.diff.DiffManager
-import com.intellij.diff.chains.SimpleDiffRequestChain
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.EduBrowser
 import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
 import org.hyperskill.academy.learning.courseFormat.ext.canShowSolution
+import org.hyperskill.academy.learning.eduState
 import org.hyperskill.academy.learning.stepik.hyperskill.HYPERSKILL_SOLUTIONS_ANCHOR
 import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillTaskLink
 import org.jetbrains.annotations.NonNls
@@ -25,10 +22,6 @@ open class CompareWithAnswerAction : DumbAwareAction() {
 
     val url = hyperskillTaskLink(task)
     EduBrowser.getInstance().browse("$url$HYPERSKILL_SOLUTIONS_ANCHOR")
-  }
-
-  protected open fun showSolution(project: Project, diffRequestChain: SimpleDiffRequestChain) {
-    DiffManager.getInstance().showDiff(project, diffRequestChain, DiffDialogHints.FRAME)
   }
 
   override fun update(e: AnActionEvent) {

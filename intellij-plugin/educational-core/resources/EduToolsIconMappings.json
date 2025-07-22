@@ -1,8 +1,8 @@
 {
   "icons" : {
-    "com" : {
-      "jetbrains" : {
-        "edu" : {
+    "org" : {
+      "hyperskill" : {
+        "academy" : {
           "expui" : {
             "actions" : {
               "applyCode.svg" : "icons/org/hyperskill/academy/learning/applyCode.svg",

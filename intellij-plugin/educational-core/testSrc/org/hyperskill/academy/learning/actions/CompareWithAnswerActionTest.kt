@@ -1,10 +1,5 @@
 package org.hyperskill.academy.learning.actions
 
-import com.intellij.diff.chains.SimpleDiffRequestChain
-import com.intellij.diff.chains.SimpleDiffRequestChain.DiffRequestProducerWrapper
-import com.intellij.diff.contents.DocumentContent
-import com.intellij.diff.requests.SimpleDiffRequest
-import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.EduActionTestCase
 import org.hyperskill.academy.learning.EduBrowser
 import org.hyperskill.academy.learning.MockEduBrowser
@@ -35,27 +30,6 @@ class CompareWithAnswerActionTest : EduActionTestCase() {
 
     val mockEduBrowser = EduBrowser.getInstance() as MockEduBrowser
     assertEquals("${hyperskillTaskLink(findTask(0, 0))}$HYPERSKILL_SOLUTIONS_ANCHOR", mockEduBrowser.lastVisitedUrl)
-  }
-
-  @Test
-  fun `test solution shown`() {
-    courseWithFiles {
-      lesson {
-        eduTask {
-          taskFile("task.txt", "task file text <p>placeholder</p>")
-        }
-      }
-    }
-
-    openFirstTaskFile()
-
-    testAction(object : CompareWithAnswerAction() {
-      override fun showSolution(project: Project, diffRequestChain: SimpleDiffRequestChain) {
-        val diffReq = diffRequestChain.requests[0] as DiffRequestProducerWrapper
-        val answerContent = (diffReq.request as SimpleDiffRequest).contents[1] as DocumentContent
-        assertEquals("task file text answer", answerContent.document.text)
-      }
-    })
   }
 
   private fun openFirstTaskFile() {
