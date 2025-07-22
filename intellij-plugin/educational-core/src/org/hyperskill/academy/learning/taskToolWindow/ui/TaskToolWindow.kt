@@ -63,7 +63,7 @@ abstract class TaskToolWindow(protected val project: Project) : Disposable {
 
   companion object {
     private const val TASK_DESCRIPTION_UPDATE: String = "Task Description Update"
-    const val TASK_DESCRIPTION_UPDATE_DELAY_REGISTRY_KEY: String = "edu.task.description.update.delay"
+    const val TASK_DESCRIPTION_UPDATE_DELAY_REGISTRY_KEY: String = "hyperskill.task.description.update.delay"
 
     fun getTaskDescription(project: Project, task: Task?, uiMode: JavaUILibrary): String {
       val openedTask = task ?: return EduCoreBundle.message("label.open.task")

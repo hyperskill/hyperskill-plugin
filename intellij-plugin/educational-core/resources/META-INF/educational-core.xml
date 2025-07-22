@@ -220,7 +220,7 @@
 
     <postStartupActivity implementation="org.hyperskill.academy.learning.EduProjectActivity"/>
 
-    <registryKey key="edu.task.description.update.delay"
+    <registryKey key="hyperskill.task.description.update.delay"
                  description="The delay in ms before loading page by Task Description view. \nRequires project reopening"
                  defaultValue="300"/>
 
@@ -228,15 +228,7 @@
                              id="Educational"
                              key="settings.education" bundle="messages.EduCoreBundle"/>
 
-    <registryKey key="edu.marketplace.solutions.sharing.prompt.default.delay"
-                 description="Delay of prompting second banner (in millis). Default value is equal to 14 days."
-                 defaultValue="1209600000"/>
-
-    <registryKey key="edu.marketplace.PostMarketplaceProjectToGitHub.completion.condition"
-                 description="Course completion percentage, which should prompt the student to publish the project on GitHub"
-                 defaultValue="80"/>
-
-    <registryKey key="edu.learning.objects.storage.type"
+    <registryKey key="hyperskill.learning.objects.storage.type"
                  description="Controls the way the original author data is stored in the project. This setting does not affect existing course projects, it affects only newly created projects"
                  defaultValue="[SQLite*|YAML]"/>
 
@@ -246,13 +238,6 @@
     <toolWindow id="HyperskillEducational.CheckDetails" anchor="bottom" canCloseContents="true" doNotActivateOnStart="true"
                 factoryClass="org.hyperskill.academy.learning.checker.details.CheckDetailsToolWindowFactory"
                 icon="org.hyperskill.academy.EducationalCoreIcons.CheckPanel.CheckDetailsToolWindow"/>
-
-    <!-- placeholders -->
-    <editorFactoryListener implementation="org.hyperskill.academy.learning.editor.EduEditorFactoryListener"/>
-    <additionalTextAttributes scheme="Default" file="colorScheme/EduDefault.xml"/>
-    <additionalTextAttributes scheme="Darcula" file="colorScheme/EduDarcula.xml"/>
-    <registryKey key="edu.placeholder.highlighting.pass" defaultValue="false" restartRequired="true"
-                 description="Render answer placeholders in Hyperskill Academy courses using highlighting API"/>
 
     <!-- should be last, otherwise project tree will be changed with GradleTreeStructureProvider -->
     <highlightErrorFilter implementation="org.hyperskill.academy.learning.editor.EduHighlightErrorFilter"/>
@@ -279,7 +264,7 @@
     <applicationService serviceImplementation="org.hyperskill.academy.learning.EduSettings"/>
     <httpRequestHandler implementation="org.hyperskill.academy.learning.taskToolWindow.ui.EduToolsResourcesRequestHandler"/>
 
-    <registryKey key="edu.course.update.check.interval"
+    <registryKey key="hyperskill.course.update.check.interval"
                  description="Sets is course up to date check interval in seconds"
                  defaultValue="18000"/>
 
@@ -308,9 +293,6 @@
     </experimentalFeature>
     <defaultLiveTemplates file="liveTemplates/hint.xml"/>
     <editorNotificationProvider implementation="org.hyperskill.academy.learning.yaml.GeneratedRemoteInfoNotificationProvider"/>
-    <registryKey key="edu.course.creator.solve.all"
-                 description="Enables `Solve All Tasks Before` action"
-                 defaultValue="false"/>
 
     <writingAccessProvider implementation="org.hyperskill.academy.learning.editor.EditableFileProvider"/>
 
@@ -324,17 +306,13 @@
       <description>Open educator help for newly created CC courses; add Help button to the toolbar above course view</description>
     </experimentalFeature>
 
-    <registryKey key="edu.course.creator.fl.sync.changes.merging.timespan"
-                 description="The delay in ms before task file synchronization in the guided project for Course Creator.\nChanging the field requires reopening the project"
-                 defaultValue="1000"/>
-
     <iconMapper mappingFile="EduToolsIconMappings.json"/>
     <themeMetadataProvider path="JetBrainsAcademyPlugin.themeMetadata.json"/>
 
     <coursesStorageProvider
         implementation="org.hyperskill.academy.learning.newproject.coursesStorage.JetBrainsAcademyCoursesStorageProvider"/>
 
-    <registryKey key="edu.network.request.assertion.policy"
+    <registryKey key="hyperskill.network.request.assertion.policy"
                  description="Assertion policy for network requests from EDT in Hyperskill Academy plugin"
                  defaultValue="[OFF|LOG_ERROR*|EXCEPTION]"/>
   </extensions>

@@ -89,7 +89,7 @@ abstract class CourseUpdateChecker(protected val project: Project) : Disposable,
   }
 
   companion object {
-    const val REGISTRY_KEY: String = "edu.course.update.check.interval"
+    const val REGISTRY_KEY: String = "hyperskill.course.update.check.interval"
 
     private val LOG: Logger = Logger.getInstance(CourseUpdateChecker::class.java)
   }

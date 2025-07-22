@@ -3,7 +3,7 @@ package org.hyperskill.academy.learning.storage
 import com.intellij.openapi.util.registry.Registry
 import java.util.*
 
-private const val REGISTRY_KEY = "edu.learning.objects.storage.type"
+private const val REGISTRY_KEY = "hyperskill.learning.objects.storage.type"
 
 /**
  * [getDefaultLearningObjectsStorageType] looks up the registry to find the default type for Learning Objects Storage for newly created projects

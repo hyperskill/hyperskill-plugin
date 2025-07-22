@@ -27,7 +27,7 @@
       <description>Enables action to push Hyperskill lesson to Stepik</description>
     </experimentalFeature>
 
-    <registryKey defaultValue="10" description="Hyperskill metrics sending interval in minutes" key="edu.hyperskill.metrics"
+    <registryKey defaultValue="10" description="Hyperskill metrics sending interval in minutes" key="hyperskill.metrics"
                  restartRequired="true"/>
   </extensions>
 

@@ -34,7 +34,7 @@ class HyperskillMetricsScheduler : AppLifecycleListener, DynamicPluginListener {
   }
 
   companion object {
-    private const val HYPERSKILL_STATISTICS_INTERVAL_REGISTRY: String = "edu.hyperskill.metrics"
+    private const val HYPERSKILL_STATISTICS_INTERVAL_REGISTRY: String = "hyperskill.metrics"
 
     @VisibleForTesting
     const val EVENTS_PER_REQUEST: Int = 1000
