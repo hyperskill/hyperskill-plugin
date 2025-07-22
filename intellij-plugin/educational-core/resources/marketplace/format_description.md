@@ -39,7 +39,7 @@
           ]
         },
         "edu_plugin_version": {
-          "description": "JetBrains Academy plugin version. Used to calculate compatibility on the marketplace.",
+          "description": "Hyperskill Academy plugin version. Used to calculate compatibility on the marketplace.",
           "type": "string",
           "examples": [
             "3.7-2019.3-5266"

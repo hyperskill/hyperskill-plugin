@@ -12,7 +12,7 @@ import com.jetbrains.edu.learning.wrapWithUtm
  */
 class HyperskillCourseAdvertiser : Course() {
   init {
-    course.name = "JetBrains Academy Project"
+    course.name = "Hyperskill Academy Project"
     visibility = CourseVisibility.FeaturedVisibility(1)
     description = """
      Project Information

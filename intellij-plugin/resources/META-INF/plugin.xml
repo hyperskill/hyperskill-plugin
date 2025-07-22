@@ -1,7 +1,7 @@
 <!--suppress PluginXmlValidity -->
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="com.jetbrains.edu" allow-bundled-update="true">
   <id>com.jetbrains.edu</id>
-  <name>JetBrains Academy</name>
+  <name>Hyperskill Academy</name>
   <vendor>JetBrains</vendor>
 
   <xi:include href="/META-INF/educational-core.xml" xpointer="xpointer(/idea-plugin/*)"/>

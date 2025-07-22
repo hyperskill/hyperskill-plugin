@@ -14,6 +14,6 @@ class PluginLoadingTest : BasePlatformTestCase() {
   @Test
   fun `plugin loading`() {
     val plugin = PluginManagerCore.getPlugin(PluginId.getId(EduNames.PLUGIN_ID))
-    assertNotNull("JetBrains Academy plugin (${EduNames.PLUGIN_ID}) is not loaded", plugin)
+    assertNotNull("Hyperskill Academy plugin (${EduNames.PLUGIN_ID}) is not loaded", plugin)
   }
 }

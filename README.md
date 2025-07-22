@@ -3,7 +3,7 @@
 [![JetBrains plugins][plugin-downloads-svg]][plugin-repo]
 [![JetBrains plugins][plugin-rating-svg]][plugin-repo]
 
-## The JetBrains Academy plugin
+## The Hyperskill Academy plugin
 
 Turn on the free educational features in your IDE to learn programming from scratch, expand your current skill set,
 or create your own interactive courses to share with others.
@@ -24,11 +24,11 @@ information.
 
 ### Issue tracker
 
-Please submit your issues to the JetBrains Academy tracker on [YouTrack](https://youtrack.jetbrains.com/issues/EDU).
+Please submit your issues to the Hyperskill Academy tracker on [YouTrack](https://youtrack.jetbrains.com/issues/EDU).
 
 ### Resources
 
-* This plugin comes with integration with [JetBrains Academy on Hyperskill](https://hi.hyperskill.org/how-we-teach), a hands-on platform for
+* This plugin comes with integration with [Hyperskill](https://hi.hyperskill.org/how-we-teach), a hands-on platform for
   learning to program.
 * You can read more about plugin development in [IntelliJ Platform SDK docs](http://www.jetbrains.org/intellij/sdk/docs/index.html).
 

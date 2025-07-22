@@ -251,7 +251,7 @@
     <additionalTextAttributes scheme="Default" file="colorScheme/EduDefault.xml"/>
     <additionalTextAttributes scheme="Darcula" file="colorScheme/EduDarcula.xml"/>
     <registryKey key="edu.placeholder.highlighting.pass" defaultValue="false" restartRequired="true"
-                 description="Render answer placeholders in JetBrains Academy courses using highlighting API"/>
+                 description="Render answer placeholders in Hyperskill Academy courses using highlighting API"/>
 
     <!-- should be last, otherwise project tree will be changed with GradleTreeStructureProvider -->
     <highlightErrorFilter implementation="com.jetbrains.edu.learning.editor.EduHighlightErrorFilter"/>
@@ -271,7 +271,7 @@
     <editorNotificationProvider implementation="com.jetbrains.edu.learning.yaml.YamlConfigNotificationProvider"/>
 
     <!-- com.jetbrains.edu.learning.notification.EduNotificationManager.JETBRAINS_ACADEMY_GROUP_ID -->
-    <notificationGroup id="JetBrains Academy" displayType="BALLOON"
+    <notificationGroup id="Hyperskill Academy" displayType="BALLOON"
                        bundle="messages.EduCoreBundle" key="notification.group.edu.tools"/>
 
     <!--suppress PluginXmlValidity -->
@@ -333,7 +333,7 @@
     <coursesStorageProvider implementation="com.jetbrains.edu.learning.newproject.coursesStorage.JetBrainsAcademyCoursesStorageProvider"/>
 
     <registryKey key="edu.network.request.assertion.policy"
-                 description="Assertion policy for network requests from EDT in JetBrains Academy plugin"
+                 description="Assertion policy for network requests from EDT in Hyperskill Academy plugin"
                  defaultValue="[OFF|LOG_ERROR*|EXCEPTION]"/>
   </extensions>
 

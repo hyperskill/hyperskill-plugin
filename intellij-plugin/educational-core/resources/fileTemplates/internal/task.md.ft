@@ -12,7 +12,7 @@ in **Preferences | Tools | Education**,
 but this will not affect any existing task description files.
 
 The following features are available in
-**task.md/task.html** which are specific to the JetBrains Academy plugin:
+**task.md/task.html** which are specific to the Hyperskill Academy plugin:
 
 - Hints can be added anywhere in the task text.
   Type "hint" and press Tab.

@@ -32,7 +32,7 @@ intellijPlatform {
   projectName = "JetBrainsAcademy"
   pluginConfiguration {
     id = "com.jetbrains.edu"
-    name = "JetBrains Academy"
+    name = "Hyperskill Academy"
     version = "$pluginVersion-$platformVersion-$buildNumber"
     changeNotes = provider { file("changes.html").readText() }
     description = provider { file("description.html").readText() }
@@ -154,7 +154,7 @@ tasks {
   }
 
   intellijPlatformTesting {
-    // Generates event scheme for JetBrains Academy plugin FUS events to `build/eventScheme.json`
+    // Generates event scheme for Hyperskill Academy plugin FUS events to `build/eventScheme.json`
     runIde.register("buildEventsScheme") {
       task {
         args("buildEventsScheme", "--outputFile=${buildDir()}/eventScheme.json", "--pluginId=com.jetbrains.edu")
