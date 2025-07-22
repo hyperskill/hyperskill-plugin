@@ -14,7 +14,7 @@ import org.hyperskill.academy.learning.stepik.StepikUser
 import org.hyperskill.academy.learning.stepik.StepikUserInfo
 import org.jdom.Element
 
-@State(name = "EduSettings", storages = [Storage("other.xml")])
+@State(name = "HsSettings", storages = [Storage("hyperskill.xml")])
 class EduSettings : PersistentStateComponent<Element> {
   @Transient
   @Volatile

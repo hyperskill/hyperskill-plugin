@@ -53,9 +53,15 @@ fun createFLMultipleFileMergeDialog(
         val acceptTheirsButton = buttons.find { it.text == VcsBundle.message("multiple.file.merge.accept.theirs") }
 
         acceptYoursButton?.text =
-          EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.MergeDialog.AcceptFromButton.text", currentTaskName)
+          EduCoreBundle.message(
+            "action.HyperskillEducational.Educator.SyncChangesWithNextTasks.MergeDialog.AcceptFromButton.text",
+            currentTaskName
+          )
         acceptTheirsButton?.text =
-          EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.MergeDialog.AcceptFromButton.text", targetTaskName)
+          EduCoreBundle.message(
+            "action.HyperskillEducational.Educator.SyncChangesWithNextTasks.MergeDialog.AcceptFromButton.text",
+            targetTaskName
+          )
       }
     }
   }

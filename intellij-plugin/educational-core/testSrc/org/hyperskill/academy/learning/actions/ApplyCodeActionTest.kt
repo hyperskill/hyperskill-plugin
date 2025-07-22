@@ -41,7 +41,7 @@ class ApplyCodeActionTest : EduActionTestCase() {
 
     withNotificationCheck(project, testRootDisposable, { notificationShown, notificationText ->
       assertTrue(notificationShown)
-      assertEquals(EduCoreBundle.message("action.Educational.Student.ApplyCode.notification.failed.text"), notificationText)
+      assertEquals(EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.notification.failed.text"), notificationText)
     }) {
       withTestDialog(TestDialog.YES) {
         testAction(ApplyCodeAction.ACTION_ID, context = dataContext)
@@ -60,7 +60,7 @@ class ApplyCodeActionTest : EduActionTestCase() {
 
     withNotificationCheck(project, testRootDisposable, { notificationShown, notificationText ->
       assertTrue(notificationShown)
-      assertEquals(EduCoreBundle.message("action.Educational.Student.ApplyCode.notification.failed.text"), notificationText)
+      assertEquals(EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.notification.failed.text"), notificationText)
     }) {
       withTestDialog(TestDialog.YES) {
         testAction(ApplyCodeAction.ACTION_ID, context = dataContext)
@@ -87,7 +87,7 @@ class ApplyCodeActionTest : EduActionTestCase() {
 
     withNotificationCheck(project, testRootDisposable, { notificationShown, notificationText ->
       assertTrue(notificationShown)
-      assertEquals(EduCoreBundle.message("action.Educational.Student.ApplyCode.notification.success.text"), notificationText)
+      assertEquals(EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.notification.success.text"), notificationText)
     }) {
       withTestDialog(TestDialog.YES) {
         testAction(ApplyCodeAction.ACTION_ID, context = dataContext)

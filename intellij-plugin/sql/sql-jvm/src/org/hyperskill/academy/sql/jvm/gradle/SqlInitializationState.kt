@@ -8,7 +8,7 @@ import com.intellij.util.xmlb.annotations.XCollection
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 
 @Service(Service.Level.PROJECT)
-@State(name = "SqlInitializationState", storages = [Storage(StoragePathMacros.WORKSPACE_FILE, roamingType = RoamingType.DISABLED)])
+@State(name = "HsSqlInitializationState", storages = [Storage(StoragePathMacros.WORKSPACE_FILE, roamingType = RoamingType.DISABLED)])
 class SqlInitializationState(private val project: Project) : SimplePersistentStateComponent<SqlInitializationState.State>(State()) {
 
   init {

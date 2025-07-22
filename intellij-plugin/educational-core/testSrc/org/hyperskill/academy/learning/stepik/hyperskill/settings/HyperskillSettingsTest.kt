@@ -10,7 +10,7 @@ class HyperskillSettingsTest : EduSettingsServiceTestBase() {
     val settings = HyperskillSettings()
     settings.loadStateAndCheck(
       """
-      <HyperskillSettings>
+      <HsHyperskillSettings>
         <option name="updateAutomatically" value="false" />
         <HyperskillAccount>
           <option name="tokenExpiresIn" value="1698707885" />
@@ -20,7 +20,7 @@ class HyperskillSettingsTest : EduSettingsServiceTestBase() {
           <option name="hyperskillProjectId" value="123" />
           <option name="id" value="12345678" />
         </HyperskillAccount>
-      </HyperskillSettings>
+      </HsHyperskillSettings>
     """
     )
   }

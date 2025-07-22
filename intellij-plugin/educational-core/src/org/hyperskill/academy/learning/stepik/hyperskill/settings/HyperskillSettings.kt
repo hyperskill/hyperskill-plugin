@@ -17,9 +17,9 @@ import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillUserInfo
 import org.jdom.Element
 
-private const val serviceName = "HyperskillSettings"
+private const val serviceName = "HsHyperskillSettings"
 
-@State(name = serviceName, storages = [Storage("other.xml")])
+@State(name = serviceName, storages = [Storage("hyperskill.xml")])
 class HyperskillSettings : PersistentStateComponent<Element> {
   @get:Transient
   @set:Transient

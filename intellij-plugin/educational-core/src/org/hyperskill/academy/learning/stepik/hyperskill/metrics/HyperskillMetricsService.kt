@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.atomic.DoubleAdder
 import kotlin.math.min
 
-@State(name = "HyperskillMetrics", storages = [Storage("hyperskill.xml", roamingType = RoamingType.DISABLED)])
+@State(name = "HsMetrics", storages = [Storage("hyperskill.xml", roamingType = RoamingType.DISABLED)])
 open class HyperskillMetricsService : PersistentStateComponent<HyperskillMetricsService.State>, Disposable, EduTestAware {
   private val frontendEvents: Deque<HyperskillFrontendEvent> = ConcurrentLinkedDeque()
   private val timeSpentEvents: MutableMap<Int, DoubleAdder> = mutableMapOf()

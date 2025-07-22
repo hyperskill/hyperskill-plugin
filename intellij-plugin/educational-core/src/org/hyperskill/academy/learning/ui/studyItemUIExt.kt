@@ -20,7 +20,7 @@ else {
 
 @NlsActions.ActionText
 fun Task.getUICheckLabel(): String {
-  val defaultMessage = EduCoreBundle.message("action.Educational.Check.text")
+  val defaultMessage = EduCoreBundle.message("action.HyperskillEducational.Check.text")
 
   return when (this) {
     is TheoryTask -> EduCoreBundle.message("action.check.run.text")

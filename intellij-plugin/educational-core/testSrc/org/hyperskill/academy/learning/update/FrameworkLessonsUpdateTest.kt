@@ -494,26 +494,26 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : UpdateTestBase<T>() {
           }
           dir("task1 renamed") {
             file("task.html")
-            file("task-info.yaml")
-            file("task-remote-info.yaml")
+            file("hs-task-info.yaml")
+            file("hs-task-remote-info.yaml")
           }
           dir("task2 renamed") {
             file("task.html")
-            file("task-info.yaml")
-            file("task-remote-info.yaml")
+            file("hs-task-info.yaml")
+            file("hs-task-remote-info.yaml")
           }
           dir("task3 renamed") {
             file("task.html")
-            file("task-info.yaml")
-            file("task-remote-info.yaml")
+            file("hs-task-info.yaml")
+            file("hs-task-remote-info.yaml")
           }
-          file("lesson-info.yaml")
-          file("lesson-remote-info.yaml")
+          file("hs-lesson-info.yaml")
+          file("hs-lesson-remote-info.yaml")
         }
         file("build.gradle")
         file("settings.gradle")
-        file("course-info.yaml")
-        file("course-remote-info.yaml")
+        file("hs-course-info.yaml")
+        file("hs-course-remote-info.yaml")
       }.assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)
     }
 
@@ -563,21 +563,21 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : UpdateTestBase<T>() {
         }
         dir("task1") {
           file("task.html")
-          file("task-info.yaml")
-          file("task-remote-info.yaml")
+          file("hs-task-info.yaml")
+          file("hs-task-remote-info.yaml")
         }
         dir("task2") {
           file("task.html")
-          file("task-info.yaml")
-          file("task-remote-info.yaml")
+          file("hs-task-info.yaml")
+          file("hs-task-remote-info.yaml")
         }
-        file("lesson-info.yaml")
-        file("lesson-remote-info.yaml")
+        file("hs-lesson-info.yaml")
+        file("hs-lesson-remote-info.yaml")
       }
       file("build.gradle")
       file("settings.gradle")
-      file("course-info.yaml")
-      file("course-remote-info.yaml")
+      file("hs-course-info.yaml")
+      file("hs-course-remote-info.yaml")
     }.assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)
   }
 
@@ -623,26 +623,26 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : UpdateTestBase<T>() {
         }
         dir("task1") {
           file("task.html")
-          file("task-info.yaml")
-          file("task-remote-info.yaml")
+          file("hs-task-info.yaml")
+          file("hs-task-remote-info.yaml")
         }
         dir("task2") {
           file("task.html")
-          file("task-info.yaml")
-          file("task-remote-info.yaml")
+          file("hs-task-info.yaml")
+          file("hs-task-remote-info.yaml")
         }
         dir("task3") {
           file("task.html")
-          file("task-info.yaml")
-          file("task-remote-info.yaml")
+          file("hs-task-info.yaml")
+          file("hs-task-remote-info.yaml")
         }
-        file("lesson-info.yaml")
-        file("lesson-remote-info.yaml")
+        file("hs-lesson-info.yaml")
+        file("hs-lesson-remote-info.yaml")
       }
       file("build.gradle")
       file("settings.gradle")
-      file("course-info.yaml")
-      file("course-remote-info.yaml")
+      file("hs-course-info.yaml")
+      file("hs-course-remote-info.yaml")
     }.assertEquals(LightPlatformTestCase.getSourceRoot(), myFixture)
   }
 

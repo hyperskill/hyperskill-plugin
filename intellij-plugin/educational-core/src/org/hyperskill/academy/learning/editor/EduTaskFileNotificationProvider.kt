@@ -19,7 +19,7 @@ class EduTaskFileNotificationProvider : EditorNotificationProvider {
       (fileEditor as? TextEditor)?.editor?.document?.text ?: return@Function null
       if (!taskFile.isValid()) {
         val panel = EditorNotificationPanel().text(EduCoreBundle.message("error.solution.cannot.be.loaded"))
-        panel.createActionLabel(EduCoreBundle.message("action.Educational.RefreshTask.text"), "HyperskillEducational.RefreshTask")
+        panel.createActionLabel(EduCoreBundle.message("action.HyperskillEducational.RefreshTask.text"), "HyperskillEducational.RefreshTask")
         panel
       }
       else {

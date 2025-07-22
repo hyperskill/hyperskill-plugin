@@ -30,8 +30,8 @@ class RevertTaskAction : DumbAwareAction(), RightAlignedToolbarAction {
       return
     }
     val result = MessageDialogBuilder.yesNo(
-      EduCoreBundle.message("action.Educational.RefreshTask.text"),
-      EduCoreBundle.message("action.Educational.RefreshTask.progress.dropped")
+      EduCoreBundle.message("action.HyperskillEducational.RefreshTask.text"),
+      EduCoreBundle.message("action.HyperskillEducational.RefreshTask.progress.dropped")
     ).ask(project)
     if (!result) return
     revert(project, task)
@@ -71,7 +71,10 @@ class RevertTaskAction : DumbAwareAction(), RightAlignedToolbarAction {
       }
 
       EditorNotifications.getInstance(project).updateAllNotifications()
-      EduNotificationManager.showInfoNotification(project, content = EduCoreBundle.message("action.Educational.RefreshTask.result"))
+      EduNotificationManager.showInfoNotification(
+        project,
+        content = EduCoreBundle.message("action.HyperskillEducational.RefreshTask.result")
+      )
       ProjectView.getInstance(project).refresh()
       TaskToolWindowView.getInstance(project).updateTaskSpecificPanel()
       TaskToolWindowView.getInstance(project).readyToCheck()

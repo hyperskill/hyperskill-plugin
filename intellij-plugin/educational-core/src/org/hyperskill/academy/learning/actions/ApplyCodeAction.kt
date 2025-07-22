@@ -84,8 +84,8 @@ open class ApplyCodeAction : DumbAwareAction(), CustomComponentAction {
   ) {
     init {
       val gotItTooltip = GotItTooltip(
-        GOT_IT_ID, EduCoreBundle.message("action.Educational.Student.ApplyCode.tooltip.text")
-      ).withHeader(EduCoreBundle.message("action.Educational.Student.ApplyCode.tooltip.title"))
+        GOT_IT_ID, EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.tooltip.text")
+      ).withHeader(EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.tooltip.title"))
 
       this.addComponentListener(object : ComponentAdapter() {
         override fun componentMoved(e: ComponentEvent) {
@@ -105,10 +105,10 @@ open class ApplyCodeAction : DumbAwareAction(), CustomComponentAction {
 
   open fun getConfirmationFromDialog(project: Project): Boolean = Messages.showYesNoDialog(
     project,
-    EduCoreBundle.message("action.Educational.Student.ApplyCode.dialog.text"),
-    EduCoreBundle.message("action.Educational.Student.ApplyCode.dialog.title"),
-    EduCoreBundle.message("action.Educational.Student.ApplyCode.dialog.yes.text"),
-    EduCoreBundle.message("action.Educational.Student.ApplyCode.dialog.no.text"),
+    EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.dialog.text"),
+    EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.dialog.title"),
+    EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.dialog.yes.text"),
+    EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.dialog.no.text"),
     AllIcons.General.Warning
   ) == Messages.YES
 
@@ -138,14 +138,14 @@ open class ApplyCodeAction : DumbAwareAction(), CustomComponentAction {
 
   open fun showFailedNotification(project: Project) = EduNotificationManager.showErrorNotification(
     project,
-    @Suppress("DialogTitleCapitalization") EduCoreBundle.message("action.Educational.Student.ApplyCode.notification.failed.title"),
-    EduCoreBundle.message("action.Educational.Student.ApplyCode.notification.failed.text")
+    @Suppress("DialogTitleCapitalization") EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.notification.failed.title"),
+    EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.notification.failed.text")
   )
 
   open fun afterActionPerformed(project: Project) = EduNotificationManager.showInfoNotification(
     project,
-    @Suppress("DialogTitleCapitalization") EduCoreBundle.message("action.Educational.Student.ApplyCode.notification.success.title"),
-    EduCoreBundle.message("action.Educational.Student.ApplyCode.notification.success.text")
+    @Suppress("DialogTitleCapitalization") EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.notification.success.title"),
+    EduCoreBundle.message("action.HyperskillEducational.Student.ApplyCode.notification.success.text")
   )
 
   open val actionId: String = ACTION_ID

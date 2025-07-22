@@ -43,7 +43,7 @@ import java.nio.file.Paths
  * TODO(use id of the task as a key instead of the path to the task)
  */
 @Service(Service.Level.PROJECT)
-@State(name = "CCFrameworkLessonManager", storages = [Storage(StoragePathMacros.WORKSPACE_FILE, roamingType = RoamingType.DISABLED)])
+@State(name = "HsCCFrameworkLessonManager", storages = [Storage(StoragePathMacros.WORKSPACE_FILE, roamingType = RoamingType.DISABLED)])
 class CCFrameworkLessonManager(
   private val project: Project
 ) : SimplePersistentStateComponent<CCFrameworkLessonManager.RecordState>(RecordState()), Disposable, EduTestAware {
@@ -247,9 +247,9 @@ class CCFrameworkLessonManager(
   private fun showApplyChangesCanceledNotification(project: Project, startTaskName: String, cancelledTaskName: String) {
     EduNotificationManager.showWarningNotification(
       project,
-      EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.Notification.cancel.title"),
+      EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.Notification.cancel.title"),
       EduCoreBundle.message(
-        "action.Educational.Educator.SyncChangesWithNextTasks.Notification.cancel.description",
+        "action.HyperskillEducational.Educator.SyncChangesWithNextTasks.Notification.cancel.description",
         startTaskName,
         cancelledTaskName
       )
@@ -259,8 +259,11 @@ class CCFrameworkLessonManager(
   private fun showApplyChangesSuccessNotification(project: Project, startTaskName: String) {
     EduNotificationManager.showInfoNotification(
       project,
-      EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.Notification.success.title"),
-      EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.Notification.success.description", startTaskName)
+      EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.Notification.success.title"),
+      EduCoreBundle.message(
+        "action.HyperskillEducational.Educator.SyncChangesWithNextTasks.Notification.success.description",
+        startTaskName
+      )
     )
   }
 

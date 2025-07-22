@@ -51,7 +51,7 @@ class DiffConflictResolveStrategy(private val project: Project) : FLConflictReso
 
     computeUnderProgress(
       project,
-      EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.conflict.resolution.smart.indicator")
+      EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.conflict.resolution.smart.indicator")
     ) { indicator ->
       for (changedFile in changedFiles) {
         val leftContent = currentState[changedFile]
@@ -106,7 +106,7 @@ class DiffConflictResolveStrategy(private val project: Project) : FLConflictReso
     invokeAndWaitIfNeeded {
       // the line below registers undo for task with given command id and launches a task with bulk update in write action
       model.executeMergeCommand(
-        EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.conflict.resolution.smart.indicator"),
+        EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.conflict.resolution.smart.indicator"),
         null,
         UndoConfirmationPolicy.DEFAULT,
         true,

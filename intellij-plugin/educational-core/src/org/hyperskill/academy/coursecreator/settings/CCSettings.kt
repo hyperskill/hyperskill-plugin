@@ -3,7 +3,7 @@ package org.hyperskill.academy.coursecreator.settings
 import com.intellij.openapi.components.*
 import com.intellij.util.xmlb.annotations.OptionTag
 
-@State(name = "CCSettings", storages = [Storage("other.xml")])
+@State(name = "HsCCSettings", storages = [Storage("hyperskill.xml")])
 class CCSettings : SimplePersistentStateComponent<CCSettings.State>(State()) {
 
   // Don't use property delegation like `var propertyName by state::propertyName`.

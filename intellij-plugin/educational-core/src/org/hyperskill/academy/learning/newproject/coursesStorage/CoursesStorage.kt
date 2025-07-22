@@ -9,7 +9,7 @@ import org.hyperskill.academy.learning.courseFormat.CourseMode
 import org.hyperskill.academy.learning.newproject.ui.welcomeScreen.JBACourseFromStorage
 import org.jetbrains.annotations.TestOnly
 
-@State(name = "CoursesStorage", storages = [Storage("coursesStorage.xml", roamingType = RoamingType.DISABLED)])
+@State(name = "HyperskillCoursesStorage", storages = [Storage("hsCoursesStorage.xml", roamingType = RoamingType.DISABLED)])
 @Service
 class CoursesStorage : CourseDataStorage, CoursesStorageBase(), EduTestAware {
 

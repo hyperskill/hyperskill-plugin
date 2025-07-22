@@ -58,15 +58,17 @@ fun SyncChangesHelpTooltip.tryInstallNewTooltip(project: Project, treeNode: Tree
   when (state) {
     null -> return false
     SyncChangesTaskFileState.INFO -> {
-      title = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.Changes.text")
-      description = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.Changes.description")
-      actionText = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ActionLink.Changes.text")
+      title = EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.Changes.text")
+      description =
+        EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.Changes.description")
+      actionText = EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.ActionLink.Changes.text")
     }
 
     SyncChangesTaskFileState.WARNING -> {
-      title = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.File.text")
-      description = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.File.description")
-      actionText = EduCoreBundle.message("action.Educational.Educator.SyncChangesWithNextTasks.ActionLink.File.text")
+      title = EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.File.text")
+      description =
+        EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.ProjectView.Tooltip.File.description")
+      actionText = EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.ActionLink.File.text")
     }
   }
 
