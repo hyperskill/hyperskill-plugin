@@ -129,7 +129,7 @@ public final class EducationalCoreIcons {
    * <p>All child icons are 16x16</p>
    */
   public static final class Platform {
-    public static final Icon JetBrainsAcademy = load("/icons/org/hyperskill/academy/learning/JB_academy.svg");
+    public static final Icon HyperskillAcademy = load("/icons/org/hyperskill/academy/learning/JB_academy.svg");
 
     /**
      * Class that provides tab icons for different platforms
@@ -138,7 +138,7 @@ public final class EducationalCoreIcons {
      * {@code org.hyperskill.academy.learning.newproject.ui.CoursesPlatformProviderFactory}</p>
      */
     public static final class Tab {
-      public static final Icon JetBrainsAcademyTab = load("/icons/org/hyperskill/academy/learning/JB_academy_course_tab.svg");
+      public static final Icon HyperskillAcademyTab = load("/icons/org/hyperskill/academy/learning/JB_academy_course_tab.svg");
     }
   }
 

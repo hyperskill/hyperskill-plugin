@@ -52,7 +52,7 @@ fun setUpPluginDependencies(project: Project, course: Course) {
 
 fun installAndEnablePlugin(pluginIds: Set<PluginId>, onSuccess: Runnable) = installAndEnable(null, pluginIds, true, onSuccess = onSuccess)
 
-val TIME_LOGGER = Logger.getInstance("JetBrainsAcademy.performance.measure")
+val TIME_LOGGER = Logger.getInstance("HyperskillAcademy.performance.measure")
 
 fun <T> measureTimeAndLog(title: String, block: () -> T): T {
   val start = System.currentTimeMillis()

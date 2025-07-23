@@ -35,7 +35,7 @@ private val LOG: Logger = Logger.getInstance("org.hyperskill.academy.learning.ne
 val Course.logo: Icon?
   get() {
     if (this is HyperskillCourseAdvertiser) {
-      return EducationalCoreIcons.Platform.JetBrainsAcademy
+      return EducationalCoreIcons.Platform.HyperskillAcademy
     }
     val logo = configurator?.logo ?: compatibilityProvider?.logo
     if (logo == null) {

@@ -304,10 +304,10 @@
     </experimentalFeature>
 
     <iconMapper mappingFile="EduToolsIconMappings.json"/>
-    <themeMetadataProvider path="JetBrainsAcademyPlugin.themeMetadata.json"/>
+    <themeMetadataProvider path="HyperskillAcademyPlugin.themeMetadata.json"/>
 
     <coursesStorageProvider
-        implementation="org.hyperskill.academy.learning.newproject.coursesStorage.JetBrainsAcademyCoursesStorageProvider"/>
+        implementation="org.hyperskill.academy.learning.newproject.coursesStorage.HyperskillAcademyCoursesStorageProvider"/>
 
     <registryKey key="hyperskill.network.request.assertion.policy"
                  description="Assertion policy for network requests from EDT in Hyperskill Academy plugin"
@@ -323,7 +323,7 @@
                   implementationClass="org.hyperskill.academy.learning.stepik.hyperskill.PlainTextHyperskillConfigurator"/>
 
     <checkListener implementation="org.hyperskill.academy.coursecreator.validation.ValidationCheckListener"/>
-    <coursesPlatformProviderFactory id="JetBrainsAcademy" order="first"
+    <coursesPlatformProviderFactory id="HyperskillAcademy" order="first"
                                     implementation="org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProviderFactory"/>
 
     <!-- Course compatibility providers   -->

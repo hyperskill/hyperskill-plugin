@@ -36,7 +36,7 @@ class HyperskillPlatformProviderFactory : CoursesPlatformProviderFactory {
 class HyperskillPlatformProvider : CoursesPlatformProvider() {
   override val name: String = EduNames.JBA
 
-  override val icon: Icon get() = EducationalCoreIcons.Platform.Tab.JetBrainsAcademyTab
+  override val icon: Icon get() = EducationalCoreIcons.Platform.Tab.HyperskillAcademyTab
 
   override fun createPanel(scope: CoroutineScope, disposable: Disposable): CoursesPanel = HyperskillCoursesPanel(
     this, scope,

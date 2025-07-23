@@ -23,7 +23,7 @@ val buildNumber = System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
 version = "$pluginVersion-$platformVersion-$buildNumber"
 
 intellijPlatform {
-  projectName = "JetBrainsAcademy"
+  projectName = "HyperskillAcademy"
   pluginConfiguration {
     id = "org.hyperskill.academy"
     name = "Hyperskill Academy"
