@@ -67,7 +67,7 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     if (DumbService.isDumb(project)) {
-      e.dataContext.showPopup(ActionUtil.getUnavailableMessage(message("check.title"), false))
+      e.dataContext.showPopup(ActionUtil.getActionUnavailableMessage(message("check.title")))
       return
     }
     CheckDetailsView.getInstance(project).clear()

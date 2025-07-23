@@ -15,7 +15,7 @@ class PsiElementLink(link: String) : TaskDescriptionLink<NavigatablePsiElement, 
     val qualifiedName = linkPath
     val dumbService = DumbService.getInstance(project)
     if (dumbService.isDumb) {
-      val message = ActionUtil.getUnavailableMessage(EduCoreBundle.message("label.navigation"), false)
+      val message = ActionUtil.getActionUnavailableMessage(EduCoreBundle.message("label.navigation"))
       dumbService.showDumbModeNotification(message)
       return null
     }
