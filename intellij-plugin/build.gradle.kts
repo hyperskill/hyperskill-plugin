@@ -27,13 +27,12 @@ intellijPlatform {
   pluginConfiguration {
     id = "org.hyperskill.academy"
     name = "Hyperskill Academy"
-    version = "$pluginVersion-$platformVersion-$buildNumber"
+    version = pluginVersion
     changeNotes = provider { file("changes.html").readText() }
     description = provider { file("description.html").readText() }
 
     ideaVersion {
       sinceBuild = prop("customSinceBuild")
-      untilBuild = prop("customUntilBuild")
     }
 
     vendor {

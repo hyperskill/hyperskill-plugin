@@ -26,9 +26,9 @@ jobs:
       - name: Generate matrix from printProductsReleases
         id: set-matrix
         run: |
-          RAW=$(./gradlew printProductsReleases -Pintellij.type=PY --quiet \
-            | grep '^PY-' \
-            | sed 's/^PY-//')
+          RAW=$(./gradlew printProductsReleases -Pintellij.type=IU --quiet \
+            | grep '^IU-' \
+            | sed 's/^IU-//')
           
           JSON=$(echo "$RAW" | jq -R . | jq -s -c '{version: .}')
           echo "Versions: $RAW"
