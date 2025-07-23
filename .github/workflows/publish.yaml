@@ -35,7 +35,7 @@ jobs:
           echo "matrix=$JSON" >> $GITHUB_OUTPUT
   
   test:
-    name: Run Tests
+    name: Run Tests for ${{ matrix.version }}
     needs: versions
     runs-on: arc-runners-small
     timeout-minutes: 60
