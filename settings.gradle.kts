@@ -115,9 +115,8 @@ fun Properties.extractAndStore(path: String, vararg keys: String) {
 
 buildCache {
   local {
-    // By default, build cache is stored in gradle home directory
-    directory = File(rootDir, "build/build-cache")
-    removeUnusedEntriesAfterDays = 30
+    isEnabled = true
+    directory = File(rootDir, ".gradle/build-cache")
   }
 }
 
