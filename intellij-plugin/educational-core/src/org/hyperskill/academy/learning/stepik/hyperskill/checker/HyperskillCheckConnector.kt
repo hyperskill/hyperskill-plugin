@@ -1,6 +1,6 @@
 package org.hyperskill.academy.learning.stepik.hyperskill.checker
 
-import com.intellij.notification.NotificationListener
+import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType.ERROR
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -207,10 +207,10 @@ object HyperskillCheckConnector {
       EduNotificationManager
         .create(ERROR, EduCoreBundle.message("error.failed.to.post.solution"), EduCoreBundle.message("error.access.denied.with.link"))
         .apply {
-          setListener { _, _ ->
+          addAction(NotificationAction.createSimpleExpiring(EduCoreBundle.message("notification.hyperskill.no.next.activity.login.action")) {
             this@apply.expire()
-            loginListener
-          }
+            loginListener.doLogin()
+          })
         }
         .notify(project)
       return
@@ -221,7 +221,9 @@ object HyperskillCheckConnector {
       ERROR,
       EduCoreBundle.message("error.failed.to.post.solution"),
       EduFormatBundle.message("help.use.guide", EduNames.FAILED_TO_POST_TO_JBA_URL)
-    ).setListener(NotificationListener.URL_OPENING_LISTENER)
+    ).addAction(NotificationAction.createSimpleExpiring("Open in Browser") {
+      EduBrowser.getInstance().browse(EduNames.FAILED_TO_POST_TO_JBA_URL)
+    })
       .notify(project)
   }
 

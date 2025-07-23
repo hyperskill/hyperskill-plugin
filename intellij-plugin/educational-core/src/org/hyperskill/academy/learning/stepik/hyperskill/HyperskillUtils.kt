@@ -1,7 +1,6 @@
 package org.hyperskill.academy.learning.stepik.hyperskill
 
 import com.intellij.notification.NotificationAction
-import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType.ERROR
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
@@ -272,7 +271,9 @@ private fun showNoNextActivityNotification(task: Task?, project: Project) {
     ERROR,
     EduCoreBundle.message("notification.hyperskill.no.next.activity.title"),
     task?.let { EduCoreBundle.message("notification.hyperskill.no.next.activity.content", stepLink(task.id)) } ?: "",
-  ).setListener(NotificationListener.URL_OPENING_LISTENER)
+  ).addAction(NotificationAction.createSimpleExpiring("Open in Browser") {
+    task?.let { EduBrowser.getInstance().browse(stepLink(it.id)) }
+  })
     .notify(project)
 }
 

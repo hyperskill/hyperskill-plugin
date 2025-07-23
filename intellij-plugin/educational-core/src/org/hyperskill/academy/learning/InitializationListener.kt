@@ -8,7 +8,6 @@ import com.intellij.ide.plugins.DynamicPluginListener
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.NotificationAction
-import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType.ERROR
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.runReadAction
@@ -127,7 +126,9 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
       ERROR,
       EduNames.JBA,
       EduCoreBundle.message("hyperskill.unsupported.port.extended.message", port.toString(), EduNames.OUTSIDE_OF_KNOWN_PORT_RANGE_URL)
-    ).setListener(NotificationListener.URL_OPENING_LISTENER)
+    ).addAction(NotificationAction.createSimpleExpiring("Open in Browser") {
+      EduBrowser.getInstance().browse(EduNames.OUTSIDE_OF_KNOWN_PORT_RANGE_URL)
+    })
       .notify(null)
   }
 
