@@ -17,6 +17,7 @@
 
 package org.hyperskill.academy.learning.stepik
 
+import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType.INFORMATION
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.progress.ProgressManager
@@ -28,16 +29,18 @@ import org.hyperskill.academy.learning.notification.EduNotificationManager
 fun showUpdateAvailableNotification(project: Project, updateAction: () -> Unit) {
   EduNotificationManager
     .create(INFORMATION, EduCoreBundle.message("update.content"), EduCoreBundle.message("update.content.request"))
-    .setListener { notification, _ ->
-      FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
-      notification.expire()
-      ProgressManager.getInstance().runProcessWithProgressSynchronously(
-        {
-          ProgressManager.getInstance().progressIndicator.isIndeterminate = true
-          updateAction()
-        },
-        EduCoreBundle.message("push.course.updating.progress.text"), true, project
-      )
+    .apply {
+      addAction(NotificationAction.createSimple("Update") {
+        FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
+        this@apply.expire()
+        ProgressManager.getInstance().runProcessWithProgressSynchronously(
+          {
+            ProgressManager.getInstance().progressIndicator.isIndeterminate = true
+            updateAction()
+          },
+          EduCoreBundle.message("push.course.updating.progress.text"), true, project
+        )
+      })
     }
     .notify(project)
 }

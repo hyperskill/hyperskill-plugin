@@ -1,7 +1,8 @@
 package org.hyperskill.academy.learning.newproject.ui
 
+import com.intellij.ide.BrowserUtil
 import com.intellij.ide.DataManager
-import com.intellij.notification.NotificationListener
+import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType.WARNING
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -142,10 +143,20 @@ fun showNotificationFromCourseValidation(result: CourseValidationResult, title: 
         }
 
         is ValidationErrorMessage -> {} // do nothing with the notification
-        is ValidationErrorMessageWithHyperlinks ->
+        is ValidationErrorMessageWithHyperlinks -> {
           //setting a listener is deprecated, so TextMessageWithHyperlinks should not be used.
           //We need to reword such messages and make viewing a link an action inside a notification
-          setListener(NotificationListener.UrlOpeningListener(false))
+          addAction(NotificationAction.createSimple("Open Link") {
+            // This is a simplified replacement that opens the first link found in the message
+            // A more complete solution would parse all links from the message and add an action for each
+            val linkPattern = "<a href='([^']*)'".toRegex()
+            val match = linkPattern.find(result.message)
+            if (match != null) {
+              val url = match.groupValues[1]
+              BrowserUtil.browse(url)
+            }
+          })
+        }
       }
     }.notify(null)
 }

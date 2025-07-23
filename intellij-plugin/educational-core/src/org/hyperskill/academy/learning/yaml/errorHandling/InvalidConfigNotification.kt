@@ -2,6 +2,7 @@ package org.hyperskill.academy.learning.yaml.errorHandling
 
 import com.intellij.CommonBundle
 import com.intellij.notification.Notification
+import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType.ERROR
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -22,7 +23,11 @@ import javax.swing.event.HyperlinkEvent
 fun showInvalidConfigNotification(project: Project, configFile: VirtualFile, cause: String) {
   EduNotificationManager
     .create(ERROR, EduCoreBundle.message("yaml.invalid.config.notification.title"), messageWithEditLink(project, configFile, cause))
-    .setListener(GoToFileListener(project, configFile))
+    .apply {
+      addAction(NotificationAction.createSimple(CommonBundle.message("button.edit")) {
+        FileEditorManager.getInstance(project).openFile(configFile, true)
+      })
+    }
     .notify(project)
 }
 

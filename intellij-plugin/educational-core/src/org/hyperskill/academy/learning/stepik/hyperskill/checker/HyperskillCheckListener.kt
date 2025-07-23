@@ -1,5 +1,6 @@
 package org.hyperskill.academy.learning.stepik.hyperskill.checker
 
+import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType.ERROR
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -16,6 +17,7 @@ import org.hyperskill.academy.learning.notification.EduNotificationManager
 import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillLoginListener
 import org.hyperskill.academy.learning.stepik.hyperskill.metrics.HyperskillMetricsService
 import org.hyperskill.academy.learning.stepik.hyperskill.settings.HyperskillSettings
+import javax.swing.event.HyperlinkEvent
 
 class HyperskillCheckListener : CheckListener {
 
@@ -64,10 +66,10 @@ class HyperskillCheckListener : CheckListener {
         EduCoreBundle.message("error.failed.to.post.solution.to", EduNames.JBA),
         EduCoreBundle.message("error.login.required", EduNames.JBA),
       ).apply {
-        setListener { _, e ->
+        addAction(NotificationAction.createSimple("Login") {
           this@apply.expire()
-          HyperskillLoginListener.hyperlinkUpdate(e)
-        }
+          HyperskillLoginListener.hyperlinkUpdate(HyperlinkEvent(this, HyperlinkEvent.EventType.ACTIVATED, null, null))
+        })
       }.notify(project)
       return
     }
