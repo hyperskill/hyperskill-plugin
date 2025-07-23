@@ -4,11 +4,9 @@ import com.google.common.collect.ImmutableMap
 import com.intellij.credentialStore.CredentialAttributes
 import com.intellij.credentialStore.generateServiceName
 import com.intellij.ide.passwordSafe.PasswordSafe
-import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.io.StreamUtil
 import com.intellij.util.ReflectionUtil
 import com.intellij.util.xmlb.SkipDefaultValuesSerializationFilters
 import com.intellij.util.xmlb.XmlSerializer
@@ -35,16 +33,6 @@ object OAuthUtils {
   private const val ERROR_MESSAGE = "%ERROR_MESSAGE"
 
   @Throws(IOException::class)
-  fun getOkPageContent(platformName: String): String {
-    return getPageContent(
-      OAUTH_OK_PAGE, ImmutableMap.of(
-        IDE_NAME, ApplicationNamesInfo.getInstance().fullProductName,
-        PLATFORM_NAME, platformName
-      )
-    )
-  }
-
-  @Throws(IOException::class)
   fun getErrorPageContent(platformName: String, errorMessage: String): String {
     return getPageContent(
       OAUTH_ERROR_PAGE, ImmutableMap.of(
@@ -66,7 +54,7 @@ object OAuthUtils {
   @Throws(IOException::class)
   private fun getPageTemplate(pagePath: String): String {
     EduUtilsKt::class.java.getResourceAsStream(pagePath).use { pageTemplateStream ->
-      return StreamUtil.readText(pageTemplateStream, StandardCharsets.UTF_8)
+      return pageTemplateStream.bufferedReader(StandardCharsets.UTF_8).use { it.readText() }
     }
   }
 
