@@ -5,10 +5,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.util.PlatformUtils
-import com.intellij.util.net.HttpConfigurable
 import com.intellij.util.net.ssl.CertificateManager
-import okhttp3.Authenticator
-import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.messages.EduFormatBundle
@@ -20,6 +17,7 @@ import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.net.ProxySelector
 import java.net.URI
 
 /**
@@ -56,10 +54,10 @@ class RetrofitHelperImpl : RetrofitHelper {
       Err("${EduFormatBundle.message("error.failed.to.connect")} \n\n${e.message}")
     }
     catch (e: ProcessCanceledException) {
-      // We don't have to LOG.log or throw ProcessCanceledException:
+      // We don't have to LOG.log ProcessCanceledException:
       // 'Control-flow exceptions (like ProcessCanceledException) should never be LOG.logged: ignore for explicitly started processes or...'
       call.cancel()
-      Err("Process canceled by user")
+      throw e
     }
     catch (e: RuntimeException) {
       log("Failed to connect to server", e.message, omitErrors)
@@ -74,12 +72,11 @@ class RetrofitHelperImpl : RetrofitHelper {
   }
 
   private fun OkHttpClient.Builder.addProxy(baseUrl: String): OkHttpClient.Builder {
-    val proxyConfigurable = HttpConfigurable.getInstance()
-    val proxies = proxyConfigurable.onlyBySettingsSelector.select(URI.create(baseUrl))
+    val uri = URI.create(baseUrl)
+    val proxies = ProxySelector.getDefault().select(uri)
     val address = proxies.firstOrNull()?.address() as? InetSocketAddress
     if (address != null) {
       proxy(Proxy(Proxy.Type.HTTP, address))
-      proxyAuthenticator(proxyAuthenticator)
     }
     val trustManager = CertificateManager.getInstance().trustManager
     val sslContext = CertificateManager.getInstance().sslContext
@@ -102,22 +99,6 @@ class RetrofitHelperImpl : RetrofitHelper {
       return String.format(
         "%s/version(%s)/%s/%s", StepikNames.PLUGIN_NAME, version, System.getProperty("os.name"), PlatformUtils.getPlatformPrefix()
       )
-    }
-
-  private val proxyAuthenticator: Authenticator
-    get() = Authenticator { _, response ->
-      val proxyConfigurable = HttpConfigurable.getInstance()
-      if (proxyConfigurable.PROXY_AUTHENTICATION && proxyConfigurable.proxyLogin != null) {
-        val login = proxyConfigurable.proxyLogin ?: return@Authenticator null
-        val password = proxyConfigurable.plainProxyPassword ?: return@Authenticator null
-
-        val credentials = Credentials.basic(login, password)
-        return@Authenticator response.request.newBuilder()
-          .header("Proxy-Authorization", credentials)
-          .build()
-      }
-
-      null
     }
 
   private fun log(title: String, message: String?, optional: Boolean) {
