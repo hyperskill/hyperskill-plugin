@@ -79,7 +79,7 @@ class OpenCourseButton(private val openCourseMetadata: () -> Map<String, String>
   }
 
   private fun closeDialog() {
-    val dialog = UIUtil.getParentOfType(DialogWrapperDialog::class.java, this) ?: error("Dialog is null")
+    val dialog = UIUtil.getParentOfType(DialogWrapperDialog::class.java, this) ?: return
     dialog.dialogWrapper?.close(DialogWrapper.OK_EXIT_CODE)
   }
 

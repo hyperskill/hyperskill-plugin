@@ -312,6 +312,8 @@
     <registryKey key="hyperskill.network.request.assertion.policy"
                  description="Assertion policy for network requests from EDT in Hyperskill Academy plugin"
                  defaultValue="[OFF|LOG_ERROR*|EXCEPTION]"/>
+    <welcomeTabFactory implementation="org.hyperskill.academy.welcomeScreen.HyperskillWelcomeTabFactory"
+                       order="last" id="HyperskillEducational.welcomTab"/>
   </extensions>
 
   <extensions defaultExtensionNs="HyperskillEducational">
