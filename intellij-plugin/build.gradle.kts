@@ -18,9 +18,7 @@ repositories {
   }
 }
 
-val buildNumber = System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
-
-version = "$pluginVersion-$platformVersion-$buildNumber"
+version = pluginVersion
 
 intellijPlatform {
   projectName = "HyperskillAcademy"
