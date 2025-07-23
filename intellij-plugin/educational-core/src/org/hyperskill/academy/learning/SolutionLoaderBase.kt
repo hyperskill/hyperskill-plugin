@@ -22,6 +22,7 @@ import org.hyperskill.academy.learning.actions.EduActionUtils
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
 import org.hyperskill.academy.learning.courseFormat.ext.allTasks
 import org.hyperskill.academy.learning.courseFormat.ext.findTaskFileInDir
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
@@ -312,7 +313,7 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       for ((path, solution) in taskSolutions.solutions) {
         val taskFile = task.getTaskFile(path)
         if (taskFile == null) {
-          GeneratorUtils.createChildFile(project, taskDir, path, solution.text)
+          GeneratorUtils.createChildFile(project, taskDir, path, InMemoryTextualContents(solution.text))
           val createdFile = task.getTaskFile(path)
           if (createdFile == null) {
             val help = if (isUnitTestMode) "Don't you forget to use `withVirtualFileListener`?" else ""

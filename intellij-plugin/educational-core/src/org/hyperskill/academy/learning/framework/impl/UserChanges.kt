@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.DataInputOutputUtil
 import org.apache.commons.codec.binary.Base64
 import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
@@ -117,12 +118,12 @@ sealed class Change {
 
     override fun apply(project: Project, taskDir: VirtualFile, task: Task) {
       if (task.getTaskFile(path) == null) {
-        GeneratorUtils.createChildFile(project, taskDir, path, text)
+        GeneratorUtils.createChildFile(project, taskDir, path, InMemoryTextualContents(text))
       }
       else {
         try {
           EduDocumentListener.modifyWithoutListener(task, path) {
-            GeneratorUtils.createChildFile(project, taskDir, path, text)
+            GeneratorUtils.createChildFile(project, taskDir, path, InMemoryTextualContents(text))
           }
         }
         catch (e: IOException) {
