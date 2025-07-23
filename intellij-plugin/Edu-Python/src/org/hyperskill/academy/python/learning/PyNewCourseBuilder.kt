@@ -2,6 +2,7 @@ package org.hyperskill.academy.python.learning
 
 import com.jetbrains.python.PyNames
 import com.jetbrains.python.sdk.flavors.PythonSdkFlavor
+import com.jetbrains.python.sdk.flavors.PythonSdkFlavor.getVersionStringStatic
 import org.hyperskill.academy.coursecreator.actions.TemplateFileInfo
 import org.hyperskill.academy.coursecreator.actions.studyItem.NewStudyItemInfo
 import org.hyperskill.academy.learning.*
@@ -26,7 +27,7 @@ class PyNewCourseBuilder : EduCourseBuilder<PyProjectSettings> {
 
   override fun getDefaultSettings(): Result<PyProjectSettings, String> {
     return findPath(INTERPRETER_PROPERTY, "Python interpreter").flatMap { sdkPath ->
-      val versionString = PythonSdkFlavor.getApplicableFlavors(false).firstOrNull()?.getVersionString(sdkPath)
+      val versionString = getVersionStringStatic(sdkPath)
                           ?: return Err("Can't get python version")
       val sdk = PySdkToCreateVirtualEnv.create(versionString, sdkPath, versionString)
       Ok(PyProjectSettings(sdk))
