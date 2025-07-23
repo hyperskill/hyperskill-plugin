@@ -35,45 +35,39 @@ if (settings.providers.gradleProperty("environmentName").get() != "252") {
   include("intellij-plugin:features:remote-env")
 }
 
-val secretProperties: String = "secret.properties"
+val secretPropertiesFilename: String = "secret.properties"
 
 configureSecretProperties()
 
 downloadHyperskillCss()
 
 fun configureSecretProperties() {
-  try {
-    download(URL("https://repo.labs.intellij.net/edu-tools/secret.properties"), secretProperties)
-  }
-  catch (_: UnknownHostException) {
-    println("repo.labs.intellij.net is not reachable")
-    val secretProperties = file(secretProperties)
-    if (!secretProperties.exists()) {
-      secretProperties.createNewFile()
-    }
+  val secretProperties = file(secretPropertiesFilename)
+  if (!secretProperties.exists()) {
+    secretProperties.createNewFile()
   }
 
-  val secretProperties = loadProperties(secretProperties)
+  val properties = loadProperties(secretPropertiesFilename)
 
-  secretProperties.extractAndStore(
+  properties.extractAndStore(
     "intellij-plugin/educational-core/resources/stepik/stepik.properties",
     "stepikClientId",
     "cogniterraClientId",
   )
-  secretProperties.extractAndStore(
+  properties.extractAndStore(
     "intellij-plugin/educational-core/resources/hyperskill/hyperskill-oauth.properties",
     "hyperskillClientId",
   )
-  secretProperties.extractAndStore(
+  properties.extractAndStore(
     "intellij-plugin/educational-core/resources/twitter/oauth_twitter.properties",
     "xClientId"
   )
-  secretProperties.extractAndStore(
+  properties.extractAndStore(
     "intellij-plugin/educational-core/resources/linkedin/linkedin-oauth.properties",
     "linkedInClientId",
     "linkedInClientSecret"
   )
-  secretProperties.extractAndStore(
+  properties.extractAndStore(
     "edu-format/resources/aes/aes.properties",
     "aesKey"
   )
