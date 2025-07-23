@@ -20,12 +20,6 @@ repositories {
 
 val buildNumber = System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
 
-if (hasProp("setTCBuildNumber")) {
-  // Specify build number at building plugin running configuration on TC
-  // with heading plugin version: e.g. `3.8.BUILD_NUMBER` instead of `BUILD_NUMBER`
-  println("##teamcity[buildNumber '$pluginVersion.$buildNumber']")
-}
-
 version = "$pluginVersion-$platformVersion-$buildNumber"
 
 intellijPlatform {

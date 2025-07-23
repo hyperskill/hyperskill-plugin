@@ -37,8 +37,6 @@ if (settings.providers.gradleProperty("environmentName").get() != "252") {
 
 val secretProperties: String = "secret.properties"
 
-val isTeamCity: Boolean get() = System.getenv("TEAMCITY_VERSION") != null
-
 configureSecretProperties()
 
 downloadHyperskillCss()
@@ -112,7 +110,6 @@ fun Properties.extractAndStore(path: String, vararg keys: String) {
 
 buildCache {
   local {
-    isEnabled = !isTeamCity
     // By default, build cache is stored in gradle home directory
     directory = File(rootDir, "build/build-cache")
     removeUnusedEntriesAfterDays = 30
