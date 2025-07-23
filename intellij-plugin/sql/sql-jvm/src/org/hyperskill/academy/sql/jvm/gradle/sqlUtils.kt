@@ -15,7 +15,7 @@ import com.intellij.database.dataSource.artifacts.DatabaseArtifactList
 import com.intellij.database.dataSource.artifacts.DatabaseArtifactLoader
 import com.intellij.database.dataSource.artifacts.DatabaseArtifactManager
 import com.intellij.database.model.DasDataSource
-import com.intellij.database.util.DataSourceUtil
+import com.intellij.database.actions.runDataSourceGeneralRefresh
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.openapi.diagnostic.Logger
@@ -123,7 +123,7 @@ fun createDataSources(project: Project, tasks: List<Task>): List<LocalDataSource
 
   for (dataSource in dataSources) {
     LocalDataSourceManager.getInstance(project).addDataSource(dataSource)
-    DataSourceUtil.performAutoSyncTask(project, dataSource)
+    runDataSourceGeneralRefresh(project, dataSource)
   }
 
   return dataSources
