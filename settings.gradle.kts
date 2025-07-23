@@ -45,17 +45,6 @@ configureSecretProperties()
 downloadHyperskillCss()
 
 fun configureSecretProperties() {
-  try {
-    download(URL("https://repo.labs.intellij.net/edu-tools/secret.properties"), secretProperties)
-  }
-  catch (_: UnknownHostException) {
-    println("repo.labs.intellij.net is not reachable")
-    val secretProperties = file(secretProperties)
-    if (!secretProperties.exists()) {
-      secretProperties.createNewFile()
-    }
-  }
-
   val secretProperties = loadProperties(secretProperties)
 
   secretProperties.extractAndStore(
