@@ -122,7 +122,10 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
         }
 
         else -> {
-          PySdkUtil.getLanguageLevelForSdk(this)
+          val flavor = PythonSdkFlavor.getFlavor(this)
+          homePath?.let {
+            flavor?.getLanguageLevel(it)
+          } ?: LanguageLevel.getDefault()
         }
       }
     }
