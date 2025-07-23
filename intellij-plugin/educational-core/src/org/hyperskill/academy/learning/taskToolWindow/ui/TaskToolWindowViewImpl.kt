@@ -22,7 +22,6 @@ import com.intellij.ui.InlineBanner
 import com.intellij.ui.InlineBannerBase
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
-import com.intellij.ui.util.maximumHeight
 import com.intellij.util.ui.JBEmptyBorder
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
@@ -212,7 +211,7 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
       border = JBEmptyBorder(0)
       preferredSize = Dimension(0, 51)
       minimumSize = Dimension(0, 51)
-      maximumHeight = 51
+      maximumSize = Dimension(maximumSize.width, 51)
     }
 
     mainPanel.add(navMapPanel)

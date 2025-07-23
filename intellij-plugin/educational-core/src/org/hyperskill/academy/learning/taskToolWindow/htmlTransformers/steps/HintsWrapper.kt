@@ -22,12 +22,13 @@ object HintsWrapper : HtmlTransformer {
     return wrapHintTagsInsideHTML(html) { e, number, title ->
       e.fixFirstParagraph()
 
-      when (context.uiMode) {
+      // Using a 'when' expression without 'else' branch for exhaustive enum
+      val result = when (context.uiMode) {
         JavaUILibrary.JCEF -> wrapHintJCEF(context.project, e, number, title)
         JavaUILibrary.SWING -> wrapHintSwing(context.project, e, number, title)
-        // all other options are deprecated, but we anyway should process them:
-        else -> e.html()
       }
+      // Return the result of the when expression
+      result
     }
   }
 

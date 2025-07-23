@@ -1,7 +1,7 @@
 package org.hyperskill.academy.learning.exceptions
 
-import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.limits.FileSizeLimit
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 
 /**
@@ -13,7 +13,7 @@ class HugeBinaryFileException(val path: String, val size: Long, val limit: Long,
     buildString {
       appendLine(EduCoreBundle.message("error.educator.file.size", path))
       appendLine(EduCoreBundle.message("error.educator.file.size.limit", StringUtil.formatFileSize(size), StringUtil.formatFileSize(limit)))
-      if (insideFrameworkLesson && !FileUtilRt.isTooLarge(size)) {
+      if (insideFrameworkLesson && size <= FileSizeLimit.getDefaultContentLoadLimit()) {
         appendLine(EduCoreBundle.message("error.educator.file.size.workaround.framework"))
       }
       else {
