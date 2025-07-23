@@ -48,6 +48,12 @@ intellijPlatform {
   }
   instrumentCode = false
   buildSearchableOptions = prop("enableBuildSearchableOptions").toBoolean()
+  
+  pluginVerification {
+    ides {
+      recommended()
+    }
+  }
 }
 
 dependencies {
