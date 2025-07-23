@@ -11,6 +11,7 @@ import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.PROGRAMMING_LA
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.SECTION
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.TASK_LIST
 
+@Suppress("DEPRECATION")
 abstract class JsonLocalCourseConverterBase : JsonLocalCourseConverter {
 
   override fun convert(localCourse: ObjectNode): ObjectNode {

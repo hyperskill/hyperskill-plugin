@@ -8,6 +8,7 @@ import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.COURSE_TYPE
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE_ID
 
+@Suppress("DEPRECATION")
 class To8VersionLocalCourseConverter : JsonLocalCourseConverter {
 
   override fun convert(localCourse: ObjectNode): ObjectNode {
