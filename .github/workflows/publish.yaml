@@ -30,7 +30,7 @@ jobs:
             | grep '^IU-' \
             | sed 's/^IU-//')
           
-          JSON=$(echo "$RAW" | jq -R . | jq -s -c '{version: .}')
+          JSON=$(echo "$RAW" | sort | uniq | jq -R . | jq -s -c '{version: .}')
           echo "Versions: $RAW"
           echo "matrix=$JSON" >> $GITHUB_OUTPUT
   
