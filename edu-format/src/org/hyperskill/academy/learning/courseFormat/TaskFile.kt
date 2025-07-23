@@ -10,7 +10,7 @@ class TaskFile : EduFile {
   constructor()
   constructor(name: String, text: String) {
     this.name = name
-    this.text = text
+    this.contents = InMemoryTextualContents(text)
   }
 
   constructor(name: String, contents: FileContents) {

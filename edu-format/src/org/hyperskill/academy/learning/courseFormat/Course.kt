@@ -130,7 +130,7 @@ abstract class Course : LessonContainer() {
     }
 
   open val humanLanguage: String
-    get() = Locale(languageCode).displayName
+    get() = Locale.forLanguageTag(languageCode).displayName
 
   open val isStepikRemote: Boolean
     get() = false

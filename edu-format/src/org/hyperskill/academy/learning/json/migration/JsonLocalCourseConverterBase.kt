@@ -7,13 +7,17 @@ import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.ITEMS
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.ITEM_TYPE
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.LESSON
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE
+import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.PROGRAMMING_LANGUAGE_ID
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.SECTION
 import org.hyperskill.academy.learning.json.mixins.JsonMixinNames.TASK_LIST
 
 abstract class JsonLocalCourseConverterBase : JsonLocalCourseConverter {
 
   override fun convert(localCourse: ObjectNode): ObjectNode {
-    val language = localCourse.get(PROGRAMMING_LANGUAGE)?.asText() ?: ""
+    // Try to get language from PROGRAMMING_LANGUAGE_ID first, then fall back to PROGRAMMING_LANGUAGE for backward compatibility
+    val language = localCourse.get(PROGRAMMING_LANGUAGE_ID)?.asText()
+                   ?: localCourse.get(PROGRAMMING_LANGUAGE)?.asText()
+                   ?: ""
 
     for (item in localCourse.getJsonObjectList(ITEMS)) {
       val type = item.get(ITEM_TYPE)?.asText()

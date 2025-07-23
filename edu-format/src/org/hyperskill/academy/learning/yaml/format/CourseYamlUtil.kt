@@ -226,7 +226,7 @@ open class CourseBuilder(
     val locale = Locale.getISOLanguages().find { displayLanguageByCode(it) == language } ?: formatError(
       message("yaml.editor.invalid.format.unknown.field", language)
     )
-    course.languageCode = Locale(locale).language
+    course.languageCode = Locale.forLanguageTag(locale).language
     return course
   }
 
@@ -235,4 +235,4 @@ open class CourseBuilder(
   }
 }
 
-private fun displayLanguageByCode(languageCode: String) = Locale(languageCode).getDisplayLanguage(Locale.ENGLISH)
+private fun displayLanguageByCode(languageCode: String) = Locale.forLanguageTag(languageCode).getDisplayLanguage(Locale.ENGLISH)
