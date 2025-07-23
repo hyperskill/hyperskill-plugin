@@ -411,77 +411,77 @@ class TaskBuilder(val lesson: Lesson, val task: Task) {
     @Language("kotlin") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun javaTaskFile(
     name: String,
     @Language("JAVA") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun pythonTaskFile(
     name: String,
     @Language("Python") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun scalaTaskFile(
     name: String,
     @Language("Scala") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun rustTaskFile(
     name: String,
     @Language("Rust") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun goTaskFile(
     name: String,
     @Language("Go") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun cppTaskFile(
     name: String,
     @Language("ObjectiveC") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun xmlTaskFile(
     name: String,
     @Language("XML") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun sqlTaskFile(
     name: String,
     @Language("SQL") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun javaScriptTaskFile(
     name: String,
     @Language("JavaScript") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun phpTaskFile(
     name: String,
     @Language("PHP") text: String = "",
     visible: Boolean? = null,
     buildTaskFile: TaskFileBuilder.() -> Unit = {}
-  ) = taskFile(name, text, visible, buildTaskFile = buildTaskFile)
+  ) = taskFile(name, InMemoryTextualContents(text), visible, buildTaskFile = buildTaskFile)
 
   fun dir(dirName: String, buildTask: TaskBuilder.() -> Unit) {
     val tmpTask = EduTask()
@@ -509,7 +509,7 @@ class AdditionalFilesBuilder(val course: Course) {
     val eduFileBuilder = EduFileBuilder()
     eduFileBuilder.withName(name)
     val textBuilder = StringBuilder(text.trimIndent())
-    eduFileBuilder.withText(textBuilder.toString())
+    eduFileBuilder.withContents(InMemoryTextualContents(textBuilder.toString()))
     eduFileBuilder.buildEduFile()
     val taskFile = eduFileBuilder.eduFile
     course.additionalFiles = course.additionalFiles + taskFile
@@ -532,7 +532,7 @@ class TaskFileBuilder(val task: Task? = null) {
   }
 
   fun withText(text: String) {
-    taskFile.text = text
+    taskFile.contents = InMemoryTextualContents(text)
   }
 
   fun withContents(contents: FileContents) {
@@ -549,7 +549,7 @@ class EduFileBuilder {
   }
 
   fun withText(text: String) {
-    eduFile.text = text
+    eduFile.contents = InMemoryTextualContents(text)
   }
 
   fun withContents(contents: FileContents) {

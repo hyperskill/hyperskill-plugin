@@ -9,6 +9,7 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTopic
 import org.hyperskill.academy.learning.yaml.YamlMapper
 import org.hyperskill.academy.learning.yaml.YamlTestCase
 import org.junit.Test
+import java.text.SimpleDateFormat
 import java.util.*
 
 class YamlRemoteSerializationTest : YamlTestCase() {
@@ -21,7 +22,8 @@ class YamlRemoteSerializationTest : YamlTestCase() {
       isTemplateBased = true
     }
     course.hyperskillProject = hyperskillProject
-    course.updateDate = Date("Fri, 01 Jan 2010 00:00:00 UTC")
+    val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
+    course.updateDate = dateFormat.parse("Fri, 01 Jan 2010 00:00:00 UTC")
 
     course.stages = listOf(
       HyperskillStage(1, "First", 11, true),
@@ -64,7 +66,8 @@ class YamlRemoteSerializationTest : YamlTestCase() {
     }.sections.first()
 
     section.id = 1
-    section.updateDate = Date("Fri, 01 Jan 2010 00:00:00 UTC")
+    val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
+    section.updateDate = dateFormat.parse("Fri, 01 Jan 2010 00:00:00 UTC")
     doTest(
       section, """
     |id: 1
@@ -82,7 +85,8 @@ class YamlRemoteSerializationTest : YamlTestCase() {
     }.lessons.first().taskList.first()
 
     task.id = 1
-    task.updateDate = Date("Fri, 01 Jan 2010 00:00:00 UTC")
+    val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
+    task.updateDate = dateFormat.parse("Fri, 01 Jan 2010 00:00:00 UTC")
     doTest(
       task, """
     |id: 1
