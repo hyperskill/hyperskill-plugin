@@ -5,7 +5,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.hyperskill.academy.coursecreator.StudyItemType
 import org.hyperskill.academy.coursecreator.actions.TemplateFileInfo
 import org.hyperskill.academy.coursecreator.actions.studyItem.NewStudyItemInfo
-import org.hyperskill.academy.coursecreator.actions.studyItem.NewStudyItemUiModel
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.Lesson
@@ -31,13 +30,6 @@ open class HyperskillCourseBuilder<T : EduProjectSettings>(private val baseCours
   override fun getDefaultSettings(): Result<T, String> = baseCourseBuilder.getDefaultSettings()
 
   override fun getSupportedLanguageVersions(): List<String> = baseCourseBuilder.getSupportedLanguageVersions()
-
-  override fun showNewStudyItemUi(
-    project: Project,
-    course: Course,
-    model: NewStudyItemUiModel,
-    studyItemCreator: (NewStudyItemInfo) -> Unit
-  ) = baseCourseBuilder.showNewStudyItemUi(project, course, model, studyItemCreator)
 
   override fun onStudyItemCreation(project: Project, item: StudyItem) {
     baseCourseBuilder.onStudyItemCreation(project, item)

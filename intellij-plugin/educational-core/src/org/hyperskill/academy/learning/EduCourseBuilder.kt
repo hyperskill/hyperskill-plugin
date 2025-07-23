@@ -8,8 +8,6 @@ import com.intellij.util.concurrency.annotations.RequiresEdt
 import org.hyperskill.academy.coursecreator.StudyItemType
 import org.hyperskill.academy.coursecreator.actions.TemplateFileInfo
 import org.hyperskill.academy.coursecreator.actions.studyItem.NewStudyItemInfo
-import org.hyperskill.academy.coursecreator.actions.studyItem.NewStudyItemUiModel
-import org.hyperskill.academy.coursecreator.ui.showNewStudyItemDialog
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.ext.findTaskFileInDir
@@ -32,19 +30,6 @@ import java.io.IOException
  * @see org.hyperskill.academy.learning.stepik.hyperskill.HyperskillCourseBuilder
  */
 interface EduCourseBuilder<Settings : EduProjectSettings> {
-  /**
-   * Shows UI for new study item creation
-   *
-   * @param model some parameters for UI extracted from context where creating action was called
-   *
-   * @return properties for study item creation
-   */
-  fun showNewStudyItemUi(
-    project: Project,
-    course: Course,
-    model: NewStudyItemUiModel,
-    studyItemCreator: (NewStudyItemInfo) -> Unit
-  ) = showNewStudyItemDialog(project, course, model, studyItemCreator = studyItemCreator)
 
   /**
    * Creates additional content of new study item in project
