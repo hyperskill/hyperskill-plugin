@@ -34,8 +34,8 @@ val Project.baseVersion: String
     else -> error("Unexpected IDE name = `$baseIDE`")
   }
 
-val Project.pythonProPlugin: String get() = "Pythonid:"
-val Project.pythonCommunityPlugin: String get() = "PythonCore:"
+val Project.pythonProPlugin: String by Properties
+val Project.pythonCommunityPlugin: String by Properties
 
 val Project.pythonPlugin: String
   get() = when {
@@ -49,14 +49,15 @@ val Project.pythonPlugin: String
   }
 val Project.javaPlugin: String get() = "com.intellij.java"
 val Project.kotlinPlugin: String get() = "org.jetbrains.kotlin"
-val Project.scalaPlugin: String get() = "org.intellij.scala:"
-val Project.rustPlugin: String get() = "com.jetbrains.rust:"
+val Project.scalaPlugin: String by Properties
+val Project.rustPlugin: String by Properties
 val Project.tomlPlugin: String get() = "org.toml.lang"
-val Project.goPlugin: String get() = "org.jetbrains.plugins.go:"
+val Project.goPlugin: String by Properties
 val Project.sqlPlugin: String get() = "com.intellij.database"
 val Project.shellScriptPlugin: String get() = "com.jetbrains.sh"
 val Project.githubPlugin: String get() = "org.jetbrains.plugins.github"
-val Project.phpPlugin: String get() = "com.jetbrains.php:"
+val Project.psiViewerPlugin: String by Properties
+val Project.phpPlugin: String by Properties
 val Project.intelliLangPlugin: String get() = "org.intellij.intelliLang"
 val Project.javaScriptPlugin: String get() = "JavaScript"
 val Project.nodeJsPlugin: String get() = "NodeJS"
@@ -136,7 +137,7 @@ fun IntelliJPlatformDependenciesExtension.intellijIde(versionWithCode: String) {
 fun IntelliJPlatformDependenciesExtension.intellijPlugins(vararg notations: String) {
   for (notation in notations) {
     if (notation.contains(":")) {
-      compatiblePlugin(notation.substringBefore(":"))
+      plugin(notation)
     }
     else {
       bundledPlugin(notation)

@@ -168,7 +168,7 @@ tasks {
 
       plugins {
         val type = baseVersion.toTypeWithVersion().type
-        compatiblePlugins(idePlugins(type))
+        plugins(idePlugins(type))
       }
     }
 
@@ -190,7 +190,7 @@ tasks {
 }
 
 fun idePlugins(type: IntelliJPlatformType): List<String> {
-  return ideToPlugins[type].orEmpty()
+  return ideToPlugins[type].orEmpty() + psiViewerPlugin
 }
 
 /**
@@ -239,7 +239,7 @@ fun IntelliJPlatformTestingExtension.customRunIdeTask(
     task(configureRunIdeTask)
 
     plugins {
-      compatiblePlugins(idePlugins(type))
+      plugins(idePlugins(type))
     }
   }
 }
