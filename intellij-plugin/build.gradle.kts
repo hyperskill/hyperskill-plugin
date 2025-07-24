@@ -168,7 +168,7 @@ tasks {
 
       plugins {
         val type = baseVersion.toTypeWithVersion().type
-        plugins(idePlugins(type))
+        compatiblePlugins(idePlugins(type))
       }
     }
 
@@ -239,7 +239,7 @@ fun IntelliJPlatformTestingExtension.customRunIdeTask(
     task(configureRunIdeTask)
 
     plugins {
-      plugins(idePlugins(type))
+      compatiblePlugins(idePlugins(type))
     }
   }
 }
