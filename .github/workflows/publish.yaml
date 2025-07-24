@@ -47,9 +47,9 @@ jobs:
 
       - name: Run Tests
         run: |
-          MAJOR=$(echo "$VERSION" | cut -d '.' -f1)
+          MAJOR=$(echo "${{ matrix.version }}" | cut -d '.' -f1)
           if [[ "$MAJOR" =~ ^20[2-9][0-9]$ ]]; then
-          MINOR=$(echo "$VERSION" | cut -d '.' -f2)
+          MINOR=$(echo "${{ matrix.version }}" | cut -d '.' -f2)
           environmentName=$(( (MAJOR - 2000) * 2 + MINOR - 1 ))
           else
           environmentName="$MAJOR"
@@ -78,9 +78,9 @@ jobs:
 
       - name: Verify Plugin
         run: |
-          MAJOR=$(echo "$VERSION" | cut -d '.' -f1)
+          MAJOR=$(echo "${{ matrix.version }}" | cut -d '.' -f1)
           if [[ "$MAJOR" =~ ^20[2-9][0-9]$ ]]; then
-          MINOR=$(echo "$VERSION" | cut -d '.' -f2)
+          MINOR=$(echo "${{ matrix.version }}" | cut -d '.' -f2)
           environmentName=$(( (MAJOR - 2000) * 2 + MINOR - 1 ))
           else
           environmentName="$MAJOR"
