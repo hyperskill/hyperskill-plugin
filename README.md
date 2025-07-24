@@ -12,14 +12,14 @@ or create your own interactive courses to share with others.
 Access over 100 courses in the most in-demand programming languages and technologies,
 and build real-world projects for your developer portfolio.
 
-Read the [Learner Start Guide](https://plugins.jetbrains.com/plugin/10081-jetbrains-academy/docs/learner-start-guide.html) for more
+Read the [Learner Start Guide](https://plugins.jetbrains.com/plugin/28001-jetbrains-academy/docs/learner-start-guide.html) for more
 information.
 
 **Want to share your knowledge?**
 Create your own courses by combining theoretical learning and hands-on practice.
 Test user knowledge with various sets of tasks, and provide extra assistance with feedback and hints.
 
-Read the [course creator start guide](https://plugins.jetbrains.com/plugin/10081-jetbrains-academy/docs/educator-start-guide.html) for more
+Read the [course creator start guide](https://plugins.jetbrains.com/plugin/28001-jetbrains-academy/docs/educator-start-guide.html) for more
 information.
 
 ### Issue tracker
@@ -38,4 +38,4 @@ Please submit your issues to the Hyperskill Academy tracker on [YouTrack](https:
 
 [plugin-rating-svg]: https://img.shields.io/jetbrains/plugin/r/rating/10081-jetbrains-academy?style=flat-square
 
-[plugin-repo]: https://plugins.jetbrains.com/plugin/10081-jetbrains-academy
+[plugin-repo]: https://plugins.jetbrains.com/plugin/28001-jetbrains-academy
