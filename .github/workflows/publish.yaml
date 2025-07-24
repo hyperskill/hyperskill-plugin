@@ -9,33 +9,15 @@ concurrency:
 
 
 jobs:
-  versions:
-    name: Support Versions
-    runs-on: arc-runners-small
-    timeout-minutes: 60
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - name: Generate matrix from printProductsReleases
-        id: set-matrix
-        run: |
-          RAW=$(cat <<EOF
-          2025.1
-          2025.2
-          EOF
-          )
-          
-          JSON=$(echo "$RAW" | sort | uniq | jq -R . | jq -s -c '{version: .}')
-          echo "Versions: $RAW"
-          echo "matrix=$JSON" >> $GITHUB_OUTPUT
-  
   test:
-    name: Run Tests for ${{ matrix.version }}
-    needs: versions
+    name: Run Tests for ${{ matrix.environmentName }}
     runs-on: arc-runners-small
     timeout-minutes: 60
     strategy:
-      matrix: ${{ fromJson(needs.versions.outputs.matrix) }}
+      matrix:
+        environmentName:
+          - 251
+          - 252
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -47,26 +29,18 @@ jobs:
 
       - name: Run Tests
         run: |
-          MAJOR=$(echo "${{ matrix.version }}" | cut -d '.' -f1)
-          if [[ "$MAJOR" =~ ^20[2-9][0-9]$ ]]; then
-          MINOR=$(echo "${{ matrix.version }}" | cut -d '.' -f2)
-          environmentName=$(( (MAJOR - 2000) * 10 + MINOR ))
-          else
-          environmentName="$MAJOR"
-          fi
-          echo "environmentName=$environmentName"
+          echo "environmentName=${{ matrix.environmentName }}"
           ./gradlew test --no-daemon -PenvironmentName=$environmentName
-        env:
-          PLATFORM_VERSION: ${{ matrix.version }}
-          COMPATIBLE_PLUGINS: ''  # FIXME: It's fix for EAP version IDE
 
   verify:
-    name: Verify Plugin for ${{ matrix.version }}
+    name: Verify Plugin for ${{ matrix.environmentName }}
     runs-on: arc-runners-small
     timeout-minutes: 60
-    needs: versions
     strategy:
-      matrix: ${{ fromJson(needs.versions.outputs.matrix) }}
+      matrix:
+        environmentName:
+          - 251
+          - 252
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -78,14 +52,7 @@ jobs:
 
       - name: Verify Plugin
         run: |
-          MAJOR=$(echo "${{ matrix.version }}" | cut -d '.' -f1)
-          if [[ "$MAJOR" =~ ^20[2-9][0-9]$ ]]; then
-          MINOR=$(echo "${{ matrix.version }}" | cut -d '.' -f2)
-          environmentName=$(( (MAJOR - 2000) * 10 + MINOR ))
-          else
-          environmentName="$MAJOR"
-          fi
-          echo "environmentName=$environmentName"
+          echo "environmentName=${{ matrix.environmentName }}"
           ./gradlew verifyPlugin --no-daemon -PenvironmentName=$environmentName
 
 #  publish:
