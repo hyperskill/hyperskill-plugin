@@ -1,13 +1,11 @@
 package org.hyperskill.academy.learning.newproject.ui.errors
 
-import com.intellij.ide.DataManager
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.PluginStateListener
 import com.intellij.ide.plugins.PluginStateManager
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.PluginId
@@ -89,12 +87,12 @@ class ErrorStateHyperlinkListener(private val parentDisposable: Disposable) : Hy
       Logger.getInstance(CoursesPanel::class.java).error("$switchUILibraryAction action not found")
       return
     }
-    action.actionPerformed(
-      AnActionEvent.createFromAnAction(
-        action, null,
-        ActionPlaces.UNKNOWN,
-        DataManager.getInstance().getDataContext(coursePanel)
-      )
+    ActionManager.getInstance().tryToExecute(
+      action,
+      null,
+      coursePanel,
+      ActionPlaces.UNKNOWN,
+      true
     )
     doValidation(coursePanel)
   }

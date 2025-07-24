@@ -1,9 +1,9 @@
 package org.hyperskill.academy.learning.newproject.ui
 
 import com.intellij.ide.BrowserUtil
-import com.intellij.ide.DataManager
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType.WARNING
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
@@ -101,13 +101,13 @@ fun createHyperlinkWithContextHelp(actionWrapper: ToolbarActionWrapper): JPanel 
   val action = actionWrapper.action
   val hyperlinkLabel = HyperlinkLabel(actionWrapper.text.get())
   hyperlinkLabel.addHyperlinkListener {
-    val actionEvent = AnActionEvent.createFromAnAction(
+    ActionManager.getInstance().tryToExecute(
       action,
       null,
+      hyperlinkLabel,
       BrowseCoursesDialog.ACTION_PLACE,
-      DataManager.getInstance().getDataContext(hyperlinkLabel)
+      true
     )
-    action.actionPerformed(actionEvent)
   }
 
   val hyperlinkPanel = JPanel(FlowLayout(FlowLayout.LEFT, 0, 0)).apply {
