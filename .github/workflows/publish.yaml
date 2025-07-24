@@ -50,7 +50,7 @@ jobs:
           MAJOR=$(echo "${{ matrix.version }}" | cut -d '.' -f1)
           if [[ "$MAJOR" =~ ^20[2-9][0-9]$ ]]; then
           MINOR=$(echo "${{ matrix.version }}" | cut -d '.' -f2)
-          environmentName=$(( (MAJOR - 2000) * 2 + MINOR - 1 ))
+          environmentName=$(( (MAJOR - 2000) * 10 + MINOR ))
           else
           environmentName="$MAJOR"
           fi
@@ -81,7 +81,7 @@ jobs:
           MAJOR=$(echo "${{ matrix.version }}" | cut -d '.' -f1)
           if [[ "$MAJOR" =~ ^20[2-9][0-9]$ ]]; then
           MINOR=$(echo "${{ matrix.version }}" | cut -d '.' -f2)
-          environmentName=$(( (MAJOR - 2000) * 2 + MINOR - 1 ))
+          environmentName=$(( (MAJOR - 2000) * 10 + MINOR ))
           else
           environmentName="$MAJOR"
           fi
