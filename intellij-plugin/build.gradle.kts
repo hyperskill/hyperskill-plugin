@@ -18,7 +18,7 @@ repositories {
   }
 }
 
-version = pluginVersion
+version = "$pluginVersion-$platformVersion"
 
 intellijPlatform {
   projectName = "HyperskillAcademy"
@@ -31,6 +31,7 @@ intellijPlatform {
 
     ideaVersion {
       sinceBuild = prop("customSinceBuild")
+      untilBuild = prop("customUntilBuild")
     }
 
     vendor {
