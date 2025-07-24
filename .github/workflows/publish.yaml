@@ -52,7 +52,14 @@ jobs:
 
       - name: Run Tests
         run: |
-          ./gradlew test --no-daemon
+          MAJOR=$(echo "$VERSION" | cut -d '.' -f1)
+          if [[ "$MAJOR" =~ ^20[2-9][0-9]$ ]]; then
+          MINOR=$(echo "$VERSION" | cut -d '.' -f2)
+          environmentName=$(( (MAJOR - 2000) * 2 + MINOR - 1 ))
+          else
+          environmentName="$MAJOR"
+          fi
+          ./gradlew test --no-daemon -PenvironmentName=$environmentName
         env:
           PLATFORM_VERSION: ${{ matrix.version }}
           COMPATIBLE_PLUGINS: ''  # FIXME: It's fix for EAP version IDE
