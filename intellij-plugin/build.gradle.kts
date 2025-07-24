@@ -25,7 +25,7 @@ intellijPlatform {
   pluginConfiguration {
     id = "org.hyperskill.academy"
     name = "Hyperskill Academy"
-    version = pluginVersion
+    version = "$pluginVersion-$platformVersion"
     changeNotes = provider { file("changes.html").readText() }
     description = provider { file("description.html").readText() }
 
