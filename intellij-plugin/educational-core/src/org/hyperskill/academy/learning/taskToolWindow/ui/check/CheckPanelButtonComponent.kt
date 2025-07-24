@@ -1,11 +1,7 @@
 package org.hyperskill.academy.learning.taskToolWindow.ui.check
 
-import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.ex.ActionUtil
-import com.intellij.openapi.actionSystem.impl.PresentationFactory
 import com.intellij.util.ui.JBUI
 import org.apache.commons.lang3.StringUtils
 import org.hyperskill.academy.learning.actions.ActionWithProgressIcon
@@ -14,7 +10,6 @@ import java.awt.BorderLayout
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.GridLayout
-import java.awt.event.ActionEvent
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -80,7 +75,13 @@ class CheckPanelButtonComponent private constructor() : JPanel(BorderLayout()) {
     }
     if (isEnabled) {
       button.addActionListener { e ->
-        performAnAction(e, this, action)
+        ActionManager.getInstance().tryToExecute(
+          action,
+          null,
+          this,
+          CheckPanel.ACTION_PLACE,
+          true
+        )
       }
     }
     return button
@@ -99,18 +100,4 @@ class CheckPanelButtonComponent private constructor() : JPanel(BorderLayout()) {
     gridBagPanel.add(buttonPanel, buttonPanelGridBagConstraints)
     return gridBagPanel
   }
-}
-
-private fun performAnAction(actionEvent: ActionEvent, component: JComponent, action: AnAction) {
-  val dataContext = DataManager.getInstance().getDataContext(component)
-  val event = AnActionEvent(
-    null,
-    dataContext,
-    CheckPanel.ACTION_PLACE,
-    PresentationFactory().getPresentation(action),
-    ActionManager.getInstance(),
-    actionEvent.modifiers
-  )
-
-  ActionUtil.performActionDumbAwareWithCallbacks(action, event)
 }
