@@ -19,9 +19,10 @@ jobs:
       - name: Generate matrix from printProductsReleases
         id: set-matrix
         run: |
-          RAW=(
-            "2025.1",
-            "2025.2"
+          RAW=$(cat <<EOF
+          2025.1
+          2025.2
+          EOF
           )
           
           JSON=$(echo "$RAW" | sort | uniq | jq -R . | jq -s -c '{version: .}')
@@ -63,6 +64,7 @@ jobs:
     name: Verify Plugin for ${{ matrix.version }}
     runs-on: arc-runners-small
     timeout-minutes: 60
+    needs: versions
     strategy:
       matrix: ${{ fromJson(needs.versions.outputs.matrix) }}
       fail-fast: false
