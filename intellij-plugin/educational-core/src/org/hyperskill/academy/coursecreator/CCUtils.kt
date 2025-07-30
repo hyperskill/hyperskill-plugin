@@ -9,7 +9,7 @@ import org.hyperskill.academy.learning.courseFormat.StudyItem
 object CCUtils {
   const val GENERATED_FILES_FOLDER = ".coursecreator"
   const val DEFAULT_PLACEHOLDER_TEXT = "type here"
-  private const val IS_LOCAL_COURSE: String = "Edu.IsLocalCourse"
+  private const val IS_LOCAL_COURSE: String = "Hyperskill.IsLocalCourse"
 
   private val INDEX_COMPARATOR = Comparator.comparingInt(StudyItem::index)
 

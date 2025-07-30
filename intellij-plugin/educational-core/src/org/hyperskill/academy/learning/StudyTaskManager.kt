@@ -86,7 +86,7 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable, Ed
   }
 
   companion object {
-    val COURSE_SET = Topic.create("Edu.courseSet", CourseSetListener::class.java)
+    val COURSE_SET = Topic.create("Hyperskill.courseSet", CourseSetListener::class.java)
     val LOG = logger<StudyTaskManager>()
 
     fun getInstance(project: Project): StudyTaskManager = project.service<StudyTaskManager>().apply {

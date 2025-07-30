@@ -96,6 +96,6 @@ class ShellWslExistenceNotificationProvider : EditorNotificationProvider, DumbAw
 
   companion object {
     @NonNls
-    private const val DISABLE_INSTALL_WSL_NOTIFICATION = "Edu.DisableWslNotification"
+    private const val DISABLE_INSTALL_WSL_NOTIFICATION = "Hyperskill.DisableWslNotification"
   }
 }

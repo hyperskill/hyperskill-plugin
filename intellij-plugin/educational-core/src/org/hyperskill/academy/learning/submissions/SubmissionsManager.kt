@@ -147,11 +147,8 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
   companion object {
 
     @Topic.ProjectLevel
-    val TOPIC: Topic<SubmissionsListener> = createTopic("Edu.submissions")
-
-    @Topic.ProjectLevel
-    val SHARED_SOLUTIONS_TOPIC: Topic<SharedSolutionsListener> = createTopic("Edu.sharedSolutions")
-
+    val TOPIC: Topic<SubmissionsListener> = createTopic("Hyperskill.submissions")
+    
     fun getInstance(project: Project): SubmissionsManager {
       return project.service()
     }

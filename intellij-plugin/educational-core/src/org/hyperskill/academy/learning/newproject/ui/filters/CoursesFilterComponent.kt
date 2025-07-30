@@ -17,7 +17,7 @@ class CoursesFilterComponent(
   emptySearchText: String,
   private val getCoursesGroups: () -> List<CoursesGroup>,
   private val updateModel: (List<CoursesGroup>) -> Unit
-) : FilterComponent("Edu.NewCourse", 5, true) {
+) : FilterComponent("Hyperskill.NewCourse", 5, true) {
 
   init {
     removeBorder()

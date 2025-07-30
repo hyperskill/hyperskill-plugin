@@ -169,6 +169,6 @@ class EduProjectActivity : ProjectActivity {
   companion object {
     private val LOG: Logger = logger<EduProjectActivity>()
 
-    private const val YAML_MIGRATED = "Edu.Yaml.Migrate"
+    private const val YAML_MIGRATED = "Hyperskill.Yaml.Migrate"
   }
 }

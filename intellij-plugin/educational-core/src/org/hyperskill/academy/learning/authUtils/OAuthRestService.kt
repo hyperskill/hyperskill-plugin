@@ -35,7 +35,7 @@ abstract class OAuthRestService(protected val platformName: String) : RestServic
   override fun isMethodSupported(method: HttpMethod): Boolean = method === HttpMethod.GET
 
   companion object {
-    private const val IS_REST_SERVICES_ENABLED = "Edu.Stepik.RestServicesEnabled"
+    private const val IS_REST_SERVICES_ENABLED = "Hyperskill.Stepik.RestServicesEnabled"
     var isRestServicesEnabled: Boolean
       get() = PropertiesComponent.getInstance().getBoolean(IS_REST_SERVICES_ENABLED, true)
       set(enabled) {

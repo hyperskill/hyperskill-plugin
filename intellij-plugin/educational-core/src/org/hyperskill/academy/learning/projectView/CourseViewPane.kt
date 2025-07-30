@@ -189,7 +189,7 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
 
   override fun getIcon(): Icon = CourseTree
   override fun getId(): String = ID
-  override fun getWeight(): Int = 10
+  override fun getWeight(): Int = 5
 
   override fun createSelectInTarget(): SelectInTarget {
     return object : ProjectViewSelectInTarget(myProject) {
@@ -214,10 +214,10 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
 
   companion object {
     @NonNls
-    const val ID = "Course"
-    const val HIDE_SOLVED_LESSONS = "Edu.HideSolvedLessons"
+    const val ID = "HyperskillCourse"
+    const val HIDE_SOLVED_LESSONS = "Hyperskill.HideSolvedLessons"
 
-    val STUDY_ITEM: DataKey<StudyItem> = DataKey.create("Edu.studyItem")
+    val STUDY_ITEM: DataKey<StudyItem> = DataKey.create("Hyperskill.studyItem")
   }
 
   class HideSolvedLessonsAction : DumbAwareToggleAction() {

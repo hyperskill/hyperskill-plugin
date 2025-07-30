@@ -64,8 +64,8 @@ open class CoursesStorageBase : SimplePersistentStateComponent<UserCoursesState>
   fun isNotEmpty() = state.courses.isNotEmpty()
 
   companion object {
-    val COURSE_DELETED = Topic.create("Edu.courseDeletedFromStorage", CourseDeletedListener::class.java)
-    val COURSE_ADDED = Topic.create("Edu.courseAddedToStorage", CourseAddedListener::class.java)
+    val COURSE_DELETED = Topic.create("Hyperskill.courseDeletedFromStorage", CourseDeletedListener::class.java)
+    val COURSE_ADDED = Topic.create("Hyperskill.courseAddedToStorage", CourseAddedListener::class.java)
   }
 }
 

@@ -51,8 +51,8 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 
 object YamlFormatSynchronizer {
-  val LOAD_FROM_CONFIG = Key<Boolean>("Edu.loadItem")
-  val SAVE_TO_CONFIG = Key<Boolean>("Edu.saveItem")
+  val LOAD_FROM_CONFIG = Key<Boolean>("Hyperskill.loadItem")
+  val SAVE_TO_CONFIG = Key<Boolean>("Hyperskill.saveItem")
 
   fun saveAll(project: Project) {
     @NonNls

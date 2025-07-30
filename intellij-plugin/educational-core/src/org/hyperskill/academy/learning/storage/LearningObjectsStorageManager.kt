@@ -187,7 +187,7 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
   companion object {
     fun getInstance(project: Project): LearningObjectsStorageManager = project.service()
 
-    private const val PROPERTIES_KEY = "Edu.LearningObjectsStorageType"
+    private const val PROPERTIES_KEY = "Hyperskill.LearningObjectsStorageType"
   }
 }
 
