@@ -13,8 +13,6 @@ import com.intellij.openapi.vfs.VirtualFileVisitor
 import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import org.hyperskill.academy.coursecreator.AdditionalFilesUtils.isExcluded
-import org.hyperskill.academy.coursecreator.courseignore.CourseIgnoreRules
 import org.hyperskill.academy.coursecreator.framework.CCFrameworkLessonManager
 import org.hyperskill.academy.coursecreator.framework.SyncChangesStateManager
 import org.hyperskill.academy.learning.*
@@ -128,13 +126,7 @@ class CCVirtualFileListener(project: Project, parentDisposable: Disposable) : Ed
     if (containingTask != null) return
 
     val course = project.course ?: return
-    val configurator = course.configurator ?: return
-    val isExcluded = !evenIfExcluded && isExcluded(
-      file,
-      CourseIgnoreRules.loadFromCourseIgnoreFile(project),
-      configurator,
-      project
-    )
+    val isExcluded = !evenIfExcluded
     if (!isExcluded) {
       additionalFileCreated(course, file)
     }

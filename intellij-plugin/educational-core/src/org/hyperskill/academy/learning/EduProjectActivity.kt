@@ -8,8 +8,6 @@ import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileTypes.ExactFileNameMatcher
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.waitForSmartMode
@@ -23,10 +21,8 @@ import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.hyperskill.academy.coursecreator.courseignore.CourseIgnoreFileType
 import org.hyperskill.academy.coursecreator.framework.SyncChangesStateManager
 import org.hyperskill.academy.coursecreator.handlers.CCVirtualFileListener
-import org.hyperskill.academy.learning.EduNames.COURSE_IGNORE
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
 import org.hyperskill.academy.learning.EduUtilsKt.isNewlyCreated
 import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
@@ -55,8 +51,6 @@ class EduProjectActivity : ProjectActivity {
 
       EduDocumentListener.setGlobalListener(project, manager)
     }
-
-    ensureCourseIgnoreHasNoCustomAssociation()
 
     // Not sure we want to wait
     project.waitForSmartMode()
@@ -110,12 +104,6 @@ class EduProjectActivity : ProjectActivity {
     if (propertyComponent.getBoolean(YAML_MIGRATED)) return
     propertyComponent.setValue(YAML_MIGRATED, true)
     if (course !is HyperskillCourse) return
-  }
-
-  private suspend fun ensureCourseIgnoreHasNoCustomAssociation() {
-    writeAction {
-      FileTypeManager.getInstance().associate(CourseIgnoreFileType, ExactFileNameMatcher(COURSE_IGNORE))
-    }
   }
 
   // In general, it's hack to select proper Project View pane for course projects

@@ -9,11 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileVisitor
 import org.hyperskill.academy.coursecreator.actions.BinaryContentsFromDisk
 import org.hyperskill.academy.coursecreator.actions.TextualContentsFromDisk
-import org.hyperskill.academy.coursecreator.courseignore.CourseIgnoreRules
-import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
 import org.hyperskill.academy.learning.configuration.EduConfigurator
-import org.hyperskill.academy.learning.configuration.courseFileAttributes
-import org.hyperskill.academy.learning.configuration.excludeFromArchive
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.EduFile
 import org.hyperskill.academy.learning.getTask
@@ -53,53 +49,12 @@ object AdditionalFilesUtils {
     return fileVisitor.additionalTaskFiles
   }
 
-  /**
-   * Tests the file to be excluded either by a course configurator or a .courseignore
-   *
-   * [useLegacyExcludeFromArchive] must not be used in the new code.
-   * It is necessary to preserve the old behavior of the plugin for YAML migration.
-   * The old plugins with YAML version 1 used the [EduConfigurator.excludeFromArchive()] method
-   * to decide which files go into the archive and which don't.
-   *
-   * Now, the files are excluded based on their archive inclusion policy.
-   */
-  fun isExcluded(
-    file: VirtualFile,
-    courseIgnoreRules: CourseIgnoreRules,
-    courseConfigurator: EduConfigurator<*>,
-    project: Project,
-    useLegacyExcludeFromArchive: Boolean = false
-  ): Boolean {
-    val excludedByConfigurator = if (useLegacyExcludeFromArchive) {
-      courseConfigurator.excludeFromArchive(project, file)
-    }
-    else {
-      courseConfigurator.courseFileAttributes(project, file).archiveInclusionPolicy == ArchiveInclusionPolicy.MUST_EXCLUDE
-    }
-
-    return courseIgnoreRules.isIgnored(file) ||
-           excludedByConfigurator
-  }
-
   private fun additionalFilesVisitor(project: Project, courseConfigurator: EduConfigurator<*>, detectTaskFoldersByContents: Boolean) =
     object : VirtualFileVisitor<Any>(NO_FOLLOW_SYMLINKS) {
       // we take the course ignore rules once, and we are sure they are not changed while course archive is being created
-      private val courseIgnoreRules = CourseIgnoreRules.loadFromCourseIgnoreFile(project)
-
       val additionalTaskFiles = mutableListOf<EduFile>()
 
       override fun visitFile(file: VirtualFile): Boolean {
-        if (isExcluded(
-            file,
-            courseIgnoreRules,
-            courseConfigurator,
-            project,
-            useLegacyExcludeFromArchive = true
-          )
-        ) {
-          return false
-        }
-
         if (file.isDirectory) {
           // All files inside task directory are already handled by `CCVirtualFileListener`
           // so here we don't need to process them again

@@ -155,18 +155,12 @@
           first-keystroke="control alt shift A"
       />
     </action>
-    <action id="HyperskillEducational.Educator.OpenEducatorHelp"
-            class="org.hyperskill.academy.coursecreator.ui.CCOpenEducatorHelp"/>
     <group id="HyperskillEducational.CourseView.SecondaryActions">
       <action id="HyperskillEducational.HideSolvedLessons"
               class="org.hyperskill.academy.learning.projectView.CourseViewPane$HideSolvedLessonsAction"/>
     </group>
 
     <!-- Actions located in the right corner of the Course View header -->
-    <group id="HyperskillEducational.CourseView.Header.Right">
-      <reference ref="HyperskillEducational.Educator.OpenEducatorHelp"/>
-    </group>
-
     <group id="HyperskillEducational.CheckPanel.Left">
       <reference ref="HyperskillEducational.Run"/>
     </group>
@@ -204,17 +198,6 @@
     <projectService serviceInterface="org.hyperskill.academy.learning.framework.FrameworkLessonManager"
                     serviceImplementation="org.hyperskill.academy.learning.framework.impl.FrameworkLessonManagerImpl"/>
 
-    <!-- Courseignore lang -->
-    <fileType language="CourseIgnore" fileNames=".courseignore" fieldName="INSTANCE" name="CourseIgnore file"
-              implementationClass="org.hyperskill.academy.coursecreator.courseignore.CourseIgnoreFileType"/>
-    <lang.parserDefinition language="CourseIgnore"
-                           implementationClass="com.intellij.openapi.vcs.changes.ignore.lang.IgnoreParserDefinition"/>
-    <codeInsight.lineMarkerProvider language="CourseIgnore"
-                                    implementationClass="com.intellij.openapi.vcs.changes.ignore.codeInsight.IgnoreDirectoryMarkerProvider"/>
-    <lang.braceMatcher language="CourseIgnore" implementationClass="com.intellij.openapi.vcs.changes.ignore.lang.IgnoreBraceMatcher"/>
-    <lang.commenter language="CourseIgnore" implementationClass="com.intellij.openapi.vcs.changes.ignore.lang.IgnoreCommenter"/>
-    <!--END of Courseignore lang-->
-
     <postStartupActivity implementation="org.hyperskill.academy.learning.EduProjectActivity"/>
 
     <registryKey key="hyperskill.task.description.update.delay"
@@ -222,8 +205,8 @@
                  defaultValue="300"/>
 
     <applicationConfigurable groupId="tools" instance="org.hyperskill.academy.learning.settings.EduConfigurable"
-                             id="Educational"
-                             key="settings.education" bundle="messages.EduCoreBundle"/>
+                             id="Hyperskill"
+                             key="settings.title" bundle="messages.EduCoreBundle"/>
 
     <registryKey key="hyperskill.learning.objects.storage.type"
                  description="Controls the way the original author data is stored in the project. This setting does not affect existing course projects, it affects only newly created projects"
@@ -285,7 +268,7 @@
 
     <projectViewPane implementation="org.hyperskill.academy.learning.projectView.CourseViewPane"/>
 
-    <experimentalFeature id="edu.course.creator.split.editor" percentOfUsers="100" internalFeature="true">
+    <experimentalFeature id="hyperskill.course.creator.split.editor" percentOfUsers="100" internalFeature="true">
       <description>Enables previous task view for guided projects</description>
     </experimentalFeature>
     <defaultLiveTemplates file="liveTemplates/hint.xml"/>
@@ -293,14 +276,11 @@
 
     <writingAccessProvider implementation="org.hyperskill.academy.learning.editor.EditableFileProvider"/>
 
-    <experimentalFeature id="edu.course.sql" percentOfUsers="100" internalFeature="true">
+    <experimentalFeature id="hyperskill.course.sql" percentOfUsers="100" internalFeature="true">
       <description>Enables support for SQL courses</description>
     </experimentalFeature>
-    <experimentalFeature id="edu.course.update.new" percentOfUsers="100">
+    <experimentalFeature id="hyperskill.course.update.new" percentOfUsers="100">
       <description>Enable the new course update functionality to provide more efficient course updates</description>
-    </experimentalFeature>
-    <experimentalFeature id="edu.educator.help" percentOfUsers="100">
-      <description>Open educator help for newly created CC courses; add Help button to the toolbar above course view</description>
     </experimentalFeature>
 
     <iconMapper mappingFile="EduToolsIconMappings.json"/>
@@ -362,8 +342,6 @@
                            implementationClass="org.hyperskill.academy.learning.compatibility.ShellCourseCompatibilityProvider"/>
 
     <!--educator-->
-    <optionsProvider instance="org.hyperskill.academy.coursecreator.settings.CCOptions"/>
-
     <pathMacroProvider implementation="org.hyperskill.academy.learning.checker.TaskRunConfigurationPathMacroProvider"/>
 
     <courseMetadataProcessor implementation="org.hyperskill.academy.learning.statistics.metadata.CoursePageExperimentMetadataProcessor"/>

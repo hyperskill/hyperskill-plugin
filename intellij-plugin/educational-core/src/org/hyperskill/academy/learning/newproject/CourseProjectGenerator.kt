@@ -30,7 +30,6 @@ import com.intellij.platform.util.progress.indeterminateStep
 import com.intellij.platform.util.progress.progressStep
 import com.intellij.platform.util.progress.withRawProgressReporter
 import com.intellij.profile.codeInspection.ProjectInspectionProfileManager
-import com.intellij.ui.jcef.JBCefApp
 import com.intellij.util.PathUtil
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -38,7 +37,6 @@ import com.intellij.util.messages.Topic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.hyperskill.academy.coursecreator.CCUtils.isLocalCourse
-import org.hyperskill.academy.coursecreator.ui.CCOpenEducatorHelp
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
 import org.hyperskill.academy.learning.configuration.EduConfigurator
@@ -96,10 +94,6 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
 
     YamlFormatSynchronizer.saveAll(project)
     YamlFormatSynchronizer.startSynchronization(project)
-
-    if (!course.isStudy && !isHeadlessEnvironment && JBCefApp.isSupported()) {
-      CCOpenEducatorHelp.doOpen(project)
-    }
 
     onConfigurationFinished()
   }
