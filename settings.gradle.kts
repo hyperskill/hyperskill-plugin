@@ -5,7 +5,7 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.Properties
 
-rootProject.name = "educational-plugin"
+rootProject.name = "hyperskill-plugin"
 include(
   "edu-format",
   "intellij-plugin",
