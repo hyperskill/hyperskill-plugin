@@ -102,8 +102,7 @@ open class SubmissionsTab(project: Project) : TaskToolWindowCardTextTab(project)
     /**
      * Showing submissions ids is needed for `ApplyHyperskillSubmission` action testing
      */
-    private fun isToShowSubmissionsIds(task: Task) =
-      task.course is HyperskillCourse && isFeatureEnabled(EduExperimentalFeatures.CC_HYPERSKILL)
+    private fun isToShowSubmissionsIds(task: Task) = false
 
     private fun submissionLink(submission: Submission, isToShowSubmissionsIds: Boolean): String? {
       val time = submission.time ?: return null

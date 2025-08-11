@@ -116,8 +116,8 @@ class CSharpCourseBuilder : EduCourseBuilder<CSharpProjectSettings> {
     const val SOLUTION_FILE_TEMPLATE = "Solution.sln"
     const val VERSION_VARIABLE = "VERSION"
 
-    val VERSION_KEY = Key.create<String>("edu.csharp.dotnetVersion")
-    val CSPROJ_NAME_PER_TASK_KEY = Key.create<String>("edu.csharp.csproj.path")
+    val VERSION_KEY = Key.create<String>("hyperskill.csharp.dotnetVersion")
+    val CSPROJ_NAME_PER_TASK_KEY = Key.create<String>("hyperskill.csharp.csproj.path")
 
     private val STUDY_ITEM_NAME_PATTERN = "[a-zA-Z0-9_ ]+".toRegex()
   }

@@ -63,7 +63,7 @@ class SqlGradleStartupActivity : ProjectActivity {
     }
 
     // Since we're already in a coroutine, we can use withBackgroundProgress directly
-    withBackgroundProgress(project, EduSqlBundle.message("edu.sql.downloading.driver.files.progress.title"), false) {
+    withBackgroundProgress(project, EduSqlBundle.message("hyperskill.sql.downloading.driver.files.progress.title"), false) {
       driver.loadArtifacts(project)
     }
   }

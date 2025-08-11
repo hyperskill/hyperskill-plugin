@@ -323,9 +323,9 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
   companion object {
     private val LOG: Logger = Logger.getInstance(CourseProjectGenerator::class.java)
 
-    val EDU_PROJECT_CREATED = Key.create<Boolean>("edu.projectCreated")
+    val EDU_PROJECT_CREATED = Key.create<Boolean>("hyperskill.projectCreated")
 
-    val COURSE_MODE_TO_CREATE = Key.create<CourseMode>("edu.courseModeToCreate")
+    val COURSE_MODE_TO_CREATE = Key.create<CourseMode>("hyperskill.courseModeToCreate")
 
     @Topic.AppLevel
     val COURSE_PROJECT_CONFIGURATION: Topic<CourseProjectConfigurationListener> = createTopic("COURSE_PROJECT_CONFIGURATION")

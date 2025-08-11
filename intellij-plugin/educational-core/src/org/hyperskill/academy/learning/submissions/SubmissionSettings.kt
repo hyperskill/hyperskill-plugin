@@ -23,9 +23,9 @@ class SubmissionSettings {
     get() = field || System.getProperty(APPLY_SUBMISSIONS_FORCE).toBoolean()
 
   companion object {
-    private const val STATE_ON_CLOSE_PROPERTY: String = "edu.course.state.on.close"
+    private const val STATE_ON_CLOSE_PROPERTY: String = "hyperskill.course.state.on.close"
 
-    private const val APPLY_SUBMISSIONS_FORCE: String = "edu.course.apply.submissions.force"
+    private const val APPLY_SUBMISSIONS_FORCE: String = "hyperskill.course.apply.submissions.force"
 
     fun getInstance(project: Project): SubmissionSettings = project.service()
   }

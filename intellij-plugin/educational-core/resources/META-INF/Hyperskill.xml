@@ -23,10 +23,6 @@
                             implementation="org.hyperskill.academy.learning.stepik.hyperskill.widget.HyperskillWidgetFactory"
                             order="before positionWidget"/>
 
-    <experimentalFeature id="edu.course.hyperskill" percentOfUsers="100" internalFeature="true">
-      <description>Enables action to push Hyperskill lesson to Stepik</description>
-    </experimentalFeature>
-
     <registryKey defaultValue="10" description="Hyperskill metrics sending interval in minutes" key="hyperskill.metrics"
                  restartRequired="true"/>
   </extensions>

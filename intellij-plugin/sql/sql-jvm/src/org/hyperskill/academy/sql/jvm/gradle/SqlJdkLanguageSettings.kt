@@ -82,7 +82,7 @@ class SqlJdkLanguageSettings : JdkLanguageSettings() {
       testLanguage = it
     }
 
-    return LabeledComponent.create(comboBox, EduSqlBundle.message("edu.sql.test.language"), BorderLayout.WEST)
+    return LabeledComponent.create(comboBox, EduSqlBundle.message("hyperskill.sql.test.language"), BorderLayout.WEST)
   }
 
   private fun comboboxModel(): ComboBoxModel<SqlTestLanguage> {

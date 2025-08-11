@@ -52,7 +52,7 @@ class EduRemoteInactivityWatcherService(private val scope: CoroutineScope) {
 
   companion object {
     @NonNls
-    private const val DELAY_SYSTEM_PROPERTY_NAME = "edu.remote.ide.inactivity.termination.delay.seconds"
+    private const val DELAY_SYSTEM_PROPERTY_NAME = "hyperskill.remote.ide.inactivity.termination.delay.seconds"
     private val LOG = logger<EduRemoteInactivityWatcherService>()
   }
 }

@@ -3,6 +3,7 @@
 package org.hyperskill.academy.sql.jvm.gradle
 
 import com.intellij.database.access.DatabaseCredentials
+import com.intellij.database.actions.runDataSourceGeneralRefresh
 import com.intellij.database.autoconfig.DataSourceConfigUtil
 import com.intellij.database.autoconfig.DataSourceDetector
 import com.intellij.database.autoconfig.DataSourceRegistry
@@ -15,7 +16,6 @@ import com.intellij.database.dataSource.artifacts.DatabaseArtifactList
 import com.intellij.database.dataSource.artifacts.DatabaseArtifactLoader
 import com.intellij.database.dataSource.artifacts.DatabaseArtifactManager
 import com.intellij.database.model.DasDataSource
-import com.intellij.database.actions.runDataSourceGeneralRefresh
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.openapi.diagnostic.Logger
@@ -276,7 +276,7 @@ private class InitScriptExecutionTask(
   private val tasks: List<Task>
 ) : com.intellij.openapi.progress.Task.Backgroundable(
   project,
-  EduSqlBundle.message("edu.sql.initialize.databases.progress.title"),
+  EduSqlBundle.message("hyperskill.sql.initialize.databases.progress.title"),
   false
 ) {
   override fun run(indicator: ProgressIndicator) {

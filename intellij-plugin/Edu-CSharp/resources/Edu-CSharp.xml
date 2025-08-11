@@ -33,7 +33,7 @@
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <experimentalFeature id="edu.course.csharp" percentOfUsers="100" internalFeature="true">
+    <experimentalFeature id="hyperskill.course.csharp" percentOfUsers="100" internalFeature="true">
       <description>Enables support for C# courses</description>
     </experimentalFeature>
     <postStartupActivity implementation="org.hyperskill.academy.csharp.CSharpProjectActivity"/>

@@ -66,19 +66,22 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
   private fun showSwitchFromEduNotification() {
     EduNotificationManager.create(
       ERROR,
-      EduCoreBundle.message("notification.ide.switch.from.edu.ide.title", ApplicationNamesInfo.getInstance().fullProductNameWithEdition),
       EduCoreBundle.message(
-        "notification.ide.switch.from.edu.ide.description",
+        "notification.ide.switch.from.hyperskill.ide.title",
+        ApplicationNamesInfo.getInstance().fullProductNameWithEdition
+      ),
+      EduCoreBundle.message(
+        "notification.ide.switch.from.hyperskill.ide.description",
         "${ApplicationNamesInfo.getInstance().fullProductName} Community"
       ),
     ).apply {
       isSuggestionType = true
       configureDoNotAskOption(
         SWITCH_TO_COMMUNITY_DO_NOT_ASK_OPTION_ID,
-        EduCoreBundle.message("notification.ide.switch.from.edu.ide.do.not.ask")
+        EduCoreBundle.message("notification.ide.switch.from.hyperskill.ide.do.not.ask")
       )
       addAction(
-        NotificationAction.createSimple(EduCoreBundle.message("notification.ide.switch.from.edu.ide.acton.title")) {
+        NotificationAction.createSimple(EduCoreBundle.message("notification.ide.switch.from.hyperskill.ide.acton.title")) {
           @Suppress("UnstableApiUsage")
           val link = if (PlatformUtils.isPyCharmEducational()) {
             "https://www.jetbrains.com/pycharm/download/"

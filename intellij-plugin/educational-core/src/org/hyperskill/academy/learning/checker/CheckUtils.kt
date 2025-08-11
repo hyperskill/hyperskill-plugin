@@ -294,7 +294,7 @@ object CheckUtils {
   /**
    * A key used to determine whether edu plugin created the environment of a specific run configuration for checking purposes.
    */
-  val EDU_ENV_KEY = Key.create<Boolean>("edu.environment")
+  val EDU_ENV_KEY = Key.create<Boolean>("hyperskill.environment")
 
   var ExecutionEnvironment.isEduTaskEnvironment: Boolean
     get() = getUserData(EDU_ENV_KEY) == true

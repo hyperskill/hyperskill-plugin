@@ -238,7 +238,7 @@
 
     <!-- org.hyperskill.academy.learning.notification.EduNotificationManager.JETBRAINS_ACADEMY_GROUP_ID -->
     <notificationGroup id="Hyperskill Academy" displayType="BALLOON"
-                       bundle="messages.EduCoreBundle" key="notification.group.edu.tools"/>
+                       bundle="messages.EduCoreBundle" key="notification.group.hyperskill.tools"/>
 
     <!--suppress PluginXmlValidity -->
     <applicationService serviceImplementation="org.hyperskill.academy.learning.EduSettings"/>
@@ -268,9 +268,6 @@
 
     <projectViewPane implementation="org.hyperskill.academy.learning.projectView.CourseViewPane"/>
 
-    <experimentalFeature id="hyperskill.course.creator.split.editor" percentOfUsers="100" internalFeature="true">
-      <description>Enables previous task view for guided projects</description>
-    </experimentalFeature>
     <defaultLiveTemplates file="liveTemplates/hint.xml"/>
     <editorNotificationProvider implementation="org.hyperskill.academy.learning.yaml.GeneratedRemoteInfoNotificationProvider"/>
 

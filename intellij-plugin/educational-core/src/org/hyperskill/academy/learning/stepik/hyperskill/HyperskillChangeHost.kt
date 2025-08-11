@@ -6,8 +6,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.RightAlignedToolbarAction
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.Messages
-import org.hyperskill.academy.learning.EduExperimentalFeatures
-import org.hyperskill.academy.learning.isFeatureEnabled
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 
 @Suppress("ComponentNotRegistered")
@@ -25,8 +23,4 @@ class HyperskillChangeHost : DumbAwareAction(EduCoreBundle.message("hyperskill.c
   }
 
   override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
-
-  override fun update(e: AnActionEvent) {
-    e.presentation.isEnabledAndVisible = isFeatureEnabled(EduExperimentalFeatures.CC_HYPERSKILL)
-  }
 }

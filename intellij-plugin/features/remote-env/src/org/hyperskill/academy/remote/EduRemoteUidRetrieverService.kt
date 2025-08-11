@@ -100,7 +100,7 @@ class EduRemoteUidRetrieverService(private val project: Project, private val sco
     private const val INFO_FILE_PATH: String = "/idea/podinfo/labels"
 
     @NonNls
-    private const val INFO_FILE_PATH_PROPERTY_NAME: String = "edu.remote.ide.info.file.path"
+    private const val INFO_FILE_PATH_PROPERTY_NAME: String = "hyperskill.remote.ide.info.file.path"
 
     @NonNls
     private const val JB_UID_PROPERTY_NAME_IN_FILE: String = "jbUid"
