@@ -1,0 +1,9 @@
+<!--suppress PluginXmlValidity -->
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy">
+  <id>org.hyperskill.academy.go</id>
+  <xi:include href="/META-INF/hs-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+  <content>
+    <module name="hs-Go"/>
+  </content>
+</idea-plugin>

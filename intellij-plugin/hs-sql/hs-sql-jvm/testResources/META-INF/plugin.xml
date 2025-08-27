@@ -1,0 +1,11 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy">
+  <id>org.hyperskill.academy.sql.jvm</id>
+  <xi:include href="/META-INF/hs-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+  <!--suppress PluginXmlValidity -->
+  <content>
+    <module name="hs-sql-core"/>
+    <module name="hs-sql-jvm"/>
+    <module name="hs-jvm-core"/>
+  </content>
+</idea-plugin>

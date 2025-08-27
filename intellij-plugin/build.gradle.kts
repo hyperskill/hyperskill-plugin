@@ -52,28 +52,28 @@ dependencies {
   intellijPlatform {
     intellijIde(baseVersion)
 
-    pluginModule(implementation(project("educational-core")))
-    pluginModule(implementation(project("jvm-core")))
-    pluginModule(implementation(project("Edu-Java")))
-    pluginModule(implementation(project("Edu-Kotlin")))
-    pluginModule(implementation(project("Edu-Python")))
-    pluginModule(implementation(project("Edu-Scala")))
-    pluginModule(implementation(project("Edu-JavaScript")))
-    pluginModule(implementation(project("Edu-Rust")))
-    pluginModule(implementation(project("Edu-Cpp")))
-    pluginModule(implementation(project("Edu-Cpp:CLion-Classic")))
-    pluginModule(implementation(project("Edu-Cpp:CLion-Nova")))
-    pluginModule(implementation(project("Edu-Go")))
-    pluginModule(implementation(project("Edu-Php")))
-    pluginModule(implementation(project("Edu-Shell")))
-    pluginModule(implementation(project("Edu-CSharp")))
-    pluginModule(implementation(project("sql")))
-    pluginModule(implementation(project("sql:sql-jvm")))
-    pluginModule(implementation(project("features:github")))
+    pluginModule(implementation(project("hs-core")))
+    pluginModule(implementation(project("hs-jvm-core")))
+    pluginModule(implementation(project("hs-Java")))
+    pluginModule(implementation(project("hs-Kotlin")))
+    pluginModule(implementation(project("hs-Python")))
+    pluginModule(implementation(project("hs-Scala")))
+    pluginModule(implementation(project("hs-JavaScript")))
+    pluginModule(implementation(project("hs-Rust")))
+    pluginModule(implementation(project("hs-Cpp")))
+    pluginModule(implementation(project("hs-Cpp:CLion-Classic")))
+    pluginModule(implementation(project("hs-Cpp:CLion-Nova")))
+    pluginModule(implementation(project("hs-Go")))
+    pluginModule(implementation(project("hs-Php")))
+    pluginModule(implementation(project("hs-Shell")))
+    pluginModule(implementation(project("hs-CSharp")))
+    pluginModule(implementation(project("hs-sql")))
+    pluginModule(implementation(project("hs-sql:hs-sql-jvm")))
+    pluginModule(implementation(project("hs-features:hs-github")))
     if (!isAtLeast252) { // BACKCOMPAT: Temporarily exclude for 2025.2 as it doesn't compile
-      pluginModule(implementation(project("features:remote-env")))
+      pluginModule(implementation(project("hs-features:hs-remote-env")))
     }
-    pluginModule(implementation(project("localization")))
+    pluginModule(implementation(project("hs-localization")))
 
     testFramework(TestFrameworkType.Bundled)
   }
@@ -138,8 +138,8 @@ tasks {
   }
 
   buildPlugin {
-    dependsOn(":edu-format:jar")
-    dependsOn(":edu-format:sourcesJar")
+    dependsOn(":hs-edu-format:jar")
+    dependsOn(":hs-edu-format:sourcesJar")
     dependsOn(*subprojects.mapNotNull { it.tasks.findByName(VERIFY_CLASSES_TASK_NAME) }.toTypedArray())
     doLast {
       copyFormatJars()
@@ -250,7 +250,7 @@ fun buildDir(): String {
 
 fun copyFormatJars() {
   copy {
-    from("../edu-format/build/libs/")
+    from("../hs-edu-format/build/libs/")
     into("build/distributions")
     include("*.jar")
   }

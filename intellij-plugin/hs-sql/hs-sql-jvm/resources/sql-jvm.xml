@@ -1,0 +1,26 @@
+<idea-plugin package="org.hyperskill.academy.sql.jvm">
+  <!--suppress PluginXmlValidity -->
+  <dependencies>
+    <!--suppress PluginXmlValidity -->
+    <module name="hs-sql-core"/>
+    <!--suppress PluginXmlValidity -->
+    <module name="hs-jvm-core"/>
+
+    <plugin id="com.intellij.database"/>
+  </dependencies>
+
+  <projectListeners>
+    <listener class="org.hyperskill.academy.sql.jvm.gradle.SqlCourseUpdateListener"
+              topic="org.hyperskill.academy.learning.CourseUpdateListener"/>
+  </projectListeners>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <postStartupActivity implementation="org.hyperskill.academy.sql.jvm.gradle.SqlGradleStartupActivity"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="HyperskillEducational">
+    <configurator language="SQL" implementationClass="org.hyperskill.academy.sql.jvm.gradle.SqlGradleConfigurator"/>
+    <taskNavigationExtension implementation="org.hyperskill.academy.sql.jvm.gradle.SqlTaskNavigationExtension"/>
+    <revertTaskExtension implementation="org.hyperskill.academy.sql.jvm.gradle.SqlRevertTaskExtension"/>
+  </extensions>
+</idea-plugin>

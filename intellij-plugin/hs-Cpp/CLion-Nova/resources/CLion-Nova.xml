@@ -1,0 +1,10 @@
+<idea-plugin package="org.hyperskill.academy.cpp.radler">
+  <dependencies>
+    <plugin id="org.jetbrains.plugins.clion.radler"/>
+    <!--suppress PluginXmlValidity -->
+    <module name="hs-Cpp"/>
+  </dependencies>
+  <extensions defaultExtensionNs="HyperskillEducational">
+    <cppRunConfigurationHelper implementation="org.hyperskill.academy.cpp.radler.checker.RadlerCppRunConfigurationHelper"/>
+  </extensions>
+</idea-plugin>

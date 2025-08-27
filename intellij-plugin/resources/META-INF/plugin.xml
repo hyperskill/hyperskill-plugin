@@ -4,7 +4,7 @@
   <name>Hyperskill Academy</name>
   <vendor>JetBrains</vendor>
 
-  <xi:include href="/META-INF/educational-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/hs-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/plugin_platform.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <!--update description in description.html file instead-->
@@ -14,24 +14,24 @@
   <change-notes/>
 
   <content>
-    <module name="jvm-core"/>
-    <module name="Edu-Java"/>
-    <module name="Edu-Kotlin"/>
-    <module name="Edu-Scala"/>
-    <module name="Edu-JavaScript"/>
-    <module name="Edu-Rust"/>
-    <module name="Edu-Cpp"/>
-    <module name="CLion-Nova"/>
-    <module name="CLion-Classic"/>
-    <module name="Edu-Go"/>
-    <module name="Edu-Php"/>
-    <module name="Edu-Shell"/>
-    <module name="Edu-Python"/>
-    <module name="Edu-CSharp"/>
-    <module name="sql-core"/>
-    <module name="sql-jvm"/>
+    <module name="hs-jvm-core"/>
+    <module name="hs-Java"/>
+    <module name="hs-Kotlin"/>
+    <module name="hs-Scala"/>
+    <module name="hs-JavaScript"/>
+    <module name="hs-Rust"/>
+    <module name="hs-Cpp"/>
+    <module name="hs-CLion-Nova"/>
+    <module name="hs-CLion-Classic"/>
+    <module name="hs-Go"/>
+    <module name="hs-Php"/>
+    <module name="hs-Shell"/>
+    <module name="hs-Python"/>
+    <module name="hs-CSharp"/>
+    <module name="hs-sql-core"/>
+    <module name="hs-sql-jvm"/>
 
     <!-- feature modules -->
-    <module name="github"/>
+    <module name="hs-github"/>
   </content>
 </idea-plugin>

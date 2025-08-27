@@ -1,0 +1,16 @@
+<!--suppress PluginXmlValidity -->
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy">
+  <id>org.hyperskill.academy.core</id>
+  <xi:include href="/META-INF/hs-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType language="FakeGradleBasedLanguage"
+              name="FakeGradleFileType"
+              extensions="kt"
+              implementationClass="org.hyperskill.academy.learning.configurators.FakeGradleFileType"/>
+    <fileType language="FakeBinaryDBFileType"
+              name="FakeDBFileType"
+              extensions="db"
+              implementationClass="org.hyperskill.academy.learning.stepik.hyperskill.FakeBinaryDBFileType"/>
+  </extensions>
+</idea-plugin>

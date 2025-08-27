@@ -1,0 +1,47 @@
+<idea-plugin package="org.hyperskill.academy.csharp">
+  <!--suppress PluginXmlValidity -->
+  <dependencies>
+    <plugin id="com.intellij.modules.rider"/>
+    <plugin id="com.intellij.resharper.unity"/>
+    <module name="intellij.rider"/>
+  </dependencies>
+
+  <resource-bundle>messages.EduCoreBundle</resource-bundle>
+
+  <actions>
+    <unregister id="HyperskillEducational.LearnAndTeachFileMenu"/>
+    <group id="HyperskillEducational.LearnAndTeachFileMenu"
+           class="org.hyperskill.academy.learning.newproject.LearnAndTeachFileMenuGroup"
+           popup="true"
+           icon="org.hyperskill.academy.EducationalCoreIcons.Platform.HyperskillAcademy">
+      <reference ref="HyperskillEducational.BrowseCourses"/>
+      <add-to-group group-id="FileMenu" anchor="before" relative-to-action="RiderFileOpenGroup"/>
+    </group>
+  </actions>
+
+  <extensions defaultExtensionNs="HyperskillEducational">
+    <configurator implementationClass="org.hyperskill.academy.csharp.CSharpConfigurator" language="C#"
+                  displayName="C#"/>
+    <!-- currently, Unity support for macOS is disabled; hence we have 2 configurators - for linux and windows only -->
+    <configurator implementationClass="org.hyperskill.academy.csharp.hyperskill.CSharpHyperskillConfigurator" language="C#"
+                  courseType="Hyperskill" os="linux"/>
+    <configurator implementationClass="org.hyperskill.academy.csharp.hyperskill.CSharpHyperskillConfigurator" language="C#"
+                  courseType="Hyperskill" os="windows"/>
+    <courseViewPaneCustomization implementation="org.hyperskill.academy.csharp.CSharpCourseViewPaneCustomization"/>
+    <studyItemRefactoringHandler implementation="org.hyperskill.academy.csharp.refactoring.CSharpStudyItemRefactoringHandler"/>
+    <hyperskillCourseCreator implementation="org.hyperskill.academy.csharp.hyperskill.UnityHyperskillCourseCreator"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <experimentalFeature id="hyperskill.course.csharp" percentOfUsers="100" internalFeature="true">
+      <description>Enables support for C# courses</description>
+    </experimentalFeature>
+    <postStartupActivity implementation="org.hyperskill.academy.csharp.CSharpProjectActivity"/>
+    <rdclient.priorityRenameHandler implementation="org.hyperskill.academy.csharp.refactoring.CSharpRenameHandler" order="first"/>
+  </extensions>
+
+  <projectListeners>
+    <listener class="org.hyperskill.academy.csharp.CSharpCourseSetListener"
+              topic="org.hyperskill.academy.learning.CourseSetListener"/>
+  </projectListeners>
+</idea-plugin>

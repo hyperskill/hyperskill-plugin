@@ -1032,7 +1032,7 @@ Their version is the same as the version written in the `course-info.yaml`.
 **Notes for developers**: to update a YAML version, implement `org.hyperskill.academy.learning.yaml.migrate.YamlMigrationStep` and list it
 in
 `org.hyperskill.academy.learning.yaml.migrate.YamlMigrator#migrationSteps`.
-To pass some data to migrator, unavailable in the `edu-format` module, use
+To pass some data to migrator, unavailable in the `hs-edu-format` module, use
 `org.hyperskill.academy.learning.yaml.EduInjectableValuesKt#setEduValue` inside the method
 `org.hyperskill.academy.learning.yaml.YamlDeepLoader#setupForMigration`.
 

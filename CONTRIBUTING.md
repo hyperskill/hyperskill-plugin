@@ -38,11 +38,11 @@ Sometimes there are not compatible changes in new platform version.
 To avoid creating several parallel vcs branches for each version, we have separate
 directories for each version to keep platform dependent code.
 
-For example, `org.hyperskill.academy.android.AndroidVersionsInfoKt#loadTargetVersions` function in `Edu-Android` module
+For example, `org.hyperskill.academy.android.AndroidVersionsInfoKt#loadTargetVersions` function in `hs-Android` module
 should have separate implementations for 182 and 183 platforms.
 Then source code structure of the corresponding module will be
 
-     +-- Edu-Android
+     +-- hs-Android
      |   +-- branches/182/src
      |       +-- org/hyperskill/academy/android
      |           +-- AndroidVersionsInfo.kt
@@ -71,7 +71,7 @@ To prevent accidental usage of specific API in common code, we have to build plu
 At the moment, the plugin tests can be launched with IDEA, Android Studio, CLion and PyCharm.
 You can change this IDE via `baseIDE` property in `gradle.properties` file.
 
-Note, not all modules can be compiled with any IDE. For example, `Edu-Android` module is supposed to be built
+Note, not all modules can be compiled with any IDE. For example, `hs-Android` module is supposed to be built
 only with Android Studio.
 Such restrictions are already taken into account in the configuration of the corresponding modules
 in `build.gradle.kts` and when you choose base IDE for build unsupported in the particular module,

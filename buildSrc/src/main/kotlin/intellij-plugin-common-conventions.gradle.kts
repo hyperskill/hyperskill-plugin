@@ -97,10 +97,10 @@ private fun manifestFile(project: Project): File? {
       filePath = "META-INF/plugin.xml"
     }
 
-    ":intellij-plugin:educational-core" -> return manifestFile(project.parent!!)
+    ":intellij-plugin:hs-core" -> return manifestFile(project.parent!!)
     // Localization module is not supposed to have a plugin manifest.
     // Since it also is not supposed to have any code, only resources, no need to verify anything for it
-    ":intellij-plugin:localization" -> return null
+    ":intellij-plugin:hs-localization" -> return null
   }
 
   val mainOutput = project.sourceSets.main.get().output

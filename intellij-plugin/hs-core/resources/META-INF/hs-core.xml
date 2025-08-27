@@ -1,0 +1,349 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+  <!--suppress PluginXmlValidity -->
+  <dependencies>
+    <plugin id="com.intellij.modules.lang"/>
+    <!-- The vcs module is needed to be sure that IgnoreFileType, PatternCache exist which are used for .courseignore support -->
+    <plugin id="com.intellij.modules.vcs"/>
+  </dependencies>
+
+  <resource-bundle>messages.EduCoreBundle</resource-bundle>
+
+  <applicationListeners>
+    <listener class="org.hyperskill.academy.learning.EduDynamicPluginListener"
+              topic="com.intellij.ide.plugins.DynamicPluginListener"/>
+    <listener class="org.hyperskill.academy.learning.InitializationListener" topic="com.intellij.ide.AppLifecycleListener"/>
+    <listener class="org.hyperskill.academy.learning.InitializationListener" topic="com.intellij.ide.plugins.DynamicPluginListener"/>
+    <listener class="org.hyperskill.academy.learning.RecentPreviewCourseListener"
+              topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    <listener class="org.hyperskill.academy.learning.RecentPreviewCourseListener"
+              topic="com.intellij.ide.AppLifecycleListener"/>
+  </applicationListeners>
+
+  <projectListeners>
+    <listener class="org.hyperskill.academy.learning.checker.FixModuleForRunConfigurationsListener"
+              topic="com.intellij.execution.RunManagerListener"/>
+    <listener class="org.hyperskill.academy.learning.checker.PreventRunConfigurationsRenameListener"
+              topic="com.intellij.execution.RunManagerListener"/>
+    <listener class="org.hyperskill.academy.learning.checker.FixModuleForRunConfigurationsListener"
+              topic="com.intellij.openapi.roots.ModuleRootListener"/>
+    <listener class="org.hyperskill.academy.learning.yaml.YamlLoadingErrorManager$Listener"
+              topic="org.hyperskill.academy.learning.yaml.YamlListener"/>
+    <listener class="org.hyperskill.academy.learning.taskToolWindow.EduFileEditorManagerListener"
+              topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+    <listener class="org.hyperskill.academy.learning.taskToolWindow.EduFileEditorManagerListener"
+              topic="com.intellij.openapi.fileEditor.FileEditorManagerListener$Before"/>
+    <listener class="org.hyperskill.academy.learning.storage.LearningObjectsPersister"
+              topic="org.hyperskill.academy.learning.CourseSetListener"/>
+  </projectListeners>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="HyperskillEducational.configurator"
+                    beanClass="org.hyperskill.academy.learning.configuration.EducationalExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="org.hyperskill.academy.learning.configuration.EduConfigurator"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="HyperskillEducational.compatibilityProvider"
+                    beanClass="org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderEP"
+                    dynamic="true">
+      <with attribute="implementationClass" implements="org.hyperskill.academy.learning.compatibility.CourseCompatibilityProvider"/>
+    </extensionPoint>
+
+    <extensionPoint qualifiedName="HyperskillEducational.remoteTaskChecker"
+                    interface="org.hyperskill.academy.learning.checker.remote.RemoteTaskChecker"
+                    dynamic="true"/>
+    <extensionPoint qualifiedName="HyperskillEducational.checkListener"
+                    interface="org.hyperskill.academy.learning.checker.CheckListener"
+                    dynamic="true"/>
+    <extensionPoint qualifiedName="HyperskillEducational.submissionsProvider"
+                    interface="org.hyperskill.academy.learning.submissions.provider.SubmissionsProvider"
+                    dynamic="true"/>
+    <extensionPoint qualifiedName="HyperskillEducational.optionsProvider"
+                    beanClass="com.intellij.openapi.options.ConfigurableEP"
+                    dynamic="true">
+      <with attribute="instance" implements="org.hyperskill.academy.learning.settings.OptionsProvider"/>
+    </extensionPoint>
+
+    <extensionPoint qualifiedName="HyperskillEducational.coursesPlatformProviderFactory"
+                    interface="org.hyperskill.academy.learning.newproject.ui.CoursesPlatformProviderFactory"
+                    dynamic="true"/>
+    <extensionPoint qualifiedName="HyperskillEducational.pathMacroProvider"
+                    interface="org.hyperskill.academy.learning.courseGeneration.macro.EduMacroProvider"
+                    dynamic="true"/>
+
+    <extensionPoint qualifiedName="HyperskillEducational.postToGithub"
+                    interface="org.hyperskill.academy.learning.github.PostToGithubActionProvider"
+                    dynamic="true"/>
+
+    <extensionPoint qualifiedName="HyperskillEducational.taskNavigationExtension"
+                    interface="org.hyperskill.academy.learning.navigation.TaskNavigationExtension"
+                    dynamic="true"/>
+
+    <extensionPoint qualifiedName="HyperskillEducational.revertTaskExtension"
+                    interface="org.hyperskill.academy.learning.actions.RevertTaskAction$RevertTaskExtension"
+                    dynamic="true"/>
+    <extensionPoint qualifiedName="HyperskillEducational.remoteEnvHelper"
+                    interface="org.hyperskill.academy.learning.RemoteEnvHelper"
+                    dynamic="true"/>
+
+    <extensionPoint qualifiedName="HyperskillEducational.courseViewPaneCustomization"
+                    interface="org.hyperskill.academy.learning.projectView.CourseViewPaneCustomization"
+                    dynamic="true"/>
+    <extensionPoint qualifiedName="HyperskillEducational.studyItemRefactoringHandler"
+                    interface="org.hyperskill.academy.coursecreator.handlers.StudyItemRefactoringHandler"
+                    dynamic="true"/>
+    <extensionPoint qualifiedName="HyperskillEducational.hyperskillCourseCreator"
+                    interface="org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillCourseCreator"
+                    dynamic="true"/>
+    <extensionPoint qualifiedName="HyperskillEducational.courseMetadataProcessor"
+                    interface="org.hyperskill.academy.learning.newproject.CourseMetadataProcessor"
+                    dynamic="true"/>
+  </extensionPoints>
+
+  <actions>
+    <action id="HyperskillEducational.Check" class="org.hyperskill.academy.learning.actions.CheckAction"/>
+    <action id="HyperskillEducational.Run"
+            class="org.hyperskill.academy.learning.actions.RunTaskAction"
+            icon="AllIcons.Actions.Execute"/>
+    <action id="HyperskillEducational.AssignRunConfigurationToTask"
+            class="org.hyperskill.academy.learning.actions.AssignRunConfigurationToTask">
+      <add-to-group group-id="RunConfiguration.Group" anchor="before" relative-to-action="DeleteRunConfiguration"/> <!-- top right -->
+    </action>
+    <action id="HyperskillEducational.Retry" class="org.hyperskill.academy.learning.actions.RetryAction"/>
+    <action id="HyperskillEducational.PreviousTask"
+            class="org.hyperskill.academy.learning.actions.PreviousTaskAction"
+            icon="AllIcons.Actions.Back"/>
+    <action id="HyperskillEducational.NextTask"
+            class="org.hyperskill.academy.learning.actions.NextTaskAction"
+            icon="AllIcons.Actions.Forward"/>
+    <action id="HyperskillEducational.RefreshTask"
+            class="org.hyperskill.academy.learning.actions.RevertTaskAction"
+            icon="org.hyperskill.academy.EducationalCoreIcons.Actions.ResetTask"/>
+    <action id="HyperskillEducational.LeaveFeedbackAction"
+            class="org.hyperskill.academy.learning.actions.LeaveFeedbackAction"
+            icon="org.hyperskill.academy.EducationalCoreIcons.Actions.CommentTask"/>
+    <action id="HyperskillEducational.OpenTaskOnSiteAction" class="org.hyperskill.academy.learning.actions.OpenTaskOnSiteAction"/>
+    <action id="HyperskillEducational.CompareWithAnswer"
+            class="org.hyperskill.academy.learning.actions.CompareWithAnswerAction"
+            icon="AllIcons.Actions.Diff"/>
+    <action id="HyperskillEducational.SwitchTaskDescriptionPanel" class="org.hyperskill.academy.learning.actions.SwitchTaskPanelAction">
+    </action>
+
+    <!-- IMPORTANT: don't change the action id, it's used in monorepo-->
+    <action id="HyperskillEducational.BrowseCourses" class="org.hyperskill.academy.learning.newproject.BrowseCoursesAction"/>
+
+    <action id="HyperskillEducational.ToggleRestServices"
+            class="org.hyperskill.academy.learning.actions.ToggleRestServicesAction"
+            internal="true"/>
+
+    <action id="HyperskillEducational.LessonCard-left" class="com.intellij.openapi.actionSystem.EmptyAction" use-shortcut-of="EditorLeft"/>
+    <action id="HyperskillEducational.LessonCard-right" class="com.intellij.openapi.actionSystem.EmptyAction"
+            use-shortcut-of="EditorRight"/>
+
+    <group id="HyperskillEducational.LearnAndTeachFileMenu"
+           class="org.hyperskill.academy.learning.newproject.LearnAndTeachFileMenuGroup"
+           popup="true"
+           icon="org.hyperskill.academy.EducationalCoreIcons.Platform.HyperskillAcademy">
+      <reference ref="HyperskillEducational.BrowseCourses"/>
+      <add-to-group group-id="FileOpenGroup" relative-to-action="OpenFile" anchor="after"/>
+    </group>
+    <action id="HyperskillEducational.Student.ApplyCode"
+            class="org.hyperskill.academy.learning.actions.ApplyCodeAction"
+            icon="org.hyperskill.academy.EducationalCoreIcons.Actions.ApplyCode">
+      <add-to-group group-id="Diff.ViewerToolbar"/>
+      <keyboard-shortcut
+          keymap="$default"
+          first-keystroke="control alt shift A"
+      />
+    </action>
+    <group id="HyperskillEducational.CourseView.SecondaryActions">
+      <action id="HyperskillEducational.HideSolvedLessons"
+              class="org.hyperskill.academy.learning.projectView.CourseViewPane$HideSolvedLessonsAction"/>
+    </group>
+
+    <!-- Actions located in the right corner of the Course View header -->
+    <group id="HyperskillEducational.CheckPanel.Left">
+      <reference ref="HyperskillEducational.Run"/>
+    </group>
+
+    <group id="HyperskillEducational.CheckPanel.Right">
+      <reference ref="HyperskillEducational.RefreshTask"/>
+      <reference ref="HyperskillEducational.LeaveFeedbackAction"/>
+    </group>
+
+    <!-- Actions located in the right corner of Task tool window -->
+    <group id="HyperskillEducational.TaskToolWindowView.TitleActions">
+      <reference ref="HyperskillEducational.PreviousTask"/>
+      <reference ref="HyperskillEducational.NextTask"/>
+    </group>
+  </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceInterface="org.hyperskill.academy.learning.EduBrowser"
+                        serviceImplementation="org.hyperskill.academy.learning.EduBrowser"
+                        testServiceImplementation="org.hyperskill.academy.learning.MockEduBrowser"/>
+
+    <applicationService serviceImplementation="org.hyperskill.academy.coursecreator.settings.CCSettings"/>
+
+    <applicationService serviceInterface="org.hyperskill.academy.learning.courseGeneration.ProjectOpener"
+                        serviceImplementation="org.hyperskill.academy.learning.courseGeneration.ProjectOpenerImpl"
+                        testServiceImplementation="org.hyperskill.academy.learning.MockProjectOpener"/>
+
+    <projectService serviceInterface="org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView"
+                    serviceImplementation="org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowViewImpl"
+                    testServiceImplementation="org.hyperskill.academy.learning.taskToolWindow.ui.MockTaskToolWindowView"/>
+    <projectService serviceInterface="org.hyperskill.academy.learning.checker.details.CheckDetailsView"
+                    serviceImplementation="org.hyperskill.academy.learning.checker.details.CheckDetailsViewImpl"
+                    headlessImplementation="org.hyperskill.academy.learning.checker.details.MockCheckDetailsView"
+                    testServiceImplementation="org.hyperskill.academy.learning.checker.details.MockCheckDetailsView"/>
+    <projectService serviceInterface="org.hyperskill.academy.learning.framework.FrameworkLessonManager"
+                    serviceImplementation="org.hyperskill.academy.learning.framework.impl.FrameworkLessonManagerImpl"/>
+
+    <postStartupActivity implementation="org.hyperskill.academy.learning.EduProjectActivity"/>
+
+    <registryKey key="hyperskill.task.description.update.delay"
+                 description="The delay in ms before loading page by Task Description view. \nRequires project reopening"
+                 defaultValue="300"/>
+
+    <applicationConfigurable groupId="tools" instance="org.hyperskill.academy.learning.settings.EduConfigurable"
+                             id="Hyperskill"
+                             key="settings.title" bundle="messages.EduCoreBundle"/>
+
+    <registryKey key="hyperskill.learning.objects.storage.type"
+                 description="Controls the way the original author data is stored in the project. This setting does not affect existing course projects, it affects only newly created projects"
+                 defaultValue="[SQLite*|YAML]"/>
+
+    <toolWindow id="Task" anchor="right" order="first"
+                factoryClass="org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowFactory"
+                icon="org.hyperskill.academy.EducationalCoreIcons.TaskToolWindow.CourseToolWindow"/>
+    <toolWindow id="HyperskillEducational.CheckDetails" anchor="bottom" canCloseContents="true" doNotActivateOnStart="true"
+                factoryClass="org.hyperskill.academy.learning.checker.details.CheckDetailsToolWindowFactory"
+                icon="org.hyperskill.academy.EducationalCoreIcons.CheckPanel.CheckDetailsToolWindow"/>
+
+    <!-- should be last, otherwise project tree will be changed with GradleTreeStructureProvider -->
+    <highlightErrorFilter implementation="org.hyperskill.academy.learning.editor.EduHighlightErrorFilter"/>
+
+    <!-- Rename -->
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.learning.handlers.rename.SectionRenameProcessor" order="first"/>
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.learning.handlers.rename.LessonRenameProcessor" order="first"/>
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.learning.handlers.rename.TaskRenameProcessor" order="first"/>
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.learning.handlers.rename.EduTaskFileRenameProcessor" order="first"/>
+
+    <!-- Move -->
+    <refactoring.moveHandler implementation="org.hyperskill.academy.learning.handlers.EduMoveDelegate" order="first"/>
+
+    <!-- Notifications   -->
+    <editorNotificationProvider implementation="org.hyperskill.academy.learning.stepik.UpdateCourseNotificationProvider"/>
+    <editorNotificationProvider implementation="org.hyperskill.academy.learning.editor.EduTaskFileNotificationProvider"/>
+    <editorNotificationProvider implementation="org.hyperskill.academy.learning.yaml.YamlConfigNotificationProvider"/>
+
+    <!-- org.hyperskill.academy.learning.notification.EduNotificationManager.JETBRAINS_ACADEMY_GROUP_ID -->
+    <notificationGroup id="Hyperskill Academy" displayType="BALLOON"
+                       bundle="messages.EduCoreBundle" key="notification.group.hyperskill.tools"/>
+
+    <!--suppress PluginXmlValidity -->
+    <applicationService serviceImplementation="org.hyperskill.academy.learning.EduSettings"/>
+    <httpRequestHandler implementation="org.hyperskill.academy.learning.taskToolWindow.ui.EduToolsResourcesRequestHandler"/>
+
+    <registryKey key="hyperskill.course.update.check.interval"
+                 description="Sets is course up to date check interval in seconds"
+                 defaultValue="18000"/>
+
+    <!--for educators-->
+    <xml.xmlSuppressionProvider
+        implementation="org.hyperskill.academy.coursecreator.taskDescription.ShortcutInTaskDescriptionSuppressionProvider"/>
+
+    <!-- Rename -->
+    <renamePsiElementProcessor implementation="org.hyperskill.academy.coursecreator.handlers.rename.CCDescriptionFileRenameProcessor"
+                               order="first"/>
+
+    <!-- Move -->
+    <refactoring.moveHandler implementation="org.hyperskill.academy.coursecreator.handlers.move.CCSectionMoveHandlerDelegate"
+                             order="first"/>
+    <refactoring.moveHandler implementation="org.hyperskill.academy.coursecreator.handlers.move.CCLessonMoveHandlerDelegate"
+                             order="first"/>
+    <refactoring.moveHandler implementation="org.hyperskill.academy.coursecreator.handlers.move.CCTaskMoveHandlerDelegate"
+                             order="first"/>
+
+    <highlightErrorFilter implementation="org.hyperskill.academy.coursecreator.CCHighlightErrorFilter"/>
+
+    <projectViewPane implementation="org.hyperskill.academy.learning.projectView.CourseViewPane"/>
+
+    <defaultLiveTemplates file="liveTemplates/hint.xml"/>
+    <editorNotificationProvider implementation="org.hyperskill.academy.learning.yaml.GeneratedRemoteInfoNotificationProvider"/>
+
+    <writingAccessProvider implementation="org.hyperskill.academy.learning.editor.EditableFileProvider"/>
+
+    <experimentalFeature id="hyperskill.course.sql" percentOfUsers="100" internalFeature="true">
+      <description>Enables support for SQL courses</description>
+    </experimentalFeature>
+    <experimentalFeature id="hyperskill.course.update.new" percentOfUsers="100">
+      <description>Enable the new course update functionality to provide more efficient course updates</description>
+    </experimentalFeature>
+
+    <iconMapper mappingFile="EduToolsIconMappings.json"/>
+    <themeMetadataProvider path="HyperskillAcademyPlugin.themeMetadata.json"/>
+
+    <coursesStorageProvider
+        implementation="org.hyperskill.academy.learning.newproject.coursesStorage.HyperskillAcademyCoursesStorageProvider"/>
+
+    <registryKey key="hyperskill.network.request.assertion.policy"
+                 description="Assertion policy for network requests from EDT in Hyperskill Academy plugin"
+                 defaultValue="[OFF|LOG_ERROR*|EXCEPTION]"/>
+    <welcomeTabFactory implementation="org.hyperskill.academy.welcomeScreen.HyperskillWelcomeTabFactory"
+                       order="last" id="HyperskillEducational.welcomTab"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="HyperskillEducational">
+    <!-- Only for development purposes -->
+    <configurator language="TEXT" implementationClass="org.hyperskill.academy.learning.configuration.PlainTextConfigurator"/>
+    <configurator language="TEXT" courseType="Hyperskill"
+                  implementationClass="org.hyperskill.academy.learning.stepik.hyperskill.PlainTextHyperskillConfigurator"/>
+
+    <checkListener implementation="org.hyperskill.academy.coursecreator.validation.ValidationCheckListener"/>
+    <coursesPlatformProviderFactory id="HyperskillAcademy" order="first"
+                                    implementation="org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.HyperskillPlatformProviderFactory"/>
+
+    <!-- Course compatibility providers   -->
+    <compatibilityProvider language="JAVA"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.JCourseCompatibilityProvider"/>
+    <compatibilityProvider language="kotlin"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.KtCourseCompatibilityProvider"/>
+    <compatibilityProvider language="Scala"
+                           environment="Gradle"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.ScalaGradleCourseCompatibilityProvider"/>
+    <!--need to register without environment to work with Hyperskill courses-->
+    <compatibilityProvider language="Scala"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.ScalaGradleCourseCompatibilityProvider"/>
+    <compatibilityProvider language="Scala"
+                           environment="sbt"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.ScalaSbtCourseCompatibilityProvider"/>
+    <compatibilityProvider language="kotlin"
+                           environment="Android"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.AndroidCourseCompatibilityProvider"/>
+    <compatibilityProvider language="Python"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.PyCourseCompatibilityProvider"/>
+    <compatibilityProvider language="Python"
+                           environment="unittest"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.PyCourseCompatibilityProvider"/>
+    <compatibilityProvider language="JavaScript"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.JsCourseCompatibilityProvider"/>
+    <compatibilityProvider language="Rust"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.RsCourseCompatibilityProvider"/>
+    <compatibilityProvider language="go"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.GoCourseCompatibilityProvider"/>
+    <compatibilityProvider language="PHP"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.PhpCourseCompatibilityProvider"/>
+    <compatibilityProvider language="SQL"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.SqlGradleCourseCompatibilityProvider"/>
+    <compatibilityProvider language="Shell Script"
+                           implementationClass="org.hyperskill.academy.learning.compatibility.ShellCourseCompatibilityProvider"/>
+
+    <!--educator-->
+    <pathMacroProvider implementation="org.hyperskill.academy.learning.checker.TaskRunConfigurationPathMacroProvider"/>
+
+    <courseMetadataProcessor implementation="org.hyperskill.academy.learning.statistics.metadata.CoursePageExperimentMetadataProcessor"/>
+    <courseMetadataProcessor implementation="org.hyperskill.academy.learning.statistics.metadata.EntryPointMetadataProcessor"/>
+  </extensions>
+
+  <xi:include href="/META-INF/Hyperskill.xml" xpointer="xpointer(/idea-plugin/*)"/>
+</idea-plugin>

@@ -7,32 +7,32 @@ import java.util.Properties
 
 rootProject.name = "hyperskill-plugin"
 include(
-  "edu-format",
+  "hs-edu-format",
   "intellij-plugin",
-  "intellij-plugin:educational-core",
-  "intellij-plugin:jvm-core",
-  "intellij-plugin:Edu-Java",
-  "intellij-plugin:Edu-Kotlin",
-  "intellij-plugin:Edu-Scala",
-  "intellij-plugin:Edu-Python",
-  "intellij-plugin:Edu-JavaScript",
-  "intellij-plugin:Edu-Rust",
-  "intellij-plugin:Edu-Cpp",
-  "intellij-plugin:Edu-Cpp:CLion-Classic", // specific support for CLion classic
-  "intellij-plugin:Edu-Cpp:CLion-Nova",    // specific support for CLion Nova
-  "intellij-plugin:Edu-Go",
-  "intellij-plugin:Edu-Php",
-  "intellij-plugin:Edu-Shell",
-  "intellij-plugin:Edu-CSharp",
-  "intellij-plugin:sql",
-  "intellij-plugin:sql:sql-jvm",
-  "intellij-plugin:localization",
-  "intellij-plugin:features:github",
+  "intellij-plugin:hs-core",
+  "intellij-plugin:hs-jvm-core",
+  "intellij-plugin:hs-Java",
+  "intellij-plugin:hs-Kotlin",
+  "intellij-plugin:hs-Scala",
+  "intellij-plugin:hs-Python",
+  "intellij-plugin:hs-JavaScript",
+  "intellij-plugin:hs-Rust",
+  "intellij-plugin:hs-Cpp",
+  "intellij-plugin:hs-Cpp:CLion-Classic", // specific support for CLion classic
+  "intellij-plugin:hs-Cpp:CLion-Nova",    // specific support for CLion Nova
+  "intellij-plugin:hs-Go",
+  "intellij-plugin:hs-Php",
+  "intellij-plugin:hs-Shell",
+  "intellij-plugin:hs-CSharp",
+  "intellij-plugin:hs-sql",
+  "intellij-plugin:hs-sql:hs-sql-jvm",
+  "intellij-plugin:hs-localization",
+  "intellij-plugin:hs-features:hs-github",
 )
 
 // BACKCOMPAT: Temporarily exclude for 2025.2 as it doesn't compile
 if (settings.providers.gradleProperty("environmentName").get() != "252") {
-  include("intellij-plugin:features:remote-env")
+  include("intellij-plugin:hs-features:hs-remote-env")
 }
 
 val secretPropertiesFilename: String = "secret.properties"
@@ -50,38 +50,38 @@ fun configureSecretProperties() {
   val properties = loadProperties(secretPropertiesFilename)
 
   properties.extractAndStore(
-    "intellij-plugin/educational-core/resources/stepik/stepik.properties",
+    "intellij-plugin/hs-core/resources/stepik/stepik.properties",
     "stepikClientId",
     "cogniterraClientId",
   )
   properties.extractAndStore(
-    "intellij-plugin/educational-core/resources/hyperskill/hyperskill-oauth.properties",
+    "intellij-plugin/hs-core/resources/hyperskill/hyperskill-oauth.properties",
     "hyperskillClientId",
   )
   properties.extractAndStore(
-    "intellij-plugin/educational-core/resources/twitter/oauth_twitter.properties",
+    "intellij-plugin/hs-core/resources/twitter/oauth_twitter.properties",
     "xClientId"
   )
   properties.extractAndStore(
-    "intellij-plugin/educational-core/resources/linkedin/linkedin-oauth.properties",
+    "intellij-plugin/hs-core/resources/linkedin/linkedin-oauth.properties",
     "linkedInClientId",
     "linkedInClientSecret"
   )
   properties.extractAndStore(
-    "edu-format/resources/aes/aes.properties",
+    "hs-edu-format/resources/aes/aes.properties",
     "aesKey"
   )
 }
 
 fun downloadHyperskillCss() {
   try {
-    download(URL("https://hyperskill.org/static/shared.css"), "intellij-plugin/educational-core/resources/style/hyperskill_task.css")
+    download(URL("https://hyperskill.org/static/shared.css"), "intellij-plugin/hs-core/resources/style/hyperskill_task.css")
   }
   catch (e: IOException) {
     System.err.println("Error downloading: ${e.message}. Using local copy")
     Files.copy(
       Paths.get("intellij-plugin/hyperskill_default.css"),
-      Paths.get("intellij-plugin/educational-core/resources/style/hyperskill_task.css"),
+      Paths.get("intellij-plugin/hs-core/resources/style/hyperskill_task.css"),
       StandardCopyOption.REPLACE_EXISTING
     )
   }

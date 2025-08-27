@@ -1,0 +1,23 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy.rust">
+  <!--suppress PluginXmlValidity -->
+  <dependencies>
+    <plugin id="com.jetbrains.rust"/>
+    <plugin id="org.toml.lang"/>
+  </dependencies>
+
+  <!-- BACKCOMPAT: 2025.1. Inline it -->
+  <xi:include href="/hs-Rust-platform.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+  <extensions defaultExtensionNs="HyperskillEducational">
+    <configurator language="Rust" implementationClass="org.hyperskill.academy.rust.RsConfigurator"/>
+  </extensions>
+
+  <actions>
+    <!-- Temporary internal action to check Learn Rust course creation like in RustRover banner -->
+    <!-- https://youtrack.jetbrains.com/issue/EDU-8189 -->
+    <action id="HyperskillEducational.OpenLearnRustCourseAction"
+            class="org.hyperskill.academy.rust.learn.OpenLearnRustCourseAction"
+            text="Open Learn Rust"
+            internal="true"/>
+  </actions>
+</idea-plugin>
