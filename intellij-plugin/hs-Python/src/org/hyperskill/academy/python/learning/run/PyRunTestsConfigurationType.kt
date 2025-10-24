@@ -13,7 +13,8 @@ class PyRunTestsConfigurationType : ConfigurationType {
 
   override fun getIcon(): Icon = AllIcons.Actions.Lightning
 
-  override fun getId(): String = "ccruntests"
+  // Use a unique ID to avoid collisions with the Edu plugin's configuration type
+  override fun getId(): String = "hsPythonRunTests"
 
   override fun getConfigurationFactories(): Array<ConfigurationFactory> {
     return arrayOf(PyRunTestsConfigurationFactory(this))
