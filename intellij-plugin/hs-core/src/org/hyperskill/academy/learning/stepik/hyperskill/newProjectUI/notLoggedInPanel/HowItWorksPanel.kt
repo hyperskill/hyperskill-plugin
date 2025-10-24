@@ -37,8 +37,8 @@ class HowItWorksPanel : JPanel(BorderLayout()) {
         cell(
           HowItWorksCard(
             "selectCourseDialog/hyperskill/Features/select-learning-track.png",
-            EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.how.it.works.learning.track.title"),
-            EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.how.it.works.learning.track.description")
+            EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.how.it.works.learning.course.title"),
+            EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.how.it.works.learning.course.description")
           )
         )
         cell(

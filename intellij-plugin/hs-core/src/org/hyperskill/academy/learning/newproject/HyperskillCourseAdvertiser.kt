@@ -18,7 +18,7 @@ class HyperskillCourseAdvertiser : Course() {
      Project Information
      
      Each project represents a real-world application, like a chat bot, game, or neural network. To get started:
-     - Log in to Hyperskill and select a learning track.
+     - Log in to Hyperskill and select a learning course.
      
      - Pick a project based on your proficiency level.
      

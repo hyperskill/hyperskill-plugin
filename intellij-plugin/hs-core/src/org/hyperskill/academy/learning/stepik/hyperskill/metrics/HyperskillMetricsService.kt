@@ -48,7 +48,7 @@ open class HyperskillMetricsService : PersistentStateComponent<HyperskillMetrics
       // Stop tracking of previous task
       taskStopped()
 
-      // There is no need to track task with corrupted 0 id
+      // There is no need to course task with corrupted 0 id
       if (id != 0) {
         taskInProgress = id to System.currentTimeMillis()
       }

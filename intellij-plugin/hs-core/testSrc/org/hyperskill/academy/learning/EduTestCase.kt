@@ -71,7 +71,7 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
     // Mock tool window provided by default headless implementation of `ToolWindowManager` doesn't keep any state.
     // As a result, it's impossible to write tests which check tool window state.
-    // `EduToolWindowHeadlessManager` allows us to track necessary properties in our tests
+    // `EduToolWindowHeadlessManager` allows us to course necessary properties in our tests
     project.replaceService(ToolWindowManager::class.java, EduToolWindowHeadlessManager(project), testRootDisposable)
 
     EduTestServiceStateHelper.restoreState(project)

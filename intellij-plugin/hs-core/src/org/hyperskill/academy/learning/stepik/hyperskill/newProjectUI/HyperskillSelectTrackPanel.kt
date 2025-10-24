@@ -29,20 +29,20 @@ class HyperskillSelectTrackPanel : JPanel(BorderLayout()) {
         cell(bannerPanel).align(Align.FILL)
       }
       row {
-        text(EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.choose.your.track")).applyToComponent {
+        text(EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.choose.your.course")).applyToComponent {
           font = JBFont.h1().asBold()
         }.align(Align.CENTER)
       }.customize(UnscaledGapsY(40))
       row {
         val text = HtmlBuilder()
-          .appendRaw(EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.choose.your.track.description"))
+          .appendRaw(EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.choose.your.course.description"))
           .wrapWith(HtmlChunk.div("text-align: center;"))
           .toString()
         comment(text, maxLineLength = 30).align(Align.CENTER)
       }
       row {
-        button(EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.select.track")) {
-          BrowserUtil.open("https://hyperskill.org/tracks")
+        button(EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.select.course")) {
+          BrowserUtil.open("https://hyperskill.org/courses")
           val dialog = UIUtil.getParentOfType(DialogWrapperDialog::class.java, this@HyperskillSelectTrackPanel)
           dialog?.dialogWrapper?.close(DialogWrapper.OK_EXIT_CODE)
         }.applyToComponent {
