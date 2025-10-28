@@ -9,15 +9,21 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.writeBytes
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.util.PsiUtilCore
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.text.nullize
@@ -25,9 +31,15 @@ import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.actions.RunTaskAction
 import org.hyperskill.academy.learning.checker.tests.TestResultCollector
 import org.hyperskill.academy.learning.courseDir
+import org.hyperskill.academy.learning.courseFormat.BinaryContents
+import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.TextualContents
+import org.hyperskill.academy.learning.courseFormat.UndeterminedContents
+import org.hyperskill.academy.learning.courseFormat.UndeterminedContents.Companion.EMPTY_BYTE_ARRAY
 import org.hyperskill.academy.learning.courseFormat.ext.getCodeTaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getDocument
+import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.messages.EduFormatBundle
@@ -289,6 +301,58 @@ object CheckUtils {
     val environments: MutableList<ExecutionEnvironment> = mutableListOf()
 
     override fun dispose() {}
+  }
+
+  fun deleteTests(testFiles: List<TaskFile>, project: Project) {
+    invokeAndWaitIfNeeded {
+      testFiles.forEach { file ->
+        when (file.contents) {
+          is BinaryContents -> replaceFileBytes(file, EMPTY_BYTE_ARRAY, project)
+          is TextualContents -> replaceFileText(file, "", project)
+          is UndeterminedContents -> replaceFileText(file, "", project)
+        }
+      }
+    }
+  }
+
+  fun createTests(testFiles: List<TaskFile>, project: Project) {
+    invokeAndWaitIfNeeded {
+      testFiles.forEach { file ->
+        when (val contents = file.contents) {
+          is BinaryContents -> replaceFileBytes(file, contents.bytes, project)
+          is TextualContents -> replaceFileText(file, contents.text, project)
+          is UndeterminedContents -> replaceFileText(
+            file,
+            contents.textualRepresentation,
+            project
+          )
+        }
+      }
+    }
+  }
+
+  private fun replaceFileBytes(file: TaskFile, bytes: ByteArray, project: Project) {
+    CommandProcessor.getInstance().runUndoTransparentAction {
+      runWriteAction {
+        file.getVirtualFile(project)?.writeBytes(bytes)
+      }
+    }
+  }
+
+  private fun replaceFileText(file: TaskFile, newText: String, project: Project) {
+    val newDocumentText = StringUtil.convertLineSeparators(newText)
+    CommandProcessor.getInstance().runUndoTransparentAction {
+      runWriteAction {
+        val document = file.getDocument(project) ?: return@runWriteAction
+        CommandProcessor.getInstance().executeCommand(
+          project,
+          { document.setText(newDocumentText) },
+          EduCoreBundle.message("action.change.test.text"),
+          "Edu Actions"
+        )
+        PsiDocumentManager.getInstance(project).commitAllDocuments()
+      }
+    }
   }
 
   /**
