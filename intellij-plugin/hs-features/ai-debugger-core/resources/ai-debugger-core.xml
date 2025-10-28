@@ -1,3 +1,9 @@
 <idea-plugin package="org.hyperskill.academy.ai.debugger.core">
+  <resource-bundle>messages.AIDebuggerCoreBundle</resource-bundle>
 
+  <actions>
+    <action id="HyperskillEducational.AIDebuggerServiceChangeHost"
+            class="org.hyperskill.academy.ai.debugger.core.action.AIDebuggerServiceChangeHost"
+            internal="true"/>
+  </actions>
 </idea-plugin>
