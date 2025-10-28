@@ -11,6 +11,14 @@ object EduColors {
   val warningTextForeground: Color = JBColor.namedColor("Component.warningForeground", 0xa49152, 0xbbb529)
   val correctLabelForeground: Color = JBColor.namedColor("Submissions.CorrectLabel.foreground", 0x368746, 0x499C54)
 
+  val hintInlineBannersBackgroundColor: JBColor = JBColor.namedColor("AIGetHint.inlineBannersBackgroundColor", 0xFAF5FF, 0x2F2936)
+  val hintInlineBannersBorderColor: JBColor = JBColor.namedColor("AIGetHint.inlineBannersBorderColor", 0xDCCBFB, 0x8150BE)
+
+  val feedbackOptionHoverBackgroundColor: JBColor = JBColor(Color(0xDFDFDF), Color(0x4C5052))
+  val feedbackOptionSelectedBackgroundColor: JBColor = JBColor(Color(0xFFFFFF), Color(0x313335))
+  val feedbackOptionUnselectedForeground: JBColor = JBColor(Color(0x000000), Color(0xBBBBBB))
+  val feedbackOptionSelectedForeground: JBColor = JBColor(Color(0x000000), Color(0xFEFEFE))
+
   // navigation map colors
   val navigationMapIconNotSelectedBorder: JBColor = JBColor.namedColor("NavigationMap.icon.not.selected.border", 0xC9CCD6, 0x646464)
   val navigationMapIconSelectedBorder: JBColor = JBColor.namedColor("NavigationMap.icon.selected.border", 0x3574F0, 0x3574F0)
