@@ -30,7 +30,9 @@ class AdditionalFilesInsideYamlTest : EduTestCase() {
     val additionalFiles = collectAdditionalFiles(course.configurator, project, detectTaskFoldersByContents = true)
       .sortedBy { it.name }
 
-    assertContentEquals(listOf("file1.txt", "lesson1/file2.txt"), additionalFiles.map { it.name })
+    assertContentEquals(
+      listOf("file1.txt", "hs-course-info.yaml", "hs-course-remote-info.yaml", "lesson1/file2.txt", "lesson1/hs-lesson-info.yaml"),
+      additionalFiles.map { it.name }
+    )
   }
-
 }
