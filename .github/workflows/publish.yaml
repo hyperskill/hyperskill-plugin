@@ -21,16 +21,23 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - uses: actions/setup-java@v4
         with:
           java-version-file: '.java-version'
           distribution: 'corretto'
+          cache: 'gradle'
 
       - name: Run Tests
+        env:
+          GRADLE_OPTS: "-Xmx2g -XX:MaxMetaspaceSize=512m -Dkotlin.daemon.jvm.options=-Xmx1g"
         run: |
           echo "environmentName=${{ matrix.environmentName }}"
-          ./gradlew test --no-daemon -PenvironmentName=${{ matrix.environmentName }}
+          ./gradlew test \
+            --parallel -Dorg.gradle.workers.max=2 -Dorg.gradle.test.worker.max=2 \
+            --no-daemon -PenvironmentName=${{ matrix.environmentName }}
 
   verify:
     name: Verify Plugin for ${{ matrix.environmentName }}
@@ -44,16 +51,23 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - uses: actions/setup-java@v4
         with:
           java-version-file: '.java-version'
           distribution: 'corretto'
+          cache: 'gradle'
 
       - name: Verify Plugin
+        env:
+          GRADLE_OPTS: "-Xmx2g -XX:MaxMetaspaceSize=512m -Dkotlin.daemon.jvm.options=-Xmx1g"
         run: |
           echo "environmentName=${{ matrix.environmentName }}"
-          ./gradlew verifyPlugin --no-daemon -PenvironmentName=${{ matrix.environmentName }}
+          ./gradlew verifyPlugin \
+            --parallel -Dorg.gradle.workers.max=2 -Dorg.gradle.test.worker.max=2 \
+            --no-daemon -PenvironmentName=${{ matrix.environmentName }}
 
 #  publish:
 #    name: Publish Plugin
