@@ -11,7 +11,7 @@ concurrency:
 jobs:
   test:
     name: Run Tests for ${{ matrix.environmentName }}
-    runs-on: arc-runners-small
+    runs-on: arc-runners-large
     timeout-minutes: 60
     strategy:
       matrix:
@@ -41,7 +41,7 @@ jobs:
 
   verify:
     name: Verify Plugin for ${{ matrix.environmentName }}
-    runs-on: arc-runners-small
+    runs-on: arc-runners-large
     timeout-minutes: 60
     strategy:
       matrix:
@@ -72,7 +72,7 @@ jobs:
 #  publish:
 #    name: Publish Plugin
 #    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-#    runs-on: arc-runners-small
+#    runs-on: arc-runners-large
 #    needs:
 #      - test
 #      - verify
