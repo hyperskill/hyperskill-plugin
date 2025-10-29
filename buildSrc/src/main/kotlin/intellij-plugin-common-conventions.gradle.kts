@@ -10,13 +10,15 @@ plugins {
 java {
   sourceSets {
     main {
-      java.srcDirs("branches/$environmentName/src")
-      resources.srcDirs("branches/$environmentName/resources")
+      // Include default sources/resources along with branch-specific overrides
+      java.srcDirs("src", "branches/$environmentName/src")
+      resources.srcDirs("resources", "branches/$environmentName/resources")
     }
 
     test {
-      java.srcDirs("branches/$environmentName/testSrc")
-      resources.srcDirs("branches/$environmentName/testResources")
+      // Include default test sources/resources along with branch-specific overrides
+      java.srcDirs("testSrc", "branches/$environmentName/testSrc")
+      resources.srcDirs("testResources", "branches/$environmentName/testResources")
     }
   }
 }
