@@ -30,7 +30,7 @@ jobs:
       - name: Run Tests
         run: |
           echo "environmentName=${{ matrix.environmentName }}"
-          ./gradlew test --no-daemon -PenvironmentName=$environmentName
+          ./gradlew test --no-daemon -PenvironmentName=${{ matrix.environmentName }}
 
   verify:
     name: Verify Plugin for ${{ matrix.environmentName }}
@@ -53,7 +53,7 @@ jobs:
       - name: Verify Plugin
         run: |
           echo "environmentName=${{ matrix.environmentName }}"
-          ./gradlew verifyPlugin --no-daemon -PenvironmentName=$environmentName
+          ./gradlew verifyPlugin --no-daemon -PenvironmentName=${{ matrix.environmentName }}
 
 #  publish:
 #    name: Publish Plugin
