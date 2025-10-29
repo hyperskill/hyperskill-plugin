@@ -18,3 +18,13 @@ dependencies {
     excludeKotlinDeps()
   }
 }
+
+tasks {
+  processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  }
+
+  processTestResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  }
+}
