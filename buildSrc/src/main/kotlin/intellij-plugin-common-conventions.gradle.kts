@@ -70,6 +70,14 @@ tasks {
     inputs.property("environmentName", providers.gradleProperty("environmentName"))
   }
 
+  processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  }
+
+  processTestResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  }
+
   register(VERIFY_CLASSES_TASK_NAME) {
     dependsOn(jar)
     // `verifyClasses` relies on resources from the current and `intellij-plugin` modules.
