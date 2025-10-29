@@ -6,6 +6,7 @@ import org.hyperskill.academy.learning.actions.NextTaskAction
 import org.hyperskill.academy.learning.actions.PreviousTaskAction
 import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
 import org.hyperskill.academy.learning.courseFormat.*
+import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
 import org.hyperskill.academy.learning.courseFormat.ext.getTaskText
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
@@ -48,8 +49,8 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
     updateCourse {
       taskList[1].apply {
         updateDate = Date(100)
-        taskFiles["src/Task.kt"]!!.text = taskText
-        taskFiles["test/Tests2.kt"]!!.text = testText
+        taskFiles["src/Task.kt"]!!.contents = InMemoryTextualContents(taskText)
+        taskFiles["test/Tests2.kt"]!!.contents = InMemoryTextualContents(testText)
       }
     }
 
@@ -162,7 +163,7 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
       it.toTaskUpdate {
         descriptionText = newText
         updateDate = Date(100)
-        getTaskFile(taskFileName)!!.text = newText
+        getTaskFile(taskFileName)!!.contents = InMemoryTextualContents(newText)
       }
     })
 
@@ -201,7 +202,7 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
       it.toTaskUpdate {
         descriptionText = newText
         updateDate = Date(100)
-        getTaskFile(taskFileName)!!.text = newText
+        getTaskFile(taskFileName)!!.contents = InMemoryTextualContents(newText)
       }
     })
 
@@ -241,7 +242,7 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
       it.toTaskUpdate {
         descriptionText = newText
         updateDate = Date(100)
-        getTaskFile(taskFileName)!!.text = newText
+        getTaskFile(taskFileName)!!.contents = InMemoryTextualContents(newText)
       }
     })
 
@@ -286,7 +287,7 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
         descriptionText = newText
         checkProfile = newCheckProfile
         updateDate = Date(100)
-        getTaskFile(taskFileName)!!.text = newText
+        getTaskFile(taskFileName)!!.contents = InMemoryTextualContents(newText)
       }
     })
 

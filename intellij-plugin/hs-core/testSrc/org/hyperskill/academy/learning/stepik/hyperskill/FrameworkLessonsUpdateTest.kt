@@ -7,6 +7,7 @@ import org.hyperskill.academy.learning.actions.navigate.NavigationTestBase
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.fileTree
 import org.hyperskill.academy.learning.testAction
@@ -79,8 +80,8 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
     updateCourse {
       taskList[0].apply {
         updateDate = Date(100)
-        taskFiles["src/Task.kt"]!!.text = taskText
-        taskFiles["test/Tests1.kt"]!!.text = testText
+        taskFiles["src/Task.kt"]!!.contents = InMemoryTextualContents(taskText)
+        taskFiles["test/Tests1.kt"]!!.contents = InMemoryTextualContents(testText)
       }
     }
 
@@ -128,8 +129,8 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
     updateCourse {
       taskList[0].apply {
         updateDate = Date(100)
-        taskFiles["src/Task.kt"]!!.text = taskText
-        taskFiles["test/Tests1.kt"]!!.text = testText
+        taskFiles["src/Task.kt"]!!.contents = InMemoryTextualContents(taskText)
+        taskFiles["test/Tests1.kt"]!!.contents = InMemoryTextualContents(testText)
       }
     }
 
@@ -174,11 +175,13 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
     updateCourse {
       taskList[0].apply {
         updateDate = Date(100)
-        taskFiles["src/Task.kt"]!!.text = "fun foo2() {}"
-        taskFiles["test/Tests1.kt"]!!.text = """
+        taskFiles["src/Task.kt"]!!.contents = InMemoryTextualContents("fun foo2() {}")
+        taskFiles["test/Tests1.kt"]!!.contents = InMemoryTextualContents(
+          """
           fun test1() {}
           fun test2() {}
         """.trimIndent()
+        )
       }
     }
 
@@ -223,8 +226,8 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : NavigationTestBase() {
     updateCourse {
       taskList[1].apply {
         updateDate = Date(100)
-        taskFiles["src/Task.kt"]!!.text = taskText
-        taskFiles["test/Tests2.kt"]!!.text = testText
+        taskFiles["src/Task.kt"]!!.contents = InMemoryTextualContents(taskText)
+        taskFiles["test/Tests2.kt"]!!.contents = InMemoryTextualContents(testText)
       }
     }
 
