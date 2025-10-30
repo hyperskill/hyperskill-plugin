@@ -18,20 +18,18 @@ import com.intellij.openapi.project.Project
 import com.intellij.xdebugger.XDebugProcess
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerManagerListener
-import  org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService
-import  org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService.Companion.getAIBreakpointType
-import  org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakpointHintMouseMotionListener
-import  org.hyperskill.academy.ai.debugger.core.feedback.AIDebugContext
-import  org.hyperskill.academy.ai.debugger.core.messages.AIDebuggerCoreBundle
-import  org.hyperskill.academy.ai.debugger.core.ui.AIDebuggerHintInlineBanner
-import  org.hyperskill.academy.ai.debugger.core.utils.AIDebugUtils.failedTestName
-import  org.hyperskill.academy.ai.debugger.core.utils.AIDebugUtils.getInvisibleTestFiles
-import  org.hyperskill.academy.ai.debugger.core.utils.AIDebugUtils.runWithTests
-import  org.hyperskill.academy.learning.checker.CheckUtils.deleteTests
-import  org.hyperskill.academy.learning.courseFormat.CheckResult
-import  org.hyperskill.academy.learning.courseFormat.ext.getAllTestDirectories
-import  org.hyperskill.academy.learning.courseFormat.tasks.Task
-import  org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
+import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService
+import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService.Companion.getAIBreakpointType
+import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakpointHintMouseMotionListener
+import org.hyperskill.academy.ai.debugger.core.feedback.AIDebugContext
+import org.hyperskill.academy.ai.debugger.core.messages.AIDebuggerCoreBundle
+import org.hyperskill.academy.ai.debugger.core.ui.AIDebuggerHintInlineBanner
+import org.hyperskill.academy.ai.debugger.core.utils.AIDebugUtils.failedTestName
+import org.hyperskill.academy.ai.debugger.core.utils.AIDebugUtils.runWithTests
+import org.hyperskill.academy.learning.courseFormat.CheckResult
+import org.hyperskill.academy.learning.courseFormat.ext.getAllTestDirectories
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
 
 class AIDebugSessionRunner(
   private val project: Project,
@@ -48,7 +46,7 @@ class AIDebugSessionRunner(
   }
 
   private fun debugStopped() {
-    deleteTests(task.getInvisibleTestFiles(), project)
+//    deleteTests(task.getInvisibleTestFiles(), project)
     closeAIDebuggingHint()
     AIDebugSessionService.getInstance(project).unlock()
     makeBreakpointsRegular()

@@ -35,7 +35,6 @@ import org.hyperskill.academy.learning.courseFormat.BinaryContents
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.TextualContents
 import org.hyperskill.academy.learning.courseFormat.UndeterminedContents
-import org.hyperskill.academy.learning.courseFormat.UndeterminedContents.Companion.EMPTY_BYTE_ARRAY
 import org.hyperskill.academy.learning.courseFormat.ext.getCodeTaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getDocument
@@ -303,17 +302,17 @@ object CheckUtils {
     override fun dispose() {}
   }
 
-  fun deleteTests(testFiles: List<TaskFile>, project: Project) {
-    invokeAndWaitIfNeeded {
-      testFiles.forEach { file ->
-        when (file.contents) {
-          is BinaryContents -> replaceFileBytes(file, EMPTY_BYTE_ARRAY, project)
-          is TextualContents -> replaceFileText(file, "", project)
-          is UndeterminedContents -> replaceFileText(file, "", project)
-        }
-      }
-    }
-  }
+//  fun deleteTests(testFiles: List<TaskFile>, project: Project) {
+//    invokeAndWaitIfNeeded {
+//      testFiles.forEach { file ->
+//        when (file.contents) {
+//          is BinaryContents -> replaceFileBytes(file, EMPTY_BYTE_ARRAY, project)
+//          is TextualContents -> replaceFileText(file, "", project)
+//          is UndeterminedContents -> replaceFileText(file, "", project)
+//        }
+//      }
+//    }
+//  }
 
   fun createTests(testFiles: List<TaskFile>, project: Project) {
     invokeAndWaitIfNeeded {
