@@ -41,12 +41,11 @@ class AIDebugSessionRunner(
 ) {
 
   fun runDebuggingSession(testResult: CheckResult) {
-    runWithTests(project, task, { startDebugSession(getRunSettingsForFailedTest(testResult)) }, { debugStopped() })
+    runWithTests({ startDebugSession(getRunSettingsForFailedTest(testResult)) }, { debugStopped() })
     subscribeToDebuggerEvents()
   }
 
   private fun debugStopped() {
-//    deleteTests(task.getInvisibleTestFiles(), project)
     closeAIDebuggingHint()
     AIDebugSessionService.getInstance(project).unlock()
     makeBreakpointsRegular()

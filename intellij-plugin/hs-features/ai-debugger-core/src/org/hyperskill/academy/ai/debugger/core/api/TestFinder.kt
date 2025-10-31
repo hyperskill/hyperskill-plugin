@@ -18,7 +18,7 @@ interface TestFinder {
     private val EP_NAME = LanguageExtension<TestFinder>("HyperskillEducational.testFinder")
 
     fun findTestByName(project: Project, task: Task, testName: String): String =
-      runWithTests(project, task, {
+      runWithTests({
         runReadAction {
           EP_NAME.forLanguage(project.language())?.findTestByName(
             project,
@@ -26,10 +26,6 @@ interface TestFinder {
             testName
           )
         }
-      })
-//        .also {
-//          deleteTests(task.getInvisibleTestFiles(), project)
-//        }
-      ?: error("Can't find test text for $testName")
+      }) ?: error("Can't find test text for $testName")
   }
 }

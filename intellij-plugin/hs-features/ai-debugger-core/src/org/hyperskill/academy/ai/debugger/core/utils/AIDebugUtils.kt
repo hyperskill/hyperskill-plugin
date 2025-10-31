@@ -9,7 +9,6 @@ import com.jetbrains.educational.ml.debugger.dto.TaskDescriptionFormat
 import org.hyperskill.academy.ai.debugger.core.api.TestFinder
 import org.hyperskill.academy.ai.debugger.core.service.TestInfo
 import org.hyperskill.academy.learning.EduUtilsKt
-import org.hyperskill.academy.learning.checker.CheckUtils.createTests
 import org.hyperskill.academy.learning.course
 import org.hyperskill.academy.learning.courseFormat.CheckResult
 import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
@@ -27,19 +26,13 @@ object AIDebugUtils {
 
   fun Project.language() = course?.languageById ?: error("Language is not found")
 
-  fun <T> runWithTests(project: Project, task: Task, execution: () -> T, executionStopped: () -> Unit = {}): T? {
-    createTests(task.getInvisibleTestFiles(), project)
-    return runCatching {
+  fun <T> runWithTests(execution: () -> T, executionStopped: () -> Unit = {}): T? =
+    runCatching {
       execution()
     }.onFailure {
       LOG.error("Failed to start execution")
       executionStopped()
     }.getOrNull()
-  }
-
-  fun Task.getInvisibleTestFiles() = taskFiles.values.filter {
-    EduUtilsKt.isTestsFile(this, it.name) && !it.isVisible
-  }
 
   private fun Task.getAllTestFiles() = taskFiles.values.filter {
     EduUtilsKt.isTestsFile(this, it.name)
@@ -69,7 +62,7 @@ object AIDebugUtils {
   fun CheckResult.collectTestInfo(project: Project, task: Task): TestInfo {
     val testName = failedTestName()
     val testText = TestFinder.findTestByName(project, task, testName)
-    val testFiles = runWithTests(project, task, {
+    val testFiles = runWithTests({
       task.getAllTestFiles().toNameTextMap(project)
     }) ?: emptyMap()
     return TestInfo(
