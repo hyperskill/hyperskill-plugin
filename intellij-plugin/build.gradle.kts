@@ -70,6 +70,7 @@ dependencies {
     pluginModule(implementation(project("hs-sql")))
     pluginModule(implementation(project("hs-sql:hs-sql-jvm")))
     pluginModule(implementation(project("hs-features:ai-debugger-core")))
+    pluginModule(implementation(project("hs-features:ai-debugger-java")))
     pluginModule(implementation(project("hs-features:ai-debugger-jvm")))
     pluginModule(implementation(project("hs-features:ai-debugger-kotlin")))
     pluginModule(implementation(project("hs-features:hs-github")))

@@ -49,10 +49,10 @@ object AIDebugUtils {
     }
 
   fun Task.getTaskDescriptionText(project: Project) = runReadAction {
-    getDescriptionFile(project)?.readText()
+    getDescriptionFile(project, guessFormat = true)?.readText()
   } ?: error("There are no description for the task")
 
-  fun Project.getLanguage() =
+  fun Project.getLanguage(): ProgrammingLanguage =
     when (course?.languageId) {
       "kotlin" -> ProgrammingLanguage.KOTLIN
       "JAVA" -> ProgrammingLanguage.JAVA

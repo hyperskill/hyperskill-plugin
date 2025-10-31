@@ -1,0 +1,11 @@
+<idea-plugin package="org.hyperskill.academy.ai.debugger.java">
+  <dependencies>
+    <!--suppress PluginXmlValidity -->
+    <module name="ai-debugger-core"/>
+    <plugin id="com.intellij.modules.java"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="HyperskillEducational">
+    <testFinder language="JAVA" implementationClass="org.hyperskill.academy.ai.debugger.java.impl.JTestFinder"/>
+  </extensions>
+</idea-plugin>
