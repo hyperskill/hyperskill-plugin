@@ -19,7 +19,6 @@ import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService
 import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakpointHintMouseMotionListener
 import org.hyperskill.academy.ai.debugger.core.breakpoint.IntermediateBreakpointProcessor
 import org.hyperskill.academy.ai.debugger.core.connector.AIDebuggerServiceConnector
-import org.hyperskill.academy.ai.debugger.core.feedback.AIDebugContext
 import org.hyperskill.academy.ai.debugger.core.log.AIDebuggerLogEntry
 import org.hyperskill.academy.ai.debugger.core.log.logError
 import org.hyperskill.academy.ai.debugger.core.log.logInfo
@@ -113,15 +112,7 @@ class AIDebugSessionService(private val project: Project, private val coroutineS
           addEditorMouseMotionListener(listener, this@AIDebugSessionService)
           addEditorMouseListener(listener, this@AIDebugSessionService)
         }
-        val debugContext = AIDebugContext(
-          task = task,
-          userSolution = userSolution,
-          testInfo = testInfo,
-          finalBreakpoints = finalBreakpoints,
-          intermediateBreakpoints = intermediateBreakpoints,
-          breakpointHints = breakpointHints
-        )
-        AIDebugSessionRunner(project, task, closeAIDebuggingHint, listener, language, debugContext).runDebuggingSession(testResult)
+        AIDebugSessionRunner(project, task, closeAIDebuggingHint, listener, language).runDebuggingSession(testResult)
         AIDebuggerLogEntry(
           task = task.toTaskData(),
           actionType = "RunDebugSession",

@@ -21,23 +21,18 @@ import com.intellij.xdebugger.XDebuggerManagerListener
 import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService
 import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService.Companion.getAIBreakpointType
 import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakpointHintMouseMotionListener
-import org.hyperskill.academy.ai.debugger.core.feedback.AIDebugContext
-import org.hyperskill.academy.ai.debugger.core.messages.AIDebuggerCoreBundle
-import org.hyperskill.academy.ai.debugger.core.ui.AIDebuggerHintInlineBanner
 import org.hyperskill.academy.ai.debugger.core.utils.AIDebugUtils.failedTestName
 import org.hyperskill.academy.ai.debugger.core.utils.AIDebugUtils.runWithTests
 import org.hyperskill.academy.learning.courseFormat.CheckResult
 import org.hyperskill.academy.learning.courseFormat.ext.getAllTestDirectories
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
-import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
 
 class AIDebugSessionRunner(
   private val project: Project,
   private val task: Task,
   private val closeAIDebuggingHint: () -> Unit,
   private val listener: AIBreakpointHintMouseMotionListener,
-  private val language: Language,
-  private val debugContext: AIDebugContext
+  private val language: Language
 ) {
 
   fun runDebuggingSession(testResult: CheckResult) {
@@ -53,11 +48,6 @@ class AIDebugSessionRunner(
       removeEditorMouseMotionListener(listener)
       removeEditorMouseListener(listener)
     }
-
-    val textToShow = AIDebuggerCoreBundle.message("ai.debugger.feedback.notification.banner.text")
-    val aiDebuggerFeedbackBanner = AIDebuggerHintInlineBanner(project, task, textToShow)
-      .addFeedbackLikenessButtons(task, debugContext)
-    TaskToolWindowView.getInstance(project).addInlineBannerToCheckPanel(aiDebuggerFeedbackBanner)
   }
 
   private fun makeBreakpointsRegular() {

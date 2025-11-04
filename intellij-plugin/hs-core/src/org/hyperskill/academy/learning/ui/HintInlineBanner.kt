@@ -2,7 +2,6 @@ package org.hyperskill.academy.learning.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.IdeBundle
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.IconButton
 import com.intellij.ui.*
 import com.intellij.ui.components.JBLabel
@@ -13,20 +12,20 @@ import com.intellij.util.ui.JBUI
 import org.hyperskill.academy.EducationalCoreIcons
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.messages.EduCoreBundle
-import org.hyperskill.academy.learning.ui.LikeBlock.FeedbackLikenessAnswer
 import org.jetbrains.annotations.Nls
 import java.awt.*
 import java.awt.event.ActionListener
-import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.*
+import javax.swing.BorderFactory
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.Timer
 import javax.swing.border.CompoundBorder
 
 /**
  * The implementation has been adopted from the Intellij's platform [com.intellij.ui.InlineBanner] so to support adding custom actions.
  */
 open class HintInlineBanner(
-  private val project: Project,
   protected val task: Task,
   @Nls messageText: String,
   status: Status = Status.Success,
@@ -36,8 +35,6 @@ open class HintInlineBanner(
   private val linkActionPanel: JPanel = JPanel(HorizontalLayout(JBUI.scale(16)))
   private val iconActionPanel: JPanel = JPanel(HorizontalLayout(JBUI.scale(16)))
   private val actionsPanel: JPanel = JPanel(BorderLayout())
-  var likeness = FeedbackLikenessAnswer.NO_ANSWER
-    private set
 
   init {
     val myCloseButton = createInplaceCloseButton {
@@ -111,126 +108,6 @@ open class HintInlineBanner(
       override fun getTextColor() = JBUI.CurrentTheme.Link.Foreground.ENABLED
     }, linkActionPanel.componentCount - 1)
     return this
-  }
-
-  fun addLikeDislikeActions(action: () -> FeedbackLikenessAnswer) {
-    actionsPanel.isVisible = true
-    val likeLabel = JLabel(AllIcons.Ide.LikeDimmed)
-    val dislikeLabel = JLabel(AllIcons.Ide.DislikeDimmed)
-    likeLabel.setupToggleWith(dislikeLabel, AllIcons.Ide.LikeSelected, AllIcons.Ide.DislikeDimmed, FeedbackLikenessAnswer.LIKE, action)
-    dislikeLabel.setupToggleWith(likeLabel, AllIcons.Ide.DislikeSelected, AllIcons.Ide.LikeDimmed, FeedbackLikenessAnswer.DISLIKE, action)
-    iconActionPanel.add(likeLabel, iconActionPanel.componentCount - 1)
-    iconActionPanel.add(dislikeLabel, iconActionPanel.componentCount - 1)
-  }
-
-  private fun JLabel.setupToggleWith(
-    otherLabel: JLabel,
-    selectedIcons: Icon,
-    unselectedIcon: Icon,
-    newLikeness: FeedbackLikenessAnswer,
-    action: () -> FeedbackLikenessAnswer
-  ) {
-    preferredSize = JBDimension(26, 26)
-
-    addMouseListener(object : MouseAdapter() {
-      override fun mouseEntered(e: MouseEvent?) {
-        background = JBUI.CurrentTheme.InlineBanner.HOVER_BACKGROUND
-        isOpaque = true
-        repaint()
-      }
-
-      override fun mousePressed(e: MouseEvent?) {
-        background = JBUI.CurrentTheme.InlineBanner.PRESSED_BACKGROUND
-        repaint()
-      }
-
-      override fun mouseReleased(e: MouseEvent?) {
-        background = this@HintInlineBanner.background
-        isOpaque = true
-        repaint()
-      }
-
-      override fun mouseExited(e: MouseEvent?) {
-        isOpaque = false
-        repaint()
-      }
-
-      override fun mouseClicked(e: MouseEvent?) {
-        updateIcons(this@setupToggleWith, otherLabel, selectedIcons, unselectedIcon)
-        likeness = newLikeness
-        val resultLikeness = action()
-        if (resultLikeness == likeness) return
-
-        when {
-          resultLikeness == FeedbackLikenessAnswer.LIKE && likeness == FeedbackLikenessAnswer.LIKE -> {
-            updateIcons(
-              currentLabel = this@setupToggleWith,
-              otherLabel = otherLabel,
-              currentIcon = AllIcons.Ide.LikeSelected,
-              otherIcon = AllIcons.Ide.DislikeDimmed
-            )
-          }
-
-          resultLikeness == FeedbackLikenessAnswer.LIKE && likeness == FeedbackLikenessAnswer.DISLIKE -> {
-            updateIcons(
-              currentLabel = otherLabel,
-              otherLabel = this@setupToggleWith,
-              currentIcon = AllIcons.Ide.LikeSelected,
-              otherIcon = AllIcons.Ide.DislikeDimmed
-            )
-          }
-
-          resultLikeness == FeedbackLikenessAnswer.DISLIKE && likeness == FeedbackLikenessAnswer.DISLIKE -> {
-            updateIcons(
-              currentLabel = this@setupToggleWith,
-              otherLabel = otherLabel,
-              currentIcon = AllIcons.Ide.DislikeSelected,
-              otherIcon = AllIcons.Ide.LikeDimmed
-            )
-          }
-
-          resultLikeness == FeedbackLikenessAnswer.DISLIKE && likeness == FeedbackLikenessAnswer.LIKE -> {
-            updateIcons(
-              currentLabel = otherLabel,
-              otherLabel = this@setupToggleWith,
-              currentIcon = AllIcons.Ide.DislikeSelected,
-              otherIcon = AllIcons.Ide.LikeDimmed
-            )
-          }
-
-          resultLikeness == FeedbackLikenessAnswer.NO_ANSWER && likeness == FeedbackLikenessAnswer.LIKE -> {
-            updateIcons(
-              currentLabel = otherLabel,
-              otherLabel = this@setupToggleWith,
-              currentIcon = AllIcons.Ide.DislikeDimmed,
-              otherIcon = AllIcons.Ide.LikeDimmed
-            )
-          }
-
-          resultLikeness == FeedbackLikenessAnswer.NO_ANSWER && likeness == FeedbackLikenessAnswer.DISLIKE -> {
-            updateIcons(
-              currentLabel = this@setupToggleWith,
-              otherLabel = otherLabel,
-              currentIcon = AllIcons.Ide.DislikeDimmed,
-              otherIcon = AllIcons.Ide.LikeDimmed
-            )
-          }
-        }
-
-        likeness = resultLikeness
-      }
-    })
-  }
-
-  private fun updateIcons(
-    currentLabel: JLabel,
-    otherLabel: JLabel,
-    currentIcon: Icon,
-    otherIcon: Icon
-  ) {
-    currentLabel.icon = currentIcon
-    otherLabel.icon = otherIcon
-    currentLabel.repaint()
   }
 
   private fun setIcon() {

@@ -5,7 +5,6 @@ import com.jetbrains.educational.ml.debugger.dto.Breakpoint
 import com.jetbrains.educational.ml.debugger.response.BreakpointHintDetails
 import org.hyperskill.academy.ai.debugger.core.service.TestInfo
 import org.hyperskill.academy.learning.courseFormat.CheckResult
-import org.hyperskill.academy.learning.ui.LikeBlock.FeedbackLikenessAnswer
 
 data class AIDebuggerLogEntry(
   val task: TaskData,
@@ -18,8 +17,6 @@ data class AIDebuggerLogEntry(
   val finalBreakpoints: List<Breakpoint> = emptyList(),
   val intermediateBreakpoints: Map<String, List<Int>> = emptyMap(),
   val breakpointHints: List<BreakpointHintDetails> = emptyList(),
-  val feedbackLikenessAnswer: FeedbackLikenessAnswer = FeedbackLikenessAnswer.NO_ANSWER,
-  val feedbackText: String = "",
 ) {
   override fun toString(): String = jacksonObjectMapper().writeValueAsString(this)
 }
