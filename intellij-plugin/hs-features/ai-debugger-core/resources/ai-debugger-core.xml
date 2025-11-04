@@ -1,0 +1,45 @@
+<idea-plugin package="org.hyperskill.academy.ai.debugger.core">
+  <resource-bundle>messages.AIDebuggerCoreBundle</resource-bundle>
+
+  <actions>
+    <action id="HyperskillEducational.AIDebuggerServiceChangeHost"
+            class="org.hyperskill.academy.ai.debugger.core.action.AIDebuggerServiceChangeHost"
+            internal="true"/>
+  </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!--suppress PluginXmlValidity -->
+    <postStartupActivity implementation="org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointsStartupActivity"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="HyperskillEducational">
+    <checkListener implementation="org.hyperskill.academy.ai.debugger.core.listener.AIDebuggerCheckListener"/>
+  </extensions>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="HyperskillEducational.breakpointTypeManager"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass"
+            implements="org.hyperskill.academy.ai.debugger.core.breakpoint.BreakpointTypeManager"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="HyperskillEducational.intermediateBreakpointProcessor"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass"
+            implements="org.hyperskill.academy.ai.debugger.core.breakpoint.IntermediateBreakpointProcessor"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="HyperskillEducational.sliceManager"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass"
+            implements="org.hyperskill.academy.ai.debugger.core.slicing.SliceManager"/>
+    </extensionPoint>
+    <extensionPoint qualifiedName="HyperskillEducational.testFinder"
+                    beanClass="com.intellij.lang.LanguageExtensionPoint"
+                    dynamic="true">
+      <with attribute="implementationClass"
+            implements="org.hyperskill.academy.ai.debugger.core.api.TestFinder"/>
+    </extensionPoint>
+  </extensionPoints>
+</idea-plugin>

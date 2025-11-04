@@ -55,6 +55,8 @@ fun TaskFile.revert(project: Project) {
   YamlFormatSynchronizer.saveItem(task)
 }
 
+fun TaskFile.getSolution(): String = contents.textualRepresentation
+
 /**
  * @return true if document related to task file has been reset, otherwise - false
  */

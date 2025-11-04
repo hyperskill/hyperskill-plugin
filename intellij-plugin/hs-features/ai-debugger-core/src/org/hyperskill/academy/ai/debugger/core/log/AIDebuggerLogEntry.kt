@@ -1,0 +1,28 @@
+package org.hyperskill.academy.ai.debugger.core.log
+
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.jetbrains.educational.ml.debugger.dto.Breakpoint
+import com.jetbrains.educational.ml.debugger.response.BreakpointHintDetails
+import org.hyperskill.academy.ai.debugger.core.service.TestInfo
+import org.hyperskill.academy.learning.courseFormat.CheckResult
+
+data class AIDebuggerLogEntry(
+  val task: TaskData,
+  val actionType: String,
+  val testResult: CheckResult? = null,
+  val firstFailedTestName: String = "",
+  val testInfo: TestInfo? = null,
+  val userCode: String = "",
+  val error: String = "",
+  val finalBreakpoints: List<Breakpoint> = emptyList(),
+  val intermediateBreakpoints: Map<String, List<Int>> = emptyMap(),
+  val breakpointHints: List<BreakpointHintDetails> = emptyList(),
+) {
+  override fun toString(): String = jacksonObjectMapper().writeValueAsString(this)
+}
+
+data class TaskData(
+  val courseId: Int,
+  val lessonId: Int,
+  val taskId: Int,
+)

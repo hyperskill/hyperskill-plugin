@@ -1,0 +1,16 @@
+<idea-plugin package="org.hyperskill.academy.ai.debugger.jvm">
+  <dependencies>
+    <!--suppress PluginXmlValidity -->
+    <module name="ai-debugger-core"/>
+    <plugin id="com.intellij.modules.java"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="HyperskillEducational">
+    <breakpointTypeManager language="JVM" implementationClass="org.hyperskill.academy.ai.debugger.jvm.JvmBreakpointTypeManager"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <xdebugger.breakpointType implementation="org.hyperskill.academy.ai.debugger.jvm.JvmAIDebuggerBreakpointType"/>
+    <debugger.javaBreakpointHandlerFactory implementation="org.hyperskill.academy.ai.debugger.jvm.JvmAIDebuggerBreakpointHandlerFactory"/>
+  </extensions>
+</idea-plugin>

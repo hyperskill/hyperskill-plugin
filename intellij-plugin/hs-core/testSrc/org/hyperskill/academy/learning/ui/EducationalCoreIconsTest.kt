@@ -73,6 +73,7 @@ class EducationalCoreIconsTest(
      */
     private val excludedFromMappings = listOf(
       EducationalCoreIcons.Actions.IgnoreSyncFile,
+      EducationalCoreIcons.Actions.Hint,
       EducationalCoreIcons.Actions.SyncChanges,
       EducationalCoreIcons.CourseCreator.GuidedProject,
       EducationalCoreIcons.CourseCreator.GuidedProjectSelected,

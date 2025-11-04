@@ -56,6 +56,7 @@ public final class EducationalCoreIcons {
     public static final Icon CommentTask = load("/icons/org/hyperskill/academy/learning/commentTask.svg");
     public static final Icon EduCourse = load("/icons/org/hyperskill/academy/eduCourseAction.svg");
     public static final Icon IgnoreSyncFile = load("/icons/org/hyperskill/academy/actions/syncFilesIgnore.svg");
+    public static final Icon Hint = load("/icons/org/hyperskill/academy/actions/hint.svg");
     public static final Icon RateCourse = load("/icons/org/hyperskill/academy/learning/rateCourse.svg");
     public static final Icon ResetTask = load("/icons/org/hyperskill/academy/learning/resetTask.svg");
     public static final Icon SyncChanges = load("/icons/org/hyperskill/academy/actions/syncFiles.svg");
