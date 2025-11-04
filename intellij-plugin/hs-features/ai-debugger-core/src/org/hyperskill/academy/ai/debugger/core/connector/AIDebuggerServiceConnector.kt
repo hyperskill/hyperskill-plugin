@@ -15,10 +15,7 @@ import org.hyperskill.academy.ai.debugger.core.error.AIDebuggerServiceError
 import org.hyperskill.academy.ai.debugger.core.error.BreakpointHintError
 import org.hyperskill.academy.ai.debugger.core.error.BreakpointsError
 import org.hyperskill.academy.ai.debugger.core.host.AIDebuggerServiceHost
-import org.hyperskill.academy.ai.debugger.core.service.AIDebuggerService
-import org.hyperskill.academy.ai.debugger.core.service.BreakpointHintRequest
-import org.hyperskill.academy.ai.debugger.core.service.DebuggerHintRequest
-import org.hyperskill.academy.ai.debugger.core.service.TestInfo
+import org.hyperskill.academy.ai.debugger.core.service.*
 import org.hyperskill.academy.learning.Err
 import org.hyperskill.academy.learning.Ok
 import org.hyperskill.academy.learning.Result
@@ -69,7 +66,7 @@ class AIDebuggerServiceConnector {
   ): Result<List<Breakpoint>, AIDebuggerServiceError> {
     val request = DebuggerHintRequest(
       authorSolution = authorSolution,
-      courseId = courseId,
+      courseInfo = CourseInfo(courseId),
       lessonName = task.lesson.name,
       taskName = task.name,
       programmingLanguage = programmingLanguage,
