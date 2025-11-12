@@ -1,6 +1,8 @@
 import groovy.util.Node
 import groovy.xml.XmlParser
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.api.tasks.Copy
+import org.gradle.language.jvm.tasks.ProcessResources
 
 plugins {
   id("common-conventions")
@@ -70,6 +72,15 @@ tasks {
     inputs.property("environmentName", providers.gradleProperty("environmentName"))
   }
 
+  // Enforce duplicate handling for all resource and copy-like tasks
+  withType<ProcessResources> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  }
+  withType<Copy> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  }
+
+  // Keep explicit configuration for the standard tasks as well
   processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   }
