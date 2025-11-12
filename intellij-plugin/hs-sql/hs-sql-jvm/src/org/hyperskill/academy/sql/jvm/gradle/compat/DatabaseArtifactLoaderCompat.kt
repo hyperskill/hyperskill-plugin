@@ -26,10 +26,10 @@ object DatabaseArtifactLoaderCompat {
   fun ensureArtifactDownloaded(project: Project, artifact: DatabaseArtifactList.ArtifactVersion): Boolean {
     // Fast-path: if already valid, nothing to download
     try {
-      val loader = DatabaseArtifactLoader.getInstance()
-      if (loader.isValid(artifact)) return true
-    } catch (t: Throwable) {
-      // If even loader resolution changed, continue with manager-based attempts below
+      if (!shouldDownload(project, artifact)) return true
+    }
+    catch (t: Throwable) {
+      // ignore and try downloading using fallbacks
     }
 
     // Try legacy: DatabaseArtifactLoader.downloadArtifact(ArtifactVersion)
@@ -43,6 +43,54 @@ object DatabaseArtifactLoaderCompat {
 
     LOG.warn("Failed to find a suitable API to download database artifact on this platform. Skipping.")
     return false
+  }
+
+  /**
+   * Determines whether the artifact should be downloaded on the current platform.
+   * If validity cannot be determined (e.g., API moved/removed), errs on the side of downloading.
+   */
+  @JvmStatic
+  fun shouldDownload(project: Project, artifact: DatabaseArtifactList.ArtifactVersion): Boolean {
+    // Try loader.isValid(artifact) if present
+    try {
+      val loader = DatabaseArtifactLoader.getInstance()
+      val m = loader.javaClass.methods.firstOrNull { it.name == "isValid" && it.parameterTypes.size == 1 }
+      if (m != null) {
+        val result = m.invoke(loader, artifact) as? Boolean
+        if (result != null) return !result
+      }
+    }
+    catch (_: Throwable) {
+      // fall through
+    }
+
+    // Try manager-level validity check if available
+    try {
+      val mgr = DatabaseArtifactManager.getInstance()
+      val cls = mgr.javaClass
+      val candidates = listOf(
+        "isValid" to arrayOf(DatabaseArtifactList.ArtifactVersion::class.java),
+        "isValid" to arrayOf(Project::class.java, DatabaseArtifactList.ArtifactVersion::class.java),
+        "isDownloaded" to arrayOf(DatabaseArtifactList.ArtifactVersion::class.java),
+        "isDownloaded" to arrayOf(Project::class.java, DatabaseArtifactList.ArtifactVersion::class.java),
+        "hasArtifact" to arrayOf(Project::class.java, DatabaseArtifactList.ArtifactVersion::class.java)
+      )
+      for ((name, types) in candidates) {
+        val m = cls.methods.firstOrNull { it.name == name && it.parameterTypes.contentEquals(types) } ?: continue
+        val ok = when (types.size) {
+          1 -> (m.invoke(mgr, artifact) as? Boolean) == true
+          2 -> (m.invoke(mgr, project, artifact) as? Boolean) == true
+          else -> false
+        }
+        return !ok
+      }
+    }
+    catch (_: Throwable) {
+      // fall through
+    }
+
+    // If we cannot determine validity, decide to download to be safe
+    return true
   }
 
   private fun tryInvokeLoader(project: Project?, artifact: DatabaseArtifactList.ArtifactVersion): Boolean {
@@ -72,11 +120,13 @@ object DatabaseArtifactLoaderCompat {
             if (p0 == DatabaseArtifactList.ArtifactVersion::class.java) {
               m.invoke(loader, artifact)
               return true
-            } else if (Collection::class.java.isAssignableFrom(p0)) {
+            }
+            else if (Collection::class.java.isAssignableFrom(p0)) {
               m.invoke(loader, listOf(artifact))
               return true
             }
           }
+
           2 -> {
             if (paramTypes[0] == Project::class.java && paramTypes[1] == DatabaseArtifactList.ArtifactVersion::class.java) {
               val p = project ?: continue
@@ -92,7 +142,8 @@ object DatabaseArtifactLoaderCompat {
         }
       }
       false
-    } catch (t: Throwable) {
+    }
+    catch (t: Throwable) {
       // Ignore and allow other strategies
       false
     }
@@ -128,7 +179,8 @@ object DatabaseArtifactLoaderCompat {
         }
       }
       false
-    } catch (t: Throwable) {
+    }
+    catch (t: Throwable) {
       false
     }
   }

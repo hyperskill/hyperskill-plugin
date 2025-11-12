@@ -13,7 +13,6 @@ import com.intellij.database.console.runConfiguration.DatabaseScriptRunConfigura
 import com.intellij.database.console.session.DatabaseSessionManager
 import com.intellij.database.dataSource.*
 import com.intellij.database.dataSource.artifacts.DatabaseArtifactList
-import com.intellij.database.dataSource.artifacts.DatabaseArtifactLoader
 import com.intellij.database.dataSource.artifacts.DatabaseArtifactManager
 import com.intellij.database.model.DasDataSource
 import com.intellij.execution.RunnerAndConfigurationSettings
@@ -184,8 +183,6 @@ private suspend fun DatabaseDriver.resolveArtifacts(project: Project): List<Data
   // But it produces deadlock in tests for some reason, so keep it as is for now
   DatabaseArtifactManager.getInstance().forceUpdate(project).await()
 
-  val loader = DatabaseArtifactLoader.getInstance()
-
   val updated = mutableListOf<DatabaseDriver.ArtifactRef>()
   val toDownload = mutableListOf<DatabaseArtifactList.ArtifactVersion>()
   for (artifact in artifacts) {
@@ -195,7 +192,7 @@ private suspend fun DatabaseDriver.resolveArtifacts(project: Project): List<Data
       version.version == artifact.artifactVersion -> artifact
       else -> DatabaseDriverImpl.createArtifactRef(artifact.id, version.version, artifact.channel)!!
     }
-    if (version != null && !loader.isValid(version)) {
+    if (version != null && DatabaseArtifactLoaderCompat.shouldDownload(project, version)) {
       toDownload += version
     }
   }
