@@ -2,8 +2,8 @@ package org.hyperskill.academy.learning.update.elements
 
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.writeAction
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
+import org.hyperskill.academy.platform.ProgressCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.hyperskill.academy.learning.courseDir
@@ -28,12 +28,12 @@ data class LessonCreationInfo(
 
     val parentDir = localContainer.getDir(project.courseDir) ?: error("Failed to find parent dir: ${localContainer.name}")
     withContext(Dispatchers.IO) {
-      blockingContext {
+      ProgressCompat.withBlockingIfNeeded {
         GeneratorUtils.createLesson(project, remoteItem, parentDir)
       }
     }
 
-    blockingContext {
+    ProgressCompat.withBlockingIfNeeded {
       YamlFormatSynchronizer.saveItemWithRemoteInfo(remoteItem)
     }
   }

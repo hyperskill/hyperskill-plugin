@@ -2,8 +2,8 @@ package org.hyperskill.academy.learning.update.elements
 
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
+import org.hyperskill.academy.platform.ProgressCompat
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
