@@ -35,6 +35,7 @@ import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.hyperskill.academy.coursecreator.CCUtils.isLocalCourse
 import org.hyperskill.academy.learning.*
@@ -55,6 +56,7 @@ import org.hyperskill.academy.learning.navigation.NavigationUtils
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillCourseProjectGenerator
 import org.hyperskill.academy.learning.submissions.SubmissionSettings
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
+import org.hyperskill.academy.platform.OpenProjectTaskCompat
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.File
 import java.io.IOException
@@ -335,21 +337,24 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
       prepareToOpenCallback: suspend (Project, Module) -> Unit,
       beforeInitHandler: BeforeInitHandler
     ): OpenProjectTask {
-      return OpenProjectTask {
-        forceOpenInNewFrame = true
-        isNewProject = true
-        isProjectCreatedWithWizard = true
-        runConfigurators = true
-        projectName = course.name
+      return OpenProjectTaskCompat.buildForOpen(
+        forceOpenInNewFrame = true,
+        isNewProject = true,
+        isProjectCreatedWithWizard = true,
+        runConfigurators = true,
+        projectName = course.name,
+        projectToClose = null,
         beforeInit = {
           it.putUserData(EDU_PROJECT_CREATED, true)
           beforeInitHandler.callback(it)
+        },
+        preparedToOpen = { project, module ->
+          StudyTaskManager.getInstance(project).course = course
+          runBlocking {
+            prepareToOpenCallback(project, module)
+          }
         }
-        preparedToOpen = {
-          StudyTaskManager.getInstance(it.project).course = course
-          prepareToOpenCallback(it.project, it)
-        }
-      }
+      )
     }
   }
 
