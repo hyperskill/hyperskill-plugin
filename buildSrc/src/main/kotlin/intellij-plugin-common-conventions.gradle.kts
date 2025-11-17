@@ -72,15 +72,6 @@ tasks {
     inputs.property("environmentName", providers.gradleProperty("environmentName"))
   }
 
-  // Enforce duplicate handling for all resource and copy-like tasks
-  withType<ProcessResources> {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-  }
-  withType<Copy> {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-  }
-
-  // Keep explicit configuration for the standard tasks as well
   processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   }

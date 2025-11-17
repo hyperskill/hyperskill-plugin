@@ -27,6 +27,10 @@ include(
   "intellij-plugin:hs-sql",
   "intellij-plugin:hs-sql:hs-sql-jvm",
   "intellij-plugin:hs-localization",
+  "intellij-plugin:hs-features:ai-debugger-core",
+  "intellij-plugin:hs-features:ai-debugger-java",
+  "intellij-plugin:hs-features:ai-debugger-jvm",
+  "intellij-plugin:hs-features:ai-debugger-kotlin",
   "intellij-plugin:hs-features:hs-github",
 )
 

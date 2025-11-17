@@ -33,5 +33,9 @@
 
     <!-- feature modules -->
     <module name="hs-github"/>
+    <module name="ai-debugger-core"/>
+    <module name="ai-debugger-java"/>
+    <module name="ai-debugger-jvm"/>
+    <module name="ai-debugger-kotlin"/>
   </content>
 </idea-plugin>

@@ -40,6 +40,7 @@ import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getDocument
 import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.OutputTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
@@ -152,7 +153,7 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
       if (checker == null) return CheckResult.NO_LOCAL_CHECK
       task.getDir(project.courseDir) ?: return CheckResult.NO_LOCAL_CHECK
 
-      if (task.course.isStudy) {
+      if (task.course.isStudy && task.course !is HyperskillCourse) {
         createTests(invisibleTestFiles)
       }
       return checker.check(indicator)
