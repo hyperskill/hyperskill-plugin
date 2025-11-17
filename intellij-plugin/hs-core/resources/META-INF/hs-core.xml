@@ -283,9 +283,6 @@
     <iconMapper mappingFile="EduToolsIconMappings.json"/>
     <themeMetadataProvider path="HyperskillAcademyPlugin.themeMetadata.json"/>
 
-    <coursesStorageProvider
-        implementation="org.hyperskill.academy.learning.newproject.coursesStorage.HyperskillAcademyCoursesStorageProvider"/>
-
     <registryKey key="hyperskill.network.request.assertion.policy"
                  description="Assertion policy for network requests from EDT in Hyperskill Academy plugin"
                  defaultValue="[OFF|LOG_ERROR*|EXCEPTION]"/>

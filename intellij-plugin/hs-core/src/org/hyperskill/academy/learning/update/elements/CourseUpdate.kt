@@ -2,7 +2,6 @@ package org.hyperskill.academy.learning.update.elements
 
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -10,6 +9,7 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.stepik.hyperskill.update.elements.HyperskillCourseUpdate
 import org.hyperskill.academy.learning.update.comparators.EduFileComparator.Companion.areNotEqual
+import org.hyperskill.academy.platform.ProgressCompat
 
 abstract class CourseUpdate<T : Course>(
   override val localItem: T,
@@ -28,7 +28,7 @@ abstract class CourseUpdate<T : Course>(
         }
       }
 
-      blockingContext {
+      ProgressCompat.withBlockingIfNeeded {
         remoteItem.additionalFiles.forEach { file ->
           GeneratorUtils.createChildFile(project, baseDir, file.name, file.contents)
         }

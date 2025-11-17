@@ -1,6 +1,8 @@
 import groovy.util.Node
 import groovy.xml.XmlParser
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.api.tasks.Copy
+import org.gradle.language.jvm.tasks.ProcessResources
 
 plugins {
   id("common-conventions")

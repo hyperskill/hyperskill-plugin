@@ -8,7 +8,6 @@ import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.waitForSmartMode
 import com.intellij.openapi.startup.ProjectActivity
@@ -37,6 +36,7 @@ import org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage
 import org.hyperskill.academy.learning.projectView.CourseViewPane
 import org.hyperskill.academy.learning.submissions.SubmissionSettings
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
+import org.hyperskill.academy.platform.ProgressCompat
 import org.jetbrains.annotations.VisibleForTesting
 
 class EduProjectActivity : ProjectActivity {
@@ -70,7 +70,7 @@ class EduProjectActivity : ProjectActivity {
     selectProjectView(project, true)
 
     withContext(Dispatchers.EDT) {
-      blockingContext {
+      ProgressCompat.withBlockingIfNeeded {
         migrateYaml(project, course)
         setupProject(project, course)
       }

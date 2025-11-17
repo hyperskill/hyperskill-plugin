@@ -4,7 +4,6 @@ import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -21,6 +20,7 @@ import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.toCourseInfoHolder
 import org.hyperskill.academy.learning.update.FrameworkLessonHistory
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
+import org.hyperskill.academy.platform.ProgressCompat
 import java.io.IOException
 
 data class FrameworkTaskUpdateInfo(
@@ -71,7 +71,7 @@ data class FrameworkTaskUpdateInfo(
       }
     }
 
-    blockingContext {
+    ProgressCompat.withBlockingIfNeeded {
       YamlFormatSynchronizer.saveItemWithRemoteInfo(remoteItem)
     }
   }
@@ -85,7 +85,7 @@ data class FrameworkTaskUpdateInfo(
       localItem.getTaskDirectory(project) ?: error("Failed to find local task dir: ${localLesson.name}")
     }
 
-    blockingContext {
+    ProgressCompat.withBlockingIfNeeded {
       GeneratorUtils.createDescriptionFile(project, newTaskDir, remoteItem)
     }
   }
@@ -125,7 +125,7 @@ data class FrameworkTaskUpdateInfo(
       }
     }
 
-    blockingContext {
+    ProgressCompat.withBlockingIfNeeded {
       GeneratorUtils.createChildFile(project.toCourseInfoHolder(), taskDir, fileName, contents, isEditable)
     }
   }

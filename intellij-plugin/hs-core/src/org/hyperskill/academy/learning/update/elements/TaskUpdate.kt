@@ -1,7 +1,7 @@
 package org.hyperskill.academy.learning.update.elements
 
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.project.Project
+import org.hyperskill.academy.platform.ProgressCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.hyperskill.academy.learning.EduCourseUpdater
@@ -23,12 +23,12 @@ data class TaskCreationInfo(val localLesson: Lesson, override val remoteItem: Ta
 
     val lessonDir = localLesson.getDir(project.courseDir) ?: error("Failed to find lesson dir: ${localLesson.name}")
     withContext(Dispatchers.IO) {
-      blockingContext {
+      org.hyperskill.academy.platform.ProgressCompat.withBlockingIfNeeded {
         GeneratorUtils.createTask(project, remoteItem, lessonDir)
       }
     }
 
-    blockingContext {
+    org.hyperskill.academy.platform.ProgressCompat.withBlockingIfNeeded {
       YamlFormatSynchronizer.saveItemWithRemoteInfo(remoteItem)
     }
   }
@@ -51,13 +51,13 @@ data class TaskUpdateInfo(override val localItem: Task, override val remoteItem:
     }
     val lessonDir = lesson.getDir(project.courseDir) ?: error("Lesson dir wasn't found")
     withContext(Dispatchers.IO) {
-      blockingContext {
+      ProgressCompat.withBlockingIfNeeded {
         EduCourseUpdater.createTaskDirectories(project, lessonDir, remoteItem)
       }
     }
     lesson.addItem(remoteItem)
 
-    blockingContext {
+    ProgressCompat.withBlockingIfNeeded {
       YamlFormatSynchronizer.saveItemWithRemoteInfo(remoteItem)
     }
   }

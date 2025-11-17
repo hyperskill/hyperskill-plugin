@@ -1,6 +1,5 @@
 package org.hyperskill.academy.learning.newproject.ui.coursePanel
 
-import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.io.FileUtil
@@ -11,6 +10,7 @@ import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.newproject.CourseMetadataProcessor
 import org.hyperskill.academy.learning.newproject.CourseProjectState
 import org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage
+import org.hyperskill.academy.platform.OpenProjectTaskCompat
 
 fun Course.openCourse(openCourseMetadata: Map<String, String>) {
   val coursesStorage = CoursesStorage.getInstance()
@@ -19,15 +19,16 @@ fun Course.openCourse(openCourseMetadata: Map<String, String>) {
 
   val pathToOpen = generator.setUpProjectLocation(coursePath)
   val beforeInitHandler = generator.beforeInitHandler(coursePath)
-  val openProjectTask = OpenProjectTask {
-    isNewProject = false
-    projectToClose = null
-    forceOpenInNewFrame = true
-    projectName = course.name
-    beforeInit = {
-      beforeInitHandler.callback(it)
-    }
-  }
+  val openProjectTask = OpenProjectTaskCompat.buildForOpen(
+    forceOpenInNewFrame = true,
+    isNewProject = false,
+    isProjectCreatedWithWizard = false,
+    runConfigurators = false,
+    projectName = course.name,
+    projectToClose = null,
+    beforeInit = { beforeInitHandler.callback(it) },
+    preparedToOpen = null
+  )
   val project = ProjectUtil.openProject(pathToOpen, openProjectTask)
 
   if (project != null) {

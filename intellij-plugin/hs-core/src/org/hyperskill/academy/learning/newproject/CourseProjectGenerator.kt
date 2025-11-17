@@ -11,8 +11,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.progress.blockingContextToIndicator
+import org.hyperskill.academy.platform.ProgressCompat
 import com.intellij.openapi.project.NOTIFICATIONS_SILENT_MODE
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
@@ -28,13 +28,14 @@ import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.platform.ide.progress.withModalProgress
 import com.intellij.platform.util.progress.indeterminateStep
 import com.intellij.platform.util.progress.progressStep
-import com.intellij.platform.util.progress.withRawProgressReporter
+import com.intellij.platform.util.progress.reportRawProgress
 import com.intellij.profile.codeInspection.ProjectInspectionProfileManager
 import com.intellij.util.PathUtil
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.hyperskill.academy.coursecreator.CCUtils.isLocalCourse
 import org.hyperskill.academy.learning.*
@@ -55,6 +56,7 @@ import org.hyperskill.academy.learning.navigation.NavigationUtils
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillCourseProjectGenerator
 import org.hyperskill.academy.learning.submissions.SubmissionSettings
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
+import org.hyperskill.academy.platform.OpenProjectTaskCompat
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.File
 import java.io.IOException
@@ -131,12 +133,10 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
     val createdProject = createProject(location, initialLessonProducer) ?: return null
 
     withContext(Dispatchers.EDT) {
-      blockingContext {
-        afterProjectGenerated(createdProject, castedProjectSettings, openCourseParams) {
-          ApplicationManager.getApplication().messageBus
-            .syncPublisher(COURSE_PROJECT_CONFIGURATION)
-            .onCourseProjectConfigured(createdProject)
-        }
+      afterProjectGenerated(createdProject, castedProjectSettings, openCourseParams) {
+        ApplicationManager.getApplication().messageBus
+          .syncPublisher(COURSE_PROJECT_CONFIGURATION)
+          .onCourseProjectConfigured(createdProject)
       }
     }
     return createdProject
@@ -167,16 +167,12 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
       }
       return null
     }
-    val baseDir = blockingContext {
-      LocalFileSystem.getInstance().refreshAndFindFileByIoFile(location)
-    }
+    val baseDir = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(location)
     if (baseDir == null) {
       LOG.error("Couldn't find '$location' in VFS")
       return null
     }
-    blockingContext {
-      VfsUtil.markDirtyAndRefresh(false, true, true, baseDir)
-    }
+    VfsUtil.markDirtyAndRefresh(false, true, true, baseDir)
 
     RecentProjectsManager.getInstance().lastProjectCreationLocation = PathUtil.toSystemIndependentName(location.parent)
 
@@ -208,7 +204,7 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
       TaskCancellation.nonCancellable()
     ) {
       indeterminateStep(EduCoreBundle.message("generate.project.unpack.course.project.settings.progress.text")) {
-        blockingContext {
+        ProgressCompat.withBlockingIfNeeded {
           unpackAdditionalFiles(holder, ONLY_IDEA_DIRECTORY)
         }
       }
@@ -246,15 +242,13 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
   @VisibleForTesting
   open suspend fun createCourseStructure(holder: CourseInfoHolder<Course>, initialLessonProducer: () -> Lesson = ::Lesson) {
     holder.course.init(false)
-    withRawProgressReporter {
-      blockingContext {
-        blockingContextToIndicator {
-          try {
-            generateCourseContent(holder, ProgressManager.getInstance().progressIndicator)
-          }
-          catch (e: IOException) {
-            LOG.error("Failed to generate course", e)
-          }
+    reportRawProgress {
+      blockingContextToIndicator {
+        try {
+          generateCourseContent(holder, ProgressManager.getInstance().progressIndicator)
+        }
+        catch (e: IOException) {
+          LOG.error("Failed to generate course", e)
         }
       }
     }
@@ -335,21 +329,24 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
       prepareToOpenCallback: suspend (Project, Module) -> Unit,
       beforeInitHandler: BeforeInitHandler
     ): OpenProjectTask {
-      return OpenProjectTask {
-        forceOpenInNewFrame = true
-        isNewProject = true
-        isProjectCreatedWithWizard = true
-        runConfigurators = true
-        projectName = course.name
+      return OpenProjectTaskCompat.buildForOpen(
+        forceOpenInNewFrame = true,
+        isNewProject = true,
+        isProjectCreatedWithWizard = true,
+        runConfigurators = true,
+        projectName = course.name,
+        projectToClose = null,
         beforeInit = {
           it.putUserData(EDU_PROJECT_CREATED, true)
           beforeInitHandler.callback(it)
+        },
+        preparedToOpen = { project, module ->
+          StudyTaskManager.getInstance(project).course = course
+          runBlocking {
+            prepareToOpenCallback(project, module)
+          }
         }
-        preparedToOpen = {
-          StudyTaskManager.getInstance(it.project).course = course
-          prepareToOpenCallback(it.project, it)
-        }
-      }
+      )
     }
   }
 

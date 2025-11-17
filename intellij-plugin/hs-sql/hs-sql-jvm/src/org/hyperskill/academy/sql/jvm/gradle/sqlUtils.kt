@@ -13,7 +13,6 @@ import com.intellij.database.console.runConfiguration.DatabaseScriptRunConfigura
 import com.intellij.database.console.session.DatabaseSessionManager
 import com.intellij.database.dataSource.*
 import com.intellij.database.dataSource.artifacts.DatabaseArtifactList
-import com.intellij.database.dataSource.artifacts.DatabaseArtifactLoader
 import com.intellij.database.dataSource.artifacts.DatabaseArtifactManager
 import com.intellij.database.model.DasDataSource
 import com.intellij.execution.RunnerAndConfigurationSettings
@@ -26,7 +25,7 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.util.progress.withRawProgressReporter
+import com.intellij.platform.util.progress.reportRawProgress
 import com.intellij.psi.PsiManager
 import com.intellij.sql.SqlFileType
 import com.intellij.sql.dialects.SqlDialectMappings
@@ -42,6 +41,7 @@ import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.sql.core.EduSqlBundle
+import org.hyperskill.academy.sql.jvm.gradle.compat.DatabaseArtifactLoaderCompat
 import org.jetbrains.annotations.VisibleForTesting
 
 private val LOG = Logger.getInstance("#org.hyperskill.academy.sql.jvm.gradle.SqlUtils")
@@ -167,7 +167,7 @@ suspend fun DatabaseDriver.loadArtifacts(project: Project) {
   val artifactsToDownload = resolveArtifacts(project)
   LOG.info("Driver artifacts to download: $artifactsToDownload")
   for (artifact in artifactsToDownload) {
-    downloadArtifact(artifact)
+    downloadArtifact(project, artifact)
   }
 }
 
@@ -183,8 +183,6 @@ private suspend fun DatabaseDriver.resolveArtifacts(project: Project): List<Data
   // But it produces deadlock in tests for some reason, so keep it as is for now
   DatabaseArtifactManager.getInstance().forceUpdate(project).await()
 
-  val loader = DatabaseArtifactLoader.getInstance()
-
   val updated = mutableListOf<DatabaseDriver.ArtifactRef>()
   val toDownload = mutableListOf<DatabaseArtifactList.ArtifactVersion>()
   for (artifact in artifacts) {
@@ -194,7 +192,7 @@ private suspend fun DatabaseDriver.resolveArtifacts(project: Project): List<Data
       version.version == artifact.artifactVersion -> artifact
       else -> DatabaseDriverImpl.createArtifactRef(artifact.id, version.version, artifact.channel)!!
     }
-    if (version != null && !loader.isValid(version)) {
+    if (version != null && DatabaseArtifactLoaderCompat.shouldDownload(project, version)) {
       toDownload += version
     }
   }
@@ -202,14 +200,13 @@ private suspend fun DatabaseDriver.resolveArtifacts(project: Project): List<Data
   return toDownload
 }
 
-private suspend fun downloadArtifact(artifact: DatabaseArtifactList.ArtifactVersion) {
-  val loader = DatabaseArtifactLoader.getInstance()
+private suspend fun downloadArtifact(project: Project, artifact: DatabaseArtifactList.ArtifactVersion) {
   withContext(Dispatchers.IO) {
-    withRawProgressReporter {
+    reportRawProgress {
       coroutineToIndicator {
         val items = artifact.items.joinToString("\n") { "  ${it.name}: ${it.type}" }
         LOG.info("Downloading `$artifact` artifact:\n$items")
-        loader.downloadArtifact(artifact)
+        DatabaseArtifactLoaderCompat.ensureArtifactDownloaded(project, artifact)
       }
     }
   }
