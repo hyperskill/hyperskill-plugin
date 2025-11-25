@@ -2,7 +2,7 @@ package org.hyperskill.academy.learning.newproject
 
 import com.intellij.ide.RecentProjectsManager
 import com.intellij.ide.impl.OpenProjectTask
-import com.intellij.ide.impl.TrustedPaths
+import com.intellij.ide.trustedProjects.TrustedProjects
 import com.intellij.idea.ActionsBundle
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
@@ -12,7 +12,7 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.blockingContextToIndicator
-import org.hyperskill.academy.platform.ProgressCompat
+import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.project.NOTIFICATIONS_SILENT_MODE
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
@@ -27,15 +27,14 @@ import com.intellij.platform.ide.progress.TaskCancellation
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.platform.ide.progress.withModalProgress
 import com.intellij.platform.util.progress.indeterminateStep
-import com.intellij.platform.util.progress.progressStep
 import com.intellij.platform.util.progress.reportRawProgress
+import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.profile.codeInspection.ProjectInspectionProfileManager
 import com.intellij.util.PathUtil
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.hyperskill.academy.coursecreator.CCUtils.isLocalCourse
 import org.hyperskill.academy.learning.*
@@ -57,6 +56,7 @@ import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.Hypers
 import org.hyperskill.academy.learning.submissions.SubmissionSettings
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 import org.hyperskill.academy.platform.OpenProjectTaskCompat
+import org.hyperskill.academy.platform.ProgressCompat
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.File
 import java.io.IOException
@@ -178,28 +178,29 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
 
     baseDir.putUserData(COURSE_MODE_TO_CREATE, course.courseMode)
 
-    @Suppress("UnstableApiUsage")
-    TrustedPaths.getInstance().setProjectPathTrusted(location.toPath(), true)
+    TrustedProjects.setProjectTrusted(location.toPath(), true)
 
     val holder = CourseInfoHolder.fromCourse(course, baseDir)
 
     // If a course doesn't contain top-level items, let's count course itself as single item for creation.
     // It's a minor workaround to avoid zero end progress during course structure creation.
-    val itemsToCreate = maxOf(1, course.items.size)
-    // Total progress: item count steps for each top-level item plus one step for project creation itself
-    val structureGenerationEndFraction = itemsToCreate.toDouble() / (itemsToCreate + 1)
-    progressStep(structureGenerationEndFraction, EduCoreBundle.message("generate.course.structure.progress.text")) {
-      createCourseStructure(holder, initialLessonProducer)
-    }
+    // Use two sequential steps: create structure, then open project
+    var newProject: Project? = null
+    reportSequentialProgress(2) { reporter ->
+      reporter.indeterminateStep(EduCoreBundle.message("generate.course.structure.progress.text")) {
+        createCourseStructure(holder, initialLessonProducer)
+      }
 
-    val newProject = progressStep(1.0, EduCoreBundle.message("generate.course.project.progress.text")) {
-      openNewCourseProject(location.toPath(), this@CourseProjectGenerator::prepareToOpen)
-    } ?: return null
+      newProject = reporter.indeterminateStep(EduCoreBundle.message("generate.course.project.progress.text")) {
+        openNewCourseProject(location.toPath(), this@CourseProjectGenerator::prepareToOpen)
+      }
+    }
+    val newProjectNonNull = newProject ?: return null
 
     // A new progress window is needed because here we already have a new project frame,
     // and previous progress is not visible for user anymore
     withModalProgress(
-      ModalTaskOwner.project(newProject),
+      ModalTaskOwner.project(newProjectNonNull),
       EduCoreBundle.message("generate.course.progress.title"),
       TaskCancellation.nonCancellable()
     ) {
@@ -212,9 +213,9 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
 
     // after adding files with settings to .idea directory, almost all settings are synchronized automatically,
     // but the inspection profiles are to be synchronized manually
-    ProjectInspectionProfileManager.getInstance(newProject).initializeComponent()
+    ProjectInspectionProfileManager.getInstance(newProjectNonNull).initializeComponent()
 
-    return newProject
+    return newProjectNonNull
   }
 
   protected open suspend fun prepareToOpen(project: Project, module: Module) {
@@ -342,8 +343,20 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
         },
         preparedToOpen = { project, module ->
           StudyTaskManager.getInstance(project).course = course
-          runBlocking {
-            prepareToOpenCallback(project, module)
+          // Avoid blocking the EDT with runBlocking: prepareToOpenCallback may perform write actions
+          // which need the EDT. If we're currently on the EDT, offload the work to a pooled thread.
+          val app = ApplicationManager.getApplication()
+          if (app.isDispatchThread) {
+            app.executeOnPooledThread {
+              runBlockingCancellable {
+                prepareToOpenCallback(project, module)
+              }
+            }
+          }
+          else {
+            runBlockingCancellable {
+              prepareToOpenCallback(project, module)
+            }
           }
         }
       )
