@@ -8,10 +8,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.refactoring.rename.RenameDialog
 import com.intellij.refactoring.rename.RenamePsiFileProcessor
 import org.hyperskill.academy.learning.EduUtilsKt
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
-import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
-import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.getContainingTask
 import org.hyperskill.academy.learning.handlers.rename.EduRenameDialogBase
@@ -22,13 +19,7 @@ import org.hyperskill.academy.learning.messages.EduCoreBundle
 class CCDescriptionFileRenameProcessor : RenamePsiFileProcessor() {
 
   override fun canProcessElement(element: PsiElement): Boolean {
-    if (element !is PsiFile) return false
-    val project = element.project
-    if (project.isStudentProject()) return false
-    val file = element.virtualFile
-    if (!EduUtilsKt.isTaskDescriptionFile(file.name)) return false
-    val task = file.getContainingTask(project) ?: return false
-    return file.parent == task.getDir(project.courseDir)
+    return false
   }
 
   override fun createRenameDialog(

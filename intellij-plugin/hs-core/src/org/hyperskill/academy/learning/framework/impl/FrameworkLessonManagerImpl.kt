@@ -8,7 +8,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.storage.AbstractStorage
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
@@ -44,9 +43,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   override fun saveExternalChanges(task: Task, externalState: Map<String, String>) {
-    require(project.isStudentProject()) {
-      "`saveExternalChanges` should be called only if course in study mode"
-    }
     require(task.lesson is FrameworkLesson) {
       "Only solutions of framework tasks can be saved"
     }
@@ -71,9 +67,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   override fun updateUserChanges(task: Task, newInitialState: Map<String, String>) {
-    require(project.isStudentProject()) {
-      "`updateUserChanges` should be called only if course in study mode"
-    }
     require(task.lesson is FrameworkLesson) {
       "Only solutions of framework tasks can be saved"
     }
@@ -108,9 +101,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   override fun getChangesTimestamp(task: Task): Long {
-    require(project.isStudentProject()) {
-      "`getTimestamp` should be called only if course in study mode"
-    }
     require(task.lesson is FrameworkLesson) {
       "Changes timestamp makes sense only for framework tasks"
     }
@@ -143,9 +133,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     taskDir: VirtualFile,
     showDialogIfConflict: Boolean
   ) {
-    require(project.isStudentProject()) {
-      "`applyTargetTaskChanges` should be called only if course in study mode"
-    }
     val currentTaskIndex = lesson.currentTaskIndex
     val targetTaskIndex = currentTaskIndex + taskIndexDelta
 

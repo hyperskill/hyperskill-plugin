@@ -33,17 +33,12 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.ui.ScrollPaneFactory
-import com.intellij.ui.dsl.builder.AlignX
-import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ArrayUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import org.hyperskill.academy.EducationalCoreIcons.CourseView.CourseTree
-import org.hyperskill.academy.coursecreator.projectView.HelpTooltipForTree
-import org.hyperskill.academy.coursecreator.projectView.tryInstallNewTooltip
 import org.hyperskill.academy.learning.CourseSetListener
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.StudyItem
@@ -83,29 +78,6 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
   private fun createCourseViewComponent(): JComponent {
     super.createComponent()
     CourseViewPaneCustomization.customize(tree)
-    if (!myProject.isStudentProject()) {
-      HelpTooltipForTree().installOnTree(this, tree) { treeNode ->
-        tryInstallNewTooltip(myProject, treeNode)
-      }
-
-      val toolbar = createHeaderRightToolbar()
-      val panel = panel {
-        row {
-          cell(toolbar.component).align(AlignX.RIGHT)
-        }
-      }.apply {
-        border = JBUI.Borders.emptyRight(12)
-      }
-      toolbar.targetComponent = panel
-
-      val mainPanel = JPanel(BorderLayout())
-      mainPanel.background = UIUtil.getTreeBackground()
-
-      mainPanel.add(panel, BorderLayout.NORTH)
-      mainPanel.add(tree, BorderLayout.CENTER)
-
-      return ScrollPaneFactory.createScrollPane(mainPanel)
-    }
 
     val panel = JPanel(BorderLayout())
     panel.background = UIUtil.getTreeBackground()

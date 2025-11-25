@@ -2,7 +2,6 @@ package org.hyperskill.academy.learning.stepik.hyperskill.update
 
 import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.EduNames
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.actions.SyncCourseAction
 import org.hyperskill.academy.learning.course
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
@@ -36,7 +35,6 @@ class SyncHyperskillCourseAction : SyncCourseAction(
   }
 
   override fun isAvailable(project: Project): Boolean {
-    if (!project.isStudentProject()) return false
     return project.course is HyperskillCourse
   }
 

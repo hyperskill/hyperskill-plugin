@@ -21,7 +21,6 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.util.ui.JBUI
 import org.hyperskill.academy.learning.*
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.ItemContainer
 import org.hyperskill.academy.learning.courseFormat.StudyItem
@@ -118,16 +117,11 @@ object YamlFormatSynchronizer {
     project.messageBus.connect().subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, object : FileEditorManagerListener {
       override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
         if (isLocalConfigFile(file)) {
-          if (project.isStudentProject()) {
-            @NonNls
-            val errorMessageToLog = "Can't find editor for a file: ${file.name}"
-            val editor = file.getEditor(project) ?: error(errorMessageToLog)
-            showNoEditingNotification(editor)
-            return
-          }
-
-          // load item to show editor notification if config file is invalid
-          YamlLoader.loadItem(project, file, false)
+          @NonNls
+          val errorMessageToLog = "Can't find editor for a file: ${file.name}"
+          val editor = file.getEditor(project) ?: error(errorMessageToLog)
+          showNoEditingNotification(editor)
+          return
         }
       }
     })

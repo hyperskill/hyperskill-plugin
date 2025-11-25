@@ -25,7 +25,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findFile
 import com.intellij.ui.GotItTooltip
 import com.intellij.util.ui.JBUI
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.actions.EduActionUtils.closeFileEditor
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.messages.EduCoreBundle
@@ -47,8 +46,7 @@ open class ApplyCodeAction : DumbAwareAction(), CustomComponentAction {
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabledAndVisible = false
-    val project = e.project ?: return
-    e.presentation.isEnabledAndVisible = project.isStudentProject() && e.isUserDataPresented() && !e.isGetHintDiff()
+    e.presentation.isEnabledAndVisible = e.isUserDataPresented() && !e.isGetHintDiff()
   }
 
   override fun actionPerformed(e: AnActionEvent) {

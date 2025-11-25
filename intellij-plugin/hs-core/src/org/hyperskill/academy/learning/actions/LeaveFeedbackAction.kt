@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.RightAlignedToolbarAction
 import com.intellij.openapi.project.DumbAwareAction
 import org.hyperskill.academy.learning.EduBrowser
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.messages.EduCoreBundle
@@ -26,7 +25,6 @@ class LeaveFeedbackAction :
     e.presentation.isEnabledAndVisible = false
 
     val project = e.project ?: return
-    if (!project.isStudentProject()) return
     val task = project.getCurrentTask() ?: return
     val course = task.course
     if (course is HyperskillCourse) {

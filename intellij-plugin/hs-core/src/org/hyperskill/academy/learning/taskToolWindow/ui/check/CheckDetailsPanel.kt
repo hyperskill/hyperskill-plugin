@@ -13,7 +13,6 @@ import com.intellij.ui.components.AnActionLink
 import com.intellij.ui.content.Content
 import com.intellij.util.Alarm
 import com.intellij.util.ui.JBUI
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.actions.CompareWithAnswerAction
 import org.hyperskill.academy.learning.checker.CheckUtils
 import org.hyperskill.academy.learning.checker.details.CheckDetailsView
@@ -115,13 +114,12 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
 
     val peekSolution = when {
       !task.canShowSolution() -> null
-      project.isStudentProject() -> {
+
+      else -> {
         val isExternal = task.course is HyperskillCourse
         val text = EduCoreBundle.message("label.peek.solution") + if (isExternal) "" else "..."
         LightColoredActionLink(text, ActionManager.getInstance().getAction(CompareWithAnswerAction.ACTION_ID), isExternal = isExternal)
       }
-
-      else -> null
     }
     peekSolution?.let { answerHintsPanel.value.add(it) }
 

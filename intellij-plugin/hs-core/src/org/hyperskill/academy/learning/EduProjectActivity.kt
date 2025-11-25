@@ -21,10 +21,8 @@ import com.intellij.util.concurrency.annotations.RequiresEdt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.hyperskill.academy.coursecreator.framework.SyncChangesStateManager
-import org.hyperskill.academy.coursecreator.handlers.CCVirtualFileListener
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
 import org.hyperskill.academy.learning.EduUtilsKt.isNewlyCreated
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
@@ -46,7 +44,7 @@ class EduProjectActivity : ProjectActivity {
     val manager = StudyTaskManager.getInstance(project)
     val connection = ApplicationManager.getApplication().messageBus.connect(manager)
     if (!isUnitTestMode) {
-      val vfsListener = if (project.isStudentProject()) UserCreatedFileListener(project) else CCVirtualFileListener(project, manager)
+      val vfsListener = UserCreatedFileListener(project)
       connection.subscribe(VirtualFileManager.VFS_CHANGES, vfsListener)
 
       EduDocumentListener.setGlobalListener(project, manager)
@@ -84,10 +82,8 @@ class EduProjectActivity : ProjectActivity {
     SyncChangesStateManager.getInstance(project).updateSyncChangesState(course)
 
     writeAction {
-      if (project.isStudentProject()) {
-        course.visitTasks {
-          setHighlightLevelForFilesInTask(it, project)
-        }
+      course.visitTasks {
+        setHighlightLevelForFilesInTask(it, project)
       }
     }
   }

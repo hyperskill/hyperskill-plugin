@@ -1,7 +1,6 @@
 package org.hyperskill.academy.learning.yaml.format
 
 import com.intellij.openapi.project.Project
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
@@ -100,7 +99,7 @@ fun <T : StudyItem> getChangeApplierForItem(project: Project, item: T): StudyIte
   return when (item) {
     is Course -> CourseChangeApplier(project)
     is Section, is Lesson -> ItemContainerChangeApplier(project)
-    is Task -> if (project.isStudentProject()) StudentTaskChangeApplier(project) else TaskChangeApplier(project)
+    is Task -> StudentTaskChangeApplier(project)
     else -> loadingError(unexpectedItemTypeMessage(item.javaClass.simpleName))
   } as StudyItemChangeApplier<T>
 }

@@ -6,7 +6,6 @@ import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.platform.backend.observation.trackActivity
 import org.hyperskill.academy.learning.EduCourseConfigurationActivityKey
 import org.hyperskill.academy.learning.EduLogInListener
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.isUnitTestMode
@@ -21,7 +20,7 @@ import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 class HyperskillStartupActivity : ProjectActivity {
 
   override suspend fun execute(project: Project) = project.trackActivity(EduCourseConfigurationActivityKey) {
-    if (project.isDisposed || !project.isStudentProject() || isUnitTestMode) return@trackActivity
+    if (project.isDisposed || isUnitTestMode) return@trackActivity
 
     val course = StudyTaskManager.getInstance(project).course as? HyperskillCourse ?: return@trackActivity
     val submissionsManager = SubmissionsManager.getInstance(project)

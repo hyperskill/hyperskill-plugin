@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import org.hyperskill.academy.learning.EduBrowser
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
 import org.hyperskill.academy.learning.courseFormat.ext.canShowSolution
 import org.hyperskill.academy.learning.eduState
@@ -28,9 +27,6 @@ open class CompareWithAnswerAction : DumbAwareAction() {
     val presentation = e.presentation
     presentation.isEnabledAndVisible = false
     val project = e.project ?: return
-    if (!project.isStudentProject()) {
-      return
-    }
     val task = project.getCurrentTask() ?: return
 
     presentation.isEnabledAndVisible = task.canShowSolution()

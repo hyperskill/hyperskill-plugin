@@ -90,14 +90,6 @@ object EduUtilsKt {
     return StudyTaskManager.getInstance(this).course != null || getCourseModeForNewlyCreatedProject(this) != null
   }
 
-  fun Project.isStudentProject(): Boolean {
-    val course = StudyTaskManager.getInstance(this).course
-    return if (course != null && course.isStudy) {
-      true
-    }
-    else CourseMode.STUDENT == getCourseModeForNewlyCreatedProject(this)
-  }
-
 }
 
 // org.intellij.markdown.flavours.gfm.GFMFlavourDescriptor considers links starting

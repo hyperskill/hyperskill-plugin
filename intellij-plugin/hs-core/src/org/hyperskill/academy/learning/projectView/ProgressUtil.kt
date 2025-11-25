@@ -8,7 +8,6 @@ import com.intellij.openapi.progress.util.ColorProgressBar
 import com.intellij.openapi.project.Project
 import com.intellij.ui.Gray
 import com.intellij.ui.JBColor
-import org.hyperskill.academy.learning.EduUtilsKt.isStudentProject
 import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -84,7 +83,7 @@ object ProgressUtil {
     }
     val progress = countProgress(course)
     val pane = ProjectView.getInstance(project).currentProjectViewPane
-    if (pane is CourseViewPane && project.isStudentProject() && !ApplicationManager.getApplication().isUnitTestMode) {
+    if (pane is CourseViewPane && !ApplicationManager.getApplication().isUnitTestMode) {
       pane.updateCourseProgress(progress)
     }
     val location = project.basePath
