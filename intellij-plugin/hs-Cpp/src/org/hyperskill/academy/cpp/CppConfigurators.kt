@@ -56,10 +56,7 @@ open class CppConfigurator : EduConfigurator<CppProjectSettings> {
 
   override val mockTemplate: String
     get() = getInternalTemplateText(MAIN_CPP)
-
-  override val isCourseCreatorEnabled: Boolean
-    get() = true
-
+  
   override val logo: Icon
     get() = EducationalCoreIcons.Language.Cpp
 

@@ -40,9 +40,6 @@ abstract class HyperskillConfigurator<T : EduProjectSettings>(private val baseCo
   override val isEnabled: Boolean
     get() = baseConfigurator.isEnabled
 
-  override val isCourseCreatorEnabled: Boolean
-    get() = baseConfigurator.isCourseCreatorEnabled
-
   override val mockTemplate: String
     get() = baseConfigurator.mockTemplate
 

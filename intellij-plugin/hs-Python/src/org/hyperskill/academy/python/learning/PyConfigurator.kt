@@ -27,9 +27,6 @@ open class PyConfigurator : EduConfigurator<PyProjectSettings> {
   override val logo: Icon
     get() = EducationalCoreIcons.Language.Python
 
-  override val isCourseCreatorEnabled: Boolean
-    get() = false
-
   override val defaultPlaceholderText: String
     get() = "# TODO"
 

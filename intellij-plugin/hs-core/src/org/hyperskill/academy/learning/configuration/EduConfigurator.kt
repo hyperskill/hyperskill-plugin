@@ -164,14 +164,6 @@ interface EduConfigurator<Settings : EduProjectSettings> {
     get() = true
 
   /**
-   * Allows to determine if configurator can be used to create new course using course creator features.
-   *
-   * @return true if configurator can be used to create new courses
-   */
-  val isCourseCreatorEnabled: Boolean
-    get() = true
-
-  /**
    * Constructs file name for Stepik tasks according to its text.
    * For example, Java requires file name should be the same as name of public class in it
    *

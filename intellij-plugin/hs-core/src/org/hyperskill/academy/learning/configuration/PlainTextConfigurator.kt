@@ -33,9 +33,6 @@ open class PlainTextConfigurator : EduConfigurator<EmptyProjectSettings> {
   override val taskCheckerProvider: TaskCheckerProvider
     get() = PlainTextTaskCheckerProvider()
 
-  override val isCourseCreatorEnabled: Boolean
-    get() = ApplicationManager.getApplication().isInternal || isUnitTestMode
-
   companion object {
     const val TEST_DIR_NAME = "tests"
   }

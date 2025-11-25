@@ -11,7 +11,6 @@ import org.hyperskill.academy.python.learning.newproject.PyProjectSettings
 class PyUnittestHyperskillConfigurator : HyperskillConfigurator<PyProjectSettings>(PyNewConfigurator()) {
   override val testDirs: List<String> = listOf(EduNames.TEST)
   override val isEnabled: Boolean = !isAndroidStudio()
-  override val isCourseCreatorEnabled: Boolean = true
 
   override fun getMockFileName(course: Course, text: String): String = MAIN_PY
 }
