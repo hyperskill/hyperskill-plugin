@@ -38,7 +38,7 @@ class CoursesPanelWithTabs(private val scope: CoroutineScope, private val dispos
 
     add(sidePanel, BorderLayout.WEST)
     add(coursesTab, BorderLayout.CENTER)
-    preferredSize = JBUI.size(PANEL_WIDTH, PANEL_HEIGHT)
+    maximumSize = JBUI.size(PANEL_WIDTH, PANEL_HEIGHT)
   }
 
   fun doValidation() {

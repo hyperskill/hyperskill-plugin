@@ -15,12 +15,10 @@ import org.hyperskill.academy.learning.newproject.ui.coursePanel.CoursePanel
 import org.hyperskill.academy.learning.newproject.ui.myCourses.MyCoursesProvider
 import org.hyperskill.academy.learning.newproject.ui.welcomeScreen.JBACourseFromStorage
 import org.hyperskill.academy.learning.taskToolWindow.ui.styleManagers.TypographyManager
-import java.awt.BorderLayout
-import java.awt.Component
-import java.awt.FlowLayout
-import java.awt.Font
+import java.awt.*
 import javax.swing.JPanel
 import javax.swing.JTree
+import javax.swing.SwingUtilities
 import javax.swing.event.TreeSelectionListener
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeCellRenderer
@@ -28,8 +26,6 @@ import javax.swing.tree.DefaultTreeCellRenderer
 private const val PROVIDER_TOP_BOTTOM_OFFSET = 11
 private const val PROVIDER_LEFT_OFFSET = 5
 private const val ICON_TEXT_GAP = 8
-private const val SCROLL_PANE_WIDTH = 233
-private const val SCROLL_PANE_HEIGHT = 800
 
 class CoursesProvidersSidePanel(private val myCoursesProvider: MyCoursesProvider, disposable: Disposable) : JBScrollPane() {
   private val tree = createCourseProvidersTree()
@@ -39,16 +35,22 @@ class CoursesProvidersSidePanel(private val myCoursesProvider: MyCoursesProvider
     panel.add(tree, BorderLayout.CENTER)
 
     setViewportView(panel)
+    // The panel width should exactly fit the content without wrapping or horizontal scrolling
     horizontalScrollBarPolicy = HORIZONTAL_SCROLLBAR_NEVER
-    verticalScrollBarPolicy = VERTICAL_SCROLLBAR_NEVER
-    preferredSize = JBUI.size(SCROLL_PANE_WIDTH, SCROLL_PANE_HEIGHT)
+    // Height can exceed the available space — enable vertical scroll on demand
+    verticalScrollBarPolicy = VERTICAL_SCROLLBAR_AS_NEEDED
     border = JBUI.Borders.customLine(CoursePanel.DIVIDER_COLOR, 0, 0, 0, 1)
     val connection = ApplicationManager.getApplication().messageBus.connect(disposable)
     connection.subscribe(CoursesStorageBase.COURSE_DELETED, object : CourseDeletedListener {
       override fun courseDeleted(course: JBACourseFromStorage) {
+        // Recalculate panel width after content changes
+        adjustWidthToContent()
         tree.repaint()
       }
     })
+
+    // Adjust width after the tree is built/expanded and the component is added to the hierarchy
+    SwingUtilities.invokeLater { adjustWidthToContent() }
   }
 
   private fun createCourseProvidersTree(): Tree {
@@ -75,6 +77,41 @@ class CoursesProvidersSidePanel(private val myCoursesProvider: MyCoursesProvider
 
   fun addTreeSelectionListener(listener: TreeSelectionListener) {
     tree.addTreeSelectionListener(listener)
+  }
+
+  /**
+   * Adjusts the scroll panel width to the widest tree element
+   * so that all text and icons are fully visible without wrapping or horizontal scrolling.
+   */
+  private fun adjustWidthToContent() {
+    // Ensure the tree is expanded so row bounds are measured correctly
+    TreeUtil.expandAll(tree)
+
+    var maxRowRight = 0
+    val rowCount = tree.rowCount
+    for (row in 0 until rowCount) {
+      val bounds = tree.getRowBounds(row) ?: continue
+      val right = bounds.x + bounds.width
+      if (right > maxRowRight) maxRowRight = right
+    }
+
+    // Add insets of the viewport border and the panel border
+    val viewportInsets = viewportBorder?.getBorderInsets(this) ?: JBUI.emptyInsets()
+    val borderInsets = border?.getBorderInsets(this) ?: JBUI.emptyInsets()
+    // Include a conservative allowance for the vertical scrollbar width so content isn't cut on the right
+    val vScrollBarWidth = if (verticalScrollBarPolicy == VERTICAL_SCROLLBAR_NEVER) 0 else (verticalScrollBar?.preferredSize?.width ?: 0)
+    val safetyPad = JBUI.scale(2)
+    val totalWidth =
+      maxRowRight + viewportInsets.left + viewportInsets.right + borderInsets.left + borderInsets.right + vScrollBarWidth + safetyPad
+
+    // Update preferred/minimum width of the scroll panel; height is not critical for BorderLayout.WEST
+    val width = totalWidth.coerceAtLeast(0)
+    val newSize = Dimension(width, preferredSize.height)
+    preferredSize = newSize
+    minimumSize = Dimension(width, minimumSize.height)
+
+    // Request parent re-layout so BorderLayout accounts for the new WEST width
+    revalidate()
   }
 
   private class ProviderWithIconCellRenderer : DefaultTreeCellRenderer() {
