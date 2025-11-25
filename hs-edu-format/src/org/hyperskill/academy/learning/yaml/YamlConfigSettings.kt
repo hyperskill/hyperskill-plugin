@@ -20,19 +20,19 @@ object YamlConfigSettings {
   /**
    * @param itemKind Course/Section/Lesson/Task
    */
-  fun getLocalConfigFileName(itemKind: String): String = "hs-$itemKind-info.yaml"
+  fun getLocalConfigFileName(itemKind: String): String = "$itemKind-info.yaml"
 
   @NonNls
-  const val REMOTE_COURSE_CONFIG = "hs-course-remote-info.yaml"
+  const val REMOTE_COURSE_CONFIG = "course-remote-info.yaml"
 
   @NonNls
-  const val REMOTE_SECTION_CONFIG = "hs-section-remote-info.yaml"
+  const val REMOTE_SECTION_CONFIG = "section-remote-info.yaml"
 
   @NonNls
-  const val REMOTE_LESSON_CONFIG = "hs-lesson-remote-info.yaml"
+  const val REMOTE_LESSON_CONFIG = "lesson-remote-info.yaml"
 
   @NonNls
-  const val REMOTE_TASK_CONFIG = "hs-task-remote-info.yaml"
+  const val REMOTE_TASK_CONFIG = "task-remote-info.yaml"
 
   val StudyItem.configFileName: String
     get() = when (this) {

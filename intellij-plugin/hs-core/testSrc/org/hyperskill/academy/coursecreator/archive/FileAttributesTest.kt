@@ -107,20 +107,20 @@ open class FileAttributesTest(
         arrayOf("section/lesson/task/task.html", excluded),
 
         // configs
-        arrayOf("hs-course-info.yaml", excluded),
-        arrayOf("section/hs-section-info.yaml", excluded),
-        arrayOf("lesson/hs-lesson-info.yaml", excluded),
-        arrayOf("section/lesson/hs-lesson-info.yaml", excluded),
-        arrayOf("lesson/task/hs-task-info.yaml", excluded),
-        arrayOf("section/lesson/task/hs-task-info.yaml", excluded),
+        arrayOf("course-info.yaml", excluded),
+        arrayOf("section/section-info.yaml", excluded),
+        arrayOf("lesson/lesson-info.yaml", excluded),
+        arrayOf("section/lesson/lesson-info.yaml", excluded),
+        arrayOf("lesson/task/task-info.yaml", excluded),
+        arrayOf("section/lesson/task/task-info.yaml", excluded),
 
         // remote configs
-        arrayOf("hs-course-remote-info.yaml", excluded),
-        arrayOf("section/hs-section-remote-info.yaml", excluded),
-        arrayOf("lesson/hs-lesson-remote-info.yaml", excluded),
-        arrayOf("section/lesson/hs-lesson-remote-info.yaml", excluded),
-        arrayOf("lesson/task/hs-task-remote-info.yaml", excluded),
-        arrayOf("section/lesson/task/hs-task-remote-info.yaml", excluded),
+        arrayOf("course-remote-info.yaml", excluded),
+        arrayOf("section/section-remote-info.yaml", excluded),
+        arrayOf("lesson/lesson-remote-info.yaml", excluded),
+        arrayOf("section/lesson/lesson-remote-info.yaml", excluded),
+        arrayOf("lesson/task/task-remote-info.yaml", excluded),
+        arrayOf("section/lesson/task/task-remote-info.yaml", excluded),
 
         //.coursecreator
         arrayOf(".coursecreator/archive.zip", excluded),

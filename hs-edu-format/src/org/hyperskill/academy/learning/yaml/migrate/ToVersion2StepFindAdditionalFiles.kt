@@ -45,7 +45,7 @@ object ToVersion2StepAddAdditionalFiles : YamlMigrationStep {
     val rawLanguageId = config.get(PROGRAMMING_LANGUAGE)?.asText()
 
     if (rawLanguageId == null) {
-      logger<ToVersion2StepAddAdditionalFiles>().severe("Failed to read language ID from hs-course-info.yaml")
+      logger<ToVersion2StepAddAdditionalFiles>().severe("Failed to read language ID from course-info.yaml")
       return config
     }
 
