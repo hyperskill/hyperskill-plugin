@@ -6,7 +6,9 @@
   </dependencies>
 
   <extensions defaultExtensionNs="HyperskillEducational">
-    <breakpointTypeManager language="JVM" implementationClass="org.hyperskill.academy.ai.debugger.jvm.JvmBreakpointTypeManager"/>
+    <!-- Register for concrete languages to avoid null from LanguageExtension.forLanguage(...) -->
+    <breakpointTypeManager language="JAVA" implementationClass="org.hyperskill.academy.ai.debugger.jvm.JvmBreakpointTypeManager"/>
+    <breakpointTypeManager language="kotlin" implementationClass="org.hyperskill.academy.ai.debugger.jvm.JvmBreakpointTypeManager"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">

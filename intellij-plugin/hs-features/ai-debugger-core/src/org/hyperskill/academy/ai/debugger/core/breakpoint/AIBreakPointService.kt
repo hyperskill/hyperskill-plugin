@@ -29,13 +29,13 @@ class AIBreakPointService(private val project: Project, private val scope: Corou
 
   fun initialize() {
     val language = project.course?.languageById ?: return
-    val type = language.getAIBreakpointType()
+    val type = language.findAIBreakpointType() ?: return
     breakpointManager.getBreakpoints(type).forEach(::highlightBreakpoint)
     addListener(type)
   }
 
   fun toggleLineBreakpoint(language: Language, file: VirtualFile, line: Int) = runReadAction {
-    val type = language.getAIBreakpointType()
+    val type = language.findAIBreakpointType() ?: return@runReadAction
     removeBreakpointsOnLine(line)
     breakpointManager.addLineBreakpoint(type, file.url, line, type.createProperties())
   }
@@ -84,8 +84,9 @@ class AIBreakPointService(private val project: Project, private val scope: Corou
   }
 
   companion object {
-    fun Language.getAIBreakpointType(): XLineBreakpointType<XBreakpointProperties<*>> {
-      val breakPointType = BreakpointTypeManager.getInstance(this).getBreakPointType()
+    fun Language.findAIBreakpointType(): XLineBreakpointType<XBreakpointProperties<*>>? {
+      val manager = BreakpointTypeManager.getInstanceOrNull(this) ?: return null
+      val breakPointType = manager.getBreakPointType()
       return XDebuggerUtil.getInstance().findBreakpointType(breakPointType::class.java)
     }
   }

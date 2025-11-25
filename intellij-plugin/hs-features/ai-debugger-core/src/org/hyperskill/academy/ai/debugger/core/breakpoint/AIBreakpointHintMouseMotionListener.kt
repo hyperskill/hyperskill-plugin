@@ -10,7 +10,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.educational.ml.debugger.response.BreakpointHintDetails
-import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService.Companion.getAIBreakpointType
+import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService.Companion.findAIBreakpointType
 import org.hyperskill.academy.ai.debugger.core.ui.AIBreakpointHint
 import org.hyperskill.academy.learning.course
 import org.hyperskill.academy.learning.courseFormat.ext.languageById
@@ -40,7 +40,7 @@ class AIBreakpointHintMouseMotionListener(
   private fun hasBreakpointAtLine(editor: Editor, line: Int, virtualFile: VirtualFile): Boolean {
     val project = editor.project ?: return false
     val language = project.course?.languageById ?: return false
-    val type = language.getAIBreakpointType()
+    val type = language.findAIBreakpointType() ?: return false
     return XDebuggerManager.getInstance(project).breakpointManager.findBreakpointsAtLine(type, virtualFile, line).isNotEmpty()
   }
 

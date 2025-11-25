@@ -19,7 +19,7 @@ import com.intellij.xdebugger.XDebugProcess
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerManagerListener
 import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService
-import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService.Companion.getAIBreakpointType
+import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakPointService.Companion.findAIBreakpointType
 import org.hyperskill.academy.ai.debugger.core.breakpoint.AIBreakpointHintMouseMotionListener
 import org.hyperskill.academy.ai.debugger.core.utils.AIDebugUtils.failedTestName
 import org.hyperskill.academy.ai.debugger.core.utils.AIDebugUtils.runWithTests
@@ -52,7 +52,8 @@ class AIDebugSessionRunner(
 
   private fun makeBreakpointsRegular() {
     val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
-    breakpointManager.getBreakpoints(language.getAIBreakpointType()).forEach {
+    val type = language.findAIBreakpointType() ?: return
+    breakpointManager.getBreakpoints(type).forEach {
       breakpointManager.updateBreakpointPresentation(it, AllIcons.Debugger.Db_set_breakpoint, null)
       project.service<AIBreakPointService>().removeHighlighter(it)
     }
