@@ -18,7 +18,6 @@ import org.hyperskill.academy.learning.taskToolWindow.ui.styleManagers.Typograph
 import java.awt.*
 import javax.swing.JPanel
 import javax.swing.JTree
-import javax.swing.SwingUtilities
 import javax.swing.event.TreeSelectionListener
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeCellRenderer
@@ -50,7 +49,7 @@ class CoursesProvidersSidePanel(private val myCoursesProvider: MyCoursesProvider
     })
 
     // Adjust width after the tree is built/expanded and the component is added to the hierarchy
-    SwingUtilities.invokeLater { adjustWidthToContent() }
+    ApplicationManager.getApplication().invokeLater { adjustWidthToContent() }
   }
 
   private fun createCourseProvidersTree(): Tree {

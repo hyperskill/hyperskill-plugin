@@ -31,7 +31,6 @@ class BrowseCoursesDialog : OpenCourseDialogBase(), CoroutineScope {
     title = EduCoreBundle.message("course.dialog.title")
     init()
     rootPane.background = SelectCourseBackgroundColor
-    panel.setSidePaneBackground()
 
     Disposer.register(disposable) { job.cancel() }
     setupPluginListeners(disposable)

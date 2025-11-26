@@ -6,6 +6,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import org.hyperskill.academy.coursecreator.AdditionalFilesUtils.collectAdditionalFiles
@@ -195,6 +196,10 @@ object YamlDeepLoader {
       loadRemoteInfo(remoteConfigFile)
     }
     catch (th: Throwable) {
+      // Important: ProcessCanceledException must be propagated as-is in the IntelliJ Platform
+      // and should never be wrapped. Wrapping it hides cancellation semantics and pollutes logs
+      // with severe errors, like: RemoteYamlLoadingException: ProcessCanceledException.
+      if (th is ProcessCanceledException) throw th
       throw RemoteYamlLoadingException(this, th)
     }
   }

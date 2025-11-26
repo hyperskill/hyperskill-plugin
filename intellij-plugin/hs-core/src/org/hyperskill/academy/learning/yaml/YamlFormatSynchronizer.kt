@@ -54,9 +54,11 @@ object YamlFormatSynchronizer {
   val SAVE_TO_CONFIG = Key<Boolean>("Hyperskill.saveItem")
 
   fun saveAll(project: Project) {
-    @NonNls
-    val errorMessageToLog = "Attempt to create config files for project without course"
-    val course = StudyTaskManager.getInstance(project).course ?: error(errorMessageToLog)
+    // If there is no course associated with the project, there is nothing to save.
+    // This can happen for regular projects or welcome/preview projects.
+    val course = StudyTaskManager.getInstance(project).course ?: return
+    // Respect settings: do not attempt to create config files if this feature is disabled for the project.
+    if (!YamlFormatSettings.shouldCreateConfigFiles(project)) return
     val mapper = mapper()
     saveItem(course, mapper)
     course.visitSections { section -> saveItem(section, mapper) }

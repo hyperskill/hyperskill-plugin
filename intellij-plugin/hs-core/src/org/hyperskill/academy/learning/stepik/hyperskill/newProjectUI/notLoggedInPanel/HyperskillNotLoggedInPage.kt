@@ -2,9 +2,11 @@ package org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.notLogged
 
 import com.intellij.ui.ExperimentalUI
 import com.intellij.ui.JBColor
+import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.components.panels.Wrapper
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
+import javax.swing.ScrollPaneConstants
 
 class HyperskillNotLoggedInPanel : Wrapper() {
   private val backgroundColor = JBColor.namedColor(
@@ -17,7 +19,8 @@ class HyperskillNotLoggedInPanel : Wrapper() {
     val loginPanel = HyperskillTopLoginPanelWithBanner()
     val howItWorksPanel = HowItWorksPanel()
 
-    setContent(panel {
+    // Build the content panel first to preserve background and styling
+    val contentPanel = panel {
       row {
         cell(loginPanel).align(AlignX.FILL)
       }
@@ -27,7 +30,18 @@ class HyperskillNotLoggedInPanel : Wrapper() {
     }.apply {
       isOpaque = true
       background = if (ExperimentalUI.isNewUI()) backgroundColor else oldUIBackgroundColor
-    })
+    }
+
+    // Wrap content into a scroll pane: vertical as needed, horizontal never
+    val scrollPane = ScrollPaneFactory.createScrollPane(contentPanel, true).apply {
+      horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+      verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
+      isOpaque = false
+      border = null
+      viewport.isOpaque = false
+    }
+
+    setContent(scrollPane)
   }
 }
 

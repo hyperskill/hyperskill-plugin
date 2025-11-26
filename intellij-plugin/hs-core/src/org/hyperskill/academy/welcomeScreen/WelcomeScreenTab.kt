@@ -19,7 +19,7 @@ class WelcomeScreenTab : DefaultWelcomeScreenTab("Hyperskill Academy"), Coroutin
     get() = job + Dispatchers.Main + ModalityState.any().asContextElement()
 
   override fun buildComponent(): JComponent {
-    val panel = CoursesPanelWithTabs(this, this)
+    val panel = CoursesPanelWithTabs(this, this, isPreferredSize = false)
     this.launch {
       panel.loadCourses()
     }

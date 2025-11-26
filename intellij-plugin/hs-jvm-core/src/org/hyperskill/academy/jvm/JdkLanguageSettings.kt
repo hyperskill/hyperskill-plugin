@@ -8,6 +8,8 @@ import com.intellij.openapi.projectRoots.JavaSdk
 import com.intellij.openapi.projectRoots.JavaSdkType
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.SdkTypeId
+import com.intellij.openapi.projectRoots.SdkType
+import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl
 import com.intellij.openapi.roots.ui.configuration.JdkComboBox
 import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel
@@ -15,6 +17,7 @@ import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.UserDataHolder
+import com.intellij.openapi.vfs.LocalFileSystem
 import org.hyperskill.academy.jvm.messages.EduJVMBundle
 import org.hyperskill.academy.learning.EduNames.ENVIRONMENT_CONFIGURATION_LINK_JAVA
 import org.hyperskill.academy.learning.LanguageSettings
@@ -34,8 +37,11 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
   private fun createSdkModel(): ProjectSdksModel {
     val project = ProjectManager.getInstance().defaultProject
+    // Do NOT call reset(project) on EDT — it performs synchronous progress and is prohibited.
+    // We return the configurable's model as-is and let subclasses optionally pre-populate it
+    // (e.g., with a bundled JDK) via setupProjectSdksModel. Any heavier refreshes must be done
+    // in background before UI selection (see preselectJdk and prewarmSdkValidation).
     return ProjectStructureConfigurable.getInstance(project).projectJdksModel.apply {
-      reset(project)
       setupProjectSdksModel(this)
     }
   }
@@ -62,7 +68,20 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
   private fun preselectJdk(course: Course, jdkComboBox: JdkComboBox, sdksModel: ProjectSdksModel) {
     if (jdkComboBox.selectedJdk != null) return
     runInBackground(course.project, EduJVMBundle.message("progress.setting.suitable.jdk"), false) {
+      // Reset SDK model off-EDT to avoid IllegalStateException from synchronous progress on EDT
+      try {
+        val project = course.project
+        if (project != null) {
+          sdksModel.reset(project)
+        }
+      }
+      catch (_: Throwable) {
+        // best-effort; if reset fails we'll try with whatever the model currently has
+      }
+
       val suitableJdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
+      // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
+      prewarmSdkValidation(suitableJdk)
       invokeLater(ModalityState.any()) {
         jdkComboBox.selectedJdk = suitableJdk
       }
@@ -152,4 +171,42 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
   }
 
   data class BundledJdkInfo(val path: String, val existingSdk: Sdk?)
+
+  /**
+   * Perform potentially slow checks and VFS access off the EDT so that UI selection/painting
+   * of the JDK combo box does not trigger SlowOperations violations on the UI thread.
+   */
+  private fun prewarmSdkValidation(sdk: Sdk?) {
+    if (sdk == null) return
+    val homePath = sdk.homePath ?: return
+    // Touch VFS for the SDK home directory in BGT
+    try {
+      val lfs = LocalFileSystem.getInstance()
+      lfs.refreshAndFindFileByPath(homePath)
+    }
+    catch (_: Throwable) {
+      // best-effort pre-warm; ignore failures
+    }
+
+    // Trigger common queries that are used by renderers off-EDT to populate caches if any
+    try {
+      // Access version string (may compute using filesystem)
+      @Suppress("UNUSED_VARIABLE")
+      val ignoredVersionString = sdk.versionString
+      // Access VirtualFile home directory through concrete impl to trigger internal resolution
+      if (sdk is ProjectJdkImpl) {
+        @Suppress("UNUSED_VARIABLE")
+        val ignoredHomeDirectory = sdk.homeDirectory
+      }
+      // Validate SDK path using SdkType logic off-EDT (renderers call this on EDT)
+      val sdkTypeId: SdkTypeId = sdk.sdkType
+      if (sdkTypeId is SdkType) {
+        @Suppress("UNUSED_VARIABLE")
+        val ignoredHasValidPath = sdkTypeId.sdkHasValidPath(sdk)
+      }
+    }
+    catch (_: Throwable) {
+      // best-effort pre-warm; ignore failures
+    }
+  }
 }

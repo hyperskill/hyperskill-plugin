@@ -5,7 +5,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.JBCardLayout
 import com.intellij.util.ui.JBUI
-import com.intellij.util.ui.UIUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.hyperskill.academy.learning.LanguageSettings
@@ -15,51 +14,32 @@ import org.hyperskill.academy.learning.newproject.ui.myCourses.MyCoursesProvider
 import org.hyperskill.academy.learning.newproject.ui.welcomeScreen.JBACourseFromStorage
 import java.awt.BorderLayout
 import javax.swing.JPanel
-import javax.swing.event.TreeSelectionEvent
-import javax.swing.event.TreeSelectionListener
-import javax.swing.tree.DefaultMutableTreeNode
 
 private const val PANEL_WIDTH = 1050
 private const val PANEL_HEIGHT = 750
 
-class CoursesPanelWithTabs(private val scope: CoroutineScope, private val disposable: Disposable) : JPanel() {
+class CoursesPanelWithTabs(private val scope: CoroutineScope, private val disposable: Disposable, val isPreferredSize: Boolean = true) :
+  JPanel() {
   private val coursesTab: CoursesTab
   private val myCoursesProvider: MyCoursesProvider = MyCoursesProvider()
-  private val sidePanel: CoursesProvidersSidePanel
 
   val languageSettings: LanguageSettings<*>? get() = coursesTab.languageSettings()
 
   init {
     layout = BorderLayout()
     coursesTab = CoursesTab()
-    sidePanel = CoursesProvidersSidePanel(myCoursesProvider, disposable).apply {
-      addTreeSelectionListener(CoursesProviderSelectionListener())
-    }
-
-    add(sidePanel, BorderLayout.WEST)
     add(coursesTab, BorderLayout.CENTER)
-    maximumSize = JBUI.size(PANEL_WIDTH, PANEL_HEIGHT)
+    if (isPreferredSize) {
+      preferredSize = JBUI.size(PANEL_WIDTH, PANEL_HEIGHT)
+    }
   }
 
   fun doValidation() {
     coursesTab.doValidation()
   }
 
-  fun setSidePaneBackground() {
-    UIUtil.setBackgroundRecursively(sidePanel, UIUtil.SIDE_PANEL_BACKGROUND)
-  }
-
   fun loadCourses() {
     coursesTab.loadCourses(scope)
-  }
-
-  private inner class CoursesProviderSelectionListener : TreeSelectionListener {
-    override fun valueChanged(e: TreeSelectionEvent?) {
-      val node = e?.path?.lastPathComponent as DefaultMutableTreeNode
-      val provider = node.userObject as? CoursesPlatformProvider ?: return
-      val coursesProviderName = provider.name
-      coursesTab.showPanel(coursesProviderName)
-    }
   }
 
   private inner class CoursesTab : JPanel() {

@@ -38,17 +38,12 @@ class HyperskillTopLoginPanelWithBanner : Wrapper() {
 
   private val oldUIBackgroundColor = JBColor(0xF2F2F2, 0x3C3F41)
   private val radius = JBUI.scale(12)
-  private val icon = loadIcon("selectCourseDialog/hyperskill/hyperskill-freemium-cover.png", this::class.java.classLoader)
 
   init {
     border = JBUI.Borders.empty(PANEL_GAP)
 
     setContent(JPanel(BorderLayout()).apply {
-      val scaledIcon = IconUtil.scale(icon, this@HyperskillTopLoginPanelWithBanner, 0.5f)
-      val bannerPanel = Wrapper(JLabel(scaledIcon))
-
       add(createLeftPanel(), BorderLayout.CENTER)
-      add(bannerPanel, BorderLayout.EAST)
     }.apply {
       isOpaque = true
       background = getBackgroundColor()
