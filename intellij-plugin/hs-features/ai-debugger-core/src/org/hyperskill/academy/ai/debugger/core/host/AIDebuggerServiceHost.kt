@@ -7,17 +7,18 @@ import org.hyperskill.academy.ai.debugger.core.messages.AIDebuggerCoreBundle
 import org.hyperskill.academy.ai.debugger.core.messages.BUNDLE
 import org.hyperskill.academy.learning.actions.changeHost.ServiceHostEnum
 import org.hyperskill.academy.learning.actions.changeHost.ServiceHostManager
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
 
 @Suppress("unused") // All enum values ar used in UI
 enum class AIDebuggerServiceHost(
-  override val url: String,
-  @param:PropertyKey(resourceBundle = BUNDLE) private val visibleNameKey: String
+  @param:PropertyKey(resourceBundle = BUNDLE) private val visibleNameKey: String,
+  @NonNls override val url: String,
 ) : ServiceHostEnum {
-  PRODUCTION(AI_DEBUGGER_SERVICE_URL, "ai.debugger.service.production.server"),
-  STAGING(AI_DEBUGGER_STAGING_URL, "ai.debugger.service.staging.server"),
-  OTHER("http://localhost:8080", "ai.debugger.service.other");
+  PRODUCTION("ai.debugger.service.production.server", AI_DEBUGGER_SERVICE_URL),
+  STAGING("ai.debugger.service.staging.server", AI_DEBUGGER_STAGING_URL),
+  OTHER("ai.debugger.service.other", "http://localhost:8080");
 
   override fun visibleName(): @NlsContexts.ListItem String = AIDebuggerCoreBundle.message(visibleNameKey)
 
