@@ -213,6 +213,7 @@
                  defaultValue="[SQLite*|YAML]"/>
 
     <toolWindow id="Task" anchor="right" order="first"
+                conditionClass="org.hyperskill.academy.learning.EduProjectCondition"
                 factoryClass="org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowFactory"
                 icon="org.hyperskill.academy.EducationalCoreIcons.TaskToolWindow.CourseToolWindow"/>
     <toolWindow id="HyperskillEducational.CheckDetails" anchor="bottom" canCloseContents="true" doNotActivateOnStart="true"

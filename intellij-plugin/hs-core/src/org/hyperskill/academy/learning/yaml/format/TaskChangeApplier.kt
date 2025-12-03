@@ -19,7 +19,6 @@ open class TaskChangeApplier(val project: Project) : StudyItemChangeApplier<Task
       return
     }
     existingItem.feedbackLink = deserializedItem.feedbackLink
-    @Suppress("DEPRECATION") // it's ok as we just copy value of deprecated field
     existingItem.customPresentableName = deserializedItem.customPresentableName
     existingItem.contentTags = deserializedItem.contentTags
     existingItem.solutionHidden = deserializedItem.solutionHidden

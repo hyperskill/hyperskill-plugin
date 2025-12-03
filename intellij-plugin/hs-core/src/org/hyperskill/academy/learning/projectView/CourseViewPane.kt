@@ -176,10 +176,9 @@ class CourseViewPane(project: Project) : AbstractProjectViewPaneWithAsyncSupport
   @Suppress("UnstableApiUsage")
   override fun supportsSortByType(): Boolean = false
 
-  @Deprecated("Migrate to [uiDataSnapshot] ASAP.")
-  override fun getData(dataId: String): Any? {
-    if (myProject.isDisposed) return null
-    return super.getData(dataId)
+  override fun uiDataSnapshot(sink: DataSink) {
+    if (myProject.isDisposed) return
+    super.uiDataSnapshot(sink)
   }
 
   override fun isDefaultPane(project: Project): Boolean = project.isEduProject()

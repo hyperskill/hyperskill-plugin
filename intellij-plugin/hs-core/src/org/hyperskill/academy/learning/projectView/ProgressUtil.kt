@@ -4,7 +4,7 @@ import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.ui.laf.darcula.ui.DarculaProgressBarUI
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.util.ColorProgressBar
+import com.intellij.util.ui.JBUI
 import com.intellij.openapi.project.Project
 import com.intellij.ui.Gray
 import com.intellij.ui.JBColor
@@ -69,7 +69,7 @@ object ProgressUtil {
         return JBColor(Gray._220, Color(76, 77, 79))
       }
     })
-    progressBar.foreground = ColorProgressBar.GREEN
+    progressBar.foreground = JBUI.CurrentTheme.ProgressBar.PASSED
     progressBar.isIndeterminate = false
     progressBar.putClientProperty("ProgressBar.flatEnds", true)
     return progressBar

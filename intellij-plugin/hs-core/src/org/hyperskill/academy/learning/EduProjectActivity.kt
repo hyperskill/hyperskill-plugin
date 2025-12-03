@@ -34,7 +34,6 @@ import org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage
 import org.hyperskill.academy.learning.projectView.CourseViewPane
 import org.hyperskill.academy.learning.submissions.SubmissionSettings
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
-import org.hyperskill.academy.platform.ProgressCompat
 import org.jetbrains.annotations.VisibleForTesting
 
 class EduProjectActivity : ProjectActivity {
@@ -68,10 +67,8 @@ class EduProjectActivity : ProjectActivity {
     selectProjectView(project, true)
 
     withContext(Dispatchers.EDT) {
-      ProgressCompat.withBlockingIfNeeded {
-        migrateYaml(project, course)
-        setupProject(project, course)
-      }
+      migrateYaml(project, course)
+      setupProject(project, course)
       val coursesStorage = CoursesStorage.getInstance()
       val location = project.basePath
       if (!coursesStorage.hasCourse(course) && location != null) {

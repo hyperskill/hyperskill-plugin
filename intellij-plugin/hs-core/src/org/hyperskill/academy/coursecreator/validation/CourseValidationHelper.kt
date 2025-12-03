@@ -1,5 +1,7 @@
 package org.hyperskill.academy.coursecreator.validation
 
+import com.intellij.openapi.actionSystem.ActionUiKind
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.EDT
@@ -76,8 +78,10 @@ class CourseValidationHelper(
   private suspend fun TestSuiteBuilder.validateTaskTests(project: Project, task: Task) {
     testCase(TESTS_NODE) {
       withContext(Dispatchers.EDT) {
+        val action = CheckAction()
         val dataContext = SimpleDataContext.getProjectContext(project)
-        ActionUtil.invokeAction(CheckAction(), dataContext, "", null, null)
+        val event = AnActionEvent.createEvent(action, dataContext, "", ActionUiKind.NONE, null)
+        ActionUtil.invokeAction(action, event, null)
       }
 
       val result = ValidationCheckResultManager.getInstance(project).getResult(task)

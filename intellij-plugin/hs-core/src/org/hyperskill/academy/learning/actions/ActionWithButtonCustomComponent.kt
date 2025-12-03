@@ -1,7 +1,9 @@
 package org.hyperskill.academy.learning.actions
 
 import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.ActionUiKind
 import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
@@ -23,8 +25,9 @@ abstract class ActionWithButtonCustomComponent : AnAction(), CustomComponentActi
     val button = JButton(presentation.text)
     button.toolTipText = presentation.description
     button.addActionListener { e ->
-      @Suppress("DEPRECATION") // BACKCOMPAT: 2024.2 Use [ActionUtil.invokeAction(AnAction, AnActionEvent, Runnable?)]
-      ActionUtil.invokeAction(this, ActionToolbar.getDataContextFor(button), place, null, null)
+      val dataContext = ActionToolbar.getDataContextFor(button)
+      val event = AnActionEvent.createEvent(this, dataContext, place, ActionUiKind.NONE, e)
+      ActionUtil.invokeAction(this, event, null)
     }
     return button
   }

@@ -1,6 +1,6 @@
 package org.hyperskill.academy.learning.newproject.ui.filters
 
-import com.intellij.ide.plugins.newui.HorizontalLayout
+import com.intellij.ui.components.panels.HorizontalLayout
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import org.hyperskill.academy.learning.courseFormat.Course

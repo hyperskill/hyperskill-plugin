@@ -3,7 +3,6 @@ package org.hyperskill.academy.learning.yaml
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
@@ -71,29 +70,25 @@ fun RemoteYamlLoadingException.processError(project: Project) {
 }
 
 private fun processErrors(project: Project, configFile: VirtualFile, e: Throwable) {
-  @Suppress("DEPRECATION")
-  // suppress deprecation for MarkedYAMLException as it is actually thrown from com.fasterxml.jackson.dataformat.yaml.YAMLParser.nextToken
   when (e) {
-    is MissingKotlinParameterException -> {
-      val parameterName = e.parameter.name
-      if (parameterName == null) {
-        showError(project, e, configFile)
-      }
-      else {
+    is InvalidYamlFormatException -> showError(project, e, configFile, e.message)
+
+    is MismatchedInputException -> {
+      // MismatchedInputException is thrown for missing required parameters (previously MissingKotlinParameterException)
+      val parameterName = e.path.lastOrNull()?.fieldName
+      if (parameterName != null) {
         val cause = EduCoreBundle.message(
           "yaml.editor.notification.parameter.is.empty",
           NameUtil.nameToWordsLowerCase(parameterName).joinToString("_")
         )
         showError(project, e, configFile, cause)
       }
+      else {
+        showError(project, e, configFile)
+      }
     }
 
-    is InvalidYamlFormatException -> showError(project, e, configFile, e.message)
-    is MismatchedInputException -> {
-      showError(project, e, configFile)
-    }
-
-    is com.fasterxml.jackson.dataformat.yaml.snakeyaml.error.MarkedYAMLException -> {
+    is org.yaml.snakeyaml.error.MarkedYAMLException -> {
       val message = yamlParsingErrorNotificationMessage(e.problem, e.contextMark?.line)
       if (message != null) {
         showError(project, e, configFile, message)

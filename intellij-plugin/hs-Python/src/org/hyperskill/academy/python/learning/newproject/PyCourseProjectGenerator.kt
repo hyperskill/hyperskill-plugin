@@ -78,7 +78,7 @@ open class PyCourseProjectGenerator(
         val packageManager = PyPackageManager.getInstance(baseSdk)
         return packageManager.createVirtualEnv(virtualEnvPath, false)
       }
-    }, PyConfigurableInterpreterList.getInstance(null).allPythonSdks, baseSdk, project.basePath, null)
+    }, PyConfigurableInterpreterList.getInstance(null).allPythonSdks, baseSdk, project.basePath, null, null)
     if (sdk == null) {
       LOG.warn("Failed to create virtual env in $virtualEnvPath")
       return

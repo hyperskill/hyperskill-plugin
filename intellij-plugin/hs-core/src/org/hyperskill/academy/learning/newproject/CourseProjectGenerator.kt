@@ -26,7 +26,6 @@ import com.intellij.platform.ide.progress.ModalTaskOwner
 import com.intellij.platform.ide.progress.TaskCancellation
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.platform.ide.progress.withModalProgress
-import com.intellij.platform.util.progress.indeterminateStep
 import com.intellij.platform.util.progress.reportRawProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.profile.codeInspection.ProjectInspectionProfileManager
@@ -56,7 +55,6 @@ import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.Hypers
 import org.hyperskill.academy.learning.submissions.SubmissionSettings
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 import org.hyperskill.academy.platform.OpenProjectTaskCompat
-import org.hyperskill.academy.platform.ProgressCompat
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.File
 import java.io.IOException
@@ -204,8 +202,8 @@ abstract class CourseProjectGenerator<S : EduProjectSettings>(
       EduCoreBundle.message("generate.course.progress.title"),
       TaskCancellation.nonCancellable()
     ) {
-      indeterminateStep(EduCoreBundle.message("generate.project.unpack.course.project.settings.progress.text")) {
-        ProgressCompat.withBlockingIfNeeded {
+      reportSequentialProgress { reporter ->
+        reporter.indeterminateStep(EduCoreBundle.message("generate.project.unpack.course.project.settings.progress.text")) {
           unpackAdditionalFiles(holder, ONLY_IDEA_DIRECTORY)
         }
       }

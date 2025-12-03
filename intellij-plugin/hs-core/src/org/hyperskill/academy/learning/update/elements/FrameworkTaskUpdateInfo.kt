@@ -20,7 +20,6 @@ import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.toCourseInfoHolder
 import org.hyperskill.academy.learning.update.FrameworkLessonHistory
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
-import org.hyperskill.academy.platform.ProgressCompat
 import java.io.IOException
 
 data class FrameworkTaskUpdateInfo(
@@ -71,9 +70,7 @@ data class FrameworkTaskUpdateInfo(
       }
     }
 
-    ProgressCompat.withBlockingIfNeeded {
-      YamlFormatSynchronizer.saveItemWithRemoteInfo(remoteItem)
-    }
+    YamlFormatSynchronizer.saveItemWithRemoteInfo(remoteItem)
   }
 
   @Throws(IOException::class, IllegalStateException::class)
@@ -85,9 +82,7 @@ data class FrameworkTaskUpdateInfo(
       localItem.getTaskDirectory(project) ?: error("Failed to find local task dir: ${localLesson.name}")
     }
 
-    ProgressCompat.withBlockingIfNeeded {
-      GeneratorUtils.createDescriptionFile(project, newTaskDir, remoteItem)
-    }
+    GeneratorUtils.createDescriptionFile(project, newTaskDir, remoteItem)
   }
 
   @Throws(IOException::class, IllegalStateException::class)
@@ -125,8 +120,6 @@ data class FrameworkTaskUpdateInfo(
       }
     }
 
-    ProgressCompat.withBlockingIfNeeded {
-      GeneratorUtils.createChildFile(project.toCourseInfoHolder(), taskDir, fileName, contents, isEditable)
-    }
+    GeneratorUtils.createChildFile(project.toCourseInfoHolder(), taskDir, fileName, contents, isEditable)
   }
 }

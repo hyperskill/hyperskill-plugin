@@ -12,7 +12,6 @@ class FrameworkLesson() : Lesson() {
     items = lesson.items
     parent = lesson.parent
     index = lesson.index
-    @Suppress("DEPRECATION")
     customPresentableName = lesson.customPresentableName
   }
 

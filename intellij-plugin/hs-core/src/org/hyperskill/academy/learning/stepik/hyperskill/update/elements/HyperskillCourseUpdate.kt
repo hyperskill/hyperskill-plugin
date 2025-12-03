@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.update.elements.CourseUpdate
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
-import org.hyperskill.academy.platform.ProgressCompat
 import java.util.*
 
 class HyperskillCourseUpdate(
@@ -25,8 +24,6 @@ class HyperskillCourseUpdate(
     localItem.updateDate = Date()
     localItem.environment = remoteItem.environment
 
-    ProgressCompat.withBlockingIfNeeded {
-      YamlFormatSynchronizer.saveItemWithRemoteInfo(localItem)
-    }
+    YamlFormatSynchronizer.saveItemWithRemoteInfo(localItem)
   }
 }

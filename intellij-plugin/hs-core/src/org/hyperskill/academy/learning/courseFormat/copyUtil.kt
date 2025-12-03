@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -20,11 +21,12 @@ import org.hyperskill.academy.learning.serialization.SerializationUtils
 private val LOG = logger<StudyItem>()
 
 private val MAPPER: ObjectMapper by lazy {
-  val mapper = ObjectMapper()
-  mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-  mapper.enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)
-  mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
-  mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+  val mapper = JsonMapper.builder()
+    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)
+    .visibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+    .visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+    .build()
 
   val module = SimpleModule()
   module.addSerializer(StudyItem::class.java, StudyItemCopySerializer())

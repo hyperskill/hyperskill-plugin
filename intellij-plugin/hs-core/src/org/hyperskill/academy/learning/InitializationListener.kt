@@ -82,7 +82,7 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
       )
       addAction(
         NotificationAction.createSimple(EduCoreBundle.message("notification.ide.switch.from.hyperskill.ide.acton.title")) {
-          @Suppress("UnstableApiUsage")
+          @Suppress("UnstableApiUsage", "DEPRECATION")
           val link = if (PlatformUtils.isPyCharmEducational()) {
             "https://www.jetbrains.com/pycharm/download/"
           }

@@ -187,7 +187,6 @@ open class PyCharmStepOptions : StepOptions {
     files = collectTaskFiles(project, task)
     taskType = task.itemType
     lessonType = if (task.lesson is FrameworkLesson) FRAMEWORK else null
-    @Suppress("DEPRECATION")
     customPresentableName = task.customPresentableName
     solutionHidden = task.solutionHidden
   }

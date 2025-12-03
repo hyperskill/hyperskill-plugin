@@ -54,15 +54,6 @@ class CCStudentInvisibleFileNode(
     data.addText(presentableName, SimpleTextAttributes.GRAY_ATTRIBUTES)
   }
 
-  @Deprecated(
-    "Deprecated in Java",
-    ReplaceWith("testPresentation(this)", "org.hyperskill.academy.learning.projectView.CourseViewUtils.testPresentation")
-  )
-  @TestOnly
-  override fun getTestPresentation(): String {
-    return testPresentation(this)
-  }
-
   private fun containsAdditionalFile(course: Course, file: VirtualFile): Boolean {
     val relativePath = FileUtil.getRelativePath(
       project.courseDir.path,

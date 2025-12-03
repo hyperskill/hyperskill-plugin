@@ -12,7 +12,7 @@ class EduTextIcon(private val text: String, private val font: Font = JBFont.labe
   private val width: Int
 
   init {
-    val fontMetrics = Toolkit.getDefaultToolkit().getFontMetrics(font)
+    val fontMetrics = Canvas().getFontMetrics(font)
     height = fontMetrics.height
     width = fontMetrics.stringWidth(text)
   }

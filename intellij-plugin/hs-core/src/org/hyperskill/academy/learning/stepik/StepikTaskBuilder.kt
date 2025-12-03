@@ -10,6 +10,7 @@ import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
+import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.languageById
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTaskType
@@ -204,7 +205,7 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
     }
     val taskFilePath = GeneratorUtils.joinPaths(configurator.sourceDir, fileName)
     val taskFile = TaskFile()
-    taskFile.text = editorText
+    taskFile.contents = InMemoryTextualContents(editorText)
     taskFile.name = taskFilePath
     task.addTaskFile(taskFile)
   }

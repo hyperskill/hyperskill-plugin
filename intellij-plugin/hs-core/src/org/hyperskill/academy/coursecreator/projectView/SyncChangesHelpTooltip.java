@@ -58,7 +58,7 @@ import static com.intellij.openapi.util.text.HtmlChunk.html;
  * TODO() Modify this class in the platform code to use version from IntelliJ platform
  */
 
-public class SyncChangesHelpTooltip {
+public class SyncChangesHelpTooltip implements com.intellij.openapi.Disposable {
   private static final Color INFO_COLOR = JBColor.namedColor("ToolTip.infoForeground", JBUI.CurrentTheme.ContextHelp.FOREGROUND);
   private static final Color LINK_COLOR = JBColor.namedColor("ToolTip.linkForeground", JBUI.CurrentTheme.Link.Foreground.ENABLED);
 
@@ -76,7 +76,7 @@ public class SyncChangesHelpTooltip {
   private static final int LINKS_GAP = JBUI.scale(10);
   private final ArrayList<ActionLink> links = new ArrayList<>();
   private final ArrayList<@Nullable JBFontScaler> linkOriginalFontScalers = new ArrayList<>();
-  private final Alarm popupAlarm = new Alarm();
+  private final Alarm popupAlarm = new Alarm(this);
   protected MouseAdapter myMouseListener;
   private @Nullable Supplier<@NotNull @TooltipTitle String> title;
   private @NlsSafe String shortcut;
@@ -750,5 +750,10 @@ public class SyncChangesHelpTooltip {
 
       setSizeForWidth(width);
     }
+  }
+
+  @Override
+  public void dispose() {
+    // Alarm is disposed automatically when this Disposable is disposed
   }
 }

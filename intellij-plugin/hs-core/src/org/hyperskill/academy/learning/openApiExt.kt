@@ -3,10 +3,10 @@ package org.hyperskill.academy.learning
 import com.intellij.facet.ui.FacetDependentToolWindow
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.application.AppUIExecutor
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.application.impl.coroutineDispatchingContext
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -16,11 +16,10 @@ import com.intellij.openapi.fileTypes.impl.DetectedByContentFileType
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
-import com.intellij.openapi.project.DumbService
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectEx
 import com.intellij.openapi.project.guessProjectDir
-import com.intellij.openapi.util.Computable
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.text.StringUtil
@@ -32,6 +31,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.util.PathUtil
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.BroadcastDirection
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.TaskFile
@@ -156,7 +156,9 @@ val String.xmlEscaped: String get() = StringUtil.escapeXmlEntities(this)
 val String.xmlUnescaped: String get() = StringUtil.unescapeXmlEntities(this)
 
 inline fun <T> runReadActionInSmartMode(project: Project, crossinline runnable: () -> T): T {
-  return DumbService.getInstance(project).runReadActionInSmartMode(Computable { runnable() })
+  return ReadAction.nonBlocking<T> { runnable() }
+    .inSmartMode(project)
+    .executeSynchronously()
 }
 
 fun Document.toPsiFile(project: Project): PsiFile? {
@@ -200,7 +202,7 @@ fun <T> withRegistryKeyOff(key: String, action: () -> T): T {
 }
 
 fun <V> getInEdt(modalityState: ModalityState = ModalityState.defaultModalityState(), compute: () -> V): V {
-  return runBlocking(AppUIExecutor.onUiThread(modalityState).coroutineDispatchingContext()) {
+  return runBlocking(Dispatchers.EDT + modalityState.asContextElement()) {
     compute()
   }
 }

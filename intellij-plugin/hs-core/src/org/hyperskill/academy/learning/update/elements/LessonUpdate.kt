@@ -14,7 +14,6 @@ import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.navigation.NavigationUtils
 import org.hyperskill.academy.learning.update.StudyItemUpdater.Companion.deleteFilesOnDisc
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
-import org.hyperskill.academy.platform.ProgressCompat
 
 sealed class LessonUpdate(localItem: Lesson?, remoteItem: Lesson?) : StudyItemUpdate<Lesson>(localItem, remoteItem)
 
@@ -28,14 +27,10 @@ data class LessonCreationInfo(
 
     val parentDir = localContainer.getDir(project.courseDir) ?: error("Failed to find parent dir: ${localContainer.name}")
     withContext(Dispatchers.IO) {
-      ProgressCompat.withBlockingIfNeeded {
-        GeneratorUtils.createLesson(project, remoteItem, parentDir)
-      }
+      GeneratorUtils.createLesson(project, remoteItem, parentDir)
     }
 
-    ProgressCompat.withBlockingIfNeeded {
-      YamlFormatSynchronizer.saveItemWithRemoteInfo(remoteItem)
-    }
+    YamlFormatSynchronizer.saveItemWithRemoteInfo(remoteItem)
   }
 }
 
@@ -65,7 +60,7 @@ data class LessonUpdateInfo(
 
       localItem.name = remoteItem.name
       withContext(Dispatchers.IO) {
-        val toDir = ProgressCompat.withBlockingIfNeeded { GeneratorUtils.createUniqueDir(parentDir, localItem) }
+        val toDir = GeneratorUtils.createUniqueDir(parentDir, localItem)
         writeAction {
           fromDir.children.forEach { it.move(this, toDir) }
           fromDir.delete(this)
@@ -73,9 +68,7 @@ data class LessonUpdateInfo(
       }
     }
 
-    ProgressCompat.withBlockingIfNeeded {
-      YamlFormatSynchronizer.saveItemWithRemoteInfo(localItem)
-    }
+    YamlFormatSynchronizer.saveItemWithRemoteInfo(localItem)
   }
 
   private suspend fun ensureFrameworkLessonCurrentTaskIsNotDeleted(
@@ -90,9 +83,7 @@ data class LessonUpdateInfo(
 
     // We explicitly navigate to the last non-deleted task to properly update the state of the framework lesson
     withContext(Dispatchers.EDT) {
-      ProgressCompat.withBlockingIfNeeded {
-        NavigationUtils.prepareFilesForTargetTask(project, lesson, currentTask, lastNonDeletedTask, showDialogIfConflict = false)
-      }
+      NavigationUtils.prepareFilesForTargetTask(project, lesson, currentTask, lastNonDeletedTask, showDialogIfConflict = false)
     }
   }
 }

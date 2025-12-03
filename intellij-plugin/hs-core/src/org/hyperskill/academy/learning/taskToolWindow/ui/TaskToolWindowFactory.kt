@@ -25,9 +25,6 @@ import javax.swing.JSlider
 import javax.swing.SwingConstants
 
 class TaskToolWindowFactory : ToolWindowFactory, DumbAware {
-  @Deprecated("This method is deprecated in the parent class")
-  override fun isApplicable(project: Project): Boolean = project.isEduProject()
-
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     if (!project.isEduProject()) {
       return

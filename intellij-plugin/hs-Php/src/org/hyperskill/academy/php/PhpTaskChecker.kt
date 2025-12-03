@@ -1,8 +1,8 @@
 package org.hyperskill.academy.php
 
 import com.intellij.execution.RunnerAndConfigurationSettings
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
@@ -41,7 +41,7 @@ class PhpTaskChecker(
       val errorOutput = StringBuilder()
       var destroyed = false
       var exitCode = 0
-      val processListener = object : ProcessAdapter() {
+      val processListener = object : ProcessListener {
         override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
           val containsError = event.text.replaceFirstChar { it.titlecaseChar() }.contains(error)
           if (outputType == ProcessOutputTypes.STDERR || containsError) {
@@ -50,7 +50,6 @@ class PhpTaskChecker(
         }
 
         override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
-          super.processWillTerminate(event, willBeDestroyed)
           destroyed = willBeDestroyed
         }
 

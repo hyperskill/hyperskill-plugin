@@ -42,10 +42,9 @@ open class HintInlineBanner(
     }
 
     layout = object : BorderLayout(gap, gap) {
-      @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
-      override fun addLayoutComponent(name: String?, comp: Component) {
+      override fun addLayoutComponent(comp: Component?, constraints: Any?) {
         if (comp !== myCloseButton) {
-          super.addLayoutComponent(name, comp)
+          super.addLayoutComponent(comp, constraints)
         }
       }
 

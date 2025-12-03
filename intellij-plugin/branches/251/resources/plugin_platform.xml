@@ -1,6 +1,0 @@
-<idea-plugin>
-  <content>
-    <!--suppress PluginXmlValidity -->
-    <module name="hs-remote-env"/>
-  </content>
-</idea-plugin>

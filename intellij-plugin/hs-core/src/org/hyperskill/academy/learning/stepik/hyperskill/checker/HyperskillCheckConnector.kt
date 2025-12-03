@@ -29,8 +29,8 @@ import org.hyperskill.academy.learning.stepik.hyperskill.submissions.HyperskillS
 import org.hyperskill.academy.learning.submissions.SolutionFile
 import org.hyperskill.academy.learning.submissions.SubmissionsManager
 import org.hyperskill.academy.learning.submissions.getSolutionFiles
-import java.net.MalformedURLException
-import java.net.URL
+import java.net.URI
+import java.net.URISyntaxException
 import java.util.concurrent.TimeUnit
 
 object HyperskillCheckConnector {
@@ -128,9 +128,9 @@ object HyperskillCheckConnector {
 
   private fun getWebsocketHostName(): String {
     return try {
-      URL(HYPERSKILL_URL).host
+      URI(HYPERSKILL_URL).host
     }
-    catch (_: MalformedURLException) {
+    catch (_: URISyntaxException) {
       return HYPERSKILL_DEFAULT_HOST
     }
   }

@@ -2,6 +2,7 @@ package org.hyperskill.academy.learning.newproject.ui
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.JBCardLayout
 import com.intellij.util.ui.JBUI
@@ -87,7 +88,7 @@ class CoursesPanelWithTabs(private val scope: CoroutineScope, private val dispos
       cardLayout.show(this, activeTabName)
       val focusManager = IdeFocusManager.findInstanceByComponent(panel)
       val toFocus = focusManager.getFocusTargetFor(panel) ?: return
-      focusManager.doWhenFocusSettlesDown { focusManager.requestFocus(toFocus, true) }
+      focusManager.doWhenFocusSettlesDown({ focusManager.requestFocus(toFocus, true) }, ModalityState.current())
     }
 
     fun doValidation() {

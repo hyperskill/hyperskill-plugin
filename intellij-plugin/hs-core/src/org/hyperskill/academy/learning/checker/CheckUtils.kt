@@ -218,7 +218,7 @@ object CheckUtils {
       }
       val processHandler = descriptor.processHandler
       if (processHandler != null) {
-        processHandler.addProcessListener(object : ProcessAdapter() {
+        processHandler.addProcessListener(object : ProcessListener {
           override fun processTerminated(event: ProcessEvent) {
             context.latch.countDown()
           }

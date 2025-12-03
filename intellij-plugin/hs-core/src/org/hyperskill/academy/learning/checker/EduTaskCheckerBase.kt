@@ -4,8 +4,8 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.ConfigurationFromContext
 import com.intellij.execution.configurations.ConfigurationType
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runInEdt
@@ -59,7 +59,7 @@ abstract class EduTaskCheckerBase(task: EduTask, private val envChecker: Environ
     }
 
     val stderr = StringBuilder()
-    val processListener = object : ProcessAdapter() {
+    val processListener = object : ProcessListener {
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         val text = event.text
         if (text != null && ProcessOutputType.isStderr(outputType)) {

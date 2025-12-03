@@ -95,6 +95,7 @@ object OAuthUtils {
   }
 }
 
+@Suppress("DEPRECATION")
 fun <UInfo : UserInfo> Account<UInfo>.serialize(): Element? {
   if (PasswordSafe.instance.isMemoryOnly) {
     return null

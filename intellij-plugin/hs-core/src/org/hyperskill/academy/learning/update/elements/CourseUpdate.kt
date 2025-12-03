@@ -9,7 +9,6 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.stepik.hyperskill.update.elements.HyperskillCourseUpdate
 import org.hyperskill.academy.learning.update.comparators.EduFileComparator.Companion.areNotEqual
-import org.hyperskill.academy.platform.ProgressCompat
 
 abstract class CourseUpdate<T : Course>(
   override val localItem: T,
@@ -28,10 +27,8 @@ abstract class CourseUpdate<T : Course>(
         }
       }
 
-      ProgressCompat.withBlockingIfNeeded {
-        remoteItem.additionalFiles.forEach { file ->
-          GeneratorUtils.createChildFile(project, baseDir, file.name, file.contents)
-        }
+      remoteItem.additionalFiles.forEach { file ->
+        GeneratorUtils.createChildFile(project, baseDir, file.name, file.contents)
       }
 
       localItem.additionalFiles = remoteItem.additionalFiles

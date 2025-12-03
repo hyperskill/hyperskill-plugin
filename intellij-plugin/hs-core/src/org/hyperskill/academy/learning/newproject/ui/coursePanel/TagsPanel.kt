@@ -1,6 +1,6 @@
 package org.hyperskill.academy.learning.newproject.ui.coursePanel
 
-import com.intellij.ide.plugins.newui.HorizontalLayout
+import com.intellij.ui.components.panels.HorizontalLayout
 import com.intellij.ide.plugins.newui.TagComponent
 import com.intellij.ui.components.panels.NonOpaquePanel
 import com.intellij.util.ui.JBUI
