@@ -4,11 +4,7 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.projectRoots.JavaSdk
-import com.intellij.openapi.projectRoots.JavaSdkType
-import com.intellij.openapi.projectRoots.Sdk
-import com.intellij.openapi.projectRoots.SdkTypeId
-import com.intellij.openapi.projectRoots.SdkType
+import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl
 import com.intellij.openapi.roots.ui.configuration.JdkComboBox
 import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable
@@ -35,6 +31,12 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
   protected var jdk: Sdk? = null
   protected val sdkModel: ProjectSdksModel = createSdkModel()
 
+  @Volatile
+  private var isJdkLoading: Boolean = false
+
+  @Volatile
+  private var componentsInitialized: Boolean = false
+
   private fun createSdkModel(): ProjectSdksModel {
     val project = ProjectManager.getInstance().defaultProject
     // Do NOT call reset(project) on EDT — it performs synchronous progress and is prohibited.
@@ -53,6 +55,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     disposable: CheckedDisposable,
     context: UserDataHolder?
   ): List<LabeledComponent<JComponent>> {
+    componentsInitialized = true
     val sdkTypeFilter = Condition<SdkTypeId> { sdkTypeId -> sdkTypeId is JavaSdkType && !(sdkTypeId as JavaSdkType).isDependent }
     val sdkFilter = Condition<Sdk> { sdk -> sdkTypeFilter.value(sdk.sdkType) }
     val jdkComboBox = JdkComboBox(null, sdkModel, sdkTypeFilter, sdkFilter, sdkTypeFilter, null)
@@ -67,6 +70,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
   private fun preselectJdk(course: Course, jdkComboBox: JdkComboBox, sdksModel: ProjectSdksModel) {
     if (jdkComboBox.selectedJdk != null) return
+    isJdkLoading = true
     runInBackground(course.project, EduJVMBundle.message("progress.setting.suitable.jdk"), false) {
       // Reset SDK model off-EDT to avoid IllegalStateException from synchronous progress on EDT
       try {
@@ -79,16 +83,26 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
         // best-effort; if reset fails we'll try with whatever the model currently has
       }
 
+      // If sdkModel is empty, try to get JDKs directly from ProjectJdkTable
       val suitableJdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
+        ?: findSuitableJdkFromTable(minJvmSdkVersion(course))
       // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
       prewarmSdkValidation(suitableJdk)
       invokeLater(ModalityState.any()) {
         jdkComboBox.selectedJdk = suitableJdk
+        jdk = suitableJdk
+        isJdkLoading = false
+        notifyListeners()
       }
     }
   }
 
   override fun validate(course: Course?, courseLocation: String?): SettingsValidationResult {
+    // If UI components haven't been initialized yet or JDK is still loading, return Pending to avoid false errors
+    if (!componentsInitialized || isJdkLoading) {
+      return SettingsValidationResult.Pending
+    }
+
     fun ready(messageId: String, vararg additionalSubstitution: String): SettingsValidationResult {
       val message = EduJVMBundle.message(messageId, *additionalSubstitution)
 
@@ -153,6 +167,28 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
     fun findSuitableJdk(courseSdkVersion: ParsedJavaVersion, sdkModel: ProjectSdksModel): Sdk? {
       val jdks = sdkModel.sdks.filter { it.sdkType == JavaSdk.getInstance() }
+
+      if (courseSdkVersion !is JavaVersionParseSuccess) {
+        return jdks.firstOrNull()
+      }
+
+      return jdks.find {
+        val jdkVersion = ParsedJavaVersion.fromJavaSdkVersionString(it.versionString)
+        if (jdkVersion is JavaVersionParseSuccess) {
+          jdkVersion isAtLeast courseSdkVersion
+        }
+        else {
+          false
+        }
+      }
+    }
+
+    /**
+     * Fallback method to find suitable JDK directly from ProjectJdkTable
+     * when ProjectSdksModel is empty (e.g., when course.project is null in Browse Courses dialog).
+     */
+    fun findSuitableJdkFromTable(courseSdkVersion: ParsedJavaVersion): Sdk? {
+      val jdks = ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance())
 
       if (courseSdkVersion !is JavaVersionParseSuccess) {
         return jdks.firstOrNull()
