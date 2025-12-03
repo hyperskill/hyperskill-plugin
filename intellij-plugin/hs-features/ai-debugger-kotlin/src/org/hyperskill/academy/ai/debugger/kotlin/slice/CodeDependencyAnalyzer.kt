@@ -31,8 +31,10 @@ class CodeDependencyAnalyzer(private val maxDepth: Int = 3) {
     dataMap.keys.filterIsInstance<KtFunction>().forEach { processDependency(it, depth + 1, dependencyDirection) }
     dataMap.values.flatten().filterIsInstance<KtFunction>().forEach { processDependency(it, depth + 1, dependencyDirection) }
     controlMap.values.flatten().filterIsInstance<KtCallExpression>().forEach { element ->
-      element.calleeExpression?.reference()?.resolve()?.let { (it as? KtFunction)?.let { function ->
-        processDependency(function, depth + 1, dependencyDirection) }
+      element.calleeExpression?.reference()?.resolve()?.let {
+        (it as? KtFunction)?.let { function ->
+          processDependency(function, depth + 1, dependencyDirection)
+        }
       }
     }
   }

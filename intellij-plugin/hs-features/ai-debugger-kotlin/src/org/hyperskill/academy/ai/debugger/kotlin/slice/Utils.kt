@@ -46,7 +46,8 @@ fun PsiElement.references(): List<KtReferenceExpression> {
     .filter { it !is KtOperationReferenceExpression }
   return if (this is KtReferenceExpression) {
     references + this
-  } else {
+  }
+  else {
     references
   }
 }
@@ -69,7 +70,8 @@ inline fun Iterator<PsiElement>.forEachReachable(action: (PsiElement) -> Unit) =
 fun Document.getLineNumberSafe(offset: Int) =
   if (offset in 0 until textLength) {
     getLineNumber(offset)
-  } else {
+  }
+  else {
     null
   }
 

@@ -17,7 +17,7 @@ interface BreakpointTypeManager {
     fun getInstance(language: Language): BreakpointTypeManager =
       requireNotNull(getInstanceOrNull(language)) {
         "No BreakpointTypeManager registered for language '${language.id}'. " +
-          "Please register an implementation via 'HyperskillEducational.breakpointTypeManager'."
+        "Please register an implementation via 'HyperskillEducational.breakpointTypeManager'."
       }
   }
 }

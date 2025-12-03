@@ -6,7 +6,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-interface AIDebuggerService{
+interface AIDebuggerService {
   @POST("/api/get-breakpoint-hint")
   suspend fun getBreakpointHint(@Body request: BreakpointHintRequest): Response<List<BreakpointHintDetails>>
 

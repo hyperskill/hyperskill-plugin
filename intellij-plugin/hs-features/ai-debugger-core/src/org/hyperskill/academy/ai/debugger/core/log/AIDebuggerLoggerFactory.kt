@@ -52,7 +52,8 @@ object AIDebuggerLoggerFactory : Logger.Factory {
       useParentHandlers = false
       level = Level.INFO
     }.let(::JulLogger)
-  } catch (e: IOException) {
+  }
+  catch (e: IOException) {
     LOG.error("Could not create a log file for $CATEGORY logs; path: $basePath", e)
     null
   }

@@ -148,7 +148,7 @@ class SubmissionsManager(private val project: Project) : EduTestAware {
 
     @Topic.ProjectLevel
     val TOPIC: Topic<SubmissionsListener> = createTopic("Hyperskill.submissions")
-    
+
     fun getInstance(project: Project): SubmissionsManager {
       return project.service()
     }

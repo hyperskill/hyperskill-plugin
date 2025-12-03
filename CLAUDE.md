@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is the **Hyperskill Academy** IntelliJ Platform plugin (formerly JetBrains Academy plugin). It enables educational features in JetBrains IDEs for learning programming and creating interactive courses. The plugin integrates with [Hyperskill](https://hi.hyperskill.org/how-we-teach).
+This is the **Hyperskill Academy** IntelliJ Platform plugin (formerly JetBrains Academy plugin). It enables educational features in
+JetBrains IDEs for learning programming and creating interactive courses. The plugin integrates
+with [Hyperskill](https://hi.hyperskill.org/how-we-teach).
 
 ## Build Commands
 
@@ -47,13 +49,15 @@ To switch versions, change `environmentName` and reload Gradle.
 
 ### Module Structure
 
-- **`hs-edu-format`**: Standalone library containing course format data models (Course, Lesson, Task, etc.), YAML/JSON serialization, and API definitions. Has no IntelliJ dependencies.
+- **`hs-edu-format`**: Standalone library containing course format data models (Course, Lesson, Task, etc.), YAML/JSON serialization, and
+  API definitions. Has no IntelliJ dependencies.
 
 - **`intellij-plugin/hs-core`**: Core plugin functionality - course management, task checking, UI components, Hyperskill integration
 
 - **`intellij-plugin/hs-jvm-core`**: Shared JVM language support (Gradle, JUnit integration)
 
-- **Language modules** (`hs-Java`, `hs-Kotlin`, `hs-Python`, `hs-Rust`, `hs-Cpp`, `hs-Go`, `hs-Php`, `hs-JavaScript`, `hs-Scala`, `hs-Shell`, `hs-sql`, `hs-CSharp`): Language-specific configurators and checkers
+- **Language modules** (`hs-Java`, `hs-Kotlin`, `hs-Python`, `hs-Rust`, `hs-Cpp`, `hs-Go`, `hs-Php`, `hs-JavaScript`, `hs-Scala`,
+  `hs-Shell`, `hs-sql`, `hs-CSharp`): Language-specific configurators and checkers
 
 - **Feature modules** (`hs-features/*`): Optional features like AI debugger, GitHub integration, remote environments
 
@@ -76,7 +80,9 @@ branches/252/  # Platform-specific overrides for 2025.2
 
 ### IntelliJ Platform Plugin
 
-Uses [IntelliJ Platform Gradle Plugin](https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html) v2.x. Key extension points:
+Uses [IntelliJ Platform Gradle Plugin](https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html) v2.x. Key
+extension points:
+
 - `intellijPlatform.pluginConfiguration` for plugin metadata
 - `intellijPlatform.pluginVerification` for compatibility checks
 

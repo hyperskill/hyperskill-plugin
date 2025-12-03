@@ -1,7 +1,6 @@
 package org.hyperskill.academy.python.learning
 
 import com.jetbrains.python.PyNames
-import com.jetbrains.python.sdk.flavors.PythonSdkFlavor
 import com.jetbrains.python.sdk.flavors.PythonSdkFlavor.getVersionStringStatic
 import org.hyperskill.academy.coursecreator.actions.TemplateFileInfo
 import org.hyperskill.academy.coursecreator.actions.studyItem.NewStudyItemInfo

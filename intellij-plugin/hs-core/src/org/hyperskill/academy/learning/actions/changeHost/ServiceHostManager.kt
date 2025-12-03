@@ -5,8 +5,8 @@ import com.intellij.openapi.util.NlsSafe
 import org.jetbrains.annotations.TestOnly
 
 abstract class ServiceHostManager<E>(val name: @NlsSafe String, val hostEnumClass: Class<E>)
-  where E: Enum<E>,
-        E: ServiceHostEnum {
+  where E : Enum<E>,
+        E : ServiceHostEnum {
   /**
    * Default host of the corresponding service. Usually, it's a production host used by actual users
    */
@@ -54,5 +54,5 @@ abstract class ServiceHostManager<E>(val name: @NlsSafe String, val hostEnumClas
     PropertiesComponent.getInstance().unsetValue(valueKey)
   }
 
-  data class SelectedServiceHost<E>(val value: E, val url: String = value.url) where E: Enum<E>, E: ServiceHostEnum
+  data class SelectedServiceHost<E>(val value: E, val url: String = value.url) where E : Enum<E>, E : ServiceHostEnum
 }

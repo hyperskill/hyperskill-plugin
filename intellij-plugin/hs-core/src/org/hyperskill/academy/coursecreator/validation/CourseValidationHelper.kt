@@ -80,7 +80,7 @@ class CourseValidationHelper(
       withContext(Dispatchers.EDT) {
         val action = CheckAction()
         val dataContext = SimpleDataContext.getProjectContext(project)
-        val event = AnActionEvent.createEvent(action, dataContext, "", ActionUiKind.NONE, null)
+        val event = AnActionEvent.createEvent(action, dataContext, null, "", ActionUiKind.NONE, null)
         ActionUtil.invokeAction(action, event, null)
       }
 

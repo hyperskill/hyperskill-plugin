@@ -41,7 +41,8 @@ interface IntermediateBreakpointProcessor {
           val slicingBp = SliceManager.getInstance(language).processSlice(psiElement, document, psiFile)
           // Combines slicing and heuristic intermediate breakpoints to select the most relevant ones, ensuring high precision.
           breakpointLines.intersect(slicingBp) + functionCalls
-        } else {
+        }
+        else {
           breakpointLines + functionCalls
         }
       }.flatten().distinct()

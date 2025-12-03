@@ -15,9 +15,7 @@ import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.getContainingTask
 import org.hyperskill.academy.learning.gradle.GradleConstants.LOCAL_PROPERTIES
 import org.hyperskill.academy.learning.messages.EduCoreBundle.message
-import org.hyperskill.academy.learning.projectView.CourseViewUtils.testPresentation
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer.isConfigFile
-import org.jetbrains.annotations.TestOnly
 
 /**
  * Add to the file name postfix "course.creator.course.view.excluded" from EduCoreBundle.properties

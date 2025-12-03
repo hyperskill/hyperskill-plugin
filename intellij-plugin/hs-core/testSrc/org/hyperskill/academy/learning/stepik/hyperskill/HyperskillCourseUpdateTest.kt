@@ -6,7 +6,6 @@ import org.hyperskill.academy.learning.actions.NextTaskAction
 import org.hyperskill.academy.learning.actions.PreviousTaskAction
 import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
 import org.hyperskill.academy.learning.courseFormat.*
-import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
 import org.hyperskill.academy.learning.courseFormat.ext.getTaskText
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse

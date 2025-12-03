@@ -4,10 +4,10 @@ import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.ui.laf.darcula.ui.DarculaProgressBarUI
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.util.ui.JBUI
 import com.intellij.openapi.project.Project
 import com.intellij.ui.Gray
 import com.intellij.ui.JBColor
+import com.intellij.util.ui.JBUI
 import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course

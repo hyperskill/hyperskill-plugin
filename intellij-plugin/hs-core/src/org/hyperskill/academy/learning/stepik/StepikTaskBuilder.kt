@@ -6,12 +6,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.rd.util.first
 import org.hyperskill.academy.learning.configuration.EduConfiguratorManager
-import org.hyperskill.academy.learning.courseFormat.CheckStatus
-import org.hyperskill.academy.learning.courseFormat.Course
-import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
-import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
-import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.languageById
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTaskType
 import org.hyperskill.academy.learning.courseFormat.tasks.*

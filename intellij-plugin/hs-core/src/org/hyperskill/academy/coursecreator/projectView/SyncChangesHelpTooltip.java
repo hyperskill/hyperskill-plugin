@@ -463,6 +463,11 @@ public class SyncChangesHelpTooltip implements com.intellij.openapi.Disposable {
     return false;
   }
 
+  @Override
+  public void dispose() {
+    // Alarm is disposed automatically when this Disposable is disposed
+  }
+
   @ApiStatus.Internal
   public static ComponentPopupBuilder initPopupBuilder(@NotNull JComponent tipPanel) {
     return JBPopupFactory.getInstance().
@@ -750,10 +755,5 @@ public class SyncChangesHelpTooltip implements com.intellij.openapi.Disposable {
 
       setSizeForWidth(width);
     }
-  }
-
-  @Override
-  public void dispose() {
-    // Alarm is disposed automatically when this Disposable is disposed
   }
 }

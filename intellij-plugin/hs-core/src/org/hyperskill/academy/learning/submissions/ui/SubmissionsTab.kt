@@ -3,12 +3,9 @@ package org.hyperskill.academy.learning.submissions.ui
 import com.intellij.execution.process.ProcessIOExecutorService
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
-import org.hyperskill.academy.learning.EduExperimentalFeatures
 import org.hyperskill.academy.learning.JavaUILibrary
-import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.invokeLater
-import org.hyperskill.academy.learning.isFeatureEnabled
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.submissions.*
 import org.hyperskill.academy.learning.submissions.ui.linkHandler.LoginLinkHandler

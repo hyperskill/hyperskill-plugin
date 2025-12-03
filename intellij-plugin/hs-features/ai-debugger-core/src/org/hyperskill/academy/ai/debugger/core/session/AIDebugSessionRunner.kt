@@ -72,9 +72,11 @@ class AIDebugSessionRunner(
     val testDirectories = runReadAction { task.getAllTestDirectories(project) }
       .ifEmpty { error("Test directories are not found") }
 
-    val settings = runReadAction { testDirectories.firstNotNullOfOrNull {
-      ConfigurationContext(it).configurationsFromContext?.firstOrNull()?.configurationSettings
-    } } ?: error("No configuration is found")
+    val settings = runReadAction {
+      testDirectories.firstNotNullOfOrNull {
+        ConfigurationContext(it).configurationsFromContext?.firstOrNull()?.configurationSettings
+      }
+    } ?: error("No configuration is found")
 
     val configuration = settings.configuration
     if (configuration is ExternalSystemRunConfiguration) {
@@ -89,7 +91,8 @@ class AIDebugSessionRunner(
       val debugExecutor = DefaultDebugExecutor.getDebugExecutorInstance()
       val environment = ExecutionEnvironmentBuilder.create(debugExecutor, settings).activeTarget().build()
       ProgramRunner.getRunner(DefaultDebugExecutor.EXECUTOR_ID, settings.configuration)?.execute(environment)
-    } catch (e: Exception) {
+    }
+    catch (e: Exception) {
       LOG.error("Failed to start debug session", e)
     }
   }

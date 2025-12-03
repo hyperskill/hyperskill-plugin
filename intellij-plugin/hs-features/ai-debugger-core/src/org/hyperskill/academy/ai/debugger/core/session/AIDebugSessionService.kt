@@ -123,7 +123,8 @@ class AIDebugSessionService(private val project: Project, private val coroutineS
           intermediateBreakpoints = intermediateBreakpoints,
           breakpointHints = breakpointHints,
         ).logInfo()
-      } catch (e: Exception) {
+      }
+      catch (e: Exception) {
         unlock()
         LOG.error("An error occurred in the ai debugging session", e)
         AIDebuggerLogEntry(
@@ -222,6 +223,6 @@ class AIDebugSessionService(private val project: Project, private val coroutineS
     fun getInstance(project: Project): AIDebugSessionService = project.getService(AIDebugSessionService::class.java)
   }
 
-  override fun dispose() { }
+  override fun dispose() {}
 
 }

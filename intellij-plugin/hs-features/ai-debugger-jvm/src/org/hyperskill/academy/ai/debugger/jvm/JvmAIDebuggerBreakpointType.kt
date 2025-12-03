@@ -9,7 +9,8 @@ import org.hyperskill.academy.ai.debugger.core.ui.AIDebuggerIcons
 import org.jetbrains.java.debugger.breakpoints.properties.JavaLineBreakpointProperties
 import javax.swing.Icon
 
-class JvmAIDebuggerBreakpointType : JavaLineBreakpointType(BREAKPOINT_TYPE_ID, AIDebuggerCoreBundle.message("ai.debugger.jvm.breakpoint.description")) {
+class JvmAIDebuggerBreakpointType :
+  JavaLineBreakpointType(BREAKPOINT_TYPE_ID, AIDebuggerCoreBundle.message("ai.debugger.jvm.breakpoint.description")) {
   override fun getEnabledIcon(): Icon = AIDebuggerIcons.Bug
 
   override fun createJavaBreakpoint(
