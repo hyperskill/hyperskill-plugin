@@ -6,10 +6,12 @@ import kotlin.reflect.KProperty
 
 const val VERIFY_CLASSES_TASK_NAME = "verifyClasses"
 
-val Project.environmentName: String by Properties
+private const val IDE_IDEA = "idea"
+private const val IDE_CLION = "clion"
+private const val IDE_PYCHARM = "pycharm"
+private const val IDE_RIDER = "rider"
 
-// BACKCOMPAT: 2025.1
-val Project.isAtLeast252: Boolean get() = environmentName.toInt() >= 252
+val Project.environmentName: String by Properties
 
 val Project.pluginVersion: String by Properties
 val Project.platformVersion: String get() = "20${StringBuilder(environmentName).insert(environmentName.length - 1, '.')}"
@@ -20,10 +22,10 @@ val Project.clionVersion: String by Properties
 val Project.pycharmVersion: String by Properties
 val Project.riderVersion: String by Properties
 
-val Project.isIdeaIDE: Boolean get() = baseIDE == "idea"
-val Project.isClionIDE: Boolean get() = baseIDE == "clion"
-val Project.isPycharmIDE: Boolean get() = baseIDE == "pycharm"
-val Project.isRiderIDE: Boolean get() = baseIDE == "rider"
+val Project.isIdeaIDE: Boolean get() = baseIDE == IDE_IDEA
+val Project.isClionIDE: Boolean get() = baseIDE == IDE_CLION
+val Project.isPycharmIDE: Boolean get() = baseIDE == IDE_PYCHARM
+val Project.isRiderIDE: Boolean get() = baseIDE == IDE_RIDER
 
 val Project.baseVersion: String
   get() = when {
@@ -63,10 +65,8 @@ val Project.javaScriptPlugin: String get() = "JavaScript"
 val Project.nodeJsPlugin: String get() = "NodeJS"
 val Project.jsonPlugin: String get() = "com.intellij.modules.json"
 val Project.yamlPlugin: String get() = "org.jetbrains.plugins.yaml"
-val Project.codeWithMePlugin: String get() = "com.jetbrains.codeWithMe"
 val Project.radlerPlugin: String get() = "org.jetbrains.plugins.clion.radler"
 val Project.imagesPlugin: String get() = "com.intellij.platform.images"
-
 
 val Project.jvmPlugins: List<String>
   get() = listOf(
@@ -88,20 +88,17 @@ val Project.rustPlugins: List<String>
   )
 
 val Project.cppPlugins: List<String>
-  get() = listOfNotNull(
+  get() = listOf(
     "com.intellij.cidr.lang",
     "com.intellij.clion",
-    "com.intellij.clion.runFile".takeIf { !isAtLeast252 },
     "com.intellij.nativeDebug",
     "org.jetbrains.plugins.clion.test.google",
     "org.jetbrains.plugins.clion.test.catch"
   )
 
 val Project.sqlPlugins: List<String>
-  get() = listOfNotNull(
+  get() = listOf(
     sqlPlugin,
-    // https://github.com/JetBrains/intellij-platform-gradle-plugin/issues/1791
-    "intellij.charts".takeIf { !isAtLeast252 }, // BACKCOMPAT: 2025.1. Drop it.
     "intellij.grid.plugin"
   )
 
@@ -118,7 +115,6 @@ val Project.commonTestPlugins: List<String>
     yamlPlugin,   // makes IDE consider .yaml files as text ones and affects formatting of yaml files
     jsonPlugin,   // dependency of a lot of other bundled plugin
   )
-
 
 data class TypeWithVersion(val type: IntelliJPlatformType, val version: String)
 

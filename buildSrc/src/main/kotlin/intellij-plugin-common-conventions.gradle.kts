@@ -34,7 +34,7 @@ kotlin {
   }
 }
 
-// It's not possible to use version catalogs in convenrion plugin as usual,
+// It's not possible to use version catalogs in convention plugin as usual,
 // so we have to get the catalog itself and libraries manually
 // See https://docs.gradle.org/current/userguide/version_catalogs.html#sec:buildsrc-version-catalog
 val libs = the<VersionCatalogsExtension>().named("libs")
