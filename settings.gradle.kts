@@ -1,8 +1,3 @@
-import java.io.IOException
-import java.net.URL
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 import java.util.Properties
 
 rootProject.name = "hyperskill-plugin"
@@ -43,8 +38,6 @@ val secretPropertiesFilename: String = "secret.properties"
 
 configureSecretProperties()
 
-downloadHyperskillCss()
-
 fun configureSecretProperties() {
   val secretProperties = file(secretPropertiesFilename)
   if (!secretProperties.exists()) {
@@ -77,30 +70,6 @@ fun configureSecretProperties() {
   )
 }
 
-fun downloadHyperskillCss() {
-  try {
-    download(URL("https://hyperskill.org/static/shared.css"), "intellij-plugin/hs-core/resources/style/hyperskill_task.css")
-  }
-  catch (e: IOException) {
-    System.err.println("Error downloading: ${e.message}. Using local copy")
-    Files.copy(
-      Paths.get("intellij-plugin/hyperskill_default.css"),
-      Paths.get("intellij-plugin/hs-core/resources/style/hyperskill_task.css"),
-      StandardCopyOption.REPLACE_EXISTING
-    )
-  }
-}
-
-fun download(url: URL, dstPath: String) {
-  println("Download $url")
-
-  url.openStream().use {
-    val path = file(dstPath).toPath().toAbsolutePath()
-    println("Copying file to $path")
-    Files.copy(it, path, StandardCopyOption.REPLACE_EXISTING)
-  }
-}
-
 fun loadProperties(path: String): Properties {
   val properties = Properties()
   file(path).bufferedReader().use { properties.load(it) }
@@ -116,6 +85,9 @@ fun Properties.extractAndStore(path: String, vararg keys: String) {
   file.parentFile?.mkdirs()
   file.bufferedWriter().use { properties.store(it, "") }
 }
+
+// Note: downloadHyperskillCss() was removed from settings.gradle.kts
+// CSS download is now done lazily in hs-core/build.gradle.kts processResources task
 
 buildCache {
   local {

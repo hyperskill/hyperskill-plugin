@@ -50,10 +50,13 @@ intellijPlatform {
 }
 
 dependencies {
+  // hs-core is the plugin core - its code and resources are included in the main plugin JAR
+  // (not as a separate module). This is intentional: hs-core.xml is included via XInclude in plugin.xml
+  implementation(project("hs-core"))
+
   intellijPlatform {
     intellijIde(baseVersion)
 
-    pluginModule(implementation(project("hs-core")))
     pluginModule(implementation(project("hs-jvm-core")))
     pluginModule(implementation(project("hs-Java")))
     pluginModule(implementation(project("hs-Kotlin")))
@@ -104,6 +107,16 @@ val ideToPlugins = mapOf(
 
 tasks {
   val projectName = project.extensionProvider.flatMap { it.projectName }
+
+  // Copy hs-core.xml and Hyperskill.xml to main plugin JAR for XInclude resolution.
+  // These files are in hs-core module but need to be in the main JAR because
+  // XInclude is resolved when loading plugin.xml, before other JARs are added to classpath.
+  processResources {
+    from(project("hs-core").file("resources/META-INF")) {
+      include("hs-core.xml", "Hyperskill.xml")
+      into("META-INF")
+    }
+  }
 
   composedJar {
     archiveBaseName.convention(projectName)
@@ -158,10 +171,9 @@ tasks {
         args("buildEventsScheme", "--outputFile=${buildDir()}/eventScheme.json", "--pluginId=org.hyperskill.academy")
         // Force headless mode to be able to run command on CI
         systemProperty("java.awt.headless", "true")
-        // BACKCOMPAT: 2025.1. Update value to 252 and this comment
         // `IDEA_BUILD_NUMBER` variable is used by `buildEventsScheme` task to write `buildNumber` to output json.
         // It will be used by TeamCity automation to set minimal IDE version for new events
-        environment("IDEA_BUILD_NUMBER", "251")
+        environment("IDEA_BUILD_NUMBER", "252")
       }
     }
 
