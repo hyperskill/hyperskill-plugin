@@ -31,7 +31,8 @@ intellijPlatform {
 
     ideaVersion {
       sinceBuild = prop("customSinceBuild")
-      untilBuild = prop("customUntilBuild")
+      // If customUntilBuild is "*", don't set untilBuild (allows all future versions)
+      prop("customUntilBuild").takeIf { it != "*" }?.let { untilBuild = it }
     }
 
     vendor {
