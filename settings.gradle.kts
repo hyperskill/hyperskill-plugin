@@ -29,10 +29,7 @@ include(
   "intellij-plugin:hs-features:hs-github",
 )
 
-// BACKCOMPAT: Temporarily exclude for 2025.2 as it doesn't compile
-if (settings.providers.gradleProperty("environmentName").get() != "252") {
-  include("intellij-plugin:hs-features:hs-remote-env")
-}
+// Note: hs-remote-env is excluded - doesn't compile with 2025.2+
 
 val secretPropertiesFilename: String = "secret.properties"
 

@@ -78,9 +78,7 @@ dependencies {
     pluginModule(implementation(project("hs-features:ai-debugger-jvm")))
     pluginModule(implementation(project("hs-features:ai-debugger-kotlin")))
     pluginModule(implementation(project("hs-features:hs-github")))
-    if (!isAtLeast252) { // BACKCOMPAT: Temporarily exclude for 2025.2 as it doesn't compile
-      pluginModule(implementation(project("hs-features:hs-remote-env")))
-    }
+    // hs-remote-env is excluded - doesn't compile with 2025.2+
     pluginModule(implementation(project("hs-localization")))
 
     testFramework(TestFrameworkType.Bundled)
