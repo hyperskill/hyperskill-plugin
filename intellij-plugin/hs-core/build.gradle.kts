@@ -33,6 +33,20 @@ dependencies {
   compileOnly(libs.kotlinx.serialization) {
     excludeKotlinDeps()
   }
+
+  // Core dependencies used only by hs-core (not needed by language modules)
+  implementationWithoutKotlin(libs.jsoup)
+  implementationWithoutKotlin(libs.jackson.dataformat.yaml)
+  implementationWithoutKotlin(libs.jackson.datatype.jsr310)
+  implementationWithoutKotlin(libs.jackson.module.kotlin)
+  implementationWithoutKotlin(libs.okhttp)
+  implementationWithoutKotlin(libs.logging.interceptor)
+  implementationWithoutKotlin(libs.retrofit)
+  implementationWithoutKotlin(libs.converter.jackson)
+  implementationWithoutKotlin(libs.kotlin.css.jvm)
+
+  testImplementationWithoutKotlin(libs.mockwebserver)
+  testImplementationWithoutKotlin(libs.mockk)
 }
 
 // Export test classes for other modules to use
