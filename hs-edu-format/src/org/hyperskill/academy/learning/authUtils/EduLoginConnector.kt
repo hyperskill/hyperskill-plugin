@@ -50,12 +50,29 @@ abstract class EduLoginConnector<UserAccount : Account<*>, SpecificUserInfo : Us
 
   protected open val requestInterceptor: Interceptor? = null
 
+  /**
+   * Primary service name used for OAuth redirect URI.
+   * Format: "edu/hyperskill"
+   */
   open val serviceName: String by lazy {
     "${EduFormatNames.EDU_PREFIX}/${platformName.lowercase()}"
   }
 
+  /**
+   * Alternative service name without "edu/" prefix.
+   * Format: "hyperskill"
+   * Used for gradual migration to simpler URL structure.
+   */
+  open val alternativeServiceName: String by lazy {
+    platformName.lowercase()
+  }
+
   open val oAuthServicePath: String by lazy {
     "/$REST_PREFIX/$serviceName/$OAUTH_SUFFIX"
+  }
+
+  open val alternativeOAuthServicePath: String by lazy {
+    "/$REST_PREFIX/$alternativeServiceName/$OAUTH_SUFFIX"
   }
 
   abstract fun getCurrentUserInfo(): SpecificUserInfo?
@@ -87,11 +104,21 @@ abstract class EduLoginConnector<UserAccount : Account<*>, SpecificUserInfo : Us
 
   abstract fun getFreshAccessToken(userAccount: UserAccount?, accessToken: String?): String?
 
+  /**
+   * Returns a pattern that matches both primary and alternative OAuth service paths.
+   * Primary: /api/edu/hyperskill/oauth
+   * Alternative: /api/hyperskill/oauth
+   */
   fun getOAuthPattern(suffix: String = """\?$CODE_ARGUMENT=[\w+,.-]*\&$STATE=[\w+,.-]*"""): Pattern {
-    return "^.*$oAuthServicePath$suffix".toPattern()
+    return "^.*($oAuthServicePath|$alternativeOAuthServicePath)$suffix".toPattern()
   }
 
-  fun getServicePattern(suffix: String): Pattern = "^.*$serviceName$suffix".toPattern()
+  /**
+   * Returns a pattern that matches both primary and alternative service names.
+   * Primary: /api/edu/hyperskill
+   * Alternative: /api/hyperskill
+   */
+  fun getServicePattern(suffix: String): Pattern = "^.*($serviceName|$alternativeServiceName)$suffix".toPattern()
 
   open fun isLoggedIn(): Boolean = account != null
 

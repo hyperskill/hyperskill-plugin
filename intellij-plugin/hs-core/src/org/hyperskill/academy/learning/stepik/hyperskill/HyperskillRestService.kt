@@ -24,7 +24,7 @@ import org.jetbrains.io.send
 import java.io.IOException
 import java.lang.reflect.InvocationTargetException
 
-class HyperskillRestService : OAuthRestService(HYPERSKILL) {
+open class HyperskillRestService : OAuthRestService(HYPERSKILL) {
 
   @Throws(InterruptedException::class, InvocationTargetException::class)
   override fun isHostTrusted(request: FullHttpRequest, urlDecoder: QueryStringDecoder): Boolean {
