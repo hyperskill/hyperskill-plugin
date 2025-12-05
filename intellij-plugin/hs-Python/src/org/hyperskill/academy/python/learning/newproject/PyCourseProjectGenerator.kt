@@ -1,25 +1,21 @@
 package org.hyperskill.academy.python.learning.newproject
 
-import com.intellij.execution.ExecutionException
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.python.configuration.PyConfigurableInterpreterList
-import com.jetbrains.python.packaging.PyPackageManager
 import com.jetbrains.python.sdk.*
+import com.jetbrains.python.sdk.configuration.createVirtualEnvAndSdkSynchronously
 import org.hyperskill.academy.learning.EduCourseBuilder
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.newproject.CourseProjectGenerator
 import org.hyperskill.academy.python.learning.installRequiredPackages
-import org.hyperskill.academy.python.learning.messages.EduPythonBundle.message
 import org.hyperskill.academy.python.learning.setAssociationToModule
 
 open class PyCourseProjectGenerator(
@@ -67,26 +63,27 @@ open class PyCourseProjectGenerator(
 
   private fun createAndAddVirtualEnv(project: Project, settings: PyProjectSettings, baseSdk: PyDetectedSdk) {
     val virtualEnvPath = project.basePath + "/.idea/VirtualEnvironment"
-    val sdk = createSdkByGenerateTask(object : Task.WithResult<String, ExecutionException>(
-      project,
-      message("creating.virtual.environment"),
-      false
-    ) {
-      @Throws(ExecutionException::class)
-      override fun compute(indicator: ProgressIndicator): String {
-        indicator.isIndeterminate = true
-        val packageManager = PyPackageManager.getInstance(baseSdk)
-        return packageManager.createVirtualEnv(virtualEnvPath, false)
-      }
-    }, PyConfigurableInterpreterList.getInstance(null).allPythonSdks, baseSdk, project.basePath, null, null)
-    if (sdk == null) {
-      LOG.warn("Failed to create virtual env in $virtualEnvPath")
+    val existingSdks = PyConfigurableInterpreterList.getInstance(null).allPythonSdks
+    val module = ModuleManager.getInstance(project).sortedModules.firstOrNull()
+    val sdk = try {
+      createVirtualEnvAndSdkSynchronously(
+        baseSdk = baseSdk,
+        existingSdks = existingSdks,
+        venvRoot = virtualEnvPath,
+        projectBasePath = project.basePath,
+        project = project,
+        module = module
+      )
+    }
+    catch (e: Exception) {
+      LOG.warn("Failed to create virtual env in $virtualEnvPath", e)
       return
     }
     settings.sdk = sdk
     SdkConfigurationUtil.addSdk(sdk)
-    val module = ModuleManager.getInstance(project).sortedModules.firstOrNull() ?: return
-    setAssociationToModule(sdk, module)
+    if (module != null) {
+      setAssociationToModule(sdk, module)
+    }
   }
 
   companion object {

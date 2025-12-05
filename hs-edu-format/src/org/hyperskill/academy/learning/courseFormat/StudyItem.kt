@@ -36,8 +36,8 @@ abstract class StudyItem() {
   abstract val itemType: String     // used in json/yaml serialization/deserialization
 
   // Non unique lesson/task/section names can be received from stepik. In this case unique directory name is generated,
-  // but original non unique name is displayed
-  @get:Deprecated("Should be used only for deserialization. Use {@link StudyItem#getPresentableName()} instead")
+  // but original non unique name is displayed.
+  // For reading the display name, prefer using `presentableName` property.
   var customPresentableName: String? = null
 
   val presentableName: String

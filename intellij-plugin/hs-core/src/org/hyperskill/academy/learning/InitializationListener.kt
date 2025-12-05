@@ -57,8 +57,8 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
       propertiesComponent.setValue(STEPIK_AUTH_RESET, true)
     }
 
-    @Suppress("UnstableApiUsage", "DEPRECATION")
-    if (!RemoteEnvHelper.isRemoteDevServer() && (PlatformUtils.isPyCharmEducational() || PlatformUtils.isIdeaEducational())) {
+    @Suppress("UnstableApiUsage")
+    if (!RemoteEnvHelper.isRemoteDevServer() && isEducationalIde()) {
       showSwitchFromEduNotification()
     }
   }
@@ -82,8 +82,8 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
       )
       addAction(
         NotificationAction.createSimple(EduCoreBundle.message("notification.ide.switch.from.hyperskill.ide.acton.title")) {
-          @Suppress("UnstableApiUsage", "DEPRECATION")
-          val link = if (PlatformUtils.isPyCharmEducational()) {
+          @Suppress("UnstableApiUsage")
+          val link = if (isPyCharmEducational()) {
             "https://www.jetbrains.com/pycharm/download/"
           }
           else {
@@ -139,5 +139,14 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
     const val RECENT_COURSES_FILLED = "HyperskillEducational.recentCoursesFilled"
     const val STEPIK_AUTH_RESET = "HyperskillEducational.stepikOAuthReset"
     private const val SWITCH_TO_COMMUNITY_DO_NOT_ASK_OPTION_ID = "Edu IDEs aren't supported"
+
+    private fun isEducationalIde(): Boolean {
+      val prefix = PlatformUtils.getPlatformPrefix()
+      return prefix == PlatformUtils.PYCHARM_EDU_PREFIX || prefix == PlatformUtils.IDEA_EDU_PREFIX
+    }
+
+    private fun isPyCharmEducational(): Boolean {
+      return PlatformUtils.getPlatformPrefix() == PlatformUtils.PYCHARM_EDU_PREFIX
+    }
   }
 }

@@ -88,7 +88,7 @@ class CoursesPanelWithTabs(private val scope: CoroutineScope, private val dispos
       cardLayout.show(this, activeTabName)
       val focusManager = IdeFocusManager.findInstanceByComponent(panel)
       val toFocus = focusManager.getFocusTargetFor(panel) ?: return
-      focusManager.doWhenFocusSettlesDown({ focusManager.requestFocus(toFocus, true) }, ModalityState.current())
+      ApplicationManager.getApplication().invokeLater({ focusManager.requestFocus(toFocus, true) }, ModalityState.current())
     }
 
     fun doValidation() {

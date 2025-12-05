@@ -23,7 +23,7 @@ abstract class ActionWithButtonCustomComponent : AnAction(), CustomComponentActi
     button.addActionListener {
       val dataContext = ActionToolbar.getDataContextFor(button)
       val event = AnActionEvent.createEvent(this, dataContext, null, place, ActionUiKind.NONE, null)
-      ActionUtil.invokeAction(this, event, null)
+      ActionUtil.performAction(this, event)
     }
     return button
   }

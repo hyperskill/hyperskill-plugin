@@ -10,7 +10,7 @@ import com.intellij.util.xmlb.XmlSerializer
 import com.intellij.util.xmlb.annotations.Transient
 import org.hyperskill.academy.learning.EduLogInListener
 import org.hyperskill.academy.learning.authUtils.deserializeOAuthAccount
-import org.hyperskill.academy.learning.authUtils.serialize
+import org.hyperskill.academy.learning.authUtils.serializeAccount
 import org.hyperskill.academy.learning.createTopic
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillAccount
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
@@ -43,7 +43,7 @@ class HyperskillSettings : PersistentStateComponent<Element> {
   override fun getState(): Element? {
     val mainElement = Element(serviceName)
     XmlSerializer.serializeInto(this, mainElement)
-    val userElement = account?.serialize() ?: return null
+    val userElement = account?.serializeAccount() ?: return null
     mainElement.addContent(userElement)
     return mainElement
   }

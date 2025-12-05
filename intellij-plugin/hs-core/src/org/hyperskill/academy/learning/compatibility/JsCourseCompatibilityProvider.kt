@@ -1,6 +1,6 @@
 package org.hyperskill.academy.learning.compatibility
 
-import com.intellij.util.PlatformUtils.*
+import com.intellij.util.PlatformUtils
 import org.hyperskill.academy.EducationalCoreIcons
 import org.hyperskill.academy.learning.courseFormat.PluginInfo
 import org.hyperskill.academy.learning.courseFormat.PluginInfos
@@ -8,8 +8,12 @@ import javax.swing.Icon
 
 class JsCourseCompatibilityProvider : CourseCompatibilityProvider {
   override fun requiredPlugins(): List<PluginInfo>? {
-    @Suppress("DEPRECATION", "UnstableApiUsage")
-    return if (isIdeaUltimate() || isWebStorm() || isPyCharmPro() || isGoIde()) {
+    val prefix = PlatformUtils.getPlatformPrefix()
+    val supportsJavaScript = prefix == PlatformUtils.IDEA_PREFIX ||
+                             prefix == PlatformUtils.WEB_PREFIX ||
+                             prefix == PlatformUtils.PYCHARM_PREFIX ||
+                             prefix == PlatformUtils.GOIDE_PREFIX
+    return if (supportsJavaScript) {
       listOf(
         PluginInfos.JAVA_SCRIPT,
         PluginInfos.JAVA_SCRIPT_DEBUGGER,

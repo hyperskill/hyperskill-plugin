@@ -58,22 +58,10 @@ class HyperskillCourse : Course {
   fun getProjectLesson(): FrameworkLesson? = lessons.firstOrNull() as? FrameworkLesson
 
   /**
-   * Deprecated. Hyperskill problems are used to be stored in [HYPERSKILL_PROBLEMS] lesson.
-   *
-   * Structure example:
-   *
-   * [HYPERSKILL_PROBLEMS] lesson
-   *
-   *     `Arithmetic average` task
-   *
-   *     `Thread-safe account` task
-   *
-   *     `Countdown counter` task
-   *
-   *    etc
-   *
+   * For backward compatibility with old course format where Hyperskill problems
+   * were stored in [HYPERSKILL_PROBLEMS] lesson.
+   * For new code, prefer using [getTopicsSection].
    */
-  @Deprecated("Problems lesson isn't used anymore, use Topics section instead", replaceWith = ReplaceWith("getTopicsSection()"))
   fun getProblemsLesson(): Lesson? = getLesson { it.presentableName == HYPERSKILL_PROBLEMS }
 
   /**

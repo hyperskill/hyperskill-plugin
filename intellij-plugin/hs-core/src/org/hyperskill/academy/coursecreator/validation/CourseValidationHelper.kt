@@ -81,7 +81,7 @@ class CourseValidationHelper(
         val action = CheckAction()
         val dataContext = SimpleDataContext.getProjectContext(project)
         val event = AnActionEvent.createEvent(action, dataContext, null, "", ActionUiKind.NONE, null)
-        ActionUtil.invokeAction(action, event, null)
+        ActionUtil.performAction(action, event)
       }
 
       val result = ValidationCheckResultManager.getInstance(project).getResult(task)

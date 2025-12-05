@@ -8,14 +8,12 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.ui.Messages
 import com.intellij.util.ReflectionUtil
-import com.intellij.util.xmlb.SkipDefaultValuesSerializationFilters
+import com.intellij.configurationStore.serialize
 import com.intellij.util.xmlb.XmlSerializer
 import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.EduUtilsKt
 import org.hyperskill.academy.learning.courseFormat.UserInfo
 import org.hyperskill.academy.learning.messages.EduCoreBundle
-import org.hyperskill.academy.learning.serialization.CompositeSerializationFilter
-import org.hyperskill.academy.learning.serialization.TransientFieldSerializationFilter
 import org.jdom.Element
 import org.jetbrains.builtInWebServer.BuiltInServerOptions
 import org.jetbrains.ide.BuiltInServerManager
@@ -95,19 +93,14 @@ object OAuthUtils {
   }
 }
 
-@Suppress("DEPRECATION")
-fun <UInfo : UserInfo> Account<UInfo>.serialize(): Element? {
+fun <UInfo : UserInfo> Account<UInfo>.serializeAccount(): Element? {
   if (PasswordSafe.instance.isMemoryOnly) {
     return null
   }
-  val serializationFilter = CompositeSerializationFilter(
-    TransientFieldSerializationFilter,
-    SkipDefaultValuesSerializationFilters()
-  )
   // Do we really need this two-step serialization?
   // Probably, it's worth merging account and user info classes into a single one
   // or copying everything from user info to an account object
-  val accountElement = XmlSerializer.serialize(this, serializationFilter)
+  val accountElement = serialize(this) ?: return null
   XmlSerializer.serializeInto(userInfo, accountElement)
   return accountElement
 }

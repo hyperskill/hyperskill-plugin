@@ -72,7 +72,6 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
   fun updateCourse(onFinish: (isUpdated: Boolean) -> Unit) {
     fun getProblemsUpdate(): List<TaskUpdateInfo> {
       // Check both legacy problem lesson format and new topics section for backward compatibility
-      @Suppress("DEPRECATION")
       val legacyProblemLesson = course.getProblemsLesson()
       val newProblemLessons = course.getTopicsSection()?.lessons ?: emptyList()
       val problemLessons = listOfNotNull(legacyProblemLesson, *newProblemLessons.toTypedArray())

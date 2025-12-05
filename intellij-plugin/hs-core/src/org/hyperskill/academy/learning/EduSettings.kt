@@ -9,7 +9,7 @@ import com.intellij.util.xmlb.XmlSerializer
 import com.intellij.util.xmlb.annotations.Property
 import com.intellij.util.xmlb.annotations.Transient
 import org.hyperskill.academy.learning.authUtils.deserializeOAuthAccount
-import org.hyperskill.academy.learning.authUtils.serialize
+import org.hyperskill.academy.learning.authUtils.serializeAccount
 import org.hyperskill.academy.learning.stepik.StepikUser
 import org.hyperskill.academy.learning.stepik.StepikUserInfo
 import org.jdom.Element
@@ -47,7 +47,7 @@ class EduSettings : PersistentStateComponent<Element> {
   private fun serialize(): Element {
     val mainElement = Element(SETTINGS_NAME)
     XmlSerializer.serializeInto(this, mainElement)
-    val userElement = _user?.serialize() ?: return mainElement
+    val userElement = _user?.serializeAccount() ?: return mainElement
     val userOption = Element(OPTION)
     userOption.setAttribute(NAME, USER)
     userOption.addContent(userElement)

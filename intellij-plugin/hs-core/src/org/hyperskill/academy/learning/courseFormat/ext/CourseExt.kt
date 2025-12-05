@@ -145,10 +145,11 @@ private fun Course.pluginCompatibility(): CourseCompatibility? {
     }
 
   val toInstallOrEnable = notLoadedPlugins.filter { (info, pluginDescriptor) ->
+    val pluginId = PluginId.getId(info.stringId)
     // Plugin is just installed and not loaded by IDE (i.e. it requires restart)
-    pluginDescriptor == null && !pluginsState.wasInstalled(PluginId.getId(info.stringId)) ||
+    pluginDescriptor == null && !pluginsState.wasInstalled(pluginId) ||
     // Plugin is installed but disabled
-    pluginDescriptor != null && !pluginDescriptor.isEnabled
+    pluginDescriptor != null && PluginManagerCore.isDisabled(pluginId)
   }
 
   return if (notLoadedPlugins.isNotEmpty()) CourseCompatibility.PluginsRequired(toInstallOrEnable.map { it.first }) else null

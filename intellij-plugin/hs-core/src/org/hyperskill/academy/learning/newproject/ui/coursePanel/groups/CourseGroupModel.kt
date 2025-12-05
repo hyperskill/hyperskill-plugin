@@ -1,5 +1,6 @@
 package org.hyperskill.academy.learning.newproject.ui.coursePanel.groups
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.ComponentUtil
@@ -105,7 +106,7 @@ class CourseGroupModel {
     override fun mouseClicked(event: MouseEvent) {
       if (SwingUtilities.isLeftMouseButton(event)) {
         val cardComponent = getCourseCard(event) ?: return
-        IdeFocusManager.getGlobalInstance().doWhenFocusSettlesDown({
+        ApplicationManager.getApplication().invokeLater({
           IdeFocusManager.getGlobalInstance().requestFocus(cardComponent as Component, true)
         }, ModalityState.current())
         if (cardComponent == selectedCard) {
