@@ -97,6 +97,9 @@ fun <UInfo : UserInfo> Account<UInfo>.serializeAccount(): Element? {
   if (PasswordSafe.instance.isMemoryOnly) {
     return null
   }
+  if (!isUserInfoInitialized()) {
+    return null
+  }
   // Do we really need this two-step serialization?
   // Probably, it's worth merging account and user info classes into a single one
   // or copying everything from user info to an account object

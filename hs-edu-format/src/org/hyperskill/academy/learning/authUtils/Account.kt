@@ -8,8 +8,10 @@ abstract class Account<UInfo : UserInfo> {
   protected abstract val servicePrefix: String
   protected val serviceName get() = "$servicePrefix Integration"
 
-  @field:Transient
+  @Transient
   lateinit var userInfo: UInfo
+
+  fun isUserInfoInitialized(): Boolean = ::userInfo.isInitialized
 
   abstract fun isUpToDate(): Boolean
   protected fun getUserName(): String = userInfo.getFullName()
