@@ -26,7 +26,7 @@ fun TaskFile.getVirtualFile(project: Project): VirtualFile? {
 }
 
 fun TaskFile.findTaskFileInDir(taskDir: VirtualFile): VirtualFile? {
-  return taskDir.findFileByRelativePath(name)
+  return runReadAction { taskDir.findFileByRelativePath(name) }
 }
 
 fun TaskFile.course() = task.lesson.course
