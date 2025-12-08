@@ -4,10 +4,15 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.util.io.FileTooBigException
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.limits.FileSizeLimit
 import org.hyperskill.academy.learning.courseFormat.BinaryContents
 import org.hyperskill.academy.learning.courseFormat.TextualContents
 import org.hyperskill.academy.learning.exceptions.HugeBinaryFileException
+
+/**
+ * Default content load limit in bytes (2.5 MB).
+ * This matches the default value from IntelliJ Platform's FileSizeLimit.
+ */
+private const val DEFAULT_CONTENT_LOAD_LIMIT = 2_500_000L
 
 class BinaryContentsFromDisk(val file: VirtualFile) : BinaryContents {
   override val bytes: ByteArray
@@ -16,7 +21,7 @@ class BinaryContentsFromDisk(val file: VirtualFile) : BinaryContents {
         file.contentsToByteArray()
       }
       catch (_: FileTooBigException) {
-        throw HugeBinaryFileException(file.path, file.length, FileSizeLimit.getDefaultContentLoadLimit().toLong())
+        throw HugeBinaryFileException(file.path, file.length, DEFAULT_CONTENT_LOAD_LIMIT)
       }
     }
 }

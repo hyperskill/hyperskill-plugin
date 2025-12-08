@@ -1,8 +1,13 @@
 package org.hyperskill.academy.learning.exceptions
 
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.limits.FileSizeLimit
 import org.hyperskill.academy.learning.messages.EduCoreBundle
+
+/**
+ * Default content load limit in bytes (2.5 MB).
+ * This matches the default value from IntelliJ Platform's FileSizeLimit.
+ */
+private const val DEFAULT_CONTENT_LOAD_LIMIT = 2_500_000
 
 /**
  * [HugeBinaryFileException] is similar to [com.intellij.openapi.util.io.FileTooBigException],
@@ -13,7 +18,7 @@ class HugeBinaryFileException(val path: String, val size: Long, val limit: Long,
     buildString {
       appendLine(EduCoreBundle.message("error.educator.file.size", path))
       appendLine(EduCoreBundle.message("error.educator.file.size.limit", StringUtil.formatFileSize(size), StringUtil.formatFileSize(limit)))
-      if (insideFrameworkLesson && size <= FileSizeLimit.getDefaultContentLoadLimit()) {
+      if (insideFrameworkLesson && size <= DEFAULT_CONTENT_LOAD_LIMIT) {
         appendLine(EduCoreBundle.message("error.educator.file.size.workaround.framework"))
       }
       else {
