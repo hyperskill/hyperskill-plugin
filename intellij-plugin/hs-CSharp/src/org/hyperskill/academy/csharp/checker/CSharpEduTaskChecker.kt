@@ -14,14 +14,28 @@ import com.jetbrains.rd.util.reactive.RdFault
 import com.jetbrains.rd.util.reactive.adviseWithPrev
 import com.jetbrains.rd.util.reactive.fire
 import com.jetbrains.rdclient.util.idea.callSynchronously
-import com.jetbrains.rider.model.*
+import com.jetbrains.rider.model.RdProjectFolderCriterion
+import com.jetbrains.rider.model.RdUnitTestCriterion
+import com.jetbrains.rider.model.RdUnitTestNavigateArgs
+import com.jetbrains.rider.model.RdUnitTestSession
+import com.jetbrains.rider.model.RdUnitTestSessionNodeDescriptor
+import com.jetbrains.rider.model.RdUnitTestStatus
+import com.jetbrains.rider.model.RdUnitTestTreeNode
+import com.jetbrains.rider.model.rdUnitTestHost
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.workspace.getId
 import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
 import com.jetbrains.rider.protocol.protocol
 import com.jetbrains.rider.unitTesting.RiderUnitTestSessionConductor
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.hyperskill.academy.csharp.CSharpConfigurator
+import org.hyperskill.academy.csharp.TestResultData
+import org.hyperskill.academy.csharp.adviseResultData
 import org.hyperskill.academy.csharp.getTestName
 import org.hyperskill.academy.learning.checker.CheckUtils
 import org.hyperskill.academy.learning.checker.CheckUtils.fillWithIncorrect
@@ -172,22 +186,21 @@ class CSharpEduTaskChecker(task: EduTask, private val envChecker: EnvironmentChe
     testInfoWithNodes: HashMap<RdUnitTestTreeNode, EduTestInfo>,
     firstFailedNode: RdUnitTestTreeNode
   ): Boolean {
-    val result = CompletableDeferred<RdUnitTestResultData>()
+    val result = CompletableDeferred<TestResultData>()
     withContext(Dispatchers.EDT) {
-      rdSession.resultData.advise(project.lifetime) { resultData ->
-        if (resultData != null && resultData.nodeId == firstFailedNode.id) {
-          result.complete(resultData)
-        }
+      adviseResultData(project, rdSession, firstFailedNode.id) { data ->
+        result.complete(data)
       }
       rdSession.treeDescriptor.selectNode.fire(RdUnitTestNavigateArgs(firstFailedNode.id, true))
     }
-    val resultData = result.await()
+    // Use withTimeoutOrNull to handle the case where callback is never invoked (253)
+    val resultData = withTimeoutOrNull(2000) { result.await() }
     val newInfo = (firstFailedNode.descriptor as RdUnitTestSessionNodeDescriptor).getEduTestInfo(resultData)
     testInfoWithNodes[firstFailedNode] = newInfo
     return true
   }
 
-  private fun RdUnitTestSessionNodeDescriptor.getEduTestInfo(data: RdUnitTestResultData? = null): EduTestInfo {
+  private fun RdUnitTestSessionNodeDescriptor.getEduTestInfo(data: TestResultData? = null): EduTestInfo {
     val (diff, infoLines) = if (data != null) {
       tryGetDiff(data.exceptionLines, text)
     }

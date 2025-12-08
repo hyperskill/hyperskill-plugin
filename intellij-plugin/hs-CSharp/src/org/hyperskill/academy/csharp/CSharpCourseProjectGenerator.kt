@@ -2,7 +2,6 @@ package org.hyperskill.academy.csharp
 
 import com.jetbrains.rd.ide.model.RdOpenSolution
 import com.jetbrains.rider.ideaInterop.fileTypes.sln.SolutionFileType
-import com.jetbrains.rider.projectView.SolutionDescriptionFactory
 import com.jetbrains.rider.projectView.SolutionInitializer
 import org.hyperskill.academy.learning.CourseInfoHolder
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -34,9 +33,7 @@ class CSharpCourseProjectGenerator(
   }
 
   override fun beforeInitHandler(location: Path): BeforeInitHandler = BeforeInitHandler {
-    val description = SolutionDescriptionFactory.existing(
-      "${location.pathString}/$solutionFileName"
-    )
+    val description = createExistingSolutionDescription("${location.pathString}/$solutionFileName")
     val strategy = RdOpenSolution(description, true)
     SolutionInitializer.initSolution(it, strategy)
   }
