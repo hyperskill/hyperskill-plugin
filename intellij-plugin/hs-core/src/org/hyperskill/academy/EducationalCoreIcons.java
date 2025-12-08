@@ -1,7 +1,6 @@
 package org.hyperskill.academy;
 
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.ui.IconManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -12,38 +11,12 @@ public final class EducationalCoreIcons {
   /**
    * Loads an icon using the default method.
    * This is currently the default way to load icons based on their path in the `resources` directory.
-   * Note that there is also a method available for loading icons as rasterized images
-   * using the {@link #loadRasterized(String)} method.
-   * <p/>
-   * However, the {@link #loadRasterized(String)} method has some limitations because it uses platform API that is not fully adjusted
-   * for our needs and may not perfectly fit our use case, but it remains a necessary option for now.
    *
    * @param path the path to the icon in the `resources` directory.
    * @return the loaded {@link Icon} object.
    */
   private static @NotNull Icon load(@NotNull String path) {
     return IconLoader.getIcon(path, EducationalCoreIcons.class);
-  }
-
-  /**
-   * Loads an icon in a modern and efficient manner as a rasterized image.
-   * Currently, this method is used exclusively for loading tool window icons.
-   * <p>
-   * Note: The last two arguments passed to {@link IconManager#loadRasterizedIcon} are `cacheKey` and `flags`.
-   * Both are set to 0, which is acceptable; however, we should consider using a different API in the future
-   * that does not apply caching, which is currently unavailable
-   *
-   * @param path the path to the icon in the resources directory, without a leading slash.
-   *             The path must be relative to the classpath root.
-   * @return the loaded {@link Icon} object.
-   * @throws IllegalArgumentException if the provided path starts with a leading slash.
-   */
-  private static @NotNull Icon loadRasterized(@NotNull String path) {
-    if (path.startsWith("/")) {
-      throw new IllegalArgumentException("Path must be specified without a leading slash");
-    }
-
-    return IconManager.getInstance().loadRasterizedIcon(path, EducationalCoreIcons.class.getClassLoader(), 0, 0);
   }
 
   /**
@@ -66,7 +39,7 @@ public final class EducationalCoreIcons {
    * Utility class that provides icons for the check panel.
    */
   public static final class CheckPanel {
-    public static final Icon CheckDetailsToolWindow = loadRasterized("icons/org/hyperskill/academy/learning/checkDetailsToolWindow.svg");
+    public static final Icon CheckDetailsToolWindow = load("/icons/org/hyperskill/academy/learning/checkDetailsToolWindow.svg");
     public static final Icon ResultCorrect = load("/icons/org/hyperskill/academy/learning/resultCorrect.svg");
     public static final Icon ResultIncorrect = load("/icons/org/hyperskill/academy/learning/resultIncorrect.svg");
   }
@@ -160,7 +133,7 @@ public final class EducationalCoreIcons {
    */
   public static final class TaskToolWindow {
     public static final Icon Clock = load("/icons/org/hyperskill/academy/learning/clock.svg");
-    public static final Icon CourseToolWindow = loadRasterized("icons/org/hyperskill/academy/eduCourseTask.svg");
+    public static final Icon CourseToolWindow = load("/icons/org/hyperskill/academy/eduCourseTask.svg");
     public static final Icon MoveDown = load("/icons/org/hyperskill/academy/learning/moveDown.svg");
     public static final Icon MoveUp = load("/icons/org/hyperskill/academy/learning/moveUp.svg");
     public static final Icon NavigationMapTheoryTask = load("/icons/org/hyperskill/academy/eduNavigationMapTheoryTask.svg");
