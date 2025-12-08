@@ -9,6 +9,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.SlowOperations
 import com.jetbrains.python.configuration.PyConfigurableInterpreterList
 import com.jetbrains.python.sdk.*
 import com.jetbrains.python.sdk.configuration.createVirtualEnvAndSdkSynchronously
@@ -66,14 +67,19 @@ open class PyCourseProjectGenerator(
     val existingSdks = PyConfigurableInterpreterList.getInstance(null).allPythonSdks
     val module = ModuleManager.getInstance(project).sortedModules.firstOrNull()
     val sdk = try {
-      createVirtualEnvAndSdkSynchronously(
-        baseSdk = baseSdk,
-        existingSdks = existingSdks,
-        venvRoot = virtualEnvPath,
-        projectBasePath = project.basePath,
-        project = project,
-        module = module
-      )
+      // BACKCOMPAT: 252 - Python SDK's createVirtualEnvAndSdkSynchronously performs slow VFS operations
+      // that trigger "Slow operations are prohibited on EDT" when called from modal progress context.
+      // Using knownIssue to suppress the warning until Python plugin fixes this.
+      SlowOperations.knownIssue("PY-78757").use {
+        createVirtualEnvAndSdkSynchronously(
+          baseSdk = baseSdk,
+          existingSdks = existingSdks,
+          venvRoot = virtualEnvPath,
+          projectBasePath = project.basePath,
+          project = project,
+          module = module
+        )
+      }
     }
     catch (e: Exception) {
       LOG.warn("Failed to create virtual env in $virtualEnvPath", e)
