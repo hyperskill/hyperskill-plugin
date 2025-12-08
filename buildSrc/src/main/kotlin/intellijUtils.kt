@@ -36,8 +36,14 @@ val Project.baseVersion: String
     else -> error("Unexpected IDE name = `$baseIDE`")
   }
 
-val Project.pythonProPlugin: String by Properties
-val Project.pythonCommunityPlugin: String by Properties
+// Marketplace plugins with :latest by default (can be overridden in gradle.properties)
+val Project.pythonProPlugin: String get() = propertyOrDefault("pythonProPlugin", "Pythonid:latest")
+val Project.pythonCommunityPlugin: String get() = propertyOrDefault("pythonCommunityPlugin", "PythonCore:latest")
+val Project.scalaPlugin: String get() = propertyOrDefault("scalaPlugin", "org.intellij.scala:latest")
+val Project.rustPlugin: String get() = propertyOrDefault("rustPlugin", "com.jetbrains.rust:latest")
+val Project.goPlugin: String get() = propertyOrDefault("goPlugin", "org.jetbrains.plugins.go:latest")
+val Project.phpPlugin: String get() = propertyOrDefault("phpPlugin", "com.jetbrains.php:latest")
+val Project.psiViewerPlugin: String get() = propertyOrDefault("psiViewerPlugin", "PsiViewer:latest")
 
 val Project.pythonPlugin: String
   get() = when {
@@ -49,17 +55,14 @@ val Project.pythonPlugin: String
     isRiderIDE -> pythonCommunityPlugin
     else -> error("Unexpected IDE name = `$baseIDE`")
   }
+
+// Bundled plugins (no version needed)
 val Project.javaPlugin: String get() = "com.intellij.java"
 val Project.kotlinPlugin: String get() = "org.jetbrains.kotlin"
-val Project.scalaPlugin: String by Properties
-val Project.rustPlugin: String by Properties
 val Project.tomlPlugin: String get() = "org.toml.lang"
-val Project.goPlugin: String by Properties
 val Project.sqlPlugin: String get() = "com.intellij.database"
 val Project.shellScriptPlugin: String get() = "com.jetbrains.sh"
 val Project.githubPlugin: String get() = "org.jetbrains.plugins.github"
-val Project.psiViewerPlugin: String by Properties
-val Project.phpPlugin: String by Properties
 val Project.intelliLangPlugin: String get() = "org.intellij.intelliLang"
 val Project.javaScriptPlugin: String get() = "JavaScript"
 val Project.nodeJsPlugin: String get() = "NodeJS"
@@ -67,6 +70,9 @@ val Project.jsonPlugin: String get() = "com.intellij.modules.json"
 val Project.yamlPlugin: String get() = "org.jetbrains.plugins.yaml"
 val Project.radlerPlugin: String get() = "org.jetbrains.plugins.clion.radler"
 val Project.imagesPlugin: String get() = "com.intellij.platform.images"
+
+private fun Project.propertyOrDefault(name: String, default: String): String =
+  findProperty(name) as? String ?: default
 
 val Project.jvmPlugins: List<String>
   get() = listOf(
@@ -132,11 +138,10 @@ fun IntelliJPlatformDependenciesExtension.intellijIde(versionWithCode: String) {
 
 fun IntelliJPlatformDependenciesExtension.intellijPlugins(vararg notations: String) {
   for (notation in notations) {
-    if (notation.contains(":")) {
-      plugin(notation)
-    }
-    else {
-      bundledPlugin(notation)
+    when {
+      notation.endsWith(":latest") -> compatiblePlugin(notation.removeSuffix(":latest"))  // pluginId:latest - auto-resolve version
+      notation.contains(":") -> plugin(notation)  // pluginId:version - explicit version
+      else -> bundledPlugin(notation)  // pluginId - bundled plugin
     }
   }
 }
@@ -147,11 +152,10 @@ fun IntelliJPlatformDependenciesExtension.intellijPlugins(notations: List<String
 
 fun IntelliJPlatformDependenciesExtension.testIntellijPlugins(vararg notations: String) {
   for (notation in notations) {
-    if (notation.contains(":")) {
-      testPlugin(notation)
-    }
-    else {
-      testBundledPlugin(notation)
+    when {
+      notation.endsWith(":latest") -> compatiblePlugin(notation.removeSuffix(":latest"))  // pluginId:latest - auto-resolve version (works for tests too)
+      notation.contains(":") -> testPlugin(notation)  // pluginId:version - explicit version
+      else -> testBundledPlugin(notation)  // pluginId - bundled plugin
     }
   }
 }
