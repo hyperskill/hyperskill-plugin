@@ -194,7 +194,14 @@ tasks {
 
       plugins {
         val type = baseVersion.toTypeWithVersion().type
-        plugins(idePlugins(type))
+        val pluginsList = idePlugins(type)
+        val latestPlugins = pluginsList.filter { it.endsWith(":latest") }.map { it.removeSuffix(":latest") }
+        val explicitPlugins = pluginsList.filter { !it.endsWith(":latest") }
+
+        if (latestPlugins.isNotEmpty()) {
+          compatiblePlugins(latestPlugins)
+        }
+        plugins(explicitPlugins)
       }
     }
 
@@ -265,7 +272,16 @@ fun IntelliJPlatformTestingExtension.customRunIdeTask(
     task(configureRunIdeTask)
 
     plugins {
-      plugins(idePlugins(type))
+      // Use compatiblePlugins for :latest, regular plugins for explicit versions
+      val pluginsList = idePlugins(type)
+      val latestPlugins = pluginsList.filter { it.endsWith(":latest") }.map { it.removeSuffix(":latest") }
+      val explicitPlugins = pluginsList.filter { !it.endsWith(":latest") }
+
+      if (latestPlugins.isNotEmpty()) {
+        compatiblePlugins(latestPlugins)
+      }
+      plugins(explicitPlugins)
+
       // Load pre-built plugin ZIP instead of building from source if localPluginPath is set
       if (hasProp("localPluginPath")) {
         localPlugin(file(prop("localPluginPath")))
