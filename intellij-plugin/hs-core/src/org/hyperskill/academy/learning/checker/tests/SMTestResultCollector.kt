@@ -83,7 +83,7 @@ open class SMTestResultCollector : TestResultCollector() {
   protected fun SMTestProxy.toEduTestInfo(name: String, message: String, diff: CheckResultDiff?): EduTestInfo {
     return EduTestInfo(
       name = name,
-      status = magnitudeInfo.value,
+      status = magnitude,
       message = removeAttributes(fillWithIncorrect(message)),
       details = stacktrace,
       isFinishedSuccessfully = finishedSuccessfully(),

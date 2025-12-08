@@ -9,9 +9,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.ColorUtil
-import com.intellij.ui.icons.CachedImageIcon
 import com.intellij.util.Time
-import org.hyperskill.academy.EducationalCoreIcons.Submission.*
 import org.hyperskill.academy.learning.RemoteEnvHelper
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.CORRECT
@@ -81,12 +79,14 @@ fun formatDate(time: Date): String {
 }
 
 fun getImageUrl(status: String?): URL? {
-  val icon = when (status) {
-    CORRECT -> if (StyleResourcesManager.isHighContrast()) TaskSolvedHighContrast else TaskSolved
-    else -> if (StyleResourcesManager.isHighContrast()) TaskFailedHighContrast else TaskFailed
-  }
+  val iconPath = when (status) {
+    CORRECT -> if (StyleResourcesManager.isHighContrast()) "/icons/org/hyperskill/academy/submission/taskSolvedHighContrast@2x.png"
+    else "/icons/org/hyperskill/academy/submission/taskSolved@2x.png"
 
-  return (icon as CachedImageIcon).url
+    else -> if (StyleResourcesManager.isHighContrast()) "/icons/org/hyperskill/academy/submission/taskFailedHighContrast@2x.png"
+    else "/icons/org/hyperskill/academy/submission/taskFailed@2x.png"
+  }
+  return Submission::class.java.getResource(iconPath)
 }
 
 fun getLinkColor(submission: Submission): String {

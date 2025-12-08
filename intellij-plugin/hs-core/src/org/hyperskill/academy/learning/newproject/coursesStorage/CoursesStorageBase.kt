@@ -93,7 +93,7 @@ class UserCoursesState : BaseState() {
     if (courseMetaInfo != null) {
       courseMetaInfo.tasksSolved = tasksSolved
       courseMetaInfo.tasksTotal = tasksTotal
-      intIncrementModificationCount()
+      incrementModificationCount()
     }
     else {
       courses.add(JBACourseFromStorage(systemIndependentLocation, course, tasksTotal, tasksSolved))

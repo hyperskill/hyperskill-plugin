@@ -2,9 +2,9 @@ package org.hyperskill.academy.learning.courseGeneration.macro
 
 import com.intellij.openapi.components.PathMacroMap
 
-@Suppress("EqualsOrHashCode")
 class EduMacroMap(private val mode: SubstitutionMode, private val macros: List<EduMacro>) : PathMacroMap() {
 
+  // PathMacroMap.hashCode() is abstract, must override
   override fun hashCode(): Int = macros.hashCode()
 
   override fun substitute(text: String, caseSensitive: Boolean): String {
