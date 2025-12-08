@@ -8,6 +8,8 @@ import java.io.DataOutput
 import java.io.IOException
 import java.nio.file.Path
 
+// BACKCOMPAT: Extends FrameworkStorageBase which uses internal AbstractStorage API.
+// Used for course creator framework lesson state persistence.
 class CCFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePath) {
   @Throws(IOException::class)
   fun updateState(record: Int, state: FLTaskState): Int {

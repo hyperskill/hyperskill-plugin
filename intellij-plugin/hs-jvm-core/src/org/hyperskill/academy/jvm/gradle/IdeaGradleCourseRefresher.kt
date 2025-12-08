@@ -7,14 +7,14 @@ import com.intellij.openapi.externalSystem.model.ExternalSystemDataKeys
 import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.project.Project
-import com.intellij.util.PlatformUtils
 import org.hyperskill.academy.learning.RefreshCause
 import org.hyperskill.academy.learning.isHeadlessEnvironment
+import org.hyperskill.academy.learning.platform.IdeDetector
 import org.hyperskill.academy.learning.projectView.CourseViewPane
 import org.jetbrains.plugins.gradle.util.GradleConstants
 
 class IdeaGradleCourseRefresher : GradleCourseRefresher {
-  override fun isAvailable(): Boolean = PlatformUtils.isIntelliJ()
+  override fun isAvailable(): Boolean = IdeDetector.isIntelliJ()
 
   override fun refresh(project: Project, cause: RefreshCause) {
     val projectBasePath = project.basePath ?: return

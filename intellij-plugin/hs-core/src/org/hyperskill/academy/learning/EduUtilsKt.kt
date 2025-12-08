@@ -9,13 +9,13 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.util.PlatformUtils
 import com.intellij.util.ui.UIUtil
 import org.hyperskill.academy.learning.courseFormat.CourseMode
 import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
 import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.newproject.CourseProjectGenerator
+import org.hyperskill.academy.learning.platform.IdeDetector
 import org.hyperskill.academy.learning.projectView.ProgressUtil.updateCourseProgress
 import org.hyperskill.academy.learning.taskToolWindow.ui.EduBrowserHyperlinkListener
 import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
@@ -55,8 +55,7 @@ object EduUtilsKt {
     return HtmlGenerator(normalizedText, parsedTree, flavour, false).generateHtml()
   }
 
-  @Suppress("UnstableApiUsage")
-  fun isAndroidStudio(): Boolean = "AndroidStudio" == PlatformUtils.getPlatformPrefix()
+  fun isAndroidStudio(): Boolean = IdeDetector.isAndroidStudio()
 
   fun isTaskDescriptionFile(fileName: String): Boolean = fileName matches DescriptionFormat.taskDescriptionRegex
 

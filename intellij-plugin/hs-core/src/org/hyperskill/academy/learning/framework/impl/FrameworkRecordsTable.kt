@@ -1,5 +1,7 @@
 package org.hyperskill.academy.learning.framework.impl
 
+// BACKCOMPAT: AbstractRecordsTable and StorageLockContext are internal APIs.
+// Used together with AbstractStorage for framework lesson history persistence.
 import com.intellij.util.io.StorageLockContext
 import com.intellij.util.io.storage.AbstractRecordsTable
 import java.nio.file.Path

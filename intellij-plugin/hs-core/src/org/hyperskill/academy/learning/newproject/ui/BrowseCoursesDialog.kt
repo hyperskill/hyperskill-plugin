@@ -1,6 +1,5 @@
 package org.hyperskill.academy.learning.newproject.ui
 
-import com.intellij.ide.plugins.DisabledPluginsState
 import com.intellij.ide.plugins.DynamicPluginListener
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.notification.Notification
@@ -47,6 +46,10 @@ class BrowseCoursesDialog : OpenCourseDialogBase(), CoroutineScope {
       override fun pluginLoaded(pluginDescriptor: IdeaPluginDescriptor) {
         panel.doValidation()
       }
+
+      override fun beforePluginUnload(pluginDescriptor: IdeaPluginDescriptor, isUpdate: Boolean) {
+        ApplicationManager.getApplication().invokeLater { panel.doValidation() }
+      }
     })
     connection
       // TODO: find out a better way to be notified when plugin installation finishes
@@ -61,14 +64,6 @@ class BrowseCoursesDialog : OpenCourseDialogBase(), CoroutineScope {
           }
         }
       })
-
-    val disablePluginListener = Runnable { ApplicationManager.getApplication().invokeLater { panel.doValidation() } }
-    Disposer.register(disposable) {
-      @Suppress("UnstableApiUsage")
-      DisabledPluginsState.removeDisablePluginListener(disablePluginListener)
-    }
-    @Suppress("UnstableApiUsage")
-    DisabledPluginsState.addDisablePluginListener(disablePluginListener)
   }
 
   companion object {

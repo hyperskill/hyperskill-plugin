@@ -7,6 +7,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ActionButtonLook
 import com.intellij.openapi.actionSystem.impl.ActionButton
+// BACKCOMPAT: ActionToolbarImpl is internal API, but required for setCustomButtonLook() and setActionButtonBorder().
+// Public ActionToolbar interface doesn't expose these customization methods.
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.actionSystem.toolbarLayout.ToolbarLayoutStrategy
 import com.intellij.openapi.project.DumbAwareAction

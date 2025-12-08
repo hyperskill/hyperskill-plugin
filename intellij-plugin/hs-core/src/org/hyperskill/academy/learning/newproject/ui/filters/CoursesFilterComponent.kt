@@ -1,11 +1,11 @@
 package org.hyperskill.academy.learning.newproject.ui.filters
 
-import com.intellij.ide.plugins.newui.ListPluginComponent
 import com.intellij.ui.FilterComponent
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.StatusText
+import com.intellij.util.ui.UIUtil
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.ext.tags
 import org.hyperskill.academy.learning.newproject.ui.coursePanel.groups.CoursesGroup
@@ -22,7 +22,7 @@ class CoursesFilterComponent(
   init {
     removeBorder()
     val emptyText: StatusText = (textEditor as JBTextField).emptyText
-    emptyText.appendText(emptySearchText, SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, ListPluginComponent.GRAY_COLOR))
+    emptyText.appendText(emptySearchText, SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, UIUtil.getContextHelpForeground()))
   }
 
   fun removeBorder() {

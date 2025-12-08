@@ -4,6 +4,8 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionToolbar
+// BACKCOMPAT: ActionToolbarImpl is internal API, but required for setActionButtonBorder().
+// ActionManager.createActionToolbar() doesn't expose this customization.
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.openapi.project.Project
 import com.intellij.ui.InlineBannerBase

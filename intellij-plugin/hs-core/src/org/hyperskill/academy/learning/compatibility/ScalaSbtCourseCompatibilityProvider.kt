@@ -1,14 +1,14 @@
 package org.hyperskill.academy.learning.compatibility
 
-import com.intellij.util.PlatformUtils
 import org.hyperskill.academy.EducationalCoreIcons
 import org.hyperskill.academy.learning.courseFormat.PluginInfo
 import org.hyperskill.academy.learning.courseFormat.PluginInfos
+import org.hyperskill.academy.learning.platform.IdeDetector
 import javax.swing.Icon
 
 class ScalaSbtCourseCompatibilityProvider : CourseCompatibilityProvider {
   override fun requiredPlugins(): List<PluginInfo>? {
-    if (!PlatformUtils.isIntelliJ()) return null
+    if (!IdeDetector.isIntelliJ()) return null
     return listOf(
       PluginInfos.SCALA,
       PluginInfos.JAVA,

@@ -4,13 +4,16 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.project.stateStore
+// BACKCOMPAT: org.jetbrains.sqlite is an internal API.
+// No public alternative exists for lightweight SQLite access.
+// Standard JDBC is heavyweight and requires additional dependencies.
 import org.jetbrains.sqlite.ObjectBinder
 import org.jetbrains.sqlite.SqliteConnection
 import java.nio.file.Path
 
 private const val AUTHOR_CONTENTS_TABLE = "Contents"
 
-@Suppress("SqlNoDataSourceInspection", "SqlResolve")
+@Suppress("SqlNoDataSourceInspection", "SqlResolve", "UnstableApiUsage")
 class SQLiteLearningObjectsStorage(val db: Path) : LearningObjectsStorage, Disposable {
 
   private val connection = SqliteConnection(db)

@@ -1,5 +1,8 @@
 package org.hyperskill.academy.learning.framework.impl
 
+// BACKCOMPAT: AbstractStorage and StorageLockContext are internal APIs.
+// No public alternative exists for file-based storage with record management.
+// These APIs are stable and have been used reliably across IDE versions.
 import com.intellij.util.io.StorageLockContext
 import com.intellij.util.io.storage.AbstractRecordsTable
 import com.intellij.util.io.storage.AbstractStorage
@@ -9,6 +12,7 @@ import java.io.IOException
 import java.nio.file.Path
 import kotlin.system.measureTimeMillis
 
+@Suppress("UnstableApiUsage")
 abstract class FrameworkStorageBase(storagePath: Path) : AbstractStorage(storagePath) {
   @Volatile
   var isDisposed = false

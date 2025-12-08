@@ -4,12 +4,12 @@ import com.intellij.openapi.application.ex.ApplicationUtil
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressManager
-import com.intellij.util.PlatformUtils
 import com.intellij.util.net.ssl.CertificateManager
 import okhttp3.OkHttpClient
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.messages.EduFormatBundle
 import org.hyperskill.academy.learning.newproject.CoursesDownloadingException
+import org.hyperskill.academy.learning.platform.IdeDetector
 import org.hyperskill.academy.learning.stepik.StepikNames
 import retrofit2.Call
 import retrofit2.Response
@@ -91,13 +91,12 @@ class RetrofitHelperImpl : RetrofitHelper {
     }
   }
 
-  @Suppress("UnstableApiUsage")
   override val eduToolsUserAgent: String
     get() {
       val version = pluginVersion(EduNames.PLUGIN_ID) ?: "unknown"
 
       return String.format(
-        "%s/version(%s)/%s/%s", StepikNames.PLUGIN_NAME, version, System.getProperty("os.name"), PlatformUtils.getPlatformPrefix()
+        "%s/version(%s)/%s/%s", StepikNames.PLUGIN_NAME, version, System.getProperty("os.name"), IdeDetector.getProductCode()
       )
     }
 

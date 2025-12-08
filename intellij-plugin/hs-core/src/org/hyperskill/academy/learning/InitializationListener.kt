@@ -14,12 +14,12 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.PathUtil
-import com.intellij.util.PlatformUtils
 import org.hyperskill.academy.learning.authUtils.OAuthUtils.isBuiltinPortValid
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage
 import org.hyperskill.academy.learning.notification.EduNotificationManager
+import org.hyperskill.academy.learning.platform.IdeDetector
 import org.hyperskill.academy.learning.yaml.YamlConfigSettings
 import org.hyperskill.academy.learning.yaml.YamlDeserializer.deserializeCourse
 import org.hyperskill.academy.learning.yaml.YamlMapper
@@ -57,7 +57,6 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
       propertiesComponent.setValue(STEPIK_AUTH_RESET, true)
     }
 
-    @Suppress("UnstableApiUsage")
     if (!RemoteEnvHelper.isRemoteDevServer() && isEducationalIde()) {
       showSwitchFromEduNotification()
     }
@@ -82,7 +81,6 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
       )
       addAction(
         NotificationAction.createSimple(EduCoreBundle.message("notification.ide.switch.from.hyperskill.ide.acton.title")) {
-          @Suppress("UnstableApiUsage")
           val link = if (isPyCharmEducational()) {
             "https://www.jetbrains.com/pycharm/download/"
           }
@@ -93,7 +91,7 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
           this@apply.expire()
         })
       addAction(NotificationAction.createSimple((IdeBundle.message("notifications.toolwindow.dont.show.again"))) {
-        @Suppress("UnstableApiUsage")
+        @Suppress("UnstableApiUsage") // Notification.setDoNotAskFor is experimental
         this@apply.setDoNotAskFor(null)
         this@apply.expire()
       })
@@ -140,13 +138,8 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
     const val STEPIK_AUTH_RESET = "HyperskillEducational.stepikOAuthReset"
     private const val SWITCH_TO_COMMUNITY_DO_NOT_ASK_OPTION_ID = "Edu IDEs aren't supported"
 
-    private fun isEducationalIde(): Boolean {
-      val prefix = PlatformUtils.getPlatformPrefix()
-      return prefix == PlatformUtils.PYCHARM_EDU_PREFIX || prefix == PlatformUtils.IDEA_EDU_PREFIX
-    }
+    private fun isEducationalIde(): Boolean = IdeDetector.isEducationalIde()
 
-    private fun isPyCharmEducational(): Boolean {
-      return PlatformUtils.getPlatformPrefix() == PlatformUtils.PYCHARM_EDU_PREFIX
-    }
+    private fun isPyCharmEducational(): Boolean = IdeDetector.isPyCharmEducational()
   }
 }

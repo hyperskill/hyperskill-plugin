@@ -2,7 +2,6 @@ package org.hyperskill.academy.javascript.learning
 
 import com.intellij.lang.javascript.ui.NodeModuleNamesUtil
 import com.intellij.openapi.extensions.PluginId
-import com.intellij.util.PlatformUtils
 import org.hyperskill.academy.EducationalCoreIcons
 import org.hyperskill.academy.javascript.learning.checker.JsTaskCheckerProvider
 import org.hyperskill.academy.learning.EduCourseBuilder
@@ -12,6 +11,7 @@ import org.hyperskill.academy.learning.configuration.ArchiveInclusionPolicy
 import org.hyperskill.academy.learning.configuration.EduConfigurator
 import org.hyperskill.academy.learning.configuration.attributesEvaluator.AttributesEvaluator
 import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.platform.IdeDetector
 import javax.swing.Icon
 
 
@@ -37,7 +37,7 @@ open class JsConfigurator : EduConfigurator<JsNewProjectSettings> {
     get() = EducationalCoreIcons.Language.JavaScript
 
   override val isEnabled: Boolean
-    get() = !PlatformUtils.isRider()
+    get() = !IdeDetector.isRider()
 
   override val courseFileAttributesEvaluator: AttributesEvaluator = AttributesEvaluator(super.courseFileAttributesEvaluator) {
     file(NodeModuleNamesUtil.PACKAGE_JSON) {

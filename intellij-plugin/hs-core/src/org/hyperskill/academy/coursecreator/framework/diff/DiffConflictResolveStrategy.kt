@@ -1,6 +1,8 @@
 package org.hyperskill.academy.coursecreator.framework.diff
 
 import com.intellij.diff.comparison.ComparisonMergeUtil
+// BACKCOMPAT: MergeModelBase is internal API, but required for three-way merge conflict resolution.
+// No public alternative exists for programmatic merge model manipulation.
 import com.intellij.diff.merge.MergeModelBase
 import com.intellij.diff.tools.util.base.HighlightPolicy
 import com.intellij.diff.tools.util.base.IgnorePolicy
