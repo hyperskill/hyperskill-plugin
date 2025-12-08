@@ -5,7 +5,6 @@ plugins {
 dependencies {
   intellijPlatform {
     intellijIde(clionVersion)
-
     intellijPlugins(cppPlugins)
     intellijPlugins(radlerPlugin)
   }

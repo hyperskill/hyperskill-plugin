@@ -1,10 +1,8 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy.python">
+<idea-plugin package="org.hyperskill.academy.python">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.intellij.modules.python"/>
   </dependencies>
-
-  <xi:include href="/META-INF/Hyperskill-Python.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
   <extensions defaultExtensionNs="com.intellij">
     <configurationType implementation="org.hyperskill.academy.python.learning.run.PyRunTestsConfigurationType"/>
@@ -22,6 +20,10 @@
                   language="Python"
                   environment="unittest"
                   displayName="Python"/>
+    <configurator implementationClass="org.hyperskill.academy.python.learning.stepik.hyperskill.PyHyperskillConfigurator"
+                  language="Python" courseType="Hyperskill"/>
+    <configurator implementationClass="org.hyperskill.academy.python.learning.stepik.hyperskill.PyUnittestHyperskillConfigurator"
+                  language="Python" courseType="Hyperskill" environment="unittest" displayName="Hyperskill Python (unittest)"/>
   </extensions>
 
   <actions resource-bundle="messages.EduPythonBundle">

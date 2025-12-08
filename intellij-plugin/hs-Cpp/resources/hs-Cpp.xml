@@ -1,6 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy.cpp">
-  <!-- BACKCOMPAT: 2025.1. Inline it. -->
-  <xi:include href="/hs-Cpp-platform.xml" xpointer="xpointer(/idea-plugin/*)"/>
+<idea-plugin package="org.hyperskill.academy.cpp">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.intellij.clion"/>
@@ -31,7 +29,7 @@
                            environment="Catch"
                            implementationClass="org.hyperskill.academy.cpp.compatibility.CppCatchCourseCompatibilityProvider"/>
 
+    <configurator implementationClass="org.hyperskill.academy.cpp.hyperskill.CppHyperskillConfigurator" language="ObjectiveC"
+                  courseType="Hyperskill"/>
   </extensions>
-
-  <xi:include href="/META-INF/Hyperskill-Cpp.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>

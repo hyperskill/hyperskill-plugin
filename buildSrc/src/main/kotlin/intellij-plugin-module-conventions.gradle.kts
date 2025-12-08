@@ -15,6 +15,11 @@ repositories {
 
 intellijPlatform {
   instrumentCode = false
+  caching {
+    ides {
+      enabled = true
+    }
+  }
 }
 
 tasks {

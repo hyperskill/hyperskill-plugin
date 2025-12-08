@@ -47,6 +47,14 @@ intellijPlatform {
       recommended()
     }
   }
+
+  // Enable IDE caching for plugin verification
+  // Cache path is configured via org.jetbrains.intellij.platform.intellijPlatformCache in gradle.properties
+  caching {
+    ides {
+      enabled = true
+    }
+  }
 }
 
 dependencies {
@@ -132,6 +140,9 @@ tasks {
       check(kotlinStdlibJars.isEmpty()) {
         "Plugin shouldn't contain kotlin stdlib jars. Found:\n" + kotlinStdlibJars.joinToString(separator = ",\n") { it.absolutePath }
       }
+
+      // BACKCOMPAT: 252 - Rename module JARs in lib/modules/ to match expected naming convention
+      renameModuleJarsToMatchDescriptors(libraryDir.resolve("modules"))
     }
   }
 

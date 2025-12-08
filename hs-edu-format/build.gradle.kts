@@ -23,6 +23,6 @@ val moduleName = "org.hyperskill.academy.format"
 tasks {
   compileJava {
     inputs.property("moduleName", moduleName)
-    options.compilerArgs = listOf("--patch-module", "$moduleName=${sourceSets.main.get().output.asPath}")
+    options.compilerArgs.addAll(listOf("--patch-module", "$moduleName=${sourceSets.main.get().output.asPath}"))
   }
 }

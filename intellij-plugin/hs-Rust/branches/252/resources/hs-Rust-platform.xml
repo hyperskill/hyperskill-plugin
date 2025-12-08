@@ -1,5 +1,0 @@
-<idea-plugin>
-  <extensions defaultExtensionNs="org.rust">
-    <learn.openCourseHandler implementation="org.hyperskill.academy.rust.learn.RsOpenCourseHandler"/>
-  </extensions>
-</idea-plugin>

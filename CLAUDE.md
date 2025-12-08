@@ -86,6 +86,22 @@ extension points:
 - `intellijPlatform.pluginConfiguration` for plugin metadata
 - `intellijPlatform.pluginVerification` for compatibility checks
 
+## Handling Platform Compatibility
+
+When code differs between platform versions:
+
+1. **Prefer deprecated APIs** if they work across all supported versions. Add `// BACKCOMPAT: <version>` comment to mark
+   for future cleanup when that version is dropped.
+
+2. **Extract platform-specific code** to `branches/<version>/src/` directories when APIs are incompatible. Keep
+   platform-specific code minimal.
+
+3. **Use runtime checks** with `ApplicationInfo.getInstance().build` when code must compile on all platforms but behave
+   differently.
+
+4. **Platform-specific XML**: Create `platform-<name>.xml` in `branches/<version>/resources/META-INF/` and include via
+   XInclude.
+
 ## Configuration Files
 
 - `gradle.properties`: Main build configuration (plugin version, target IDE, feature flags)

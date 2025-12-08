@@ -58,24 +58,34 @@ dependencies {
 // Download Hyperskill CSS lazily (only when building, not on every Gradle invocation)
 val downloadHyperskillCss by tasks.registering {
   val cssUrl = "https://hyperskill.org/static/shared.css"
-  val outputFile = file("resources/style/hyperskill_task.css")
-  val fallbackFile = file("../hyperskill_default.css")
+  val outputFile = layout.projectDirectory.file("resources/style/hyperskill_task.css")
+  val fallbackFile = layout.projectDirectory.file("../hyperskill_default.css")
 
+  inputs.property("cssUrl", cssUrl)
+  inputs.file(fallbackFile).withPathSensitivity(PathSensitivity.NONE)
   outputs.file(outputFile)
-  outputs.upToDateWhen { outputFile.exists() && outputFile.length() > 0 }
+  outputs.cacheIf { true }
+
+  onlyIf {
+    val file = outputFile.asFile
+    !file.exists() || file.length() == 0L
+  }
 
   doLast {
+    val output = outputFile.asFile
+    val fallback = fallbackFile.asFile
     try {
       URI(cssUrl).toURL().openStream().use { input ->
-        outputFile.parentFile.mkdirs()
-        outputFile.outputStream().use { output ->
-          input.copyTo(output)
+        output.parentFile.mkdirs()
+        output.outputStream().use { out ->
+          input.copyTo(out)
         }
       }
       println("Downloaded CSS from $cssUrl")
-    } catch (e: Exception) {
+    }
+    catch (e: Exception) {
       println("Error downloading CSS: ${e.message}. Using local fallback.")
-      fallbackFile.copyTo(outputFile, overwrite = true)
+      fallback.copyTo(output, overwrite = true)
     }
   }
 }

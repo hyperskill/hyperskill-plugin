@@ -1,4 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" package="org.hyperskill.academy.javascript">
+<idea-plugin package="org.hyperskill.academy.javascript">
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="JavaScript"/>
@@ -6,9 +6,9 @@
     <plugin id="com.intellij.css"/>
   </dependencies>
 
-  <xi:include href="/META-INF/Hyperskill-JavaScript.xml" xpointer="xpointer(/idea-plugin/*)"/>
-
   <extensions defaultExtensionNs="HyperskillEducational">
     <configurator implementationClass="org.hyperskill.academy.javascript.learning.JsConfigurator" language="JavaScript"/>
+    <configurator implementationClass="org.hyperskill.academy.javascript.learning.stepik.hyperskill.JsHyperskillConfigurator"
+                  language="JavaScript" courseType="Hyperskill"/>
   </extensions>
 </idea-plugin>
