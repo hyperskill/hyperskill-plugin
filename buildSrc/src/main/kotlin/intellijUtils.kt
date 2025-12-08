@@ -131,7 +131,18 @@ fun String.toTypeWithVersion(): TypeWithVersion {
 
 fun IntelliJPlatformDependenciesExtension.intellijIde(versionWithCode: String) {
   val (type, version) = versionWithCode.toTypeWithVersion()
-  create(type, version, useInstaller = false)
+  // Starting from 2025.3, IntelliJ IDEA Community and Ultimate are unified into a single distribution.
+  // Use the new intellijIdea() helper which resolves the unified artifact.
+  // See: https://blog.jetbrains.com/platform/2025/11/intellij-platform-2025-3-what-plugin-developers-should-know/
+  if (type == IntelliJPlatformType.IntellijIdeaUltimate && version.startsWith("2025.3")) {
+    intellijIdea(version) {
+      useInstaller.set(false)
+    }
+  } else {
+    create(type, version) {
+      useInstaller.set(false)
+    }
+  }
   // JetBrains runtime is necessary not only for running IDE but for tests as well
   jetbrainsRuntime()
 }
