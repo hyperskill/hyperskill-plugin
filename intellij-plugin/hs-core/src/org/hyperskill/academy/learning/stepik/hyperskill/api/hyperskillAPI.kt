@@ -4,8 +4,8 @@ package org.hyperskill.academy.learning.stepik.hyperskill.api
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationNamesInfo
-import com.intellij.openapi.application.impl.ApplicationInfoImpl
 import com.intellij.openapi.project.Project
 import org.hyperskill.academy.coursecreator.AdditionalFilesUtils
 import org.hyperskill.academy.learning.EduNames
@@ -280,7 +280,7 @@ class HyperskillFrontendEventContext {
   var client: String = EDUTOOLS
 
   @JsonProperty(IDE_VERSION)
-  var ideVersion: String = with(ApplicationInfoImpl.getShadowInstance()) { "$versionName $fullVersion" }
+  var ideVersion: String = with(ApplicationInfo.getInstance()) { "$versionName $fullVersion" }
 
   @JsonProperty(IDE_EDITION)
   var ideEdition: String = ApplicationNamesInfo.getInstance().editionName ?: ""

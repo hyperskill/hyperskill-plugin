@@ -1,8 +1,8 @@
 package org.hyperskill.academy.learning.authUtils
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.application.impl.ApplicationInfoImpl
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.WindowManager
@@ -44,7 +44,7 @@ fun requestFocus() {
 }
 
 fun sendPluginInfoResponse(request: FullHttpRequest, context: ChannelHandlerContext) {
-  val appInfo = ApplicationInfoImpl.getShadowInstance()
+  val appInfo = ApplicationInfo.getInstance()
   createResponse(
     ObjectMapper().writeValueAsString(
       PluginInfo(
