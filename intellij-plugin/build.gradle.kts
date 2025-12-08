@@ -266,6 +266,10 @@ fun IntelliJPlatformTestingExtension.customRunIdeTask(
 
     plugins {
       plugins(idePlugins(type))
+      // Load pre-built plugin ZIP instead of building from source if localPluginPath is set
+      if (hasProp("localPluginPath")) {
+        localPlugin(file(prop("localPluginPath")))
+      }
     }
   }
 }
