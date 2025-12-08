@@ -1,7 +1,7 @@
 package org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.notLoggedInPanel
 
-import com.intellij.ui.ExperimentalUI
 import com.intellij.ui.JBColor
+import com.intellij.ui.NewUI
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.components.panels.Wrapper
 import com.intellij.ui.dsl.builder.AlignX
@@ -29,7 +29,7 @@ class HyperskillNotLoggedInPanel : Wrapper() {
       }
     }.apply {
       isOpaque = true
-      background = if (ExperimentalUI.isNewUI()) backgroundColor else oldUIBackgroundColor
+      background = if (NewUI.isEnabled()) backgroundColor else oldUIBackgroundColor
     }
 
     // Wrap content into a scroll pane: vertical as needed, horizontal never
@@ -44,6 +44,3 @@ class HyperskillNotLoggedInPanel : Wrapper() {
     setContent(scrollPane)
   }
 }
-
-
-

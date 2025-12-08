@@ -2,8 +2,8 @@ package org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.notLogged
 
 import com.intellij.ide.ui.laf.darcula.ui.DarculaButtonUI
 import com.intellij.openapi.ui.VerticalFlowLayout
-import com.intellij.ui.ExperimentalUI
 import com.intellij.ui.JBColor
+import com.intellij.ui.NewUI
 import com.intellij.ui.components.panels.Wrapper
 import com.intellij.ui.dsl.builder.TopGap
 import com.intellij.ui.dsl.builder.panel
@@ -129,5 +129,5 @@ class HyperskillTopLoginPanelWithBanner : Wrapper() {
     }
   }
 
-  private fun getBackgroundColor() = if (ExperimentalUI.isNewUI()) backgroundColor else oldUIBackgroundColor
+  private fun getBackgroundColor() = if (NewUI.isEnabled()) backgroundColor else oldUIBackgroundColor
 }
