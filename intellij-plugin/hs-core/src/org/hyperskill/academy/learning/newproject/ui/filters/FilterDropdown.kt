@@ -70,6 +70,7 @@ abstract class FilterDropdown(
         root.add(node)
       }
 
+      @Suppress("DEPRECATION") // CheckboxTree constructor without checkPolicy is deprecated
       return CheckboxTree(OptionNameCellRenderer(), root).apply {
         isRootVisible = true
         showsRootHandles = false

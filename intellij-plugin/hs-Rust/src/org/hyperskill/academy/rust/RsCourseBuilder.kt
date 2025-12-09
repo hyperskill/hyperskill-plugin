@@ -318,9 +318,8 @@ class RsCourseBuilder : EduCourseBuilder<RsProjectSettings> {
     FileDocumentManager.getInstance().saveDocument(document)
   }
 
-  private fun TomlPsiFactory.createComma(): PsiElement {
-    return createArray("1, 2").childrenWithLeaves.first { it.isTomlComma }
-  }
+  // Note: TomlPsiFactory has its own createComma() method since recent TOML plugin versions,
+  // so we use that directly instead of our custom implementation
 
   private val PsiElement.isTomlComma: Boolean get() = elementType == TomlElementTypes.COMMA
 

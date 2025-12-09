@@ -4,7 +4,7 @@ import org.hyperskill.academy.learning.messages.BUNDLE
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.jetbrains.annotations.PropertyKey
 
-enum class TabType(@PropertyKey(resourceBundle = BUNDLE) private val nameId: String) {
+enum class TabType(@param:PropertyKey(resourceBundle = BUNDLE) private val nameId: String) {
   DESCRIPTION_TAB("description.tab.name"),
   THEORY_TAB("hyperskill.theory.tab.name"),
   TOPICS_TAB("hyperskill.topics.tab.name"),

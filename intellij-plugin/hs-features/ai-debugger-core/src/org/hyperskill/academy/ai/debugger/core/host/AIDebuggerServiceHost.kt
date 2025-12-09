@@ -11,7 +11,7 @@ import org.jetbrains.annotations.PropertyKey
 
 
 enum class AIDebuggerServiceHost(
-  @PropertyKey(resourceBundle = BUNDLE) private val visibleNameKey: String,
+  @param:PropertyKey(resourceBundle = BUNDLE) private val visibleNameKey: String,
 ) : ServiceHostEnum {
   PRODUCTION("ai.debugger.service.production.server"),
   STAGING("ai.debugger.service.staging.server"),

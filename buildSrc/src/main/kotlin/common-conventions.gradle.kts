@@ -59,7 +59,8 @@ tasks {
       jvmTarget = JvmTarget.JVM_21
       languageVersion = KotlinVersion.DEFAULT
       // see https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library
-      apiVersion = KotlinVersion.KOTLIN_1_8
+      // Kotlin 2.1 is bundled with IntelliJ 2025.2+
+      apiVersion = KotlinVersion.KOTLIN_2_1
       freeCompilerArgs = listOf("-Xjvm-default=all")
     }
   }

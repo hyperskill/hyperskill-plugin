@@ -39,9 +39,9 @@ abstract class SectionYamlMixin {
 
 @JsonPOJOBuilder(withPrefix = "")
 private class SectionBuilder(
-  @JsonProperty(CONTENT) val content: List<String?> = emptyList(),
-  @JsonProperty(CUSTOM_NAME) val customName: String? = null,
-  @JsonProperty(TAGS) val contentTags: List<String> = emptyList()
+  @param:JsonProperty(CONTENT) val content: List<String?> = emptyList(),
+  @param:JsonProperty(CUSTOM_NAME) val customName: String? = null,
+  @param:JsonProperty(TAGS) val contentTags: List<String> = emptyList()
 ) {
   @Suppress("unused") //used for deserialization
   private fun build(): Section {

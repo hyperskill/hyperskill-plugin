@@ -13,23 +13,23 @@ private const val BOTTOM = "bottomOfTermRect"
 private const val TOP = "topOfTermRect"
 
 data class JsEventData(
-  @JsonProperty(TERM)
+  @param:JsonProperty(TERM)
   val term: String,
 
-  @JsonProperty(X)
-  @JsonDeserialize(contentConverter = DoubleToIntConverter::class)
+  @param:JsonProperty(X)
+  @param:JsonDeserialize(contentConverter = DoubleToIntConverter::class)
   val x: Int,
 
-  @JsonProperty(Y)
-  @JsonDeserialize(contentConverter = DoubleToIntConverter::class)
+  @param:JsonProperty(Y)
+  @param:JsonDeserialize(contentConverter = DoubleToIntConverter::class)
   val y: Int,
 
-  @JsonProperty(BOTTOM)
-  @JsonDeserialize(contentConverter = DoubleToIntConverter::class)
+  @param:JsonProperty(BOTTOM)
+  @param:JsonDeserialize(contentConverter = DoubleToIntConverter::class)
   val bottomOfTermRect: Int? = null,
 
-  @JsonProperty(TOP)
-  @JsonDeserialize(contentConverter = DoubleToIntConverter::class)
+  @param:JsonProperty(TOP)
+  @param:JsonDeserialize(contentConverter = DoubleToIntConverter::class)
   val topOfTermRect: Int? = null
 ) {
   companion object {

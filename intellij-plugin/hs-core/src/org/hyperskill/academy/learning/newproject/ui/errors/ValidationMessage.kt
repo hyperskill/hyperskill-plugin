@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nls
  *
  */
 data class ValidationMessage(
-  @Nls val message: String,
+  @param:Nls val message: String,
   val hyperlinkAddress: String? = null,
   val type: ValidationMessageType = ValidationMessageType.ERROR
 )

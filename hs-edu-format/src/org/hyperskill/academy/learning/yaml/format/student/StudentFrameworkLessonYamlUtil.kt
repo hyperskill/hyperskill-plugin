@@ -22,7 +22,7 @@ abstract class StudentFrameworkLessonYamlMixin : FrameworkLessonYamlMixin() {
 }
 
 private class StudentFrameworkLessonBuilder(
-  @JsonProperty(CURRENT_TASK) val currentTaskIndex: Int,
+  @param:JsonProperty(CURRENT_TASK) val currentTaskIndex: Int,
   @JsonProperty(IS_TEMPLATE_BASED) isTemplateBased: Boolean = true,
   @JsonProperty(CONTENT) content: List<String?> = emptyList(),
   @JsonProperty(TAGS) contentTags: List<String> = emptyList(),

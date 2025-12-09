@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import org.hyperskill.academy.coursecreator.framework.SyncChangesStateManager
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -87,12 +88,13 @@ class EduDocumentListener private constructor(
       val document = FileDocumentManager.getInstance().getDocument(file) ?: return
 
       val listener = EduDocumentListener(holder, taskFile)
-      document.addDocumentListener(listener)
+      val disposable = Disposer.newDisposable()
+      document.addDocumentListener(listener, disposable)
       try {
         action(document)
       }
       finally {
-        document.removeDocumentListener(listener)
+        Disposer.dispose(disposable)
       }
     }
 

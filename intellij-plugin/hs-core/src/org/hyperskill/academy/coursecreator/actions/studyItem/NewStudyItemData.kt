@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NonNls
 import javax.swing.Icon
 
 class NewStudyItemInfo(
-  @NonNls val name: String,
+  @param:NonNls val name: String,
   val index: Int
 ) : UserDataHolderBase()
 
@@ -34,9 +34,9 @@ data class NewStudyItemUiModel(
 )
 
 data class StudyItemVariant(
-  @Nls(capitalization = Nls.Capitalization.Title)
+  @param:Nls(capitalization = Nls.Capitalization.Title)
   val type: String,
-  @Nls(capitalization = Nls.Capitalization.Sentence)
+  @param:Nls(capitalization = Nls.Capitalization.Sentence)
   val description: String,
   val icon: Icon,
   val producer: () -> StudyItem

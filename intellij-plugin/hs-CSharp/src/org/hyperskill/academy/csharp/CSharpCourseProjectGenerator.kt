@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION") // SolutionInitializer is deprecated, but SolutionInitializerService is not available in all supported versions
+
 package org.hyperskill.academy.csharp
 
 import com.jetbrains.rd.ide.model.RdOpenSolution

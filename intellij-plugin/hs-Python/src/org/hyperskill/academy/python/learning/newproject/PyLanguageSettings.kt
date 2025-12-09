@@ -29,6 +29,7 @@ import java.awt.BorderLayout
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
 
+@Suppress("DEPRECATION") // PySdkPathChoosingComboBox and addInterpretersAsync are deprecated but no clear replacement is available yet
 open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
 
   private val projectSettings: PyProjectSettings = PyProjectSettings()

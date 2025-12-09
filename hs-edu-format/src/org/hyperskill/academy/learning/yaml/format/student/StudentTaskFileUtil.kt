@@ -46,10 +46,10 @@ class IsBinaryFilter {
 }
 
 class StudentTaskFileBuilder(
-  @JsonProperty(TEXT) val textFromConfig: String?,
-  @Encrypt @JsonProperty(ENCRYPTED_TEXT) val encryptedTextFromConfig: String?,
-  @JsonProperty(LEARNER_CREATED) val learnerCreated: Boolean = false,
-  @JsonProperty(IS_BINARY) val isBinary: Boolean? = false,
+  @param:JsonProperty(TEXT) val textFromConfig: String?,
+  @param:Encrypt @param:JsonProperty(ENCRYPTED_TEXT) val encryptedTextFromConfig: String?,
+  @param:JsonProperty(LEARNER_CREATED) val learnerCreated: Boolean = false,
+  @param:JsonProperty(IS_BINARY) val isBinary: Boolean? = false,
   name: String?,
   visible: Boolean = true,
   editable: Boolean = true,

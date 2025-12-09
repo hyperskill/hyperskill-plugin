@@ -18,6 +18,7 @@ import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 
 
+@Suppress("DEPRECATION") // PermanentInstallationID is deprecated but no clear replacement is available yet
 object EduLaunchesReporter {
   private const val LAST_UPDATE: String = "org.hyperskill.academy.LAST_UPDATE"
   private const val PLUGIN_ID: String = "org.hyperskill.academy"

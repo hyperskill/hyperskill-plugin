@@ -66,6 +66,7 @@ class RsLanguageSettings : LanguageSettings<RsProjectSettings>() {
 
   private fun findAllToolchainsPath(): List<Path> {
     checkIsBackgroundThread()
+    @Suppress("DEPRECATION") // Using deprecated API, new one requires projectDir which we don't have here
     return RsToolchainFlavor.getApplicableFlavors().flatMap { it.suggestHomePaths() }.distinct()
   }
 

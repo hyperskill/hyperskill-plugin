@@ -71,7 +71,7 @@ abstract class TaskFileYamlMixin : EduFileYamlMixin() {
  * A base class for building task files and additional files
  */
 open class EduFileBuilder(
-  @JsonProperty(NAME) val name: String?
+  @param:JsonProperty(NAME) val name: String?
 ) {
   protected open fun setupEduFile(eduFile: EduFile) {
     eduFile.name = name ?: formatError(message("yaml.editor.invalid.file.without.name"))
@@ -80,7 +80,7 @@ open class EduFileBuilder(
 
 @JsonPOJOBuilder(buildMethodName = "buildAdditionalFile", withPrefix = "")
 class AdditionalFileBuilder(
-  @JsonProperty(IS_BINARY) val isBinary: Boolean? = false,
+  @param:JsonProperty(IS_BINARY) val isBinary: Boolean? = false,
   name: String?
 ) : EduFileBuilder(name) {
 
@@ -104,10 +104,10 @@ class AdditionalFileBuilder(
 @JsonPOJOBuilder(buildMethodName = "buildTaskFile", withPrefix = "")
 open class TaskFileBuilder(
   name: String?,
-  @JsonProperty(VISIBLE) val visible: Boolean = true,
-  @JsonProperty(EDITABLE) val editable: Boolean = true,
-  @JsonProperty(PROPAGATABLE) val propagatable: Boolean = true,
-  @JsonProperty(HIGHLIGHT_LEVEL) val errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.ALL_PROBLEMS
+  @param:JsonProperty(VISIBLE) val visible: Boolean = true,
+  @param:JsonProperty(EDITABLE) val editable: Boolean = true,
+  @param:JsonProperty(PROPAGATABLE) val propagatable: Boolean = true,
+  @param:JsonProperty(HIGHLIGHT_LEVEL) val errorHighlightLevel: EduFileErrorHighlightLevel = EduFileErrorHighlightLevel.ALL_PROBLEMS
 ) : EduFileBuilder(name) {
 
   @Suppress("unused") //used for deserialization
