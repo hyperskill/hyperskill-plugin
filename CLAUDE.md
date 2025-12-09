@@ -21,6 +21,9 @@ with [Hyperskill](https://hi.hyperskill.org/how-we-teach).
 # Run a single test class
 ./gradlew :intellij-plugin:hs-core:test --tests "org.hyperskill.academy.learning.format.CourseFormatTest"
 
+# Run a single test method
+./gradlew :intellij-plugin:hs-core:test --tests "org.hyperskill.academy.learning.format.CourseFormatTest.testSomething"
+
 # Run IDE with the plugin (various IDEs supported)
 ./gradlew runIde          # Default IDE based on baseIDE property
 ./gradlew runIdea         # IntelliJ IDEA Ultimate
@@ -33,14 +36,17 @@ with [Hyperskill](https://hi.hyperskill.org/how-we-teach).
 
 # Verify plugin compatibility
 ./gradlew verifyPlugin
+
+# Run in split mode (backend/frontend separation)
+./gradlew runInSplitMode
 ```
 
 ## Platform Version Targeting
 
 The plugin supports multiple IntelliJ Platform versions. The target version is controlled by `environmentName` in `gradle.properties`:
 
-- `environmentName=252` targets 2025.2.x
-- Version-specific properties are in `gradle-252.properties`, etc.
+- `environmentName=252` targets 2025.2.x, `environmentName=253` targets 2025.3.x
+- Version-specific properties are in `gradle-252.properties`, `gradle-253.properties`, etc.
 - Branch-specific source overrides go in `branches/<version>/src/` directories
 
 To switch versions, change `environmentName` and reload Gradle.
@@ -74,9 +80,12 @@ branches/252/  # Platform-specific overrides for 2025.2
 ### Key Patterns
 
 - All plugin module classes must be in the `org.hyperskill.academy` package (enforced by `verifyClasses` task)
-- Kotlin stdlib is excluded from dependencies (bundled with IDE)
+- Kotlin stdlib is excluded from dependencies (bundled with IDE) — see `kotlin.stdlib.default.dependency=false`
 - Tests use IntelliJ's test framework (`LightPlatformCodeInsightTestCase`, etc.)
-- Convention plugins in `buildSrc/` provide shared Gradle configuration
+- Convention plugins in `buildSrc/` provide shared Gradle configuration:
+  - `common-conventions` — base Java/Kotlin setup (Java 21, Kotlin 2.1)
+  - `intellij-plugin-common-conventions` — IntelliJ plugin modules with branch-specific sources
+  - `intellij-plugin-module-conventions` — full IntelliJ Platform module setup with IDE caching
 
 ### IntelliJ Platform Plugin
 
@@ -85,6 +94,7 @@ extension points:
 
 - `intellijPlatform.pluginConfiguration` for plugin metadata
 - `intellijPlatform.pluginVerification` for compatibility checks
+- `intellijPlatform.caching { ides { enabled = true } }` for IDE download caching
 
 ## Handling Platform Compatibility
 
@@ -105,9 +115,13 @@ When code differs between platform versions:
 ## Configuration Files
 
 - `gradle.properties`: Main build configuration (plugin version, target IDE, feature flags)
-- `gradle-252.properties`: Platform-specific plugin/IDE versions
+- `gradle-252.properties`, `gradle-253.properties`: Platform-specific plugin/IDE versions
 - `secret.properties`: OAuth client IDs (not committed, created from template)
 - `gradle/libs.versions.toml`: Dependency version catalog
+
+## Code Style
+
+- Only English is allowed in the code (comments, identifiers, strings)
 
 ## Issue Tracker
 
