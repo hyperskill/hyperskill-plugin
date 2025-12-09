@@ -19,8 +19,6 @@
     <postStartupActivity implementation="org.hyperskill.academy.learning.stepik.hyperskill.HyperskillStartupActivity"/>
 
     <httpRequestHandler implementation="org.hyperskill.academy.learning.stepik.hyperskill.HyperskillRestService"/>
-    <!-- Alternative handler for /api/hyperskill (without /edu/ prefix) for gradual migration -->
-    <httpRequestHandler implementation="org.hyperskill.academy.learning.stepik.hyperskill.HyperskillRestServiceAlternative"/>
     <statusBarWidgetFactory id="widget.hyperskill"
                             implementation="org.hyperskill.academy.learning.stepik.hyperskill.widget.HyperskillWidgetFactory"
                             order="before positionWidget"/>

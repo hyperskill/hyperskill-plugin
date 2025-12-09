@@ -88,7 +88,7 @@ open class HyperskillRestService : OAuthRestService(HYPERSKILL) {
     return "Unknown command: $uri"
   }
 
-  override fun getServiceName(): String = HyperskillConnector.getInstance().serviceName
+  override fun getServiceName(): String = HyperskillConnector.getInstance().oAuthServiceName
 
   override fun isOriginAllowed(request: HttpRequest): OriginCheckResult {
     val originAllowed = super.isOriginAllowed(request)

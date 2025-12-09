@@ -1,7 +1,6 @@
 package org.hyperskill.academy.learning.courseFormat
 
 object EduFormatNames {
-  const val EDU_PREFIX = "edu"
   const val REST_PREFIX = "api"
   const val CODE_ARGUMENT = "code"
 

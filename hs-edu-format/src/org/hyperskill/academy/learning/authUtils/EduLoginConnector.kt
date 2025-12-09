@@ -3,7 +3,6 @@ package org.hyperskill.academy.learning.authUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.ConnectionPool
 import okhttp3.Interceptor
-import org.hyperskill.academy.learning.courseFormat.EduFormatNames
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.CODE_ARGUMENT
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.REST_PREFIX
 import org.hyperskill.academy.learning.courseFormat.UserInfo
@@ -51,28 +50,15 @@ abstract class EduLoginConnector<UserAccount : Account<*>, SpecificUserInfo : Us
   protected open val requestInterceptor: Interceptor? = null
 
   /**
-   * Primary service name used for OAuth redirect URI.
-   * Format: "edu/hyperskill"
-   */
-  open val serviceName: String by lazy {
-    "${EduFormatNames.EDU_PREFIX}/${platformName.lowercase()}"
-  }
-
-  /**
-   * Alternative service name without "edu/" prefix.
+   * Service name used for OAuth redirect URI.
    * Format: "hyperskill"
-   * Used for gradual migration to simpler URL structure.
    */
-  open val alternativeServiceName: String by lazy {
+  open val oAuthServiceName: String by lazy {
     platformName.lowercase()
   }
 
   open val oAuthServicePath: String by lazy {
-    "/$REST_PREFIX/$serviceName/$OAUTH_SUFFIX"
-  }
-
-  open val alternativeOAuthServicePath: String by lazy {
-    "/$REST_PREFIX/$alternativeServiceName/$OAUTH_SUFFIX"
+    "/$REST_PREFIX/$oAuthServiceName/$OAUTH_SUFFIX"
   }
 
   abstract fun getCurrentUserInfo(): SpecificUserInfo?
@@ -105,20 +91,18 @@ abstract class EduLoginConnector<UserAccount : Account<*>, SpecificUserInfo : Us
   abstract fun getFreshAccessToken(userAccount: UserAccount?, accessToken: String?): String?
 
   /**
-   * Returns a pattern that matches both primary and alternative OAuth service paths.
-   * Primary: /api/edu/hyperskill/oauth
-   * Alternative: /api/hyperskill/oauth
+   * Returns a pattern that matches OAuth service path.
+   * Path: /api/hyperskill/oauth
    */
   fun getOAuthPattern(suffix: String = """\?$CODE_ARGUMENT=[\w+,.-]*\&$STATE=[\w+,.-]*"""): Pattern {
-    return "^.*($oAuthServicePath|$alternativeOAuthServicePath)$suffix".toPattern()
+    return "^.*$oAuthServicePath$suffix".toPattern()
   }
 
   /**
-   * Returns a pattern that matches both primary and alternative service names.
-   * Primary: /api/edu/hyperskill
-   * Alternative: /api/hyperskill
+   * Returns a pattern that matches the service name.
+   * Path: /api/hyperskill
    */
-  fun getServicePattern(suffix: String): Pattern = "^.*($serviceName|$alternativeServiceName)$suffix".toPattern()
+  fun getServicePattern(suffix: String): Pattern = "^.*$oAuthServiceName$suffix".toPattern()
 
   open fun isLoggedIn(): Boolean = account != null
 
