@@ -50,6 +50,13 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
   protected open fun setupProjectSdksModel(model: ProjectSdksModel) {}
 
+  /**
+   * Called from background thread to add bundled JDK to the model if needed.
+   * Override this instead of [setupProjectSdksModel] for operations that require write actions
+   * (like [ProjectSdksModel.addSdk]) which are prohibited on EDT in IntelliJ 2025.3+.
+   */
+  protected open fun addBundledJdkIfNeeded(model: ProjectSdksModel) {}
+
   override fun getLanguageSettingsComponents(
     course: Course,
     disposable: CheckedDisposable,
@@ -81,6 +88,14 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
       }
       catch (_: Throwable) {
         // best-effort; if reset fails we'll try with whatever the model currently has
+      }
+
+      // Add bundled JDK if needed (must be done off-EDT as addSdk requires write action)
+      try {
+        addBundledJdkIfNeeded(sdksModel)
+      }
+      catch (_: Throwable) {
+        // best-effort; ignore failures
       }
 
       // If sdkModel is empty, try to get JDKs directly from ProjectJdkTable

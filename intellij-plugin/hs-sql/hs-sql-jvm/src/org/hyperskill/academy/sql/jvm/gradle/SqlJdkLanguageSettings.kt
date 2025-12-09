@@ -21,7 +21,11 @@ class SqlJdkLanguageSettings : JdkLanguageSettings() {
 
   private var testLanguage: SqlTestLanguage? = null
 
-  override fun setupProjectSdksModel(model: ProjectSdksModel) {
+  // Note: setupProjectSdksModel is intentionally not overridden here.
+  // Adding SDK via model.addSdk() on EDT is prohibited in IntelliJ 2025.3+.
+  // Bundled JDK is added in addBundledJdkIfNeeded() which is called from background thread.
+
+  override fun addBundledJdkIfNeeded(model: ProjectSdksModel) {
     val (jdkPath, sdk) = findBundledJdk(model) ?: return
     if (sdk == null) {
       model.addSdk(JavaSdk.getInstance(), jdkPath) {
