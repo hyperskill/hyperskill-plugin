@@ -22,8 +22,7 @@ fun testStageName(index: Int): String = "Test Stage $index"
 fun logInFakeHyperskillUser() {
   val fakeToken = TokenInfo().apply { accessToken = "faketoken" }
   HyperskillSettings.INSTANCE.account = HyperskillAccount().apply {
-    userInfo = HyperskillUserInfo()
-    userInfo.id = 1
+    userInfo = HyperskillUserInfo().apply { id = 1 }
     saveTokens(fakeToken)
   }
 }

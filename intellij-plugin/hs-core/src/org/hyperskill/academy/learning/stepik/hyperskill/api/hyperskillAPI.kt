@@ -89,7 +89,6 @@ class HyperskillAccount : OAuthAccount<HyperskillUserInfo> {
   constructor(tokenExpiresIn: Long) : super(tokenExpiresIn)
 
   override val servicePrefix: String = EduNames.JBA
-
 }
 
 class HyperskillUserInfo : UserInfo {
