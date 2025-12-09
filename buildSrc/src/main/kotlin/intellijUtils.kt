@@ -137,10 +137,12 @@ fun IntelliJPlatformDependenciesExtension.intellijIde(versionWithCode: String) {
   if (type == IntelliJPlatformType.IntellijIdeaUltimate && version.startsWith("2025.3")) {
     intellijIdea(version) {
       useInstaller.set(false)
+      useCache.set(true)
     }
   } else {
     create(type, version) {
       useInstaller.set(false)
+      useCache.set(true)
     }
   }
   // JetBrains runtime is necessary not only for running IDE but for tests as well
