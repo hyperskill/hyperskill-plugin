@@ -7,6 +7,6 @@ import com.intellij.openapi.wm.WelcomeTabFactory
 
 class HyperskillWelcomeTabFactory : WelcomeTabFactory {
   override fun createWelcomeTabs(ws: WelcomeScreen, parentDisposable: Disposable): List<WelcomeScreenTab> {
-    return listOf(WelcomeScreenTab())
+    return listOf(WelcomeScreenTab(parentDisposable))
   }
 }
