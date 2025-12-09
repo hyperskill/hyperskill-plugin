@@ -57,13 +57,18 @@ abstract class EduOAuthCodeFlowConnector<Account : OAuthAccount<*>, SpecificUser
     vararg postLoginActions: Runnable,
     authorizationPlace: AuthorizationPlace
   ) {
+    LOG.info("doAuthorize called for $platformName from $authorizationPlace")
     // Unit tests use completely different port and
     // `OAuthUtils.checkBuiltinPortValid()` always returns false here since it relies only on the default production port number
-    if (!isUnitTestMode && !OAuthUtils.checkBuiltinPortValid()) return
+    if (!isUnitTestMode && !OAuthUtils.checkBuiltinPortValid()) {
+      LOG.warn("doAuthorize aborted: built-in port is not valid")
+      return
+    }
 
     this.authorizationPlace = authorizationPlace
     setPostLoginActions(postLoginActions.asList())
     val url = generateAuthorizationUrl()
+    LOG.info("Opening authorization URL in browser for $platformName")
     EduBrowser.getInstance().browse(url.toString())
   }
 
@@ -92,6 +97,7 @@ abstract class EduOAuthCodeFlowConnector<Account : OAuthAccount<*>, SpecificUser
    */
   @Synchronized
   fun notifyUserLoggedIn() {
+    LOG.info("User logged in to $platformName, executing ${postLoginActions?.size ?: 0} post-login actions")
     postLoginActions?.forEach {
       it.run()
     }
@@ -105,6 +111,7 @@ abstract class EduOAuthCodeFlowConnector<Account : OAuthAccount<*>, SpecificUser
    */
   @Synchronized
   fun notifyUserLoggedOut() {
+    LOG.info("User logged out from $platformName")
     submissionTabListener?.userLoggedOut()
     authorizationPlace = null
   }
@@ -117,6 +124,7 @@ abstract class EduOAuthCodeFlowConnector<Account : OAuthAccount<*>, SpecificUser
 
   @Synchronized
   fun doLogout(authorizationPlace: AuthorizationPlace = AuthorizationPlace.UNKNOWN) {
+    LOG.info("doLogout called for $platformName from $authorizationPlace")
     this.authorizationPlace = authorizationPlace
     account = null
   }
@@ -159,10 +167,12 @@ abstract class EduOAuthCodeFlowConnector<Account : OAuthAccount<*>, SpecificUser
     // which causes tokens corruption
     synchronized(this) {
       val currentAccount = account ?: return
+      LOG.info("Refreshing tokens for $platformName")
+      val startTime = System.currentTimeMillis()
       val tokens = getNewTokens()
       currentAccount.tokenExpiresIn = tokens.expiresIn
       currentAccount.saveTokens(tokens)
-      LOG.info("successfully refreshed tokens for $platformName")
+      LOG.info("Successfully refreshed tokens for $platformName in ${System.currentTimeMillis() - startTime}ms")
     }
   }
 

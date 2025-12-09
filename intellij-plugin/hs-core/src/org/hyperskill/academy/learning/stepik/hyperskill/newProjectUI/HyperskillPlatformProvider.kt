@@ -34,6 +34,8 @@ class HyperskillPlatformProviderFactory : CoursesPlatformProviderFactory {
 }
 
 class HyperskillPlatformProvider : CoursesPlatformProvider() {
+  private val LOG = logger<HyperskillPlatformProvider>()
+
   override val name: String = EduNames.JBA
 
   override val icon: Icon get() = EducationalCoreIcons.Platform.Tab.HyperskillAcademyTab
@@ -49,20 +51,27 @@ class HyperskillPlatformProvider : CoursesPlatformProvider() {
     coursePanel: CoursePanel,
     openCourseParams: Map<String, String>
   ) {
-
     val course = courseInfo.course
+    LOG.info("joinAction called for course: ${course.name}, type: ${course.javaClass.simpleName}")
+    val startTime = System.currentTimeMillis()
+
     if (course is HyperskillCourse) {
+      LOG.info("Loading stages for HyperskillCourse via joinAction")
       computeUnderProgress(title = EduCoreBundle.message("hyperskill.loading.stages")) {
         HyperskillConnector.getInstance().loadStages(course)
       }
+      LOG.info("Stages loaded in ${System.currentTimeMillis() - startTime}ms, proceeding to super.joinAction")
       super.joinAction(courseInfo, courseMode, coursePanel, openCourseParams)
+      LOG.info("joinAction completed in ${System.currentTimeMillis() - startTime}ms total")
       return
     }
 
+    LOG.info("Opening Hyperskill project via HyperskillProjectAction")
     val isOpened = HyperskillProjectAction.openHyperskillProject { errorMessage ->
       Messages.showErrorDialog(errorMessage.message, EduCoreBundle.message("hyperskill.failed.to.open.project"))
-      logger<HyperskillPlatformProvider>().warn("Joining a course resulted in an error: ${errorMessage.message}. The error was shown inside an error dialog.")
+      LOG.warn("Joining a course resulted in an error: ${errorMessage.message}. The error was shown inside an error dialog.")
     }
+    LOG.info("HyperskillProjectAction.openHyperskillProject returned: $isOpened in ${System.currentTimeMillis() - startTime}ms")
 
     if (isOpened) {
       val dialog = UIUtil.getParentOfType(DialogWrapperDialog::class.java, coursePanel)

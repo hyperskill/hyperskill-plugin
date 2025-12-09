@@ -5,6 +5,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.XmlSerializer
 import com.intellij.util.xmlb.annotations.Transient
@@ -18,6 +19,7 @@ import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillUserInfo
 import org.jdom.Element
 
 private const val serviceName = "HsHyperskillSettings"
+private val LOG = logger<HyperskillSettings>()
 
 @State(name = serviceName, storages = [Storage("hyperskill.xml")])
 class HyperskillSettings : PersistentStateComponent<Element> {
@@ -26,7 +28,15 @@ class HyperskillSettings : PersistentStateComponent<Element> {
   @field:Volatile
   var account: HyperskillAccount? = null
     set(account) {
+      val oldAccount = field
       field = account
+      if (account != null) {
+        val userInfo = account.userInfo
+        LOG.info("Hyperskill account set: userId=${userInfo?.id ?: "unknown"}, userName=${userInfo?.getFullName() ?: "unknown"}")
+      }
+      else if (oldAccount != null) {
+        LOG.info("Hyperskill account cleared (logged out)")
+      }
       HyperskillConnector.getInstance().apply {
         if (account != null) {
           notifyUserLoggedIn()
@@ -43,16 +53,24 @@ class HyperskillSettings : PersistentStateComponent<Element> {
   override fun getState(): Element? {
     val mainElement = Element(serviceName)
     XmlSerializer.serializeInto(this, mainElement)
-    val userElement = account?.serializeAccount() ?: return null
+    val userElement = account?.serializeAccount() ?: return mainElement
     mainElement.addContent(userElement)
     return mainElement
   }
 
   override fun loadState(settings: Element) {
+    LOG.info("Loading Hyperskill settings from storage")
     XmlSerializer.deserializeInto(this, settings)
     val accountClass = HyperskillAccount::class.java
     val user = settings.getChild(accountClass.simpleName)
-    account = user.deserializeOAuthAccount(accountClass, HyperskillUserInfo::class.java)
+    val loadedAccount = user.deserializeOAuthAccount(accountClass, HyperskillUserInfo::class.java)
+    if (loadedAccount != null) {
+      LOG.info("Loaded Hyperskill account from storage: userId=${loadedAccount.userInfo?.id ?: "unknown"}")
+    }
+    else {
+      LOG.info("No Hyperskill account found in storage")
+    }
+    account = loadedAccount
   }
 
   companion object {

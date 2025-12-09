@@ -94,18 +94,39 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
 
   @Synchronized
   override fun login(code: String): Boolean {
-    val tokenInfo = retrieveLoginToken(code, getRedirectUri()) ?: return false
+    LOG.info("Login started for Hyperskill")
+    val startTime = System.currentTimeMillis()
+
+    LOG.info("Retrieving login token")
+    val tokenStartTime = System.currentTimeMillis()
+    val tokenInfo = retrieveLoginToken(code, getRedirectUri())
+    if (tokenInfo == null) {
+      LOG.warn("Failed to retrieve login token in ${System.currentTimeMillis() - tokenStartTime}ms")
+      return false
+    }
+    LOG.info("Login token retrieved in ${System.currentTimeMillis() - tokenStartTime}ms")
+
     val account = HyperskillAccount(tokenInfo.expiresIn)
-    val currentUser = getUserInfo(account, tokenInfo.accessToken) ?: return false
+
+    LOG.info("Fetching user info")
+    val userInfoStartTime = System.currentTimeMillis()
+    val currentUser = getUserInfo(account, tokenInfo.accessToken)
+    if (currentUser == null) {
+      LOG.warn("Failed to fetch user info in ${System.currentTimeMillis() - userInfoStartTime}ms")
+      return false
+    }
+    LOG.info("User info fetched in ${System.currentTimeMillis() - userInfoStartTime}ms: userId=${currentUser.id}, email=${currentUser.email}")
+
     if (currentUser.isGuest) {
       // it means that session is broken, so we should force user to re-login
-      LOG.warn("User ${currentUser.getFullName()} ${currentUser.email} is anonymous")
+      LOG.warn("User ${currentUser.getFullName()} ${currentUser.email} is anonymous (guest), login rejected")
       this.account = null
       return false
     }
     account.userInfo = currentUser
     account.saveTokens(tokenInfo)
     this.account = account
+    LOG.info("Login completed successfully for user ${currentUser.getFullName()} (id=${currentUser.id}) in ${System.currentTimeMillis() - startTime}ms total")
     return true
   }
 
@@ -188,19 +209,32 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
     lesson.name = course.name
     progressIndicator?.checkCanceled()
     val stageIds = course.stages.map { it.stepId }
+
+    LOG.info("Fetching step sources for ${stageIds.size} stages")
+    val stepSourcesStartTime = System.currentTimeMillis()
     val stepSources = getStepSources(stageIds).onError { e ->
       LOG.warn("Failed to load content for $stageIds stages because of: $e")
       emptyList()
     }
+    LOG.info("Step sources fetched in ${System.currentTimeMillis() - stepSourcesStartTime}ms, got ${stepSources.size} sources")
 
     progressIndicator?.checkCanceled()
+
+    LOG.info("Creating tasks from step sources")
+    val tasksStartTime = System.currentTimeMillis()
     val tasks = getTasks(course, stepSources)
+    LOG.info("Tasks created in ${System.currentTimeMillis() - tasksStartTime}ms, got ${tasks.size} tasks")
+
     for (task in tasks) {
       lesson.addTask(task)
     }
     lesson.sortItems()
     val hyperskillProject = course.hyperskillProject ?: error("No Hyperskill project")
+
+    LOG.info("Loading additional course info")
+    val additionalInfoStartTime = System.currentTimeMillis()
     loadAndFillAdditionalCourseInfo(course, hyperskillProject.id)
+    LOG.info("Additional course info loaded in ${System.currentTimeMillis() - additionalInfoStartTime}ms")
 
     val stages = course.stages
     val projectId = hyperskillProject.id
@@ -237,11 +271,33 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
   fun loadStages(hyperskillCourse: HyperskillCourse) {
     val hyperskillProject = hyperskillCourse.hyperskillProject ?: error("No Hyperskill project")
     val projectId = hyperskillProject.id
+    LOG.info("Loading stages for project $projectId (${hyperskillCourse.name})")
+    val startTime = System.currentTimeMillis()
+
     if (hyperskillCourse.stages.isEmpty()) {
-      val stages = getStages(projectId) ?: return
+      LOG.info("Fetching stages from API for project $projectId")
+      val stagesStartTime = System.currentTimeMillis()
+      val stages = getStages(projectId)
+      LOG.info("Stages API call completed in ${System.currentTimeMillis() - stagesStartTime}ms, got ${stages?.size ?: 0} stages")
+      if (stages == null) {
+        LOG.warn("Failed to load stages for project $projectId")
+        return
+      }
       hyperskillCourse.stages = stages
     }
-    val lesson = getLesson(hyperskillCourse) ?: return
+    else {
+      LOG.info("Using ${hyperskillCourse.stages.size} cached stages")
+    }
+
+    LOG.info("Loading lesson content for ${hyperskillCourse.stages.size} stages")
+    val lessonStartTime = System.currentTimeMillis()
+    val lesson = getLesson(hyperskillCourse)
+    LOG.info("Lesson loading completed in ${System.currentTimeMillis() - lessonStartTime}ms")
+
+    if (lesson == null) {
+      LOG.warn("Failed to load lesson for project $projectId")
+      return
+    }
 
     // We want project lesson to be the first
     // It's possible to open Problems in IDE without loading project lesson (stages)
@@ -253,7 +309,7 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
     }
     hyperskillCourse.addLesson(lesson)
     hyperskillCourse.sortItems()
-    return
+    LOG.info("Stages loading completed for project $projectId in ${System.currentTimeMillis() - startTime}ms total")
   }
 
   private fun feedbackLink(project: Int, stage: HyperskillStage): String {
