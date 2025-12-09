@@ -10,6 +10,7 @@ import org.hyperskill.academy.learning.authUtils.*
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.CODE_ARGUMENT
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
 import org.hyperskill.academy.learning.courseFormat.ext.CourseValidationResult
+import org.hyperskill.academy.learning.courseFormat.ext.PluginsRequired
 import org.hyperskill.academy.learning.courseFormat.ext.ValidationErrorMessage
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.getInternalTemplateText
 import org.hyperskill.academy.learning.courseGeneration.ProjectOpener
@@ -120,7 +121,7 @@ open class HyperskillRestService : OAuthRestService(HYPERSKILL) {
       LOG.warn(message)
       return message
     }
-    if (localAccount.userInfo.id == userId) {
+    if (localAccount.userInfo?.id == userId) {
       return action()
     }
 
@@ -194,18 +195,19 @@ open class HyperskillRestService : OAuthRestService(HYPERSKILL) {
 
     return getInEdt {
       requestFocus()
+      val localUserName = localAccount.userInfo?.getFullName() ?: ""
 
       val dialogResult = Messages.showDialog(
         "<html>${
           EduCoreBundle.message(
-            "hyperskill.accounts.are.different", localAccount.userInfo.getFullName(),
+            "hyperskill.accounts.are.different", localUserName,
             browserAccount.fullname
           )
         }</html>",
         EduCoreBundle.message("hyperskill.accounts.are.different.title"),
         arrayOf(
           EduCoreBundle.message("hyperskill.accounts.are.different.re.login", browserAccount.fullname),
-          EduCoreBundle.message("hyperskill.accounts.are.different.continue", localAccount.userInfo.getFullName())
+          EduCoreBundle.message("hyperskill.accounts.are.different.continue", localUserName)
         ),
         0,
         null
@@ -232,7 +234,15 @@ open class HyperskillRestService : OAuthRestService(HYPERSKILL) {
         val message = validationResult.message
         LOG.warn(message)
         showError(validationResult)
-        sendStatus(HttpResponseStatus.NOT_FOUND, false, context.channel())
+        // For PluginsRequired, return OK so Hyperskill doesn't show error in browser.
+        // The user will see a notification in IDE with "Install and Enable" action.
+        if (validationResult is PluginsRequired) {
+          requestFocus()
+          sendOk(request, context)
+        }
+        else {
+          sendStatus(HttpResponseStatus.NOT_FOUND, false, context.channel())
+        }
         message
       }
     }
