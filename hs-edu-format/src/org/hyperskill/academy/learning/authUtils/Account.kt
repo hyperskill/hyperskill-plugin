@@ -9,12 +9,10 @@ abstract class Account<UInfo : UserInfo> {
   protected val serviceName get() = "$servicePrefix Integration"
 
   @Transient
-  lateinit var userInfo: UInfo
-
-  fun isUserInfoInitialized(): Boolean = ::userInfo.isInitialized
+  var userInfo: UInfo? = null
 
   abstract fun isUpToDate(): Boolean
-  protected fun getUserName(): String = userInfo.getFullName()
+  protected fun getUserName(): String = userInfo?.getFullName() ?: ""
 
   protected fun getSecret(userName: String, serviceNameForPasswordSafe: String): String? {
     return findService(PasswordService::class.java).getSecret(userName, serviceNameForPasswordSafe)

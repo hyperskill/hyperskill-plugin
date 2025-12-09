@@ -10,23 +10,21 @@ class StepikUser : OAuthAccount<StepikUserInfo>() {
 
   @get:Transient
   val id: Int
-    get() {
-      return userInfo.id
-    }
+    get() = userInfo?.id ?: 0
 
   @get:Transient
   val name: String
     get() {
-      return arrayOf(userInfo.firstName, userInfo.lastName).joinToString(" ")
+      val info = userInfo ?: return ""
+      return arrayOf(info.firstName, info.lastName).joinToString(" ")
     }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || javaClass != other.javaClass) return false
     val user = other as StepikUser
-    val otherInfo = user.userInfo
-    return userInfo == otherInfo
+    return userInfo == user.userInfo
   }
 
-  override fun hashCode(): Int = userInfo.hashCode()
+  override fun hashCode(): Int = userInfo?.hashCode() ?: 0
 }

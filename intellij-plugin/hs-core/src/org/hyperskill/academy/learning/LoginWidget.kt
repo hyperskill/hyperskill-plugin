@@ -94,8 +94,9 @@ abstract class LoginWidget<T : OAuthAccount<out UserInfo>>(
   }
 
   private fun createWidgetContent(currentAccount: T?, popup: JBPopup, wrapperPanel: JPanel, isLoggedIn: Boolean): JPanel {
-    val accountInfoText = if (currentAccount != null && isLoggedIn) {
-      EduCoreBundle.message("account.widget.login.message", profileUrl(currentAccount), currentAccount.userInfo)
+    val userInfo = currentAccount?.userInfo
+    val accountInfoText = if (currentAccount != null && userInfo != null && isLoggedIn) {
+      EduCoreBundle.message("account.widget.login.message", profileUrl(currentAccount), userInfo)
     }
     else {
       EduCoreBundle.message("account.widget.no.login.message")

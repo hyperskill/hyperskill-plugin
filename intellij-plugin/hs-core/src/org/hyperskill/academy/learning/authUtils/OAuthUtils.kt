@@ -20,6 +20,8 @@ import org.jetbrains.ide.BuiltInServerManager
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
+private val LOG: Logger = logger<OAuthUtils>()
+
 object OAuthUtils {
   private val LOG: Logger = logger<OAuthUtils>()
 
@@ -97,14 +99,12 @@ fun <UInfo : UserInfo> Account<UInfo>.serializeAccount(): Element? {
   if (PasswordSafe.instance.isMemoryOnly) {
     return null
   }
-  if (!isUserInfoInitialized()) {
-    return null
-  }
+  val currentUserInfo = userInfo ?: return null
   // Do we really need this two-step serialization?
   // Probably, it's worth merging account and user info classes into a single one
   // or copying everything from user info to an account object
   val accountElement = serialize(this) ?: return null
-  XmlSerializer.serializeInto(userInfo, accountElement)
+  XmlSerializer.serializeInto(currentUserInfo, accountElement)
   return accountElement
 }
 

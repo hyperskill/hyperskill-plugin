@@ -133,7 +133,7 @@ val HyperskillProject.eduEnvironment: String?
     return HYPERSKILL_ENVIRONMENTS[hyperskillEnvironment]
   }
 
-val HyperskillAccount.profileUrl: String get() = "$HYPERSKILL_PROFILE_PATH${userInfo.id}"
+val HyperskillAccount.profileUrl: String get() = "$HYPERSKILL_PROFILE_PATH${userInfo?.id ?: ""}"
 
 fun Task.getRelatedTheoryTask(): TheoryTask? {
   if (course !is HyperskillCourse) return null

@@ -122,14 +122,14 @@ abstract class LoginOptions<T : Account<out UserInfo>> : OptionsProvider {
 
     val selectedAccount = lastSavedAccount
 
-    if (selectedAccount == null) {
+    val userInfo = selectedAccount?.userInfo
+    if (selectedAccount == null || userInfo == null) {
       browseProfileLabel.text = EduCoreBundle.message("not.logged.in")
       loginLink.text = EduCoreBundle.message("log.in.to", displayName)
       loginListener = createAuthorizeListener()
     }
     else {
-      val info = selectedAccount.userInfo
-      browseProfileLabel.text = EduCoreBundle.message("logged.in.as.verbose", "<a href=${profileUrl(selectedAccount)}>${info}</a>")
+      browseProfileLabel.text = EduCoreBundle.message("logged.in.as.verbose", "<a href=${profileUrl(selectedAccount)}>${userInfo}</a>")
       loginLink.text = getLogoutText()
       loginListener = createLogOutListener()
     }

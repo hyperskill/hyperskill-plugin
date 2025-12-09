@@ -49,7 +49,8 @@ class InitialState(project: Project, task: CodeTask, private val token: String) 
 
 private class WaitingForConnectionState(project: Project, task: CodeTask) : WebSocketConnectionState(project, task) {
   override fun handleEvent(webSocket: WebSocket, message: String): WebSocketConnectionState {
-    webSocket.send(SubscribeToSubmissionsMessage(HyperskillSettings.INSTANCE.account!!.userInfo.id))
+    val userId = HyperskillSettings.INSTANCE.account?.userInfo?.id ?: return ErrorState(project, task)
+    webSocket.send(SubscribeToSubmissionsMessage(userId))
     return WaitingForSubscriptionState(project, task)
   }
 }
