@@ -17,12 +17,26 @@ object TransientFieldSerializationFilter : SerializationFilter {
     val field = try {
       // Do we need some cache for reflection here?
       // If so, see `com.intellij.util.xmlb.XmlSerializerImpl.XmlSerializer` as an example
-      bean.javaClass.getField(accessor.name)
+      // Use getDeclaredField to find private fields, and search up the class hierarchy
+      findFieldInHierarchy(bean.javaClass, accessor.name)
     }
     catch (ignore: NoSuchFieldException) {
       return false
     }
 
-    return Modifier.isTransient(field.modifiers)
+    return field != null && Modifier.isTransient(field.modifiers)
+  }
+
+  private fun findFieldInHierarchy(clazz: Class<*>?, fieldName: String): java.lang.reflect.Field? {
+    var currentClass = clazz
+    while (currentClass != null) {
+      try {
+        return currentClass.getDeclaredField(fieldName)
+      }
+      catch (ignore: NoSuchFieldException) {
+        currentClass = currentClass.superclass
+      }
+    }
+    return null
   }
 }

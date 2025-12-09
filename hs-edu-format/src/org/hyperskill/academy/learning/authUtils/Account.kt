@@ -8,7 +8,7 @@ abstract class Account<UInfo : UserInfo> {
   protected abstract val servicePrefix: String
   protected val serviceName get() = "$servicePrefix Integration"
 
-  @Transient
+  @field:Transient
   var userInfo: UInfo? = null
 
   abstract fun isUpToDate(): Boolean

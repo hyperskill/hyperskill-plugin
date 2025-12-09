@@ -8,12 +8,14 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.ui.Messages
 import com.intellij.util.ReflectionUtil
-import com.intellij.configurationStore.serialize
+import com.intellij.util.xmlb.SkipDefaultValuesSerializationFilters
 import com.intellij.util.xmlb.XmlSerializer
 import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.EduUtilsKt
 import org.hyperskill.academy.learning.courseFormat.UserInfo
 import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.serialization.CompositeSerializationFilter
+import org.hyperskill.academy.learning.serialization.TransientFieldSerializationFilter
 import org.jdom.Element
 import org.jetbrains.builtInWebServer.BuiltInServerOptions
 import org.jetbrains.ide.BuiltInServerManager
@@ -100,10 +102,16 @@ fun <UInfo : UserInfo> Account<UInfo>.serializeAccount(): Element? {
     return null
   }
   val currentUserInfo = userInfo ?: return null
-  // Do we really need this two-step serialization?
-  // Probably, it's worth merging account and user info classes into a single one
-  // or copying everything from user info to an account object
-  val accountElement = serialize(this) ?: return null
+  // Use TransientFieldSerializationFilter to skip fields marked with @field:Transient (like userInfo).
+  // The standard IntelliJ XmlSerializer only recognizes com.intellij.util.xmlb.annotations.Transient,
+  // but we use kotlin.jvm.Transient which compiles to Java's transient modifier.
+  @Suppress("DEPRECATION")
+  val serializationFilter = CompositeSerializationFilter(
+    TransientFieldSerializationFilter,
+    SkipDefaultValuesSerializationFilters()
+  )
+  val accountElement = XmlSerializer.serialize(this, serializationFilter)
+  // Serialize userInfo fields directly into accountElement
   XmlSerializer.serializeInto(currentUserInfo, accountElement)
   return accountElement
 }
@@ -112,6 +120,13 @@ fun <UserAccount : Account<UInfo>, UInfo : UserInfo> Element.deserializeAccount(
   accountClass: Class<UserAccount>,
   userInfoClass: Class<UInfo>
 ): UserAccount {
+  // Remove userInfo element before deserializing Account to avoid XmlSerializer trying
+  // to instantiate the UserInfo interface. The kotlin.jvm.Transient annotation on
+  // Account.userInfo is not recognized by IntelliJ XmlSerializer.
+  val userInfoElement = children.find { it.name == "option" && it.getAttributeValue("name") == "userInfo" }
+  if (userInfoElement != null) {
+    removeContent(userInfoElement)
+  }
 
   val account = XmlSerializer.deserialize(this, accountClass)
 
