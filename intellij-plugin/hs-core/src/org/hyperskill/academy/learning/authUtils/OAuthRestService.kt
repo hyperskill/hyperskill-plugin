@@ -5,6 +5,9 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.FullHttpRequest
 import io.netty.handler.codec.http.HttpMethod
 import io.netty.handler.codec.http.HttpRequest
+import io.netty.handler.codec.http.HttpResponseStatus
+import io.netty.handler.codec.http.HttpVersion
+import io.netty.handler.codec.http.DefaultHttpResponse
 import org.hyperskill.academy.learning.authUtils.OAuthUtils.getErrorPageContent
 import org.jetbrains.ide.RestService
 import org.jetbrains.io.send
@@ -28,6 +31,12 @@ abstract class OAuthRestService(protected val platformName: String) : RestServic
   protected fun showErrorPage(request: HttpRequest, context: ChannelHandlerContext, errorMessage: String) {
     val pageContent = getErrorPageContent(platformName, errorMessage)
     createResponse(pageContent).send(context.channel(), request)
+  }
+
+  protected fun sendRedirect(request: HttpRequest, context: ChannelHandlerContext, location: String) {
+    val response = DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FOUND)
+    response.headers().set("Location", location)
+    response.send(context.channel(), request)
   }
 
   override fun isSupported(request: FullHttpRequest): Boolean = isRestServicesEnabled && super.isSupported(request)

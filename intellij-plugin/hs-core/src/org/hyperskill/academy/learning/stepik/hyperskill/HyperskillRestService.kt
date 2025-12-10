@@ -12,7 +12,6 @@ import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
 import org.hyperskill.academy.learning.courseFormat.ext.CourseValidationResult
 import org.hyperskill.academy.learning.courseFormat.ext.PluginsRequired
 import org.hyperskill.academy.learning.courseFormat.ext.ValidationErrorMessage
-import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.getInternalTemplateText
 import org.hyperskill.academy.learning.courseGeneration.ProjectOpener
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.newproject.ui.showNotificationFromCourseValidation
@@ -63,8 +62,7 @@ open class HyperskillRestService : OAuthRestService(HYPERSKILL) {
       val success = hyperskillConnector.login(code)
       if (success) {
         LOG.info("$platformName: OAuth code is handled")
-        val pageContent = getInternalTemplateText("hyperskill.redirectPage.html")
-        createResponse(pageContent).send(context.channel(), request)
+        sendRedirect(request, context, "$HYPERSKILL_URL/courses/")
         return null
       }
       return sendErrorResponse(request, context, "Failed to login using provided code")
