@@ -69,6 +69,7 @@ class HyperskillCoursesPanel(
           runInEdt(modalityState = ModalityState.stateForComponent(this@HyperskillCoursesPanel)) {
             panel.removeAll()
             panel.add(createCoursesPanel())
+            showContent(false)
             scope.launch {
               updateCoursesAfterLogin(false)
             }

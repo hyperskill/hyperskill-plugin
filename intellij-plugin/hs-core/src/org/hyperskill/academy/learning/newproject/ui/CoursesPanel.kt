@@ -159,7 +159,7 @@ abstract class CoursesPanel(
 
   private fun showProgressState() = cardLayout.show(this, LOADING_CARD_NAME)
 
-  private fun showContent(empty: Boolean) {
+  protected fun showContent(empty: Boolean) {
     if (empty) {
       cardLayout.show(this, NO_COURSES)
       return

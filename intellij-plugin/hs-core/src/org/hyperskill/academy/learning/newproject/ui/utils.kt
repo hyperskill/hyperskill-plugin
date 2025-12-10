@@ -4,8 +4,6 @@ import com.intellij.ide.BrowserUtil
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType.WARNING
 import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.HyperlinkLabel
@@ -130,20 +128,20 @@ fun getColorFromScheme(colorId: String, default: Color): JBColor {
 }
 
 fun showNotificationFromCourseValidation(result: CourseValidationResult, title: String) {
-  EduNotificationManager
-    .create(WARNING, title, result.message)
-    .apply {
-      when (result) {
-        is PluginsRequired -> {
-          addAction(object : AnAction(result.actionText()) {
-            override fun actionPerformed(e: AnActionEvent) {
-              result.showPluginInstallAndEnableDialog()
-            }
-          })
-        }
+  when (result) {
+    is PluginsRequired -> {
+      // Show dialog immediately for better visibility, especially on Welcome Screen
+      result.showPluginInstallAndEnableDialog()
+    }
 
-        is ValidationErrorMessage -> {} // do nothing with the notification
-        is ValidationErrorMessageWithHyperlinks -> {
+    is ValidationErrorMessage -> {
+      EduNotificationManager.create(WARNING, title, result.message).notify(null)
+    }
+
+    is ValidationErrorMessageWithHyperlinks -> {
+      EduNotificationManager
+        .create(WARNING, title, result.message)
+        .apply {
           //setting a listener is deprecated, so TextMessageWithHyperlinks should not be used.
           //We need to reword such messages and make viewing a link an action inside a notification
           addAction(NotificationAction.createSimple("Open Link") {
@@ -156,7 +154,7 @@ fun showNotificationFromCourseValidation(result: CourseValidationResult, title: 
               BrowserUtil.browse(url)
             }
           })
-        }
-      }
-    }.notify(null)
+        }.notify(null)
+    }
+  }
 }
