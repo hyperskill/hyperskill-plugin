@@ -16,6 +16,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.PathUtil
 import org.hyperskill.academy.learning.authUtils.OAuthUtils.isBuiltinPortValid
 import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage
 import org.hyperskill.academy.learning.notification.EduNotificationManager
@@ -103,7 +104,7 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
     val recentPathsInfo = state.additionalInfo
     recentPathsInfo.forEach {
       val projectPath = it.key
-      val course = deserializeCourse(projectPath)
+      val course = deserializeHyperskillCourse(projectPath)
       if (course != null) {
         // Note: we don't set course progress here, because we didn't load course items here
         CoursesStorage.getInstance().addCourse(course, projectPath)
@@ -111,13 +112,25 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
     }
   }
 
-  private fun deserializeCourse(projectPath: String): Course? {
+  /**
+   * Deserializes course from the given project path, returning only Hyperskill courses.
+   * Non-Hyperskill courses are handled by other plugins (e.g., JetBrains Academy).
+   */
+  private fun deserializeHyperskillCourse(projectPath: String): Course? {
     val projectFile = File(PathUtil.toSystemDependentName(projectPath))
     val projectDir = VfsUtil.findFile(projectFile.toPath(), true) ?: return null
     val courseConfig = projectDir.findChild(YamlConfigSettings.COURSE_CONFIG) ?: return null
     return runReadAction {
-      ProgressManager.getInstance().computeInNonCancelableSection<Course, Exception> {
-        YamlMapper.basicMapper().deserializeCourse(VfsUtil.loadText(courseConfig))
+      ProgressManager.getInstance().computeInNonCancelableSection<Course?, Exception> {
+        try {
+          val course = YamlMapper.basicMapper().deserializeCourse(VfsUtil.loadText(courseConfig))
+          // Only return Hyperskill courses, ignore other course types
+          if (course is HyperskillCourse) course else null
+        }
+        catch (e: Exception) {
+          // Ignore deserialization errors for non-Hyperskill courses
+          null
+        }
       }
     }
   }
