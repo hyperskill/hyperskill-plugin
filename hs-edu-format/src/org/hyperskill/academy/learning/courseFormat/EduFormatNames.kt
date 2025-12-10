@@ -84,9 +84,9 @@ object EduFormatNames {
   const val PYTHON_3_VERSION = "3.x"
 
   // Troubleshooting guide links
-  const val TROUBLESHOOTING_GUIDE_URL = "https://plugins.jetbrains.com/plugin/28001-jetbrains-academy/docs/troubleshooting-guide.html"
-  const val NO_TESTS_URL = "$TROUBLESHOOTING_GUIDE_URL#no_tests_have_run"
-  const val FAILED_TO_CHECK_URL = "$TROUBLESHOOTING_GUIDE_URL#failed_to_launch_checking"
+  const val TROUBLESHOOTING_GUIDE_URL = "https://support.hyperskill.org/hc/en-us/sections/20682551792404-IDE-Troubleshooting"
+  const val NO_TESTS_URL = "https://support.hyperskill.org/hc/en-us/articles/28831366886932-Error-No-test-have-run-in-PyCharm"
+  const val FAILED_TO_CHECK_URL = TROUBLESHOOTING_GUIDE_URL
 
   val LOGIN_NEEDED_MESSAGE = message("check.error.login.needed")
 }
