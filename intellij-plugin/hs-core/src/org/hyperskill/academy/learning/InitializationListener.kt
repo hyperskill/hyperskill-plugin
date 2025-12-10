@@ -22,7 +22,9 @@ import org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage
 import org.hyperskill.academy.learning.notification.EduNotificationManager
 import org.hyperskill.academy.learning.platform.IdeDetector
 import org.hyperskill.academy.learning.yaml.YamlConfigSettings
+import org.hyperskill.academy.learning.yaml.YamlConfigSettings.REMOTE_COURSE_CONFIG
 import org.hyperskill.academy.learning.yaml.YamlDeserializer.deserializeCourse
+import org.hyperskill.academy.learning.yaml.YamlDeepLoader.loadRemoteInfo
 import org.hyperskill.academy.learning.yaml.YamlMapper
 import org.jetbrains.ide.BuiltInServerManager
 import java.io.File
@@ -125,7 +127,14 @@ class InitializationListener : AppLifecycleListener, DynamicPluginListener {
         try {
           val course = YamlMapper.basicMapper().deserializeCourse(VfsUtil.loadText(courseConfig))
           // Only return Hyperskill courses, ignore other course types
-          if (course is HyperskillCourse) course else null
+          if (course !is HyperskillCourse) return@computeInNonCancelableSection null
+
+          // Load remote info to get hyperskillProject with correct id
+          val remoteInfoConfig = projectDir.findChild(REMOTE_COURSE_CONFIG)
+          if (remoteInfoConfig != null) {
+            course.loadRemoteInfo(remoteInfoConfig)
+          }
+          course
         }
         catch (e: Exception) {
           // Ignore deserialization errors for non-Hyperskill courses
