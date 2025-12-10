@@ -40,7 +40,9 @@ class HyperskillSettings : PersistentStateComponent<Element> {
       HyperskillConnector.getInstance().apply {
         if (account != null) {
           notifyUserLoggedIn()
+          LOG.info("Publishing LOGGED_IN_TO_HYPERSKILL event")
           ApplicationManager.getApplication().messageBus.syncPublisher(LOGGED_IN_TO_HYPERSKILL).userLoggedIn()
+          LOG.info("LOGGED_IN_TO_HYPERSKILL event published")
         }
         else {
           notifyUserLoggedOut()

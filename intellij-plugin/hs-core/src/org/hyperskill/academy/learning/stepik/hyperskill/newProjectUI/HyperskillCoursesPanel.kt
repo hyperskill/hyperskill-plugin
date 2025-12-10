@@ -4,6 +4,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.diagnostic.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +21,8 @@ import org.hyperskill.academy.learning.stepik.hyperskill.JBA_HELP
 import org.hyperskill.academy.learning.stepik.hyperskill.newProjectUI.notLoggedInPanel.HyperskillNotLoggedInPanel
 import org.hyperskill.academy.learning.stepik.hyperskill.settings.HyperskillSettings
 import javax.swing.JPanel
+
+private val LOG = logger<HyperskillCoursesPanel>()
 
 class HyperskillCoursesPanel(
   private val platformProvider: HyperskillPlatformProvider,
@@ -52,6 +55,7 @@ class HyperskillCoursesPanel(
   override fun createCoursesListPanel() = HyperskillCoursesListPanel()
 
   override fun createContentPanel(): JPanel {
+    LOG.info("createContentPanel called, isLoggedIn=${isLoggedIn()}")
     val panel = if (isLoggedIn()) {
       super.createContentPanel()
     }
@@ -62,18 +66,29 @@ class HyperskillCoursesPanel(
     fun createCoursesPanel() = super.createContentPanel()
 
     val connection = ApplicationManager.getApplication().messageBus.connect()
+    LOG.info("Subscribing to LOGGED_IN_TO_HYPERSKILL topic")
     connection.subscribe(
       HyperskillSettings.LOGGED_IN_TO_HYPERSKILL,
       object : EduLogInListener {
         override fun userLoggedIn() {
-          runInEdt(modalityState = ModalityState.stateForComponent(this@HyperskillCoursesPanel)) {
+          LOG.info("userLoggedIn event received in HyperskillCoursesPanel, panel.isDisplayable=${panel.isDisplayable}, panel.isShowing=${panel.isShowing}")
+          runInEdt(ModalityState.any()) {
+            LOG.info("Updating panel after login: removing old content and adding courses panel")
+            if (!panel.isDisplayable) {
+              LOG.warn("Panel is not displayable, skipping update")
+              connection.disconnect()
+              return@runInEdt
+            }
             panel.removeAll()
             panel.add(createCoursesPanel())
+            panel.revalidate()
+            panel.repaint()
             showContent(false)
             scope.launch {
               updateCoursesAfterLogin(false)
             }
             connection.disconnect()
+            LOG.info("Panel update completed, connection disconnected")
           }
         }
       }
