@@ -98,10 +98,18 @@ object OAuthUtils {
 }
 
 fun <UInfo : UserInfo> Account<UInfo>.serializeAccount(): Element? {
-  if (PasswordSafe.instance.isMemoryOnly) {
+  val passwordSafe = PasswordSafe.instance
+  LOG.info("Serializing account: isMemoryOnly=${passwordSafe.isMemoryOnly}, userInfo=${userInfo?.getFullName() ?: "null"}")
+  if (passwordSafe.isMemoryOnly) {
+    LOG.warn("PasswordSafe is in memory-only mode, account will not be persisted. " +
+             "User should check Settings > Appearance & Behavior > System Settings > Passwords and select a persistent storage option.")
     return null
   }
-  val currentUserInfo = userInfo ?: return null
+  val currentUserInfo = userInfo
+  if (currentUserInfo == null) {
+    LOG.warn("Account has no userInfo, cannot serialize")
+    return null
+  }
   // Use TransientFieldSerializationFilter to skip fields marked with @field:Transient (like userInfo).
   // The standard IntelliJ XmlSerializer only recognizes com.intellij.util.xmlb.annotations.Transient,
   // but we use kotlin.jvm.Transient which compiles to Java's transient modifier.
@@ -147,8 +155,12 @@ fun <OAuthAcc : OAuthAccount<UInfo>, UInfo : UserInfo> Element.deserializeOAuthA
   val tokenInfo = TokenInfo()
   XmlSerializer.deserializeInto(tokenInfo, this)
 
+  // Security check: if accessToken was serialized to XML (insecure storage),
+  // reject the account. Tokens should only be stored in PasswordSafe.
   if (tokenInfo.accessToken.isNotEmpty()) {
+    LOG.warn("Access token found in XML storage (security violation), rejecting account deserialization")
     return null
   }
+  LOG.info("Account deserialized successfully: ${accountClass.simpleName}")
   return account
 }

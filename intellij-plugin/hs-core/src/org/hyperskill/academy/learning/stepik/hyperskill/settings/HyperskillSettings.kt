@@ -51,10 +51,16 @@ class HyperskillSettings : PersistentStateComponent<Element> {
   var updateAutomatically: Boolean = true
 
   override fun getState(): Element? {
+    LOG.info("Saving Hyperskill settings to storage, account=${account?.userInfo?.id ?: "null"}")
     val mainElement = Element(serviceName)
     XmlSerializer.serializeInto(this, mainElement)
-    val userElement = account?.serializeAccount() ?: return mainElement
+    val userElement = account?.serializeAccount()
+    if (userElement == null) {
+      LOG.info("Account serialization returned null, only basic settings will be saved")
+      return mainElement
+    }
     mainElement.addContent(userElement)
+    LOG.info("Account serialized successfully")
     return mainElement
   }
 
@@ -62,13 +68,18 @@ class HyperskillSettings : PersistentStateComponent<Element> {
     LOG.info("Loading Hyperskill settings from storage")
     XmlSerializer.deserializeInto(this, settings)
     val accountClass = HyperskillAccount::class.java
-    val user = settings.getChild(accountClass.simpleName)
-    val loadedAccount = user.deserializeOAuthAccount(accountClass, HyperskillUserInfo::class.java)
+    val accountElement = settings.getChild(accountClass.simpleName)
+    if (accountElement == null) {
+      LOG.info("No HyperskillAccount element found in storage")
+      account = null
+      return
+    }
+    val loadedAccount = accountElement.deserializeOAuthAccount(accountClass, HyperskillUserInfo::class.java)
     if (loadedAccount != null) {
       LOG.info("Loaded Hyperskill account from storage: userId=${loadedAccount.userInfo?.id ?: "unknown"}")
     }
     else {
-      LOG.info("No Hyperskill account found in storage")
+      LOG.info("Failed to deserialize Hyperskill account from storage")
     }
     account = loadedAccount
   }
