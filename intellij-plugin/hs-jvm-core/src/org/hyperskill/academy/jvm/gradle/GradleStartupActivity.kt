@@ -3,13 +3,16 @@ package org.hyperskill.academy.jvm.gradle
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.startup.ProjectActivity
+import com.intellij.openapi.vfs.VfsUtil
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.hyperskill.academy.jvm.gradle.generation.EduGradleUtils
 import org.hyperskill.academy.jvm.gradle.generation.EduGradleUtils.setupGradleProject
 import org.hyperskill.academy.jvm.gradle.generation.EduGradleUtils.updateGradleSettings
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
 import org.hyperskill.academy.learning.StudyTaskManager
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import kotlin.coroutines.resume
 
 class GradleStartupActivity : ProjectActivity {
@@ -36,12 +39,28 @@ class GradleStartupActivity : ProjectActivity {
         if (EduGradleUtils.isConfiguredWithGradle(project)) {
           setupGradleProject(project)
         }
+
+        // Ensure util module directory exists for Hyperskill projects.
+        // Gradle 9.x requires module directories to exist during project configuration.
+        if (course is HyperskillCourse) {
+          ensureUtilModuleDirectoryExists(project)
+        }
+
         continuation.resume(Unit)
       }
     }
   }
 
+  private fun ensureUtilModuleDirectoryExists(project: Project) {
+    val projectDir = project.guessProjectDir() ?: return
+    val utilDir = projectDir.findChild(UTIL_MODULE_NAME)
+    if (utilDir != null && utilDir.isDirectory) return
+
+    VfsUtil.createDirectoryIfMissing(projectDir, "$UTIL_MODULE_NAME/src")
+  }
+
   companion object {
     private val LOG = Logger.getInstance(GradleStartupActivity::class.java)
+    private const val UTIL_MODULE_NAME = "util"
   }
 }

@@ -8,6 +8,7 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.JavaSdk
 import com.intellij.openapi.projectRoots.JavaSdkVersion
+import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtil
@@ -26,6 +27,7 @@ import org.jetbrains.plugins.gradle.settings.GradleProjectSettings
 import org.jetbrains.plugins.gradle.util.GradleConstants
 import java.io.File
 import java.io.IOException
+import java.util.*
 
 object EduGradleUtils {
   fun isConfiguredWithGradle(project: Project): Boolean {
@@ -83,6 +85,20 @@ object EduGradleUtils {
 
   private fun setUpGradleJvm(project: Project, projectSettings: GradleProjectSettings, sdk: Sdk?) {
     if (sdk == null) return
+
+    val gradleVersion = getGradleVersion(project)
+    val maxCompatibleJdk = gradleVersion?.let { getMaxCompatibleJdkVersion(it) }
+
+    // If we know Gradle version and max compatible JDK, try to find a compatible JDK
+    if (maxCompatibleJdk != null) {
+      val compatibleJdk = findCompatibleJdk(maxCompatibleJdk)
+      if (compatibleJdk != null) {
+        projectSettings.gradleJvm = compatibleJdk.name
+        return
+      }
+    }
+
+    // Fallback to original logic
     val projectSdkVersion = sdk.javaSdkVersion
     val internalSdkVersion = computeUnderProgress(project, EduJVMBundle.message("progress.resolving.suitable.jdk"), false) {
       ExternalSystemJdkUtil.resolveJdkName(null, USE_INTERNAL_JAVA)
@@ -94,6 +110,94 @@ object EduGradleUtils {
       projectSdkVersion == null -> USE_INTERNAL_JAVA
       else -> if (internalSdkVersion < projectSdkVersion) USE_INTERNAL_JAVA else USE_PROJECT_JDK
     }
+  }
+
+  /**
+   * Reads Gradle version from gradle-wrapper.properties or .gradle cache directory.
+   */
+  private fun getGradleVersion(project: Project): String? {
+    val basePath = project.basePath ?: return null
+
+    // Try to read from gradle-wrapper.properties
+    val wrapperPropertiesFile = File(basePath, "gradle/wrapper/gradle-wrapper.properties")
+    if (wrapperPropertiesFile.exists()) {
+      try {
+        val properties = Properties()
+        wrapperPropertiesFile.inputStream().use { properties.load(it) }
+        val distributionUrl = properties.getProperty("distributionUrl")
+        if (distributionUrl != null) {
+          // Extract version from URL like: https://services.gradle.org/distributions/gradle-8.5-bin.zip
+          val versionRegex = Regex("gradle-(\\d+\\.\\d+(?:\\.\\d+)?)")
+          versionRegex.find(distributionUrl)?.groupValues?.get(1)?.let { return it }
+        }
+      }
+      catch (_: Exception) {
+        // Continue to try other methods
+      }
+    }
+
+    // Try to detect version from .gradle cache directory
+    val gradleCacheDir = File(basePath, ".gradle")
+    if (gradleCacheDir.exists() && gradleCacheDir.isDirectory) {
+      val versionRegex = Regex("^(\\d+\\.\\d+(?:\\.\\d+)?)$")
+      gradleCacheDir.listFiles()
+        ?.filter { it.isDirectory }
+        ?.mapNotNull { versionRegex.find(it.name)?.groupValues?.get(1) }
+        ?.maxWithOrNull(GradleVersionComparator)
+        ?.let { return it }
+    }
+
+    return null
+  }
+
+  private object GradleVersionComparator : Comparator<String> {
+    override fun compare(v1: String, v2: String): Int {
+      val parts1 = v1.split(".").mapNotNull { it.toIntOrNull() }
+      val parts2 = v2.split(".").mapNotNull { it.toIntOrNull() }
+      for (i in 0 until maxOf(parts1.size, parts2.size)) {
+        val p1 = parts1.getOrElse(i) { 0 }
+        val p2 = parts2.getOrElse(i) { 0 }
+        if (p1 != p2) return p1.compareTo(p2)
+      }
+      return 0
+    }
+  }
+
+  /**
+   * Returns maximum JDK version compatible with the given Gradle version.
+   * Based on https://docs.gradle.org/current/userguide/compatibility.html
+   */
+  private fun getMaxCompatibleJdkVersion(gradleVersion: String): JavaSdkVersion? {
+    val parts = gradleVersion.split(".")
+    val major = parts.getOrNull(0)?.toIntOrNull() ?: return null
+    val minor = parts.getOrNull(1)?.toIntOrNull() ?: 0
+
+    return when {
+      major >= 9 -> JavaSdkVersion.JDK_23  // Gradle 9.x supports JDK 23
+      major >= 8 && minor >= 10 -> JavaSdkVersion.JDK_23
+      major >= 8 && minor >= 8 -> JavaSdkVersion.JDK_22
+      major >= 8 && minor >= 5 -> JavaSdkVersion.JDK_21
+      major >= 8 && minor >= 3 -> JavaSdkVersion.JDK_20
+      major >= 8 -> JavaSdkVersion.JDK_19
+      major >= 7 && minor >= 6 -> JavaSdkVersion.JDK_19
+      major >= 7 && minor >= 5 -> JavaSdkVersion.JDK_18
+      major >= 7 && minor >= 3 -> JavaSdkVersion.JDK_17
+      major >= 7 -> JavaSdkVersion.JDK_16
+      else -> JavaSdkVersion.JDK_11
+    }
+  }
+
+  /**
+   * Finds the highest available JDK that is compatible with the given max version.
+   */
+  private fun findCompatibleJdk(maxVersion: JavaSdkVersion): Sdk? {
+    val javaSdk = JavaSdk.getInstance()
+    return ProjectJdkTable.getInstance().allJdks
+      .filter { javaSdk.isOfVersionOrHigher(it, JavaSdkVersion.JDK_1_8) }
+      .mapNotNull { sdk -> javaSdk.getVersion(sdk)?.let { version -> sdk to version } }
+      .filter { (_, version) -> version <= maxVersion }
+      .maxByOrNull { (_, version) -> version.ordinal }
+      ?.first
   }
 
   private val Sdk.javaSdkVersion: JavaSdkVersion? get() = JavaSdk.getInstance().getVersion(this)

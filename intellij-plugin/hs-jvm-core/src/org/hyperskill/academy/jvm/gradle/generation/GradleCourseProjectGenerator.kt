@@ -5,12 +5,14 @@ import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.vfs.VfsUtil
 import org.hyperskill.academy.jvm.JdkProjectSettings
 import org.hyperskill.academy.jvm.gradle.GradleCourseBuilderBase
 import org.hyperskill.academy.learning.CourseInfoHolder
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.EduFile
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.runInWriteActionAndWait
 import org.hyperskill.academy.learning.newproject.CourseProjectGenerator
 
 open class GradleCourseProjectGenerator(
@@ -31,6 +33,16 @@ open class GradleCourseProjectGenerator(
 
   protected open fun setupGradleSettings(project: Project, sdk: Sdk?) {
     EduGradleUtils.setGradleSettings(project, sdk, project.basePath!!)
+  }
+
+  override fun createAdditionalFiles(holder: CourseInfoHolder<Course>) {
+    super.createAdditionalFiles(holder)
+    // Create util module directory with src subdirectory.
+    // Gradle 9.x requires module directories to exist during project configuration.
+    // The util module is referenced in settings.gradle and build.gradle templates.
+    runInWriteActionAndWait {
+      VfsUtil.createDirectoryIfMissing(holder.courseDir, "$UTIL_MODULE_NAME/src")
+    }
   }
 
   override fun autoCreatedAdditionalFiles(holder: CourseInfoHolder<Course>): List<EduFile> {
@@ -58,5 +70,6 @@ open class GradleCourseProjectGenerator(
 
   companion object {
     private const val SHOW_UNLINKED_GRADLE_POPUP = "show.inlinked.gradle.project.popup"
+    private const val UTIL_MODULE_NAME = "util"
   }
 }
