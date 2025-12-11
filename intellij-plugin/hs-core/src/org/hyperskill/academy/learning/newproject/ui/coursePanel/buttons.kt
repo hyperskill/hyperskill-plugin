@@ -2,12 +2,11 @@ package org.hyperskill.academy.learning.newproject.ui.coursePanel
 
 
 import com.intellij.ide.plugins.newui.ColorButton
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.DialogWrapperDialog
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.io.FileUtil
+import java.io.File
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.UIUtil
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -39,17 +38,15 @@ private val BorderColor: Color = JBColor.namedColor("SelectCourse.Button.border"
 class OpenCourseButton(private val openCourseMetadata: () -> Map<String, String>) : CourseButtonBase() {
 
   override fun actionListener(course: Course): ActionListener = ActionListener {
-    invokeLater {
-      val coursesStorage = CoursesStorage.getInstance()
-      val coursePath = coursesStorage.getCoursePath(course) ?: return@invokeLater
-      if (!FileUtil.exists(coursePath)) {
-        processMissingCourseOpening(course, coursePath)
-        return@invokeLater
-      }
-
-      closeDialog()
-      course.openCourse(openCourseMetadata())
+    val coursesStorage = CoursesStorage.getInstance()
+    val coursePath = coursesStorage.getCoursePath(course) ?: return@ActionListener
+    if (!File(coursePath).exists()) {
+      processMissingCourseOpening(course, coursePath)
+      return@ActionListener
     }
+
+    closeDialog()
+    course.openCourse(openCourseMetadata())
   }
 
   private fun processMissingCourseOpening(course: Course, coursePath: String) {

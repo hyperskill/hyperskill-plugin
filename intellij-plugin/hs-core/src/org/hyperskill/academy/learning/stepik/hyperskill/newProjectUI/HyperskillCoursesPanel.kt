@@ -13,7 +13,6 @@ import org.hyperskill.academy.learning.EduLogInListener
 import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.messages.EduCoreBundle
-import org.hyperskill.academy.learning.newproject.HyperskillCourseAdvertiser
 import org.hyperskill.academy.learning.newproject.ui.CourseCardComponent
 import org.hyperskill.academy.learning.newproject.ui.CoursesPanel
 import org.hyperskill.academy.learning.newproject.ui.welcomeScreen.JBACourseFromStorage
@@ -36,13 +35,14 @@ class HyperskillCoursesPanel(
   }
 
   override fun updateModelAfterCourseDeletedFromStorage(deletedCourse: JBACourseFromStorage) {
-    val firstGroup = coursesGroups.firstOrNull()
-    if (firstGroup != null) {
-      if (firstGroup.courses.none { it.id != deletedCourse.id }) {
-        coursesGroups[0] = firstGroup.copy(courses = listOf(HyperskillCourseAdvertiser()))
-      }
+    // Reload courses from server to get current selected project
+    scope.launch {
+      val reloadedGroups = withContext(Dispatchers.IO) { platformProvider.loadCourses() }
+      coursesGroups.clear()
+      coursesGroups.addAll(reloadedGroups)
+      super.updateModelAfterCourseDeletedFromStorage(deletedCourse)
+      showContent(coursesGroups.isEmpty())
     }
-    super.updateModelAfterCourseDeletedFromStorage(deletedCourse)
   }
 
   override fun createNoCoursesPanel(): JPanel = if (isLoggedIn()) {
