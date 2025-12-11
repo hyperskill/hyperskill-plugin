@@ -1,8 +1,10 @@
 package org.hyperskill.academy.jvm
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl
@@ -25,6 +27,8 @@ import org.hyperskill.academy.learning.runInBackground
 import java.awt.BorderLayout
 import java.io.File
 import javax.swing.JComponent
+
+private val LOG = logger<JdkLanguageSettings>()
 
 open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
@@ -89,6 +93,43 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
       jdk = jdkComboBox.selectedItem?.jdk
       notifyListeners()
     }
+
+    // Subscribe to JDK table changes to update combobox when user adds/removes JDKs in Settings
+    val connection = ApplicationManager.getApplication().messageBus.connect(disposable)
+    connection.subscribe(ProjectJdkTable.JDK_TABLE_TOPIC, object : ProjectJdkTable.Listener {
+      override fun jdkAdded(addedJdk: Sdk) {
+        LOG.info("JDK added event received: ${addedJdk.name}, type=${addedJdk.sdkType}")
+        if (addedJdk.sdkType is JavaSdkType) {
+          invokeLater(ModalityState.any()) {
+            LOG.info("Processing JDK added on EDT, current jdk=$jdk, loadingState=$loadingState")
+            jdkComboBox.reloadModel()
+            if (jdk == null) {
+              jdkComboBox.selectedJdk = addedJdk
+              jdk = addedJdk
+              LOG.info("Selected newly added JDK: ${addedJdk.name}")
+            }
+            loadingState = JdkLoadingState.LOADED
+            loadingError = null
+            LOG.info("Updated loadingState to LOADED, calling notifyListeners")
+            notifyListeners()
+          }
+        }
+      }
+
+      override fun jdkRemoved(removedJdk: Sdk) {
+        LOG.info("JDK removed event received: ${removedJdk.name}")
+        if (removedJdk.sdkType is JavaSdkType) {
+          invokeLater(ModalityState.any()) {
+            jdkComboBox.reloadModel()
+            if (jdk == removedJdk) {
+              jdk = jdkComboBox.selectedJdk
+            }
+            notifyListeners()
+          }
+        }
+      }
+    })
+
     return listOf(LabeledComponent.create(jdkComboBox, "JDK", BorderLayout.WEST))
   }
 
@@ -162,15 +203,38 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
   }
 
   override fun validate(course: Course?, courseLocation: String?): SettingsValidationResult {
+    LOG.info("validate called: componentsInitialized=$componentsInitialized, loadingState=$loadingState, jdk=$jdk")
+
     // If UI components haven't been initialized yet or JDK is still loading, return Pending to avoid false errors
     if (!componentsInitialized || loadingState == JdkLoadingState.LOADING) {
       return SettingsValidationResult.Pending
     }
 
-    // If JDK loading failed, show the error
+    // If JDK loading previously failed but now a JDK is available, reset the error state
     if (loadingState == JdkLoadingState.FAILED) {
-      val errorMsg = loadingError ?: EduJVMBundle.message("error.jdk.loading.failed")
-      return SettingsValidationResult.Ready(ValidationMessage(errorMsg, ENVIRONMENT_CONFIGURATION_LINK_JAVA))
+      // First check if user already selected a JDK in the combobox (e.g., downloaded one)
+      if (jdk != null) {
+        LOG.info("loadingState is FAILED but jdk is already selected: $jdk, resetting to LOADED")
+        loadingState = JdkLoadingState.LOADED
+        loadingError = null
+      }
+      else {
+        // Check ProjectJdkTable as fallback (for JDKs added via Settings)
+        val jdksInTable = ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance())
+        LOG.info("loadingState is FAILED, jdk is null, checking ProjectJdkTable: found ${jdksInTable.size} JDKs")
+        if (jdksInTable.isNotEmpty()) {
+          // JDKs are now available - user added them via Settings
+          loadingState = JdkLoadingState.LOADED
+          loadingError = null
+          jdk = findSuitableJdkFromTable(course?.let { minJvmSdkVersion(it) } ?: JavaVersionNotProvided)
+          LOG.info("Auto-selected JDK from table: $jdk")
+        }
+        else {
+          val errorMsg = loadingError ?: EduJVMBundle.message("error.jdk.loading.failed")
+          LOG.info("Returning FAILED state with error: $errorMsg")
+          return SettingsValidationResult.Ready(ValidationMessage(errorMsg, ENVIRONMENT_CONFIGURATION_LINK_JAVA))
+        }
+      }
     }
 
     fun ready(messageId: String, vararg additionalSubstitution: String): SettingsValidationResult {

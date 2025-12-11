@@ -55,6 +55,7 @@ abstract class CoursesPanel(
   private val coursesListDecorator = CoursesListDecorator(this.createCoursesListPanel(), this.tabDescription(), this.toolbarAction())
 
   private val cardLayout = JBCardLayout()
+  private lateinit var noCoursesPanel: JPanel
   protected val coursesGroups = mutableListOf<CoursesGroup>()
 
   @Volatile
@@ -72,7 +73,8 @@ abstract class CoursesPanel(
     this.add(createContentPanel(), CONTENT_CARD_NAME)
     this.add(createLoadingPanel(), LOADING_CARD_NAME)
     @Suppress("LeakingThis")
-    this.add(createNoCoursesPanel(), NO_COURSES)
+    noCoursesPanel = createNoCoursesPanel()
+    this.add(noCoursesPanel, NO_COURSES)
     showProgressState()
   }
 
@@ -165,6 +167,16 @@ abstract class CoursesPanel(
       return
     }
     cardLayout.show(this, CONTENT_CARD_NAME)
+  }
+
+  protected fun updateNoCoursesPanel() {
+    val newPanel = createNoCoursesPanel()
+    val index = getComponentZOrder(noCoursesPanel)
+    remove(noCoursesPanel)
+    noCoursesPanel = newPanel
+    add(noCoursesPanel, NO_COURSES, index)
+    revalidate()
+    repaint()
   }
 
   protected open fun updateFilters(coursesGroups: List<CoursesGroup>) {

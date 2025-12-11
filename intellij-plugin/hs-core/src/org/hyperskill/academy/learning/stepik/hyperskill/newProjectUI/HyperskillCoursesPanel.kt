@@ -25,9 +25,53 @@ private val LOG = logger<HyperskillCoursesPanel>()
 
 class HyperskillCoursesPanel(
   private val platformProvider: HyperskillPlatformProvider,
-  val scope: CoroutineScope,
+  private val scope: CoroutineScope,
   disposable: Disposable
 ) : CoursesPanel(platformProvider, scope, disposable) {
+
+  private var contentPanel: JPanel? = null
+
+  init {
+    subscribeToLoginEvents(disposable)
+  }
+
+  private fun subscribeToLoginEvents(disposable: Disposable) {
+    val connection = ApplicationManager.getApplication().messageBus.connect(disposable)
+    connection.subscribe(
+      HyperskillSettings.LOGGED_IN_TO_HYPERSKILL,
+      object : EduLogInListener {
+        override fun userLoggedIn() {
+          LOG.info("userLoggedIn event received")
+          runInEdt(ModalityState.any()) {
+            onUserLoggedIn()
+          }
+        }
+      }
+    )
+  }
+
+  private fun onUserLoggedIn() {
+    LOG.info("Updating panels after login")
+
+    // Update content panel
+    contentPanel?.let { panel ->
+      if (panel.isDisplayable) {
+        panel.removeAll()
+        panel.add(createCoursesContentPanel())
+        panel.revalidate()
+        panel.repaint()
+      }
+    }
+
+    // Update no courses panel (it may show different content based on login state)
+    updateNoCoursesPanel()
+
+    // Load courses and update UI
+    scope.launch {
+      updateCoursesAfterLogin(false)
+    }
+    LOG.info("Panel update completed")
+  }
 
   override fun tabDescription(): String {
     val linkText = """<a href="$JBA_HELP">${EduNames.JBA}</a>"""
@@ -35,7 +79,6 @@ class HyperskillCoursesPanel(
   }
 
   override fun updateModelAfterCourseDeletedFromStorage(deletedCourse: JBACourseFromStorage) {
-    // Reload courses from server to get current selected project
     scope.launch {
       val reloadedGroups = withContext(Dispatchers.IO) { platformProvider.loadCourses() }
       coursesGroups.clear()
@@ -57,45 +100,16 @@ class HyperskillCoursesPanel(
   override fun createContentPanel(): JPanel {
     LOG.info("createContentPanel called, isLoggedIn=${isLoggedIn()}")
     val panel = if (isLoggedIn()) {
-      super.createContentPanel()
+      createCoursesContentPanel()
     }
     else {
       HyperskillNotLoggedInPanel()
     }
-
-    fun createCoursesPanel() = super.createContentPanel()
-
-    val connection = ApplicationManager.getApplication().messageBus.connect()
-    LOG.info("Subscribing to LOGGED_IN_TO_HYPERSKILL topic")
-    connection.subscribe(
-      HyperskillSettings.LOGGED_IN_TO_HYPERSKILL,
-      object : EduLogInListener {
-        override fun userLoggedIn() {
-          LOG.info("userLoggedIn event received in HyperskillCoursesPanel, panel.isDisplayable=${panel.isDisplayable}, panel.isShowing=${panel.isShowing}")
-          runInEdt(ModalityState.any()) {
-            LOG.info("Updating panel after login: removing old content and adding courses panel")
-            if (!panel.isDisplayable) {
-              LOG.warn("Panel is not displayable, skipping update")
-              connection.disconnect()
-              return@runInEdt
-            }
-            panel.removeAll()
-            panel.add(createCoursesPanel())
-            panel.revalidate()
-            panel.repaint()
-            showContent(false)
-            scope.launch {
-              updateCoursesAfterLogin(false)
-            }
-            connection.disconnect()
-            LOG.info("Panel update completed, connection disconnected")
-          }
-        }
-      }
-    )
-
+    contentPanel = panel
     return panel
   }
+
+  private fun createCoursesContentPanel(): JPanel = super.createContentPanel()
 
   override suspend fun updateCoursesAfterLogin(preserveSelection: Boolean) {
     val academyCoursesGroups = withContext(Dispatchers.IO) { platformProvider.loadCourses() }
