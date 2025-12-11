@@ -2,10 +2,18 @@ package org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration
 
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Ref
 import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.notification.EduNotificationManager
+import java.util.concurrent.CancellationException
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import org.hyperskill.academy.learning.authUtils.requestFocus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
@@ -32,6 +40,8 @@ import org.jetbrains.annotations.VisibleForTesting
 object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpenRequest>() {
   private val LOG = Logger.getInstance(HyperskillOpenInIdeRequestHandler::class.java)
 
+  private const val STAGE_LOADING_TIMEOUT_MS = 60_000L
+
   override val courseLoadingProcessTitle: String get() = EduCoreBundle.message("hyperskill.loading.project")
 
   private inline fun <T> logTimed(operation: String, block: () -> T): T {
@@ -46,6 +56,62 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
   }
 
   private fun hasAndroidEnvironment(course: Course): Boolean = course.environment == EduNames.ANDROID
+
+  /**
+   * Loads stages with a timeout to prevent IDE from hanging on slow networks.
+   * Returns Ok if successful, Err with error message on failure or timeout.
+   * Rethrows ProcessCanceledException if the operation was cancelled.
+   */
+  private fun loadStagesWithTimeout(
+    project: Project,
+    hyperskillCourse: HyperskillCourse,
+    timeoutMs: Long = STAGE_LOADING_TIMEOUT_MS
+  ): Result<Unit, String> {
+    val future = CompletableFuture.supplyAsync {
+      computeUnderProgress(project, EduCoreBundle.message("hyperskill.loading.stages")) {
+        HyperskillConnector.getInstance().loadStages(hyperskillCourse)
+      }
+    }
+
+    return try {
+      future.get(timeoutMs, TimeUnit.MILLISECONDS)
+      Ok(Unit)
+    }
+    catch (e: TimeoutException) {
+      future.cancel(true)
+      LOG.warn("Stage loading timed out after ${timeoutMs}ms")
+      Err(EduCoreBundle.message("hyperskill.error.stage.loading.timeout"))
+    }
+    catch (e: CancellationException) {
+      LOG.info("Stage loading was cancelled")
+      throw ProcessCanceledException()
+    }
+    catch (e: ExecutionException) {
+      val cause = e.cause
+      // Rethrow ProcessCanceledException - it's a control flow exception
+      if (cause is ProcessCanceledException) {
+        throw cause
+      }
+      LOG.warn("Failed to load stages: ${cause?.message ?: e.message}", e)
+      Err(EduCoreBundle.message("hyperskill.error.stage.loading.failed", cause?.message ?: e.message ?: "Unknown error"))
+    }
+    catch (e: InterruptedException) {
+      LOG.info("Stage loading was interrupted")
+      Thread.currentThread().interrupt()
+      throw ProcessCanceledException()
+    }
+  }
+
+  /**
+   * Shows an error notification when stage loading fails.
+   */
+  private fun showStageLoadingError(project: Project, errorMessage: String) {
+    EduNotificationManager.showErrorNotification(
+      project = project,
+      title = EduCoreBundle.message("hyperskill.error.stage.loading.title"),
+      content = errorMessage
+    )
+  }
 
   override fun openInExistingProject(
     request: HyperskillOpenRequest,
@@ -79,15 +145,26 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
         val hyperskillCourse = course as HyperskillCourse
         if (hyperskillCourse.getProjectLesson() == null) {
           LOG.info("Project lesson not found, loading stages")
-          logTimed("Loading stages via computeUnderProgress") {
-            computeUnderProgress(project, EduCoreBundle.message("hyperskill.loading.stages")) {
-              HyperskillConnector.getInstance().loadStages(hyperskillCourse)
-            }
+
+          // Load stages with timeout to prevent IDE from hanging
+          val loadResult = logTimed("Loading stages with timeout") {
+            loadStagesWithTimeout(project, hyperskillCourse)
           }
+
+          if (loadResult is Err) {
+            LOG.warn("Stage loading failed: ${loadResult.error}")
+            showStageLoadingError(project, loadResult.error)
+            // Return the project so user can retry later, but show error notification
+            course.selectedStage = request.stageId
+            runInEdt { openSelectedStage(hyperskillCourse, project) }
+            return project
+          }
+
           logTimed("Course init") { hyperskillCourse.init(false) }
           val projectLesson = hyperskillCourse.getProjectLesson() ?: run {
             LOG.warn("Project lesson is null after loading stages")
-            return null
+            showStageLoadingError(project, EduCoreBundle.message("hyperskill.error.stage.loading.no.lesson"))
+            return project
           }
           val courseDir = project.courseDir
           logTimed("Creating lesson directory") { GeneratorUtils.createLesson(project, projectLesson, courseDir) }
@@ -222,24 +299,43 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     LOG.info("getCourse called for request: ${request.javaClass.simpleName}")
     val totalStartTime = System.currentTimeMillis()
 
+    // Set up progress indicator for better user feedback
+    indicator.isIndeterminate = false
+    indicator.fraction = 0.0
+
     if (request is HyperskillOpenStepRequest) {
       LOG.info("Processing HyperskillOpenStepRequest: stepId=${request.stepId}, language=${request.language}")
+      indicator.text2 = EduCoreBundle.message("hyperskill.loading.step.info")
+      indicator.fraction = 0.2
+
       val newProject = HyperskillProject()
       val hyperskillLanguage = request.language
       val hyperskillCourse = createHyperskillCourse(request, hyperskillLanguage, newProject).onError { return Err(it) }
+
+      indicator.fraction = 0.5
+      indicator.text2 = EduCoreBundle.message("hyperskill.loading.problems")
       hyperskillCourse.addProblemsWithTopicWithFiles(null, getStepSource(request.stepId, request.isLanguageSelectedByUser))
       hyperskillCourse.selectedProblem = request.stepId
+
+      indicator.fraction = 1.0
       LOG.info("HyperskillOpenStepRequest processed in ${System.currentTimeMillis() - totalStartTime}ms")
       return Ok(hyperskillCourse)
     }
+
     request as HyperskillOpenWithProjectRequestBase
     LOG.info("Fetching project info for projectId=${request.projectId}")
+    indicator.text2 = EduCoreBundle.message("hyperskill.loading.project.info")
+    indicator.fraction = 0.1
+
     val projectStartTime = System.currentTimeMillis()
     val hyperskillProject = HyperskillConnector.getInstance().getProject(request.projectId).onError {
       LOG.warn("Failed to fetch project ${request.projectId}: $it")
       return Err(ValidationErrorMessage(it))
     }
     LOG.info("Project info fetched in ${System.currentTimeMillis() - projectStartTime}ms")
+
+    indicator.fraction = 0.3
+    indicator.text2 = EduCoreBundle.message("hyperskill.creating.course")
 
     val hyperskillLanguage = if (request is HyperskillOpenStepWithProjectRequest) request.language else hyperskillProject.language
     LOG.info("Creating course for language: $hyperskillLanguage")
@@ -254,9 +350,12 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
       return Err(it)
     }
 
+    indicator.fraction = 0.5
+
     when (request) {
       is HyperskillOpenStepWithProjectRequest -> {
         LOG.info("Loading problems for stepId=${request.stepId}")
+        indicator.text2 = EduCoreBundle.message("hyperskill.loading.problems")
         hyperskillCourse.addProblemsWithTopicWithFiles(null, getStepSource(request.stepId, request.isLanguageSelectedByUser))
         hyperskillCourse.selectedProblem = request.stepId
       }
@@ -264,10 +363,13 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
       is HyperskillOpenProjectStageRequest -> {
         LOG.info("Loading stages for new project, stageId=${request.stageId}")
         indicator.text2 = EduCoreBundle.message("hyperskill.loading.stages")
+        ProgressManager.checkCanceled()
         HyperskillConnector.getInstance().loadStages(hyperskillCourse)
         hyperskillCourse.selectedStage = request.stageId
       }
     }
+
+    indicator.fraction = 1.0
     LOG.info("getCourse completed in ${System.currentTimeMillis() - totalStartTime}ms total")
     return Ok(hyperskillCourse)
   }

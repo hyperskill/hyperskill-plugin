@@ -137,10 +137,23 @@ class CourseSettingsPanel(
       }
     }
 
-    if (settingsComponents.isNotEmpty()
-        && course !is HyperskillCourseAdvertiser
-        && !CoursesStorage.getInstance().hasCourse(course)
-    ) {
+    // Determine if settings panel should be visible:
+    // 1. Course is new (not in storage), OR
+    // 2. Course is in storage but files are missing (needs reconfiguration)
+    val coursesStorage = CoursesStorage.getInstance()
+    val courseInStorage = coursesStorage.hasCourse(course)
+    val courseFilesExist = if (courseInStorage) {
+      coursesStorage.getCoursePath(course)?.let { File(it).exists() } ?: false
+    }
+    else {
+      false
+    }
+
+    val shouldShowSettings = settingsComponents.isNotEmpty()
+      && course !is HyperskillCourseAdvertiser
+      && (!courseInStorage || !courseFilesExist)
+
+    if (shouldShowSettings) {
       isVisible = true
       setSettingsComponents(settingsComponents)
     }

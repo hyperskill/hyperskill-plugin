@@ -3,9 +3,13 @@ package org.hyperskill.academy.learning.newproject.ui.coursePanel
 
 import com.intellij.ide.plugins.newui.ColorButton
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.fileChooser.FileChooser
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.DialogWrapperDialog
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.LocalFileSystem
 import java.io.File
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.UIUtil
@@ -49,28 +53,104 @@ class OpenCourseButton(private val openCourseMetadata: () -> Map<String, String>
     course.openCourse(openCourseMetadata())
   }
 
-  private fun processMissingCourseOpening(course: Course, coursePath: String) {
-    val message = EduCoreBundle.message("course.dialog.course.not.found.reopen.button")
+  /**
+   * Actions available when course files are not found.
+   */
+  private enum class MissingCourseAction {
+    REMOVE_FROM_LIST,
+    DOWNLOAD_AGAIN,
+    LOCATE_FOLDER,
+    CANCEL
+  }
 
-    if (showNoCourseDialog(coursePath, message) == Messages.NO) {
-      CoursesStorage.getInstance().removeCourseByLocation(coursePath)
-      when (course) {
-        is HyperskillCourse -> {
+  private fun processMissingCourseOpening(course: Course, coursePath: String) {
+    val action = showMissingCourseDialog(course, coursePath)
+
+    when (action) {
+      MissingCourseAction.REMOVE_FROM_LIST -> {
+        CoursesStorage.getInstance().removeCourseByLocation(coursePath)
+        // UI will be updated via COURSE_DELETED listener
+      }
+
+      MissingCourseAction.DOWNLOAD_AGAIN -> {
+        CoursesStorage.getInstance().removeCourseByLocation(coursePath)
+        restartCourseDownload(course)
+      }
+
+      MissingCourseAction.LOCATE_FOLDER -> {
+        val newPath = promptForCourseLocation(coursePath)
+        if (newPath != null && File(newPath).exists()) {
+          CoursesStorage.getInstance().updateCoursePath(course, newPath)
           closeDialog()
-          ProjectOpener.getInstance().apply {
-            HyperskillOpenInIdeRequestHandler.openInNewProject(HyperskillOpenProjectStageRequest(course.id, null)).onError {
-              Messages.showErrorDialog(it.message, EduCoreBundle.message("course.dialog.error.restart.jba"))
-              logger<HyperskillOpenInIdeRequestHandler>().warn("Opening a new project resulted in an error: ${it.message}. The error was shown inside an error dialog.")
-            }
+          course.openCourse(openCourseMetadata())
+        }
+      }
+
+      MissingCourseAction.CANCEL -> {
+        // Do nothing
+      }
+    }
+  }
+
+  private fun showMissingCourseDialog(course: Course, coursePath: String): MissingCourseAction {
+    val message = EduCoreBundle.message(
+      "course.dialog.course.not.found.detailed",
+      course.name,
+      FileUtil.toSystemDependentName(coursePath)
+    )
+
+    val options = arrayOf(
+      EduCoreBundle.message("course.dialog.action.remove"),
+      EduCoreBundle.message("course.dialog.action.download.again"),
+      EduCoreBundle.message("course.dialog.action.locate"),
+      Messages.getCancelButton()
+    )
+
+    val result = Messages.showDialog(
+      null,
+      message,
+      EduCoreBundle.message("course.dialog.course.not.found.title"),
+      options,
+      0, // Default to "Remove from list"
+      Messages.getWarningIcon()
+    )
+
+    return when (result) {
+      0 -> MissingCourseAction.REMOVE_FROM_LIST
+      1 -> MissingCourseAction.DOWNLOAD_AGAIN
+      2 -> MissingCourseAction.LOCATE_FOLDER
+      else -> MissingCourseAction.CANCEL
+    }
+  }
+
+  private fun promptForCourseLocation(previousPath: String): String? {
+    val descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
+      .withTitle(EduCoreBundle.message("course.dialog.locate.title"))
+      .withDescription(EduCoreBundle.message("course.dialog.locate.description"))
+
+    val previousDir = File(previousPath).parentFile?.let {
+      LocalFileSystem.getInstance().findFileByIoFile(it)
+    }
+
+    val chosen = FileChooser.chooseFile(descriptor, null, previousDir)
+    return chosen?.path
+  }
+
+  private fun restartCourseDownload(course: Course) {
+    when (course) {
+      is HyperskillCourse -> {
+        closeDialog()
+        ProjectOpener.getInstance().apply {
+          HyperskillOpenInIdeRequestHandler.openInNewProject(HyperskillOpenProjectStageRequest(course.id, null)).onError {
+            Messages.showErrorDialog(it.message, EduCoreBundle.message("course.dialog.error.restart.jba"))
+            logger<HyperskillOpenInIdeRequestHandler>().warn("Opening a new project resulted in an error: ${it.message}. The error was shown inside an error dialog.")
           }
         }
+      }
 
-        else -> {
-          closeDialog()
-          // if course is present both on stepik and marketplace we open marketplace-based one
-          val courseToOpen = course
-          JoinCourseDialog(courseToOpen).show()
-        }
+      else -> {
+        closeDialog()
+        JoinCourseDialog(course).show()
       }
     }
   }

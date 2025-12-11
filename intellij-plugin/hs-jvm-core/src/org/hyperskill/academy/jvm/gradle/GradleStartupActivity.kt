@@ -1,5 +1,6 @@
 package org.hyperskill.academy.jvm.gradle
 
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
@@ -56,7 +57,9 @@ class GradleStartupActivity : ProjectActivity {
     val utilDir = projectDir.findChild(UTIL_MODULE_NAME)
     if (utilDir != null && utilDir.isDirectory) return
 
-    VfsUtil.createDirectoryIfMissing(projectDir, "$UTIL_MODULE_NAME/src")
+    runWriteAction {
+      VfsUtil.createDirectoryIfMissing(projectDir, "$UTIL_MODULE_NAME/src")
+    }
   }
 
   companion object {

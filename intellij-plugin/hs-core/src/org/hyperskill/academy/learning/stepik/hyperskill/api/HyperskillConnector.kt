@@ -274,11 +274,18 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
     LOG.info("Loading stages for project $projectId (${hyperskillCourse.name})")
     val startTime = System.currentTimeMillis()
 
+    // Check for cancellation at the start
+    ProgressManager.checkCanceled()
+
     if (hyperskillCourse.stages.isEmpty()) {
       LOG.info("Fetching stages from API for project $projectId")
       val stagesStartTime = System.currentTimeMillis()
       val stages = getStages(projectId)
       LOG.info("Stages API call completed in ${System.currentTimeMillis() - stagesStartTime}ms, got ${stages?.size ?: 0} stages")
+
+      // Check for cancellation after network call
+      ProgressManager.checkCanceled()
+
       if (stages == null) {
         LOG.warn("Failed to load stages for project $projectId")
         return
@@ -289,10 +296,16 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
       LOG.info("Using ${hyperskillCourse.stages.size} cached stages")
     }
 
+    // Check for cancellation before loading lesson
+    ProgressManager.checkCanceled()
+
     LOG.info("Loading lesson content for ${hyperskillCourse.stages.size} stages")
     val lessonStartTime = System.currentTimeMillis()
     val lesson = getLesson(hyperskillCourse)
     LOG.info("Lesson loading completed in ${System.currentTimeMillis() - lessonStartTime}ms")
+
+    // Check for cancellation after loading lesson
+    ProgressManager.checkCanceled()
 
     if (lesson == null) {
       LOG.warn("Failed to load lesson for project $projectId")

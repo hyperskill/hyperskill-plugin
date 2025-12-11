@@ -45,6 +45,18 @@ open class CoursesStorageBase : SimplePersistentStateComponent<UserCoursesState>
     state.updateCourseProgress(course, location, tasksSolved, tasksTotal)
   }
 
+  /**
+   * Updates the file path for a course in storage.
+   * Used when user relocates course files to a different directory.
+   */
+  fun updateCoursePath(course: Course, newLocation: String) {
+    val courseMetaInfo = getCourseMetaInfo(course) ?: return
+    val systemIndependentLocation = FileUtilRt.toSystemIndependentName(newLocation)
+    courseMetaInfo.location = systemIndependentLocation
+    // Trigger state modification by updating an existing field
+    state.updateCoursePath(courseMetaInfo, systemIndependentLocation)
+  }
+
   fun coursesInGroups(): List<CoursesGroup> {
     val courses = state.courses
     val solvedCourses = courses.filter { it.isStudy && it.tasksSolved != 0 && it.tasksSolved == it.tasksTotal }.map { it.toCourse() }
@@ -98,5 +110,10 @@ class UserCoursesState : BaseState() {
     else {
       courses.add(JBACourseFromStorage(systemIndependentLocation, course, tasksTotal, tasksSolved))
     }
+  }
+
+  fun updateCoursePath(courseMetaInfo: JBACourseFromStorage, newLocation: String) {
+    courseMetaInfo.location = newLocation
+    incrementModificationCount()
   }
 }

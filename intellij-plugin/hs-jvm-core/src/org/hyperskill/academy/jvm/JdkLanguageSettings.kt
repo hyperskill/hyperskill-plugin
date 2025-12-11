@@ -31,11 +31,28 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
   protected var jdk: Sdk? = null
   protected val sdkModel: ProjectSdksModel = createSdkModel()
 
+  /**
+   * Represents the state of JDK loading process.
+   */
+  private enum class JdkLoadingState {
+    NOT_STARTED,
+    LOADING,
+    LOADED,
+    FAILED
+  }
+
   @Volatile
-  private var isJdkLoading: Boolean = false
+  private var loadingState: JdkLoadingState = JdkLoadingState.NOT_STARTED
+
+  @Volatile
+  private var loadingError: String? = null
 
   @Volatile
   private var componentsInitialized: Boolean = false
+
+  // Keep for backward compatibility with isJdkLoading checks
+  private val isJdkLoading: Boolean
+    get() = loadingState == JdkLoadingState.LOADING
 
   private fun createSdkModel(): ProjectSdksModel {
     val project = ProjectManager.getInstance().defaultProject
@@ -76,9 +93,20 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
   }
 
   private fun preselectJdk(course: Course, jdkComboBox: JdkComboBox, sdksModel: ProjectSdksModel) {
-    if (jdkComboBox.selectedJdk != null) return
-    isJdkLoading = true
+    if (jdkComboBox.selectedJdk != null) {
+      loadingState = JdkLoadingState.LOADED
+      return
+    }
+    loadingState = JdkLoadingState.LOADING
+    loadingError = null
+
+    // Disable combo box while loading to indicate loading state
+    jdkComboBox.isEnabled = false
+
     runInBackground(course.project, EduJVMBundle.message("progress.setting.suitable.jdk"), false) {
+      var errorOccurred = false
+      var errorMessage: String? = null
+
       // Reset SDK model off-EDT to avoid IllegalStateException from synchronous progress on EDT
       try {
         val project = course.project
@@ -86,8 +114,9 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
           sdksModel.reset(project)
         }
       }
-      catch (_: Throwable) {
+      catch (e: Throwable) {
         // best-effort; if reset fails we'll try with whatever the model currently has
+        errorMessage = e.message
       }
 
       // Add bundled JDK if needed (must be done off-EDT as addSdk requires write action)
@@ -101,12 +130,32 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
       // If sdkModel is empty, try to get JDKs directly from ProjectJdkTable
       val suitableJdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
         ?: findSuitableJdkFromTable(minJvmSdkVersion(course))
+
+      // Check if we found any JDK at all (either suitable or any)
+      val anyJdkAvailable = sdksModel.sdks.any { it.sdkType == JavaSdk.getInstance() }
+        || ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance()).isNotEmpty()
+
+      if (!anyJdkAvailable) {
+        errorOccurred = true
+        errorMessage = EduJVMBundle.message("error.no.jdk.available")
+      }
+
       // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
       prewarmSdkValidation(suitableJdk)
+
       invokeLater(ModalityState.any()) {
+        jdkComboBox.isEnabled = true
         jdkComboBox.selectedJdk = suitableJdk
         jdk = suitableJdk
-        isJdkLoading = false
+
+        if (errorOccurred) {
+          loadingState = JdkLoadingState.FAILED
+          loadingError = errorMessage
+        }
+        else {
+          loadingState = JdkLoadingState.LOADED
+          loadingError = null
+        }
         notifyListeners()
       }
     }
@@ -114,8 +163,14 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
   override fun validate(course: Course?, courseLocation: String?): SettingsValidationResult {
     // If UI components haven't been initialized yet or JDK is still loading, return Pending to avoid false errors
-    if (!componentsInitialized || isJdkLoading) {
+    if (!componentsInitialized || loadingState == JdkLoadingState.LOADING) {
       return SettingsValidationResult.Pending
+    }
+
+    // If JDK loading failed, show the error
+    if (loadingState == JdkLoadingState.FAILED) {
+      val errorMsg = loadingError ?: EduJVMBundle.message("error.jdk.loading.failed")
+      return SettingsValidationResult.Ready(ValidationMessage(errorMsg, ENVIRONMENT_CONFIGURATION_LINK_JAVA))
     }
 
     fun ready(messageId: String, vararg additionalSubstitution: String): SettingsValidationResult {
