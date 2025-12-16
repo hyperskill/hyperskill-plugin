@@ -2,6 +2,7 @@ package org.hyperskill.academy.learning.newproject.ui.coursePanel
 
 
 import com.intellij.ide.plugins.newui.ColorButton
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -139,11 +140,17 @@ class OpenCourseButton(private val openCourseMetadata: () -> Map<String, String>
   private fun restartCourseDownload(course: Course) {
     when (course) {
       is HyperskillCourse -> {
+        val projectId = course.id
         closeDialog()
-        ProjectOpener.getInstance().apply {
-          HyperskillOpenInIdeRequestHandler.openInNewProject(HyperskillOpenProjectStageRequest(course.id, null)).onError {
-            Messages.showErrorDialog(it.message, EduCoreBundle.message("course.dialog.error.restart.jba"))
-            logger<HyperskillOpenInIdeRequestHandler>().warn("Opening a new project resulted in an error: ${it.message}. The error was shown inside an error dialog.")
+        // Use invokeLater to ensure the dialog closure is fully processed
+        // before starting the new project opening flow. This prevents
+        // modal state issues that can cause EDT blocking.
+        ApplicationManager.getApplication().invokeLater {
+          ProjectOpener.getInstance().apply {
+            HyperskillOpenInIdeRequestHandler.openInNewProject(HyperskillOpenProjectStageRequest(projectId, null)).onError {
+              Messages.showErrorDialog(it.message, EduCoreBundle.message("course.dialog.error.restart.jba"))
+              logger<HyperskillOpenInIdeRequestHandler>().warn("Opening a new project resulted in an error: ${it.message}. The error was shown inside an error dialog.")
+            }
           }
         }
       }

@@ -59,6 +59,9 @@ object YamlFormatSynchronizer {
     val course = StudyTaskManager.getInstance(project).course ?: return
     // Respect settings: do not attempt to create config files if this feature is disabled for the project.
     if (!YamlFormatSettings.shouldCreateConfigFiles(project)) return
+    // If course directory was deleted or is invalid, skip saving to avoid InvalidVirtualFileAccessException.
+    val courseDir = project.guessCourseDir()
+    if (courseDir == null || !courseDir.isValid) return
     val mapper = mapper()
     saveItem(course, mapper)
     course.visitSections { section -> saveItem(section, mapper) }

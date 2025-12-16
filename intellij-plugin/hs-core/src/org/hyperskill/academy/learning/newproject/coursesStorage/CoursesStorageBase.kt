@@ -22,7 +22,10 @@ open class CoursesStorageBase : SimplePersistentStateComponent<UserCoursesState>
 
   open fun getCoursePath(course: Course): String? = getCourseMetaInfo(course)?.location
 
-  fun hasCourse(course: Course): Boolean = getCoursePath(course) != null
+  fun hasCourse(course: Course): Boolean {
+    val courseMetaInfo = getCourseMetaInfo(course) ?: return false
+    return courseMetaInfo.isLocationValid
+  }
 
   protected fun doRemoveCourseByLocation(location: String): Boolean {
     val deletedCourse = state.removeCourseByLocation(location) ?: return false
@@ -58,7 +61,7 @@ open class CoursesStorageBase : SimplePersistentStateComponent<UserCoursesState>
   }
 
   fun coursesInGroups(): List<CoursesGroup> {
-    val courses = state.courses
+    val courses = state.courses.filter { it.isLocationValid }
     val solvedCourses = courses.filter { it.isStudy && it.tasksSolved != 0 && it.tasksSolved == it.tasksTotal }.map { it.toCourse() }
     val solvedCoursesGroup = CoursesGroup(EduCoreBundle.message("course.dialog.completed"), solvedCourses)
 

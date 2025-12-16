@@ -31,12 +31,22 @@ open class JdkProjectSettings(val model: ProjectSdksModel, val jdk: Sdk?) : EduP
   ): Sdk? {
     val jdk = getJdk()
 
-    // Try to apply model, i.e. commit changes from sdk model into ProjectJdkTable
-    try {
-      model.apply()
-    }
-    catch (e: ConfigurationException) {
-      LOG.error(e)
+    // Only apply the model if the selected JDK is NOT already in ProjectJdkTable.
+    // When using ProjectSdksModel from ProjectStructureConfigurable (e.g., from JdkLanguageSettings),
+    // the model already contains existing SDKs. Calling apply() would try to add them again,
+    // causing SymbolicIdAlreadyExistsException in IntelliJ 2025.3+.
+    val jdkExistsInTable = jdk != null && ProjectJdkTable.getInstance().findJdk(jdk.name) != null
+    if (!jdkExistsInTable) {
+      try {
+        model.apply()
+      }
+      catch (e: ConfigurationException) {
+        LOG.error(e)
+      }
+      catch (e: RuntimeException) {
+        // SymbolicIdAlreadyExistsException may still occur in edge cases
+        LOG.warn("Failed to apply SDK model: ${e.message}")
+      }
     }
 
     runWriteAction {
@@ -77,6 +87,7 @@ open class JdkProjectSettings(val model: ProjectSdksModel, val jdk: Sdk?) : EduP
         val jdkName = propertyValue(DEFAULT_JDK_NAME_PROPERTY, "JDK name").onError { DEFAULT_JDK_NAME }
 
         var jdk = ProjectJdkTable.getInstance().findJdk(jdkName)
+        val jdkAlreadyExists = jdk != null
 
         if (jdk == null) {
           val jdkHomeDir = LocalFileSystem.getInstance().refreshAndFindFileByPath(jdkPath)
@@ -90,7 +101,11 @@ open class JdkProjectSettings(val model: ProjectSdksModel, val jdk: Sdk?) : EduP
         }
 
         val sdksModel = ProjectSdksModel()
-        sdksModel.addSdk(jdk)
+        // Only add SDK to model if it doesn't already exist in ProjectJdkTable
+        // to avoid SymbolicIdAlreadyExistsException when model.apply() is called
+        if (!jdkAlreadyExists) {
+          sdksModel.addSdk(jdk)
+        }
 
         Ok(JdkProjectSettings(sdksModel, jdk))
       }

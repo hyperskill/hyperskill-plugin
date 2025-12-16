@@ -42,15 +42,16 @@ abstract class ProjectOpener {
     return computeUnderProgress(title = courseLoadingProcessTitle) { indicator ->
       getCourse(request, indicator)
     }.map { course ->
-      getInEdt {
-        requestFocus()
-        val opened = newProject(course)
-        val project = course.project
-        if (opened && project != null) {
-          afterProjectOpened(request, project)
-        }
-        opened
+      // After computeUnderProgress we are already on EDT, so no need for getInEdt
+      // Using getInEdt here would cause a deadlock because runBlocking(Dispatchers.EDT)
+      // blocks the current thread while waiting for EDT, but EDT is already blocked
+      requestFocus()
+      val opened = newProject(course)
+      val project = course.project
+      if (opened && project != null) {
+        afterProjectOpened(request, project)
       }
+      opened
     }
   }
 

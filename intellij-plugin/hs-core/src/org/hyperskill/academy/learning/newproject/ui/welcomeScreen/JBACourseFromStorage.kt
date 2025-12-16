@@ -1,5 +1,6 @@
 package org.hyperskill.academy.learning.newproject.ui.welcomeScreen
 
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.CourseInfo
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Tag
@@ -84,6 +85,15 @@ class JBACourseFromStorage() : CourseInfo() {
 
   val isStudy: Boolean
     get() = this.courseMode == CourseMode.STUDENT
+
+  /**
+   * Checks if the course directory exists on disk.
+   * Returns false if the location is empty or the directory was deleted.
+   * Uses VFS to avoid slow I/O operations on EDT.
+   */
+  val isLocationValid: Boolean
+    @Transient
+    get() = location.isNotBlank() && LocalFileSystem.getInstance().findFileByPath(location) != null
 
   fun toCourse(): Course {
     val course = HyperskillCourse()
