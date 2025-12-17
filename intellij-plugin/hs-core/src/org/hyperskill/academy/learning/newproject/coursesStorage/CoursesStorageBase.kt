@@ -26,7 +26,7 @@ open class CoursesStorageBase : SimplePersistentStateComponent<UserCoursesState>
   fun hasCourse(course: Course): Boolean {
     val courseMetaInfo = getCourseMetaInfo(course) ?: return false
     // Allow slow VFS operations when checking if course location is valid
-    return SlowOperations.allowSlowOperations<Boolean> {
+    return SlowOperations.allowSlowOperations("Checking course location validity").use {
       courseMetaInfo.isLocationValid
     }
   }
