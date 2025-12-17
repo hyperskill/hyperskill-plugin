@@ -5,6 +5,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.SimplePersistentStateComponent
 import com.intellij.openapi.util.io.FileUtilRt
+import com.intellij.util.SlowOperations
 import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.annotations.XCollection
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -24,7 +25,10 @@ open class CoursesStorageBase : SimplePersistentStateComponent<UserCoursesState>
 
   fun hasCourse(course: Course): Boolean {
     val courseMetaInfo = getCourseMetaInfo(course) ?: return false
-    return courseMetaInfo.isLocationValid
+    // Allow slow VFS operations when checking if course location is valid
+    return SlowOperations.allowSlowOperations<Boolean> {
+      courseMetaInfo.isLocationValid
+    }
   }
 
   protected fun doRemoveCourseByLocation(location: String): Boolean {
