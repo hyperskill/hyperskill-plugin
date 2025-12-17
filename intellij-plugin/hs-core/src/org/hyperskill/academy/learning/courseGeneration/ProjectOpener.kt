@@ -1,9 +1,12 @@
 package org.hyperskill.academy.learning.courseGeneration
 
+import com.intellij.ide.impl.ProjectUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Ref
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.authUtils.requestFocus
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -42,14 +45,22 @@ abstract class ProjectOpener {
     return computeUnderProgress(title = courseLoadingProcessTitle) { indicator ->
       getCourse(request, indicator)
     }.map { course ->
-      // After computeUnderProgress we are already on EDT, so no need for getInEdt
-      // Using getInEdt here would cause a deadlock because runBlocking(Dispatchers.EDT)
-      // blocks the current thread while waiting for EDT, but EDT is already blocked
-      requestFocus()
-      val opened = newProject(course)
+      runInEdt {
+        requestFocus()
+      }
+      // JoinCourseDialog (newProject) must be created on EDT
+      val openedRef = Ref<Boolean>()
+      ApplicationManager.getApplication().invokeAndWait {
+        openedRef.set(newProject(course))
+      }
+      val opened = openedRef.get()
       val project = course.project
       if (opened && project != null) {
-        afterProjectOpened(request, project)
+        invokeLater {
+          afterProjectOpened(request, project)
+          // Ensure the newly created project window comes to the front
+          ProjectUtil.focusProjectWindow(project, true)
+        }
       }
       opened
     }

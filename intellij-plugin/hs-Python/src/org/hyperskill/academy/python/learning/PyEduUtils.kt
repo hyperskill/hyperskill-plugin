@@ -66,8 +66,8 @@ fun installRequiredPackages(project: Project, sdk: Sdk) {
       continue
     }
 
-    val packageManager = PythonPackageManager.forSdk(project, sdk)
     runWithModalProgressBlocking(project, EduPythonBundle.message("installing.requirements.progress")) {
+      val packageManager = PythonPackageManager.forSdk(project, sdk)
       reportSequentialProgress(requirements.size) { reporter ->
         installRequiredPackages(reporter, packageManager, requirements)
       }

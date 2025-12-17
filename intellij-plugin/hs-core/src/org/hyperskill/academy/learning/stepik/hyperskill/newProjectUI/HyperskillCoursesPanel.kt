@@ -88,12 +88,7 @@ class HyperskillCoursesPanel(
     }
   }
 
-  override fun createNoCoursesPanel(): JPanel = if (isLoggedIn()) {
-    HyperskillSelectTrackPanel()
-  }
-  else {
-    HyperskillNotLoggedInPanel()
-  }
+  override fun createNoCoursesPanel(): JPanel = HyperskillSelectTrackPanel()
 
   override fun createCoursesListPanel() = HyperskillCoursesListPanel()
 
