@@ -46,8 +46,8 @@ open class JoinCourseDialog(
       connection.subscribe(CoursesStorageBase.COURSE_DELETED, object : CourseDeletedListener {
         override fun courseDeleted(deletedCourse: JBACourseFromStorage) {
           // If the deleted course is the one we're showing, update button visibility
-          if (deletedCourse.id == course.id) {
-            bindCourse(CourseBindData(course, settings))
+          if (deletedCourse.id == this@JoinCourseDialog.course.id) {
+            bindCourse(CourseBindData(this@JoinCourseDialog.course, settings))
           }
         }
       })
