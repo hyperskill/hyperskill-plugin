@@ -79,11 +79,14 @@ class HyperskillCoursesPanel(
   }
 
   override fun updateModelAfterCourseDeletedFromStorage(deletedCourse: JBACourseFromStorage) {
+    // Update UI immediately to remove the course card
+    super.updateModelAfterCourseDeletedFromStorage(deletedCourse)
+
+    // Reload courses from API in background to refresh the list
     scope.launch {
       val reloadedGroups = withContext(Dispatchers.IO) { platformProvider.loadCourses() }
       coursesGroups.clear()
       coursesGroups.addAll(reloadedGroups)
-      super.updateModelAfterCourseDeletedFromStorage(deletedCourse)
       showContent(coursesGroups.isEmpty())
     }
   }
