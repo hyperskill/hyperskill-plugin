@@ -79,6 +79,14 @@ abstract class CoursesPanel(
   }
 
   open fun updateModelAfterCourseDeletedFromStorage(deletedCourse: JBACourseFromStorage) {
+    // Remove the deleted course from coursesGroups
+    val updatedGroups = coursesGroups.map { group ->
+      CoursesGroup(group.name, group.courses.filter { it.id != deletedCourse.id })
+    }.filter { it.courses.isNotEmpty() }
+
+    coursesGroups.clear()
+    coursesGroups.addAll(updatedGroups)
+
     updateModel(coursesGroups, null, true)
   }
 
