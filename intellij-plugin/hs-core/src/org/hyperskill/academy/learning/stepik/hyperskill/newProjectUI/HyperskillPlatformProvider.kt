@@ -9,6 +9,8 @@ import com.intellij.util.ui.UIUtil
 import kotlinx.coroutines.CoroutineScope
 import org.hyperskill.academy.EducationalCoreIcons
 import org.hyperskill.academy.learning.EduNames
+import org.hyperskill.academy.learning.Err
+import org.hyperskill.academy.learning.Ok
 import org.hyperskill.academy.learning.computeUnderProgress
 import org.hyperskill.academy.learning.courseFormat.CourseMode
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
@@ -56,6 +58,26 @@ class HyperskillPlatformProvider : CoursesPlatformProvider() {
     val startTime = System.currentTimeMillis()
 
     if (course is HyperskillCourse) {
+      // If hyperskillProject is not set (e.g., course created from storage), load it from API
+      if (course.hyperskillProject == null) {
+        LOG.info("hyperskillProject is null for course ID: ${course.id}, loading from API")
+        val projectResult = computeUnderProgress(title = EduCoreBundle.message("hyperskill.loading.project.info")) {
+          HyperskillConnector.getInstance().getProject(course.id)
+        }
+        when (projectResult) {
+          is Ok -> {
+            course.hyperskillProject = projectResult.value
+            LOG.info("hyperskillProject loaded successfully: projectId=${projectResult.value.id}, title=${projectResult.value.title}")
+          }
+          is Err -> {
+            val errorMessage = "Failed to load project information: ${projectResult.error}"
+            Messages.showErrorDialog(errorMessage, EduCoreBundle.message("hyperskill.failed.to.open.project"))
+            LOG.warn("Failed to load hyperskillProject for course ID ${course.id}: ${projectResult.error}")
+            return
+          }
+        }
+      }
+
       LOG.info("Loading stages for HyperskillCourse via joinAction")
       computeUnderProgress(title = EduCoreBundle.message("hyperskill.loading.stages")) {
         HyperskillConnector.getInstance().loadStages(course)
