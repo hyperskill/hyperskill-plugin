@@ -23,18 +23,16 @@ import java.util.*
 @JsonPropertyOrder(TYPE, CUSTOM_NAME, FILES, FEEDBACK_LINK, STATUS, FEEDBACK, RECORD, TAGS)
 abstract class StudentTaskYamlMixin : TaskYamlMixin() {
 
-  override var status: CheckStatus
-    @JsonGetter(STATUS)
-    get() = throw NotImplementedInMixin()
-    @JsonSetter(STATUS)
-    set(value) {
-      throw NotImplementedInMixin()
-    }
+  @JsonProperty(STATUS)
+  @JsonInclude(JsonInclude.Include.ALWAYS)
+  override var status: CheckStatus = CheckStatus.Unchecked
 
   @JsonProperty(FEEDBACK)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   override var feedback: CheckFeedback? = null
 
   @JsonProperty(RECORD)
+  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
   override var record: Int = -1
 }
 
