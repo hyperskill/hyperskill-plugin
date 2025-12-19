@@ -85,14 +85,20 @@ object YamlFormatSynchronizer {
       return
     }
 
-    // Don't save course if items are not loaded yet - this would clear content field
-    if (item is Course && item.items.isEmpty() && item.additionalProperties["_yaml_content"] != null) {
-      return
-    }
+    // Don't save course if critical fields were cleared - this indicates course is not fully loaded
+    if (item is Course) {
+      val originalContent = item.additionalProperties["_yaml_content"] as? List<*>
+      val originalAdditionalFiles = item.additionalProperties["_yaml_additional_files"] as? List<*>
 
-    // Don't save course if additionalFiles are cleared but original values exist
-    if (item is Course && item.additionalFiles.isEmpty() && item.additionalProperties["_yaml_additional_files"] != null) {
-      return
+      // If items are empty but original content exists, skip save
+      if (item.items.isEmpty() && originalContent != null && originalContent.isNotEmpty()) {
+        return
+      }
+
+      // If additionalFiles differ from original, skip save (to prevent accidental clearing)
+      if (originalAdditionalFiles != null && item.additionalFiles.size != originalAdditionalFiles.size) {
+        return
+      }
     }
 
     item.saveConfig(project, configName, mapper)
