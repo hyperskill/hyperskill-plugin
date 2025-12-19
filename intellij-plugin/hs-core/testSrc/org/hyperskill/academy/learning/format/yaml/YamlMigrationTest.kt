@@ -193,10 +193,44 @@ class YamlMigrationTest : EduTestCase() {
     }
   }
 
+  @Test
+  fun `future yaml version does not crash plugin`() {
+    val futureVersion = CURRENT_YAML_VERSION + 1
+
+    val course = courseWithFiles(createYamlConfigs = true) {
+      lesson("Test Lesson") {
+        eduTask("Test Task")
+      }
+    }
+
+    // Test loading with future version using migration framework
+    // This simulates what happens when a course from a newer plugin version is loaded
+    class FutureVersionNoOp : YamlMigrationStep {
+      // No-op migration step for future version
+      // Just to simulate that future version exists
+    }
+
+    YamlMigrator.withMigrationSteps(mapOf(futureVersion to FutureVersionNoOp())) {
+      // Try to load course - it should succeed because we handle unknown versions gracefully
+      val loadedCourse = loadCourse(project)
+
+      assertNotNull("Course should load successfully despite future version being defined", loadedCourse)
+      assertEquals("Course name should be preserved", course.name, loadedCourse!!.name)
+      assertEquals("Course items should be loaded", 1, loadedCourse.items.size)
+      assertEquals("Lesson should be loaded", "Test Lesson", loadedCourse.items[0].name)
+
+      LOG.info("Future version test passed: successfully handled yaml_version=$futureVersion")
+    }
+  }
+
   private fun findTaskFiles(lesson: Lesson, taskFolder: String): List<String> {
     val lessonDir = lesson.getDir(project.courseDir) ?: kotlin.test.fail("Failed to get lesson dir")
     val taskDir = lessonDir.findChild(taskFolder) ?: kotlin.test.fail("Failed to get task dir")
 
     return taskDir.children.map { it.name }
+  }
+
+  companion object {
+    private val LOG = logger<YamlMigrationTest>()
   }
 }

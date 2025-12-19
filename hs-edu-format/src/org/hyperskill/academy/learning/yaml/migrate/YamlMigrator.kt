@@ -37,6 +37,25 @@ class YamlMigrator(private val mapper: ObjectMapper) {
    */
   fun migrateCourse(configTree: ObjectNode): ObjectNode {
     val yamlVersion = configTree.get(YAML_VERSION)?.asInt(0) ?: 0
+
+    // Handle courses created with newer plugin versions (backward compatibility)
+    if (yamlVersion > currentYamlVersion) {
+      logger<YamlMigrator>().warning(
+        "Course YAML version ($yamlVersion) is newer than the supported version ($currentYamlVersion). " +
+        "The course will be loaded with compatibility mode. " +
+        "Some features from the newer plugin version may not be available. " +
+        "The YAML version will be automatically downgraded to $currentYamlVersion."
+      )
+
+      // Downgrade YAML version to current supported version
+      // This is safe because Jackson is configured with FAIL_ON_UNKNOWN_PROPERTIES = false
+      configTree.put(YAML_VERSION, currentYamlVersion)
+      mapper.setEduValue(YAML_VERSION_MAPPER_KEY, currentYamlVersion)
+
+      // No migration steps needed - just use the current version
+      return configTree
+    }
+
     mapper.setEduValue(YAML_VERSION_MAPPER_KEY, yamlVersion)
 
     return runMigrationSteps(configTree) {

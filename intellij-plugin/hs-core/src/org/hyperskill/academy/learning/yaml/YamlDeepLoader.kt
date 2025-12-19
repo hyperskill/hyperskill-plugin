@@ -50,7 +50,15 @@ object YamlDeepLoader {
     val initialMapper = YamlMapper.basicMapper()
     initialMapper.setupForMigration(project)
     val deserializedCourse = deserializeItemProcessingErrors(courseConfig, project, mapper = initialMapper) as? Course ?: return null
-    val needMigration = YamlMigrator(initialMapper).needMigration()
+
+    val migrator = YamlMigrator(initialMapper)
+    val needMigration = migrator.needMigration()
+
+    // Check if course YAML version is newer than supported and show notification
+    val courseYamlVersion = initialMapper.getEduValue(YAML_VERSION_MAPPER_KEY)
+    if (courseYamlVersion != null && courseYamlVersion > YamlMapper.CURRENT_YAML_VERSION) {
+      showYamlVersionCompatibilityNotification(project, courseYamlVersion, YamlMapper.CURRENT_YAML_VERSION)
+    }
 
     // this mapper already respects course mode, it will be used to deserialize all other course items
     val mapper = mapper()
@@ -217,6 +225,16 @@ object YamlDeepLoader {
         it.updateDescriptionTextAndFormat(project)
       }
     }
+  }
+
+  private fun showYamlVersionCompatibilityNotification(project: Project, courseYamlVersion: Int, currentYamlVersion: Int) {
+    val title = EduCoreBundle.message("yaml.version.compatibility.title")
+    val message = EduCoreBundle.message("yaml.version.compatibility.message", courseYamlVersion, currentYamlVersion)
+
+    com.intellij.notification.NotificationGroupManager.getInstance()
+      .getNotificationGroup("Hyperskill.Academy")
+      .createNotification(title, message, com.intellij.notification.NotificationType.WARNING)
+      .notify(project)
   }
 
   /**

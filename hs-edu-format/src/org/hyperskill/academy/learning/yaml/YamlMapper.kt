@@ -35,7 +35,7 @@ import org.hyperskill.academy.learning.yaml.format.tasks.TaskYamlMixin
 import java.util.*
 
 object YamlMapper {
-  const val CURRENT_YAML_VERSION = 4
+  const val CURRENT_YAML_VERSION = 5
 
   fun basicMapper(): ObjectMapper {
     val mapper = createMapper()

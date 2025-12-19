@@ -1063,10 +1063,26 @@ To pass some data to migrator, unavailable in the `hs-edu-format` module, use
 4. Introduced "disabled_features" field, represented by a list of strings. This field should allow course authors to control which IDE
    features should be available to students.
     ```yaml
-    "disabled_features": 
+    "disabled_features":
       - ai-hints
       - theory-lookup
-     ```  
+     ```
+5. Introduced "visible" field for additional files. This field controls whether an additional file is visible in the Course Tree.
+   The default value is `false`. Visible additional files are displayed in the Course Tree, and directories containing visible files
+   are also shown. Visible directories display all their contents except invisible additional files. Files created by users inside
+   visible directories are also visible.
+    ```yaml
+    additional_files:
+      - name: a.txt
+        visible: true
+      - name: dir/subfile.txt
+        visible: true
+      - name: hidden.txt
+        visible: false  # default value, can be omitted
+      - name: binary-file.png
+        visible: true
+        is_binary: true
+     ```
 
 ### Courseignore format version
 
