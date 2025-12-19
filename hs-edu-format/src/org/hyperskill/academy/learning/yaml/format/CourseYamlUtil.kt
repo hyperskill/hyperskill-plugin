@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ser.VirtualBeanPropertyWriter
 import com.fasterxml.jackson.databind.util.Annotations
 import com.fasterxml.jackson.databind.util.StdConverter
 import org.hyperskill.academy.learning.courseFormat.*
+import org.hyperskill.academy.learning.courseFormat.CourseMode.Companion.toCourseMode
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.DEFAULT_ENVIRONMENT
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.PYCHARM
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
@@ -33,6 +34,7 @@ import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.ENVIRONMENT
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.ENVIRONMENT_SETTINGS
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.FEEDBACK_LINK
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.LANGUAGE
+import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.MODE
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.PROGRAMMING_LANGUAGE
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.PROGRAMMING_LANGUAGE_VERSION
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.SOLUTIONS_HIDDEN
@@ -67,7 +69,8 @@ import java.util.*
   TAGS,
   ENVIRONMENT_SETTINGS,
   ADDITIONAL_FILES,
-  CUSTOM_CONTENT_PATH
+  CUSTOM_CONTENT_PATH,
+  MODE
   // YAML_VERSION is appended to the end with the @JsonAppend annotation
 )
 @JsonDeserialize(builder = CourseBuilder::class)
@@ -134,8 +137,24 @@ abstract class CourseYamlMixin {
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   lateinit var disabledFeatures: List<String>
 
+  @JsonSerialize(converter = CourseModeSerializationConverter::class)
+  @JsonProperty(MODE)
+  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+  private var courseMode: CourseMode = CourseMode.STUDENT
+
   @JsonIgnore
   private var programmingLanguage: String? = null
+
+  // Store additional unknown properties to preserve them during serialization
+  @get:JsonAnyGetter
+  @set:JsonAnySetter
+  protected open var additionalProperties: MutableMap<String, Any?> = mutableMapOf()
+}
+
+private class CourseModeSerializationConverter : StdConverter<CourseMode, String>() {
+  override fun convert(courseMode: CourseMode): String {
+    return courseMode.toString()
+  }
 }
 
 private class YamlVersionWriter : VirtualBeanPropertyWriter {
@@ -192,8 +211,12 @@ open class CourseBuilder(
   @param:JsonProperty(ENVIRONMENT_SETTINGS) val yamlEnvironmentSettings: Map<String, String> = emptyMap(),
   @param:JsonProperty(ADDITIONAL_FILES) val yamlAdditionalFiles: List<EduFile> = emptyList(),
   @param:JsonProperty(CUSTOM_CONTENT_PATH) val pathToContent: String = "",
-  @param:JsonProperty(DISABLED_FEATURES) val yamlDisabledFeatures: List<String> = emptyList()
+  @param:JsonProperty(DISABLED_FEATURES) val yamlDisabledFeatures: List<String> = emptyList(),
+  @param:JsonProperty(MODE) val yamlCourseMode: String? = null
 ) {
+  // Store additional unknown properties to preserve them
+  @JsonAnySetter
+  val additionalProperties: MutableMap<String, Any?> = mutableMapOf()
   @Suppress("unused") // used for deserialization
   private fun build(): Course {
     val course = makeCourse() ?: formatError(unsupportedItemTypeMessage(courseType ?: "", EduFormatNames.COURSE))
@@ -206,6 +229,11 @@ open class CourseBuilder(
       environmentSettings = yamlEnvironmentSettings
       additionalFiles = yamlAdditionalFiles
       disabledFeatures = yamlDisabledFeatures
+
+      // Parse course mode from YAML, defaulting to STUDENT if not present
+      if (yamlCourseMode != null) {
+        courseMode = yamlCourseMode.toCourseMode() ?: CourseMode.STUDENT
+      }
 
       languageId = Language.findLanguageByName(displayProgrammingLanguageName)
                    ?: formatError(message("yaml.editor.invalid.unsupported.language", displayProgrammingLanguageName))

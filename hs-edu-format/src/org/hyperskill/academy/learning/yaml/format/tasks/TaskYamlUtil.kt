@@ -2,16 +2,23 @@
 
 package org.hyperskill.academy.learning.yaml.format.tasks
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import org.hyperskill.academy.learning.courseFormat.CheckFeedback
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.json.mixins.NotImplementedInMixin
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.CUSTOM_NAME
+import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.FEEDBACK
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.FEEDBACK_LINK
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.FILES
+import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.RECORD
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.SOLUTION_HIDDEN
+import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.STATUS
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.TAGS
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.TYPE
 
@@ -20,7 +27,7 @@ import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.TYPE
  * Update [org.hyperskill.academy.learning.yaml.format.TaskChangeApplier] if new fields added to mixin
  */
 @Suppress("unused") // used for yaml serialization
-@JsonPropertyOrder(TYPE, CUSTOM_NAME, FILES, FEEDBACK_LINK, SOLUTION_HIDDEN, TAGS)
+@JsonPropertyOrder(TYPE, CUSTOM_NAME, FILES, FEEDBACK_LINK, SOLUTION_HIDDEN, STATUS, FEEDBACK, RECORD, TAGS)
 abstract class TaskYamlMixin {
   val itemType: String
     @JsonProperty(TYPE)
@@ -48,7 +55,24 @@ abstract class TaskYamlMixin {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private var solutionHidden: Boolean? = null
 
+  @JsonProperty(STATUS)
+  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+  protected open var status: CheckStatus = CheckStatus.Unchecked
+
+  @JsonProperty(FEEDBACK)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  protected open var feedback: CheckFeedback? = null
+
+  @JsonProperty(RECORD)
+  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+  protected open var record: Int = -1
+
   @JsonProperty(TAGS)
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   protected open lateinit var contentTags: List<String>
+
+  // Store additional unknown properties to preserve them during serialization
+  @get:JsonAnyGetter
+  @set:JsonAnySetter
+  protected open var additionalProperties: MutableMap<String, Any?> = mutableMapOf()
 }

@@ -2,6 +2,8 @@
 
 package org.hyperskill.academy.learning.yaml.format
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
@@ -32,6 +34,11 @@ import org.hyperskill.academy.learning.yaml.format.student.TakeFromStorageTextua
 abstract class EduFileYamlMixin {
   @JsonProperty(NAME)
   private lateinit var name: String
+
+  // Store additional unknown properties to preserve them during serialization
+  @get:JsonAnyGetter
+  @set:JsonAnySetter
+  protected open var additionalProperties: MutableMap<String, Any?> = mutableMapOf()
 }
 
 @JsonDeserialize(builder = AdditionalFileBuilder::class)

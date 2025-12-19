@@ -6,6 +6,12 @@ open class EduFile {
   var name: String = ""
 
   /**
+   * Stores additional unknown properties from YAML to preserve them during serialization
+   * This allows forward compatibility with files created by newer plugin versions
+   */
+  var additionalProperties: MutableMap<String, Any?> = mutableMapOf()
+
+  /**
    * The contents of this edu file encoded as a string.
    * If the file is textual, the contents are stored as is.
    * If the contents are binary, it is stored as a base64 encoded string.

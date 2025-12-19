@@ -18,6 +18,12 @@ abstract class Course : LessonContainer() {
   var solutionsHidden: Boolean = false
   var disabledFeatures: List<String> = emptyList()
 
+  /**
+   * Stores additional unknown properties from YAML to preserve them during serialization
+   * This allows forward compatibility with courses created by newer plugin versions
+   */
+  var additionalProperties: MutableMap<String, Any?> = mutableMapOf()
+
   @Transient
   var visibility: CourseVisibility = CourseVisibility.LocalVisibility
 

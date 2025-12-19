@@ -37,6 +37,12 @@ abstract class Task : StudyItem {
   var solutionHidden: Boolean? = null
   var record: Int = -1
 
+  /**
+   * Stores additional unknown properties from YAML to preserve them during serialization
+   * This allows forward compatibility with tasks created by newer plugin versions
+   */
+  var additionalProperties: MutableMap<String, Any?> = mutableMapOf()
+
   protected var checkStatus: CheckStatus = CheckStatus.Unchecked
 
   open var status: CheckStatus

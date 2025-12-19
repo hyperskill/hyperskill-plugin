@@ -23,7 +23,7 @@ import java.util.*
 @JsonPropertyOrder(TYPE, CUSTOM_NAME, FILES, FEEDBACK_LINK, STATUS, FEEDBACK, RECORD, TAGS)
 abstract class StudentTaskYamlMixin : TaskYamlMixin() {
 
-  protected var checkStatus: CheckStatus
+  override var status: CheckStatus
     @JsonGetter(STATUS)
     get() = throw NotImplementedInMixin()
     @JsonSetter(STATUS)
@@ -32,10 +32,10 @@ abstract class StudentTaskYamlMixin : TaskYamlMixin() {
     }
 
   @JsonProperty(FEEDBACK)
-  private lateinit var feedback: CheckFeedback
+  override var feedback: CheckFeedback? = null
 
   @JsonProperty(RECORD)
-  protected open var record: Int = -1
+  override var record: Int = -1
 }
 
 @Suppress("unused") // used for yaml serialization
