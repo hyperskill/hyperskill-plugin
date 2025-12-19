@@ -4,6 +4,7 @@ package org.hyperskill.academy.learning.yaml.format.tasks
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
@@ -72,7 +73,20 @@ abstract class TaskYamlMixin {
   protected open lateinit var contentTags: List<String>
 
   // Store additional unknown properties to preserve them during serialization
-  @get:JsonAnyGetter
-  @set:JsonAnySetter
-  protected open var additionalProperties: MutableMap<String, Any?> = mutableMapOf()
+  @JsonIgnore
+  protected open lateinit var additionalProperties: MutableMap<String, Any?>
+
+  // The getter filters out known fields to avoid duplication
+  @JsonAnyGetter
+  protected open fun getAdditionalPropertiesForSerialization(): Map<String, Any?> {
+    // Filter out known field names that are already serialized by the mixin
+    val knownFields = setOf("type", "custom_name", "files", "feedback_link",
+      "solution_hidden", "status", "feedback", "record", "tags")
+    return additionalProperties.filterKeys { it !in knownFields }
+  }
+
+  @JsonAnySetter
+  protected open fun setAdditionalProperty(key: String, value: Any?) {
+    additionalProperties[key] = value
+  }
 }

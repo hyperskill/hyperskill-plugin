@@ -146,9 +146,24 @@ abstract class CourseYamlMixin {
   private var programmingLanguage: String? = null
 
   // Store additional unknown properties to preserve them during serialization
-  @get:JsonAnyGetter
-  @set:JsonAnySetter
-  protected open var additionalProperties: MutableMap<String, Any?> = mutableMapOf()
+  @JsonIgnore
+  protected open lateinit var additionalProperties: MutableMap<String, Any?>
+
+  // The getter filters out known fields to avoid duplication
+  @JsonAnyGetter
+  protected open fun getAdditionalPropertiesForSerialization(): Map<String, Any?> {
+    // Filter out known field names that are already serialized by the mixin
+    val knownFields = setOf("type", "title", "language", "summary", "programming_language",
+      "programming_language_version", "environment", "solutions_hidden", "content",
+      "feedback_link", "tags", "environment_settings", "additional_files",
+      "custom_content_path", "disabled_features", "mode", "yaml_version")
+    return additionalProperties.filterKeys { it !in knownFields }
+  }
+
+  @JsonAnySetter
+  protected open fun setAdditionalProperty(key: String, value: Any?) {
+    additionalProperties[key] = value
+  }
 }
 
 private class CourseModeSerializationConverter : StdConverter<CourseMode, String>() {
@@ -215,6 +230,7 @@ open class CourseBuilder(
   @param:JsonProperty(MODE) val yamlCourseMode: String? = null
 ) {
   // Store additional unknown properties to preserve them
+  // Note: Known fields handled by @JsonProperty won't go here due to Jackson's property detection
   @JsonAnySetter
   val additionalProperties: MutableMap<String, Any?> = mutableMapOf()
   @Suppress("unused") // used for deserialization
