@@ -84,6 +84,17 @@ object YamlFormatSynchronizer {
     if (!YamlFormatSettings.shouldCreateConfigFiles(project)) {
       return
     }
+
+    // Don't save course if items are not loaded yet - this would clear content field
+    if (item is Course && item.items.isEmpty() && item.additionalProperties["_yaml_content"] != null) {
+      return
+    }
+
+    // Don't save course if additionalFiles are cleared but original values exist
+    if (item is Course && item.additionalFiles.isEmpty() && item.additionalProperties["_yaml_additional_files"] != null) {
+      return
+    }
+
     item.saveConfig(project, configName, mapper)
   }
 

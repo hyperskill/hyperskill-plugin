@@ -107,6 +107,7 @@ abstract class CourseYamlMixin {
 
   @JsonSerialize(contentConverter = StudyItemConverter::class)
   @JsonProperty(CONTENT)
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   private lateinit var _items: List<StudyItem>
 
   @JsonProperty(SOLUTIONS_HIDDEN)
@@ -268,6 +269,14 @@ open class CourseBuilder(
 
       // Copy additional unknown properties to preserve forward compatibility
       additionalProperties.putAll(this@CourseBuilder.additionalProperties)
+
+      // Save original YAML values to preserve them if plugin logic clears these fields
+      if (content.isNotEmpty()) {
+        additionalProperties["_yaml_content"] = content
+      }
+      if (yamlAdditionalFiles.isNotEmpty()) {
+        additionalProperties["_yaml_additional_files"] = yamlAdditionalFiles
+      }
     }
 
     val locale = Locale.getISOLanguages().find { displayLanguageByCode(it) == language } ?: formatError(
