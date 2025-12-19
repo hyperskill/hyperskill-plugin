@@ -23,33 +23,40 @@ import java.util.*
 @JsonPropertyOrder(TYPE, CUSTOM_NAME, FILES, FEEDBACK_LINK, STATUS, FEEDBACK, RECORD, TAGS)
 abstract class StudentTaskYamlMixin : TaskYamlMixin() {
 
-  @JsonProperty(STATUS)
-  @JsonInclude(JsonInclude.Include.ALWAYS)
-  override var status: CheckStatus = CheckStatus.Unchecked
+  @get:JsonProperty(STATUS)
+  @set:JsonProperty(STATUS)
+  @get:JsonInclude(JsonInclude.Include.ALWAYS)
+  protected override var status: CheckStatus = CheckStatus.Unchecked
 
-  @JsonProperty(FEEDBACK)
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  override var feedback: CheckFeedback? = null
+  @get:JsonProperty(FEEDBACK)
+  @set:JsonProperty(FEEDBACK)
+  @get:JsonInclude(JsonInclude.Include.NON_NULL)
+  protected override var feedback: CheckFeedback? = null
 
-  @JsonProperty(RECORD)
-  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-  override var record: Int = -1
+  @get:JsonProperty(RECORD)
+  @set:JsonProperty(RECORD)
+  @get:JsonInclude(JsonInclude.Include.NON_DEFAULT)
+  protected override var record: Int = -1
 }
 
 @Suppress("unused") // used for yaml serialization
 @JsonPropertyOrder(MESSAGE, TIME, EXPECTED, ACTUAL)
 abstract class FeedbackYamlMixin {
   @JsonProperty(MESSAGE)
+  @JsonInclude(JsonInclude.Include.ALWAYS)
   private var message: String = ""
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "EEE, dd MMM yyyy HH:mm:ss zzz")
   @JsonProperty(TIME)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private var time: Date? = null
 
   @JsonProperty(EXPECTED)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private var expected: String? = null
 
   @JsonProperty(ACTUAL)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private var actual: String? = null
 }
 

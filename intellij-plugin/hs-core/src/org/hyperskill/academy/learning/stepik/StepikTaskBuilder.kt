@@ -49,6 +49,7 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
         HyperskillTaskType.CODE -> this::codeTask
         HyperskillTaskType.PYCHARM -> { _: String -> pycharmTask() }
         HyperskillTaskType.REMOTE_EDU -> { _: String -> pycharmTask(REMOTE_EDU_TASK_TYPE) }
+        HyperskillTaskType.TEXT -> { _: String -> pycharmTask(THEORY_TASK_TYPE) }
         else -> this::unsupportedTask
       }
     })

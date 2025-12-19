@@ -15,12 +15,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.attempts.DataTaskAttempt
+import org.hyperskill.academy.learning.courseFormat.CheckFeedback
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTopic
 import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
 import org.hyperskill.academy.learning.yaml.format.*
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.HYPERSKILL_TYPE_YAML
 import org.hyperskill.academy.learning.yaml.format.hyperskill.HyperskillCourseMixin
@@ -30,8 +32,12 @@ import org.hyperskill.academy.learning.yaml.format.hyperskill.HyperskillTopicMix
 import org.hyperskill.academy.learning.yaml.format.remote.DataTaskAttemptYamlMixin
 import org.hyperskill.academy.learning.yaml.format.remote.RemoteCourseYamlMixin
 import org.hyperskill.academy.learning.yaml.format.remote.RemoteStudyItemYamlMixin
+import org.hyperskill.academy.learning.yaml.format.student.FeedbackYamlMixin
+import org.hyperskill.academy.learning.yaml.format.student.StudentTaskFileYamlMixin
+import org.hyperskill.academy.learning.yaml.format.student.StudentTaskYamlMixin
 import org.hyperskill.academy.learning.yaml.format.tasks.CodeTaskYamlMixin
 import org.hyperskill.academy.learning.yaml.format.tasks.TaskYamlMixin
+import org.hyperskill.academy.learning.yaml.format.tasks.TheoryTaskYamlUtil
 import java.util.*
 
 object YamlMapper {
@@ -80,10 +86,12 @@ object YamlMapper {
     addMixIn(Section::class.java, SectionYamlMixin::class.java)
     addMixIn(Lesson::class.java, LessonYamlMixin::class.java)
     addMixIn(FrameworkLesson::class.java, FrameworkLessonYamlMixin::class.java)
-    addMixIn(Task::class.java, TaskYamlMixin::class.java)
+    addMixIn(Task::class.java, StudentTaskYamlMixin::class.java)
     addMixIn(CodeTask::class.java, CodeTaskYamlMixin::class.java)
+    addMixIn(TheoryTask::class.java, TheoryTaskYamlUtil::class.java)
+    addMixIn(CheckFeedback::class.java, FeedbackYamlMixin::class.java)
     addMixIn(EduFile::class.java, AdditionalFileYamlMixin::class.java)
-    addMixIn(TaskFile::class.java, TaskFileYamlMixin::class.java)
+    addMixIn(TaskFile::class.java, StudentTaskFileYamlMixin::class.java)
 
     registerSubtypes(NamedType(HyperskillCourse::class.java, HYPERSKILL_TYPE_YAML))
   }

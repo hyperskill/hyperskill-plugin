@@ -2,6 +2,7 @@ package org.hyperskill.academy.learning.update
 
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
 import org.hyperskill.academy.learning.course
@@ -10,6 +11,7 @@ import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.*
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.invokeLater
@@ -17,8 +19,19 @@ import org.hyperskill.academy.learning.navigation.NavigationUtils
 import org.hyperskill.academy.learning.toCourseInfoHolder
 
 object UpdateUtils {
+  private val LOG = Logger.getInstance(UpdateUtils::class.java)
 
   fun updateTaskDescription(project: Project, task: Task, remoteTask: Task) {
+    LOG.info("updateTaskDescription: localTask=${task.javaClass.simpleName} '${task.name}', remoteTask=${remoteTask.javaClass.simpleName} '${remoteTask.name}'")
+
+    // Don't update description if remote task is UnsupportedTask and local task is not
+    // This prevents overwriting valid descriptions with "tasks are not supported yet" message
+    if (remoteTask is UnsupportedTask && task !is UnsupportedTask) {
+      LOG.info("Skipping description update: remote is UnsupportedTask, local is ${task.javaClass.simpleName}")
+      return
+    }
+
+    LOG.info("Updating description from remote task")
     task.descriptionText = remoteTask.descriptionText
     task.descriptionFormat = remoteTask.descriptionFormat
     task.feedbackLink = remoteTask.feedbackLink

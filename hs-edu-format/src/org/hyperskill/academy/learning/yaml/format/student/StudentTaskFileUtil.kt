@@ -34,7 +34,7 @@ abstract class StudentTaskFileYamlMixin : TaskFileYamlMixin() {
   }
 
   @JsonProperty(LEARNER_CREATED)
-  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+  @JsonInclude(JsonInclude.Include.ALWAYS)
   private var isLearnerCreated = false
 }
 

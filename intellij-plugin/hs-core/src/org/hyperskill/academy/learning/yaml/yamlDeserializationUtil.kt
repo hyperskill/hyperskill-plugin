@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsSafe
@@ -17,7 +18,10 @@ import org.hyperskill.academy.learning.isUnitTestMode
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.yaml.errorHandling.InvalidYamlFormatException
 import org.hyperskill.academy.learning.yaml.errorHandling.RemoteYamlLoadingException
+import org.hyperskill.academy.learning.yaml.errorHandling.YamlLoadingException
 import org.hyperskill.academy.learning.yaml.errorHandling.showInvalidConfigNotification
+
+private val LOG = Logger.getInstance("org.hyperskill.academy.learning.yaml.yamlDeserializationUtil")
 
 /**
  * [parentItem] is an already deserialized study item, if known
@@ -71,7 +75,18 @@ fun RemoteYamlLoadingException.processError(project: Project) {
 
 private fun processErrors(project: Project, configFile: VirtualFile, e: Throwable) {
   when (e) {
-    is InvalidYamlFormatException -> showError(project, e, configFile, e.message)
+    is YamlLoadingException -> {
+      showError(project, e, configFile, e.message)
+    }
+
+    is InvalidYamlFormatException -> {
+      // Don't show notifications for unsupported task types - just log them
+      if (e.message.contains("unsupported", ignoreCase = true) && e.message.contains("type", ignoreCase = true)) {
+        LOG.info("Skipping unsupported item in ${configFile.path}: ${e.message}")
+      } else {
+        showError(project, e, configFile, e.message)
+      }
+    }
 
     is MismatchedInputException -> {
       // MismatchedInputException is thrown for missing required parameters (previously MissingKotlinParameterException)
@@ -104,7 +119,13 @@ private fun processErrors(project: Project, configFile: VirtualFile, e: Throwabl
         showError(project, e, configFile)
       }
       else {
-        showError(project, causeException, configFile, causeException.message)
+        // Don't show notifications for unsupported task types - just log them
+        if (causeException.message.contains("unsupported", ignoreCase = true) &&
+            causeException.message.contains("type", ignoreCase = true)) {
+          LOG.info("Skipping unsupported item in ${configFile.path}: ${causeException.message}")
+        } else {
+          showError(project, causeException, configFile, causeException.message)
+        }
       }
     }
 

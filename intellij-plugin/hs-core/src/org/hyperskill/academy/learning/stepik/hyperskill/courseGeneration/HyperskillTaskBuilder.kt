@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration
 
 import com.intellij.lang.Language
+import com.intellij.openapi.diagnostic.Logger
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.EduFileErrorHighlightLevel
@@ -39,6 +40,7 @@ class HyperskillTaskBuilder(
 
   override fun createTask(type: String): Task {
     val task = super.createTask(type)
+    LOG.info("Creating task from server: type='$type', stepId=${stepSource.id}, taskClass=${task.javaClass.simpleName}, title='${stepSource.title}'")
 
     task.descriptionText = "<div class=\"step-text\">\n${task.descriptionText}\n</div>"
     task.apply {
@@ -57,6 +59,10 @@ class HyperskillTaskBuilder(
           }
           name = stepSource.title
           customPresentableName = null
+        }
+
+        is TheoryTask -> {
+          name = stepSource.title
         }
 
         is UnsupportedTask -> {
@@ -85,5 +91,9 @@ class HyperskillTaskBuilder(
     for ((_, taskFile) in task.taskFiles) {
       taskFile.errorHighlightLevel = EduFileErrorHighlightLevel.NONE
     }
+  }
+
+  companion object {
+    private val LOG = Logger.getInstance(HyperskillTaskBuilder::class.java)
   }
 }

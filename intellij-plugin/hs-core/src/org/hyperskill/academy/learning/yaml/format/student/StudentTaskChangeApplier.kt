@@ -18,16 +18,17 @@ class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
       throw YamlLoadingException(EduCoreBundle.message("yaml.editor.invalid.visibility.cannot.be.changed"))
     }
     super.applyChanges(existingItem, deserializedItem)
-    if (existingItem.status != deserializedItem.status && !ApplicationManager.getApplication().isInternal) {
-      throw YamlLoadingException(EduCoreBundle.message("yaml.editor.invalid.status.cannot.be.changed"))
-    }
-    when (existingItem) {
 
+    // Apply status and feedback from deserialized item
+    existingItem.status = deserializedItem.status
+    existingItem.feedback = deserializedItem.feedback
+    existingItem.record = deserializedItem.record
+
+    when (existingItem) {
       is EduTask -> {
         if (existingItem is RemoteEduTask) {
           existingItem.checkProfile = (deserializedItem as RemoteEduTask).checkProfile
         }
-        existingItem.record = deserializedItem.record
       }
     }
   }

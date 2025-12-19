@@ -22,7 +22,6 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import org.hyperskill.academy.learning.JavaUILibrary
-import org.hyperskill.academy.learning.computeUnderProgress
 import org.hyperskill.academy.learning.courseFormat.ext.getFormattedTaskText
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.messages.EduCoreBundle
@@ -67,12 +66,8 @@ abstract class TaskToolWindow(protected val project: Project) : Disposable {
 
     fun getTaskDescription(project: Project, task: Task?, uiMode: JavaUILibrary): String {
       val openedTask = task ?: return EduCoreBundle.message("label.open.task")
-      val taskText = computeUnderProgress(project, EduCoreBundle.message("progress.loading.task.description")) {
-        runReadAction {
-          openedTask.getFormattedTaskText(
-            project
-          )
-        }
+      val taskText = runReadAction {
+        openedTask.getFormattedTaskText(project)
       } ?: return EduCoreBundle.message("label.open.task")
       val transformerContext = HtmlTransformerContext(project, task, uiMode)
       return TaskDescriptionTransformer.transform(taskText, transformerContext)

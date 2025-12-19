@@ -248,6 +248,8 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
         }
         updateTaskDescription(project, localTask, taskFromServer)
         localTask.updateDate = taskFromServer.updateDate
+        localTask.status = taskFromServer.status
+        localTask.feedback = taskFromServer.feedback
         if (localTask is RemoteEduTask && taskFromServer is RemoteEduTask) {
           localTask.checkProfile = taskFromServer.checkProfile
         }

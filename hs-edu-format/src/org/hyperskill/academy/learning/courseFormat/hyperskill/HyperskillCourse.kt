@@ -115,6 +115,7 @@ class HyperskillCourse : Course {
     private val SUPPORTED_STEP_TYPES: Set<String> = setOf(
       HyperskillTaskType.CODE.type,
       HyperskillTaskType.PYCHARM.type,
+      HyperskillTaskType.TEXT.type,
     )
 
     fun isStepSupported(type: String?): Boolean = type in SUPPORTED_STEP_TYPES

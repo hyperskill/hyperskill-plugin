@@ -85,22 +85,6 @@ object YamlFormatSynchronizer {
       return
     }
 
-    // Don't save course if critical fields were cleared - this indicates course is not fully loaded
-    if (item is Course) {
-      val originalContent = item.additionalProperties["_yaml_content"] as? List<*>
-      val originalAdditionalFiles = item.additionalProperties["_yaml_additional_files"] as? List<*>
-
-      // If items are empty but original content exists, skip save
-      if (item.items.isEmpty() && originalContent != null && originalContent.isNotEmpty()) {
-        return
-      }
-
-      // If additionalFiles differ from original, skip save (to prevent accidental clearing)
-      if (originalAdditionalFiles != null && item.additionalFiles.size != originalAdditionalFiles.size) {
-        return
-      }
-    }
-
     item.saveConfig(project, configName, mapper)
   }
 
@@ -161,7 +145,12 @@ object YamlFormatSynchronizer {
   }
 
   private fun StudyItem.saveConfig(project: Project, configName: String, mapper: ObjectMapper) {
-    val dir = getConfigDir(project)
+    val dir = try {
+      getConfigDir(project)
+    } catch (e: IllegalStateException) {
+      // Config dir not found - item was probably deleted from filesystem
+      return
+    }
 
     val configFile = runReadAction { dir.findChild(configName) }
     if (configFile?.getUserData(SAVE_TO_CONFIG) == false) return
