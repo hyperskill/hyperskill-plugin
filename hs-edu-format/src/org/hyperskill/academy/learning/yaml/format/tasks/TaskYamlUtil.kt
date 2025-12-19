@@ -56,7 +56,7 @@ abstract class TaskYamlMixin {
   private var solutionHidden: Boolean? = null
 
   @JsonProperty(STATUS)
-  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+  @JsonInclude(JsonInclude.Include.ALWAYS)
   protected open var status: CheckStatus = CheckStatus.Unchecked
 
   @JsonProperty(FEEDBACK)

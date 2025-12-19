@@ -126,7 +126,7 @@ abstract class CourseYamlMixin {
   lateinit var environmentSettings: Map<String, String>
 
   @JsonProperty(ADDITIONAL_FILES)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  @JsonInclude(JsonInclude.Include.ALWAYS)
   lateinit var additionalFiles: List<EduFile>
 
   @JsonProperty(CUSTOM_CONTENT_PATH)
@@ -249,6 +249,9 @@ open class CourseBuilder(
       }
       items = newItems
       customContentPath = pathToContent
+
+      // Copy additional unknown properties to preserve forward compatibility
+      additionalProperties.putAll(this@CourseBuilder.additionalProperties)
     }
 
     val locale = Locale.getISOLanguages().find { displayLanguageByCode(it) == language } ?: formatError(
