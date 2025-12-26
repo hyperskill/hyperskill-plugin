@@ -49,7 +49,16 @@ object YamlDeepLoader {
     // the initial mapper has no idea whether the course is in the CC or in the Student mode
     val initialMapper = YamlMapper.basicMapper()
     initialMapper.setupForMigration(project)
-    val deserializedCourse = deserializeItemProcessingErrors(courseConfig, project, mapper = initialMapper) as? Course ?: return null
+    val deserializedItem = deserializeItemProcessingErrors(courseConfig, project, mapper = initialMapper)
+    if (deserializedItem == null) {
+      LOG.warn("Failed to deserialize course from ${courseConfig.path}: deserializeItemProcessingErrors returned null")
+      return null
+    }
+    val deserializedCourse = deserializedItem as? Course
+    if (deserializedCourse == null) {
+      LOG.warn("Failed to cast deserialized item to Course from ${courseConfig.path}: actual type is ${deserializedItem::class.simpleName}")
+      return null
+    }
 
     val migrator = YamlMigrator(initialMapper)
     val needMigration = migrator.needMigration()

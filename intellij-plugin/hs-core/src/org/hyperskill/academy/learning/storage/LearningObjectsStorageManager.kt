@@ -85,9 +85,7 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
           }
         }
 
-        if (isUnitTestMode) {
-          persistingTasks.add(future)
-        }
+        persistingTasks.add(future)
       }
     }
   }
@@ -133,6 +131,24 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
     for (additionalFile in course.additionalFiles) {
       additionalFile.persist(learningObjectsStorage)
     }
+  }
+
+  /**
+   * Waits for all pending persistence operations to complete.
+   * This should be called before YAML serialization to avoid race conditions.
+   */
+  fun waitForPersistingTasks() {
+    val tasks = persistingTasks.toList()
+    for (task in tasks) {
+      try {
+        task.get()
+      }
+      catch (e: Exception) {
+        logger<LearningObjectsStorageManager>().error("Error waiting for persisting task", e)
+      }
+    }
+    // Clean up completed tasks
+    persistingTasks.removeAll(tasks.toSet())
   }
 
   /**

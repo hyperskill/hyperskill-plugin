@@ -274,11 +274,16 @@ object GeneratorUtils {
     when (fileContents) {
       is BinaryContents -> writeBinary(fileContents.bytes)
       is TextualContents -> writeTextual(fileContents.text)
-      is UndeterminedContents -> if (virtualTaskFile.isToEncodeContent) { // fallback to the legacy way to interpret task file content
-        writeBinary(fileContents.bytes)
-      }
-      else {
-        writeTextual(fileContents.text)
+      is UndeterminedContents -> {
+        // Determine if file should be binary based on path, not on VirtualFile content
+        // This is important because the file might not have correct content yet during creation
+        val shouldBeBinary = shouldEncodeFileContentByPath(virtualTaskFile.path)
+        if (shouldBeBinary) {
+          writeBinary(fileContents.bytes)
+        }
+        else {
+          writeTextual(fileContents.text)
+        }
       }
     }
 

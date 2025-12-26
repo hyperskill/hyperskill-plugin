@@ -25,6 +25,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.components.JBLoadingPanel
+import com.intellij.util.SlowOperations
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresWriteLock
 import com.intellij.util.io.ReadOnlyAttributeUtil
@@ -142,10 +143,12 @@ fun VirtualFile.isTaskDirectory(project: Project): Boolean {
 }
 
 fun VirtualFile.getTextFromTaskTextFile(): String? {
-  val document = runReadAction {
-    FileDocumentManager.getInstance().getDocument(this)
+  return SlowOperations.knownIssue("EDU-8086").use {
+    val document = runReadAction {
+      FileDocumentManager.getInstance().getDocument(this)
+    }
+    document?.text
   }
-  return document?.text
 }
 
 fun VirtualFile.getStudyItem(project: Project): StudyItem? {

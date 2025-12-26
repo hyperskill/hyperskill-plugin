@@ -109,11 +109,13 @@ fun Task.getDescriptionFile(
 ): VirtualFile? {
   val taskDirectory = getTaskDirectory(project) ?: return null
 
-  val file = if (guessFormat) {
-    taskDirectory.run { findChild(DescriptionFormat.HTML.fileName) ?: findChild(DescriptionFormat.MD.fileName) }
-  }
-  else {
-    taskDirectory.findChild(descriptionFormat.fileName)
+  val file = com.intellij.util.SlowOperations.knownIssue("EDU-8086").use {
+    if (guessFormat) {
+      taskDirectory.run { findChild(DescriptionFormat.HTML.fileName) ?: findChild(DescriptionFormat.MD.fileName) }
+    }
+    else {
+      taskDirectory.findChild(descriptionFormat.fileName)
+    }
   }
   if (file == null) {
     LOG.warn("No task description file for $name")

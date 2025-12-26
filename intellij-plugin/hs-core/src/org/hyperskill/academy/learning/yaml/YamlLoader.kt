@@ -176,6 +176,7 @@ object YamlLoader {
 
   private fun StudyItem.getParentItem(project: Project, parentDir: VirtualFile): ItemContainer {
     val course = StudyTaskManager.getInstance(project).course
+                 ?: loadingError(EduCoreBundle.message("yaml.editor.invalid.format.parent.not.found", name))
     val customContentPath = course.customContentPath
     val itemContainer = when (this) {
       is Section -> if (project.courseDir.findFileByRelativePath(customContentPath) == parentDir) course else null
@@ -183,10 +184,10 @@ object YamlLoader {
         course
       }
       else {
-        course?.let { parentDir.getSection(project) }
+        parentDir.getSection(project)
       }
 
-      is Task -> course?.let { parentDir.getLesson(project) }
+      is Task -> parentDir.getLesson(project)
       else -> loadingError(
         EduCoreBundle.message("yaml.editor.invalid.unexpected.item.type", itemType)
       )

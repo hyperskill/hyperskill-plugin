@@ -75,29 +75,107 @@ inline fun Project.invokeLater(modalityState: ModalityState? = null, crossinline
 }
 
 /**
+ * Determines if a file should be treated as binary based on its path, without accessing the file content.
+ * This is useful when creating new files where the content hasn't been written yet.
+ */
+fun shouldEncodeFileContentByPath(path: String): Boolean {
+  val name = PathUtil.getFileName(path)
+  val extension = FileUtilRt.getExtension(name).lowercase()
+
+  if (isUnitTestMode && extension == EDU_TEST_BIN) {
+    return true
+  }
+
+  // Check for common binary file extensions first
+  // This is important because FileType detection and MIME type detection
+  // may not work correctly for files that don't exist yet
+  if (isCommonBinaryExtension(extension)) {
+    return true
+  }
+
+  // Try to get file type by extension/name without reading content
+  val fileType = FileTypeManagerEx.getInstance().getFileTypeByExtension(extension)
+  if (fileType !is UnknownFileType) {
+    return fileType.isBinary
+  }
+
+  // Special case for .db files
+  if (extension == "db") {
+    return true
+  }
+
+  // Check for font files
+  if (isFontExtension(extension)) {
+    return true
+  }
+
+  // Check for git objects
+  if (isGitObject(name)) {
+    return true
+  }
+
+  // Use MIME type detection based on path
+  // Note: this may return null for non-existent files
+  val contentType = mimeFileType(path)
+  return if (contentType != null) {
+    isBinary(contentType)
+  }
+  else {
+    false
+  }
+}
+
+private val commonBinaryExtensions = setOf(
+  // Images
+  "png", "jpg", "jpeg", "gif", "bmp", "ico", "svg", "webp", "tiff", "tif",
+  // Archives
+  "zip", "jar", "tar", "gz", "bz2", "7z", "rar",
+  // Executables
+  "exe", "dll", "so", "dylib", "class",
+  // Media
+  "mp3", "mp4", "avi", "mov", "wav", "ogg", "flac",
+  // Documents
+  "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx",
+  // Other
+  "bin", "dat", "db", "sqlite"
+)
+
+private fun isCommonBinaryExtension(extension: String): Boolean {
+  return commonBinaryExtensions.contains(extension.lowercase())
+}
+
+/**
  * Note: there are some unsupported cases in this method.
  * For example, some files have known file type but no extension
  */
 fun toEncodeFileContent(virtualFile: VirtualFile): Boolean {
   val path = virtualFile.path
-  val name = PathUtil.getFileName(path)
-  val extension = FileUtilRt.getExtension(name)
-  if (isUnitTestMode && extension == EDU_TEST_BIN) {
-    return true
+
+  // First try to determine by path/extension without reading content
+  val byPath = shouldEncodeFileContentByPath(path)
+
+  // If path-based detection found a known type, use it
+  val extension = FileUtilRt.getExtension(PathUtil.getFileName(path))
+  val fileTypeByExtension = FileTypeManagerEx.getInstance().getFileTypeByExtension(extension)
+  if (fileTypeByExtension !is UnknownFileType) {
+    return byPath
   }
+
+  // Fall back to content-based detection for unknown extensions
   val fileType = FileTypeManagerEx.getInstance().getFileTypeByFile(virtualFile)
   if (fileType !is UnknownFileType && fileType !is DetectedByContentFileType) {
     return fileType.isBinary
   }
+
   if (fileType is DetectedByContentFileType && extension == "db") {
     /** We do encode *.db files when sending them to Stepik. When we get them back they have [DetectedByContentFileType] fileType and by
      * default this file type is not binary, so we have to forcely specify it as binary
      */
     return true
   }
-  // Files.probeContentType does not recognize mime font types on windows, so we check for font files separately
-  val contentType = mimeFileType(path) ?: return isGitObject(name) || isFontExtension(extension)
-  return isBinary(contentType)
+
+  // Use the path-based result as fallback
+  return byPath
 }
 
 private fun isGitObject(name: String): Boolean {

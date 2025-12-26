@@ -8,12 +8,6 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Ref
 import org.hyperskill.academy.learning.*
-import org.hyperskill.academy.learning.notification.EduNotificationManager
-import java.util.concurrent.CancellationException
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 import org.hyperskill.academy.learning.authUtils.requestFocus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
@@ -30,12 +24,14 @@ import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.IdeaDirec
 import org.hyperskill.academy.learning.courseGeneration.OpenInIdeRequestHandler
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.navigation.NavigationUtils.navigateToTask
+import org.hyperskill.academy.learning.notification.EduNotificationManager
 import org.hyperskill.academy.learning.stepik.hyperskill.*
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillSolutionLoader
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillStepSource
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 import org.jetbrains.annotations.VisibleForTesting
+import java.util.concurrent.*
 
 object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpenRequest>() {
   private val LOG = Logger.getInstance(HyperskillOpenInIdeRequestHandler::class.java)
@@ -168,7 +164,12 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
           }
           val courseDir = project.courseDir
           logTimed("Creating lesson directory") { GeneratorUtils.createLesson(project, projectLesson, courseDir) }
-          logTimed("Unpacking additional files") { GeneratorUtils.unpackAdditionalFiles(CourseInfoHolder.fromCourse(course, courseDir), ALL_FILES) }
+          logTimed("Unpacking additional files") {
+            GeneratorUtils.unpackAdditionalFiles(
+              CourseInfoHolder.fromCourse(course, courseDir),
+              ALL_FILES
+            )
+          }
           logTimed("Saving YAML files") { YamlFormatSynchronizer.saveAll(project) }
           logTimed("Refreshing project") { course.configurator?.courseBuilder?.refreshProject(project, RefreshCause.DEPENDENCIES_UPDATED) }
           synchronizeProjectOnStageOpening(project, hyperskillCourse, projectLesson.taskList)
@@ -324,7 +325,8 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
 
     request as HyperskillOpenWithProjectRequestBase
     LOG.info("Fetching project info for projectId=${request.projectId}")
-    indicator.text2 = EduCoreBundle.message("hyperskill.loading.project.info")
+    indicator.text = EduCoreBundle.message("hyperskill.loading.project.info")
+    indicator.text2 = EduCoreBundle.message("hyperskill.loading.project.info.details")
     indicator.fraction = 0.1
 
     val projectStartTime = System.currentTimeMillis()
@@ -334,8 +336,9 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     }
     LOG.info("Project info fetched in ${System.currentTimeMillis() - projectStartTime}ms")
 
-    indicator.fraction = 0.3
-    indicator.text2 = EduCoreBundle.message("hyperskill.creating.course")
+    indicator.fraction = 0.2
+    indicator.text = EduCoreBundle.message("hyperskill.creating.course")
+    indicator.text2 = EduCoreBundle.message("hyperskill.creating.course.details")
 
     val hyperskillLanguage = if (request is HyperskillOpenStepWithProjectRequest) request.language else hyperskillProject.language
     LOG.info("Creating course for language: $hyperskillLanguage")
@@ -350,21 +353,27 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
       return Err(it)
     }
 
-    indicator.fraction = 0.5
+    indicator.fraction = 0.4
 
     when (request) {
       is HyperskillOpenStepWithProjectRequest -> {
         LOG.info("Loading problems for stepId=${request.stepId}")
-        indicator.text2 = EduCoreBundle.message("hyperskill.loading.problems")
+        indicator.text = EduCoreBundle.message("hyperskill.loading.problems")
+        indicator.text2 = EduCoreBundle.message("hyperskill.loading.problems.details")
         hyperskillCourse.addProblemsWithTopicWithFiles(null, getStepSource(request.stepId, request.isLanguageSelectedByUser))
         hyperskillCourse.selectedProblem = request.stepId
       }
 
       is HyperskillOpenProjectStageRequest -> {
         LOG.info("Loading stages for new project, stageId=${request.stageId}")
-        indicator.text2 = EduCoreBundle.message("hyperskill.loading.stages")
+        indicator.text = EduCoreBundle.message("hyperskill.loading.stages")
+        indicator.text2 = EduCoreBundle.message("hyperskill.loading.stages.details")
+        indicator.fraction = 0.5
         ProgressManager.checkCanceled()
         HyperskillConnector.getInstance().loadStages(hyperskillCourse)
+        indicator.fraction = 0.7
+        indicator.text = EduCoreBundle.message("hyperskill.creating.project.structure")
+        indicator.text2 = EduCoreBundle.message("hyperskill.creating.project.structure.details")
         hyperskillCourse.selectedStage = request.stageId
       }
     }

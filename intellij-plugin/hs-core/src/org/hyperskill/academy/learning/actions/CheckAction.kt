@@ -23,6 +23,7 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsActions
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.writeBytes
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.concurrency.annotations.RequiresEdt
@@ -36,14 +37,12 @@ import org.hyperskill.academy.learning.checker.details.CheckDetailsView
 import org.hyperskill.academy.learning.checker.remote.RemoteTaskCheckerManager.remoteCheckerForTask
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.CheckResult.Companion.failedToCheck
-import org.hyperskill.academy.learning.courseFormat.ext.configurator
-import org.hyperskill.academy.learning.courseFormat.ext.getDir
-import org.hyperskill.academy.learning.courseFormat.ext.getDocument
-import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
+import org.hyperskill.academy.learning.courseFormat.ext.*
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.OutputTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.messages.EduCoreBundle.message
 import org.hyperskill.academy.learning.projectView.ProgressUtil.updateCourseProgress
 import org.hyperskill.academy.learning.stepik.hyperskill.checker.HyperskillCheckConnector.failedToSubmit
@@ -151,12 +150,47 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
 
     private fun localCheck(indicator: ProgressIndicator): CheckResult {
       if (checker == null) return CheckResult.NO_LOCAL_CHECK
-      task.getDir(project.courseDir) ?: return CheckResult.NO_LOCAL_CHECK
+      val taskDir = task.getDir(project.courseDir) ?: return CheckResult.NO_LOCAL_CHECK
+
+      // Recreate test files from task definition before checking
+      // This prevents students from cheating by modifying or deleting test files
+      if (task.course.isStudy) {
+        recreateTestFiles(taskDir)
+      }
 
       if (task.course.isStudy && task.course !is HyperskillCourse) {
         createTests(invisibleTestFiles)
       }
       return checker.check(indicator)
+    }
+
+    private fun recreateTestFiles(taskDir: VirtualFile) {
+      // Test files are files provided by the course author (isLearnerCreated = false)
+      // that are identified as test files by the language-specific configurator
+      // This uses configurator.isTestFile() which checks testDirs and other language-specific rules
+      // We recreate them before Check to prevent cheating
+      val testFiles = task.taskFiles.values.filter { taskFile ->
+        !taskFile.isLearnerCreated && taskFile.isTestFile
+      }
+
+      invokeAndWaitIfNeeded {
+        runWriteAction {
+          for (taskFile in testFiles) {
+            try {
+              GeneratorUtils.createChildFile(
+                project.toCourseInfoHolder(),
+                taskDir,
+                taskFile.name,
+                taskFile.contents,
+                taskFile.isEditable
+              )
+            }
+            catch (e: Exception) {
+              LOG.warn("Failed to recreate test file ${taskFile.name}", e)
+            }
+          }
+        }
+      }
     }
 
     private fun createTests(testFiles: List<TaskFile>) {

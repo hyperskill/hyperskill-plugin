@@ -1,21 +1,27 @@
 package org.hyperskill.academy.learning.framework.impl
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.SlowOperations
 import com.intellij.util.io.storage.AbstractStorage
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
+import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.ext.shouldBePropagated
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.framework.propagateFilesOnNavigation
 import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.toCourseInfoHolder
 import org.hyperskill.academy.learning.ui.getUIName
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 import org.jetbrains.annotations.TestOnly
@@ -140,7 +146,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val targetTask = lesson.taskList[targetTaskIndex]
 
     lesson.currentTaskIndex = targetTaskIndex
-    YamlFormatSynchronizer.saveItem(lesson)
+    SlowOperations.knownIssue("EDU-XXXX").use {
+      YamlFormatSynchronizer.saveItem(lesson)
+    }
 
     val currentRecord = currentTask.record
     val targetRecord = targetTask.record
@@ -165,7 +173,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     // 3. Update record index to a new one.
     currentTask.record = newCurrentRecord
-    YamlFormatSynchronizer.saveItem(currentTask)
+    SlowOperations.knownIssue("EDU-XXXX").use {
+      YamlFormatSynchronizer.saveItem(currentTask)
+    }
 
     // 4. Get difference (change list) between initial and latest states of target task
     val nextUserChanges = getUserChangesFromStorage(targetTask)
@@ -191,7 +201,47 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     // 7. Apply difference between latest states of current and target tasks on local FS
     changes.apply(project, taskDir, targetTask)
-    YamlFormatSynchronizer.saveItem(targetTask)
+
+    // 8. Recreate test files (files with isLearnerCreated = false) from target task definition
+    // These files are not tracked in framework storage, so we need to recreate them explicitly
+    recreateTestFiles(project, taskDir, targetTask)
+
+    SlowOperations.knownIssue("EDU-XXXX").use {
+      YamlFormatSynchronizer.saveItem(targetTask)
+    }
+  }
+
+  /**
+   * Recreates test files (files with isLearnerCreated = false) from the task definition.
+   * These files are provided by the course author and should not be modified by students.
+   * We recreate them when navigating to a new task to ensure they match the task definition.
+   */
+  private fun recreateTestFiles(project: Project, taskDir: VirtualFile, task: Task) {
+    // Test files are files provided by the course author (isLearnerCreated = false)
+    // that are identified as test files by the language-specific configurator
+    // This uses configurator.isTestFile() which checks testDirs and other language-specific rules
+    val testFiles = task.taskFiles.values.filter { taskFile ->
+      !taskFile.isLearnerCreated && taskFile.isTestFile
+    }
+
+    invokeAndWaitIfNeeded {
+      runWriteAction {
+        for (taskFile in testFiles) {
+          try {
+            GeneratorUtils.createChildFile(
+              project.toCourseInfoHolder(),
+              taskDir,
+              taskFile.name,
+              taskFile.contents,
+              taskFile.isEditable
+            )
+          }
+          catch (e: Exception) {
+            LOG.warn("Failed to recreate test file ${taskFile.name} for task ${task.name}", e)
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -340,7 +390,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   private val Task.allFiles: FLTaskState
-    get() = taskFiles.mapValues { it.value.contents.textualRepresentation }
+    get() = taskFiles
+      .filterValues { it.isLearnerCreated } // Only track student-created files, exclude test files from framework storage
+      .mapValues { it.value.contents.textualRepresentation }
 
   private fun FLTaskState.splitByKey(predicate: (String) -> Boolean): Pair<FLTaskState, FLTaskState> {
     val positive = HashMap<String, String>()

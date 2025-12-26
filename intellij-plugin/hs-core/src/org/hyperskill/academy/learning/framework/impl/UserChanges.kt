@@ -75,13 +75,13 @@ sealed class Change {
   @Throws(IOException::class)
   constructor(input: DataInput) {
     this.path = input.readUTF()
-    this.text = input.readUTF()
+    this.text = Companion.readString(input)
   }
 
   @Throws(IOException::class)
   protected fun write(out: DataOutput) {
     out.writeUTF(path)
-    out.writeUTF(text)
+    Companion.writeString(out, text)
   }
 
 
@@ -238,6 +238,7 @@ sealed class Change {
 
   companion object {
     private val LOG: Logger = Logger.getInstance(Change::class.java)
+    private const val UTF_ENCODING_THRESHOLD = 65535
 
     @Throws(IOException::class)
     fun writeChange(change: Change, out: DataOutput) {
@@ -263,6 +264,35 @@ sealed class Change {
         4 -> RemoveTaskFile(input)
         else -> error("Unexpected change type: $ordinal")
       }
+    }
+
+    @Throws(IOException::class)
+    fun writeString(out: DataOutput, value: String) {
+      val bytes = value.toByteArray(Charsets.UTF_8)
+      if (bytes.size < UTF_ENCODING_THRESHOLD) {
+        // Use standard UTF format for small strings (backward compatible)
+        out.writeUTF(value)
+      }
+      else {
+        // For large strings, write a marker, then length + bytes
+        out.writeUTF("") // Empty string as marker for extended format
+        DataInputOutputUtil.writeINT(out, bytes.size)
+        out.write(bytes)
+      }
+    }
+
+    @Throws(IOException::class)
+    fun readString(input: DataInput): String {
+      val utfString = input.readUTF()
+      if (utfString.isNotEmpty()) {
+        // Standard UTF format
+        return utfString
+      }
+      // Extended format: read length + bytes
+      val length = DataInputOutputUtil.readINT(input)
+      val bytes = ByteArray(length)
+      input.readFully(bytes)
+      return String(bytes, Charsets.UTF_8)
     }
   }
 }

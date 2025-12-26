@@ -87,7 +87,9 @@ object CheckUtils {
     fileNamePredicate: (String) -> Boolean
   ): RunnerAndConfigurationSettings? {
     val taskDir = task.getDir(project.courseDir) ?: error("Failed to find directory of `${task.name}` task")
-    val runConfigurationDir = taskDir.findChild(EduNames.RUN_CONFIGURATION_DIR) ?: return null
+    val runConfigurationDir = com.intellij.util.SlowOperations.knownIssue("EDU-8086").use {
+      taskDir.findChild(EduNames.RUN_CONFIGURATION_DIR)
+    } ?: return null
     val pathPrefix = "${runConfigurationDir.path}/"
 
     return RunManager.getInstance(project).allSettings.find {

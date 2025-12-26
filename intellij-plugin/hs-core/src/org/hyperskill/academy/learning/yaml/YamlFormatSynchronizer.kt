@@ -30,6 +30,7 @@ import org.hyperskill.academy.learning.courseFormat.ext.project
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.storage.LearningObjectsStorageManager
 import org.hyperskill.academy.learning.storage.persistAdditionalFiles
 import org.hyperskill.academy.learning.storage.persistEduFiles
 import org.hyperskill.academy.learning.yaml.YamlConfigSettings.COURSE_CONFIG
@@ -147,7 +148,8 @@ object YamlFormatSynchronizer {
   private fun StudyItem.saveConfig(project: Project, configName: String, mapper: ObjectMapper) {
     val dir = try {
       getConfigDir(project)
-    } catch (e: IllegalStateException) {
+    }
+    catch (e: IllegalStateException) {
       // Config dir not found - item was probably deleted from filesystem
       return
     }
@@ -164,6 +166,10 @@ object YamlFormatSynchronizer {
       disambiguateAdditionalFilesContents(project)
       persistAdditionalFiles(project)
     }
+
+    // Wait for all persistence operations to complete before YAML serialization
+    // to avoid race conditions with concurrent access to FileContents
+    LearningObjectsStorageManager.getInstance(project).waitForPersistingTasks()
 
     project.invokeLater {
       runWriteAction {
