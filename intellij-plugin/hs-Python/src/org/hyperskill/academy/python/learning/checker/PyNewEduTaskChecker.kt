@@ -16,6 +16,7 @@ import org.hyperskill.academy.learning.checker.tests.TestResultCollector
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.CheckResult
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.NO_TESTS_URL
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
 import org.hyperskill.academy.learning.messages.EduFormatBundle
@@ -23,6 +24,26 @@ import org.hyperskill.academy.python.learning.installRequiredPackages
 import org.hyperskill.academy.python.learning.messages.EduPythonBundle
 
 class PyNewEduTaskChecker(task: EduTask, envChecker: EnvironmentChecker, project: Project) : EduTaskCheckerBase(task, envChecker, project) {
+
+  override fun check(indicator: ProgressIndicator): CheckResult {
+    val result = super.check(indicator)
+
+    // If the result is "No tests have run", replace it with Python-specific version with install link
+    if (result.message == CheckResult.noTestsRun.message) {
+      val sdk = ProjectRootManager.getInstance(project).projectSdk
+      if (sdk != null) {
+        // Keep original troubleshooting link and add install dependencies action
+        val message = """${EduFormatBundle.message("check.no.tests.with.help.guide", NO_TESTS_URL)}. ${EduPythonBundle.message("python.dependencies.install.suggestion")}"""
+        return CheckResult(
+          CheckStatus.Unchecked,
+          message,
+          hyperlinkAction = { installRequiredPackages(project, sdk) }
+        )
+      }
+    }
+
+    return result
+  }
 
   override fun createDefaultTestConfigurations(): List<RunnerAndConfigurationSettings> {
     val module = ModuleManager.getInstance(project).modules.singleOrNull()

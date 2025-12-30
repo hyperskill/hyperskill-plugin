@@ -1,5 +1,6 @@
 package org.hyperskill.academy.python.learning.newproject
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.util.CheckedDisposable
@@ -66,16 +67,34 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
   // Inspired by `com.jetbrains.python.sdk.add.PyAddSdkPanelKt.addBaseInterpretersAsync` implementation
   @RequiresBackgroundThread
   private fun collectPySdks(course: Course, context: UserDataHolder): List<Sdk> {
-    val fakeSdk = listOfNotNull(createFakeSdk(course, context))
-
-    return (fakeSdk + findBaseSdks(emptyList(), null, context))
+    // Find all base Python SDKs
+    val baseSdks = findBaseSdks(emptyList(), null, context)
              // It's important to check validity here, in background thread,
              // because it caches a result of checking if python binary is executable.
              // If the first (uncached) invocation is invoked in EDT, it may throw exception and break UI rendering.
              // See https://youtrack.jetbrains.com/issue/EDU-6371
              .filter { it.sdkSeemsValid }
-             .takeIf { it.isNotEmpty() }
-           ?: getSdksToInstall()
+
+    if (baseSdks.isEmpty()) {
+      return getSdksToInstall()
+    }
+
+    // Create fake SDK (PySdkToCreateVirtualEnv) for each base SDK
+    // This ensures all SDKs use the same code path and work consistently
+    val fakeSdks = baseSdks.mapNotNull { baseSdk ->
+      val homePath = baseSdk.homePath ?: return@mapNotNull null
+      val languageLevel = baseSdk.languageLevel
+      val pythonVersion = languageLevel.toPythonVersion()
+
+      // Create display name like "Python 3.13"
+      val name = "Python ${languageLevel.majorVersion}.${languageLevel.minorVersion}"
+
+      LOG.warn("PyLanguageSettings: Creating fake SDK with name='$name', homePath='$homePath', version='$pythonVersion'")
+
+      PySdkToCreateVirtualEnv.create(name, homePath, pythonVersion)
+    }
+
+    return fakeSdks.takeIf { it.isNotEmpty() } ?: getSdksToInstall()
   }
 
   override fun getSettings(): PyProjectSettings = projectSettings
@@ -132,6 +151,7 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
     }
 
   companion object {
+    private val LOG = logger<PyLanguageSettings>()
 
     private val OK = Ok(Unit)
 

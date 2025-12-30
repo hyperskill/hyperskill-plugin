@@ -18,6 +18,7 @@ import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.courseGeneration.macro.EduMacroUtils
 import java.io.DataInput
 import java.io.DataOutput
+import java.io.EOFException
 import java.io.IOException
 
 class UserChanges(val changes: List<Change>, val timestamp: Long = System.currentTimeMillis()) : FrameworkStorageData {
@@ -51,13 +52,18 @@ class UserChanges(val changes: List<Change>, val timestamp: Long = System.curren
 
     @Throws(IOException::class)
     fun read(input: DataInput): UserChanges {
-      val size = DataInputOutputUtil.readINT(input)
-      val changes = ArrayList<Change>(size)
-      for (i in 0 until size) {
-        changes += Change.readChange(input)
+      return try {
+        val size = DataInputOutputUtil.readINT(input)
+        val changes = ArrayList<Change>(size)
+        for (i in 0 until size) {
+          changes += Change.readChange(input)
+        }
+        val timestamp = DataInputOutputUtil.readLONG(input)
+        UserChanges(changes, timestamp)
+      } catch (e: EOFException) {
+        // Storage file is corrupted or empty, return empty changes
+        EMPTY
       }
-      val timestamp = DataInputOutputUtil.readLONG(input)
-      return UserChanges(changes, timestamp)
     }
   }
 }

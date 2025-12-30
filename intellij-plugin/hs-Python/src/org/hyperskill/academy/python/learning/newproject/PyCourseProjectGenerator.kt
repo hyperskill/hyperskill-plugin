@@ -48,16 +48,20 @@ open class PyCourseProjectGenerator(
         sdk = projectSettings.sdk
       }
     }
-    if (sdk is PySdkToCreateVirtualEnv) {
+    else if (sdk is PySdkToCreateVirtualEnv) {
       val homePath = sdk.homePath ?: error("Home path is not passed during fake python sdk creation")
       createAndAddVirtualEnv(project, projectSettings, PyDetectedSdk(homePath))
       sdk = projectSettings.sdk
     }
     sdk = updateSdkIfNeeded(project, sdk)
+    LOG.warn("PyCourseProjectGenerator: After updateSdkIfNeeded, sdk = ${sdk?.name} at ${sdk?.homePath}")
     SdkConfigurationUtil.setDirectoryProjectSdk(project, sdk)
+    LOG.warn("PyCourseProjectGenerator: After setDirectoryProjectSdk")
     if (sdk == null) {
+      LOG.warn("PyCourseProjectGenerator: SDK is null, skipping package installation")
       return
     }
+    LOG.warn("PyCourseProjectGenerator: About to install packages")
     installRequiredPackages(project, sdk)
     super.afterProjectGenerated(project, projectSettings, openCourseParams, onConfigurationFinished)
   }
@@ -66,6 +70,7 @@ open class PyCourseProjectGenerator(
     val virtualEnvPath = project.basePath + "/.idea/VirtualEnvironment"
     val existingSdks = PyConfigurableInterpreterList.getInstance(null).allPythonSdks
     val module = ModuleManager.getInstance(project).sortedModules.firstOrNull()
+    LOG.warn("PyCourseProjectGenerator: createAndAddVirtualEnv - module = ${module?.name}")
     val sdk = try {
       // BACKCOMPAT: 252 - Python SDK's createVirtualEnvAndSdkSynchronously performs slow VFS operations
       // that trigger "Slow operations are prohibited on EDT" when called from modal progress context.
@@ -85,10 +90,16 @@ open class PyCourseProjectGenerator(
       LOG.warn("Failed to create virtual env in $virtualEnvPath", e)
       return
     }
+    LOG.warn("PyCourseProjectGenerator: venv created successfully, sdk = ${sdk.name} at ${sdk.homePath}")
     settings.sdk = sdk
     SdkConfigurationUtil.addSdk(sdk)
+    LOG.warn("PyCourseProjectGenerator: SDK added via SdkConfigurationUtil.addSdk")
     if (module != null) {
+      LOG.warn("PyCourseProjectGenerator: Setting SDK association to module ${module.name}")
       setAssociationToModule(sdk, module)
+      LOG.warn("PyCourseProjectGenerator: SDK association set")
+    } else {
+      LOG.warn("PyCourseProjectGenerator: No module found, skipping SDK association")
     }
   }
 
@@ -96,15 +107,24 @@ open class PyCourseProjectGenerator(
     private val LOG = logger<PyCourseProjectGenerator>()
 
     private fun updateSdkIfNeeded(project: Project, sdk: Sdk?): Sdk? {
+      LOG.warn("updateSdkIfNeeded: sdk = ${sdk?.name}, type = ${sdk?.javaClass?.simpleName}, homePath = ${sdk?.homePath}")
       if (sdk !is PyDetectedSdk) {
+        LOG.warn("updateSdkIfNeeded: SDK is not PyDetectedSdk, returning as is")
         return sdk
       }
+      LOG.warn("updateSdkIfNeeded: SDK is PyDetectedSdk, using sdk.name = ${sdk.name}")
       val name = sdk.name
-      val sdkHome = WriteAction.compute<VirtualFile, RuntimeException> { LocalFileSystem.getInstance().refreshAndFindFileByPath(name) }
+      val sdkHome = WriteAction.compute<VirtualFile, RuntimeException> {
+        LocalFileSystem.getInstance().refreshAndFindFileByPath(name)
+      }
+      LOG.warn("updateSdkIfNeeded: sdkHome = ${sdkHome?.path}")
       val newSdk = SdkConfigurationUtil.createAndAddSDK(sdkHome.path, PythonSdkType.getInstance())
       if (newSdk != null) {
+        LOG.warn("updateSdkIfNeeded: New SDK created: ${newSdk.name}, updating...")
         @Suppress("UnstableApiUsage")
         PythonSdkUpdater.updateOrShowError(newSdk, project, null)
+      } else {
+        LOG.warn("updateSdkIfNeeded: Failed to create new SDK")
       }
       return newSdk
     }
