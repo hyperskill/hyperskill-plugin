@@ -76,7 +76,7 @@ fun Task.getAllTestVFiles(project: Project): MutableList<VirtualFile> {
   val testFiles = mutableListOf<VirtualFile>()
   findTestDirs(project).forEach { testDir ->
     VfsUtilCore.processFilesRecursively(testDir) {
-      if (it.isTestsFile(project)) {
+      if (!it.isDirectory && it.isTestsFile(project)) {
         testFiles.add(it)
       }
       true

@@ -33,7 +33,12 @@ class PyNewEduTaskChecker(task: EduTask, envChecker: EnvironmentChecker, project
       val sdk = ProjectRootManager.getInstance(project).projectSdk
       if (sdk != null) {
         // Keep original troubleshooting link and add install dependencies action
-        val message = """${EduFormatBundle.message("check.no.tests.with.help.guide", NO_TESTS_URL)}. ${EduPythonBundle.message("python.dependencies.install.suggestion")}"""
+        val message = """${
+          EduFormatBundle.message(
+            "check.no.tests.with.help.guide",
+            NO_TESTS_URL
+          )
+        }. ${EduPythonBundle.message("python.dependencies.install.suggestion")}"""
         return CheckResult(
           CheckStatus.Unchecked,
           message,
@@ -71,7 +76,8 @@ class PyNewEduTaskChecker(task: EduTask, envChecker: EnvironmentChecker, project
     if (isMissingDependenciesError(stderr)) {
       val sdk = ProjectRootManager.getInstance(project).projectSdk
       if (sdk != null) {
-        val message = """${EduFormatBundle.message("check.no.tests")}. ${EduPythonBundle.message("python.dependencies.install.suggestion")}"""
+        val message =
+          """${EduFormatBundle.message("check.no.tests")}. ${EduPythonBundle.message("python.dependencies.install.suggestion")}"""
         return CheckResult(
           CheckStatus.Unchecked,
           message,

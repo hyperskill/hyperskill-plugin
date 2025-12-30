@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.stepik.hyperskill
 
 import com.intellij.openapi.extensions.PluginId
+import com.intellij.openapi.vfs.VfsUtilCore
 import org.hyperskill.academy.learning.EduCourseBuilder
 import org.hyperskill.academy.learning.checker.TaskCheckerProvider
 import org.hyperskill.academy.learning.configuration.EduConfigurator
@@ -53,7 +54,8 @@ abstract class HyperskillConfigurator<T : EduProjectSettings>(private val baseCo
     baseConfigurator.courseFileAttributesEvaluator
 
   override fun isTestFile(task: Task, path: String): Boolean {
-    val isTestFile = baseConfigurator.isTestFile(task, path)
+    // Use this.testDirs instead of delegating to baseConfigurator to respect overridden testDirs
+    val isTestFile = path == testFileName || testDirs.any { testDir -> VfsUtilCore.isEqualOrAncestor(testDir, path) }
     val taskFile = task.getTaskFile(path)
     return isTestFile || taskFile?.isVisible == false
   }

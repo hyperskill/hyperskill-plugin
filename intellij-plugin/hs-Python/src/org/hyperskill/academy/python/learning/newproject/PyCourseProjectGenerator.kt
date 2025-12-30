@@ -70,7 +70,6 @@ open class PyCourseProjectGenerator(
     val virtualEnvPath = project.basePath + "/.idea/VirtualEnvironment"
     val existingSdks = PyConfigurableInterpreterList.getInstance(null).allPythonSdks
     val module = ModuleManager.getInstance(project).sortedModules.firstOrNull()
-    LOG.warn("PyCourseProjectGenerator: createAndAddVirtualEnv - module = ${module?.name}")
     val sdk = try {
       // BACKCOMPAT: 252 - Python SDK's createVirtualEnvAndSdkSynchronously performs slow VFS operations
       // that trigger "Slow operations are prohibited on EDT" when called from modal progress context.
@@ -90,16 +89,11 @@ open class PyCourseProjectGenerator(
       LOG.warn("Failed to create virtual env in $virtualEnvPath", e)
       return
     }
-    LOG.warn("PyCourseProjectGenerator: venv created successfully, sdk = ${sdk.name} at ${sdk.homePath}")
     settings.sdk = sdk
     SdkConfigurationUtil.addSdk(sdk)
-    LOG.warn("PyCourseProjectGenerator: SDK added via SdkConfigurationUtil.addSdk")
+
     if (module != null) {
-      LOG.warn("PyCourseProjectGenerator: Setting SDK association to module ${module.name}")
       setAssociationToModule(sdk, module)
-      LOG.warn("PyCourseProjectGenerator: SDK association set")
-    } else {
-      LOG.warn("PyCourseProjectGenerator: No module found, skipping SDK association")
     }
   }
 
@@ -123,7 +117,8 @@ open class PyCourseProjectGenerator(
         LOG.warn("updateSdkIfNeeded: New SDK created: ${newSdk.name}, updating...")
         @Suppress("UnstableApiUsage")
         PythonSdkUpdater.updateOrShowError(newSdk, project, null)
-      } else {
+      }
+      else {
         LOG.warn("updateSdkIfNeeded: Failed to create new SDK")
       }
       return newSdk

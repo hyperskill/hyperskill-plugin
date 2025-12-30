@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.util.SlowOperations
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.ui.tree.TreeUtil
@@ -150,7 +151,11 @@ object NavigationUtils {
   @VisibleForTesting
   fun getFirstTask(course: Course): Task? {
     WriteIntentReadAction.run {
-      LocalFileSystem.getInstance().refresh(false)
+      // VFS refresh is needed to ensure file system is up-to-date before navigation
+      // but it's a slow operation, so we use knownIssue to suppress EDT warning 
+      SlowOperations.knownIssue("EDU-XXXX").use {
+        LocalFileSystem.getInstance().refresh(false)
+      }
     }
     val firstItem = course.items.firstOrNull() ?: return null
     val firstLesson = if (firstItem is Section) firstItem.lessons.firstOrNull() else firstItem as Lesson

@@ -69,11 +69,11 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
   private fun collectPySdks(course: Course, context: UserDataHolder): List<Sdk> {
     // Find all base Python SDKs
     val baseSdks = findBaseSdks(emptyList(), null, context)
-             // It's important to check validity here, in background thread,
-             // because it caches a result of checking if python binary is executable.
-             // If the first (uncached) invocation is invoked in EDT, it may throw exception and break UI rendering.
-             // See https://youtrack.jetbrains.com/issue/EDU-6371
-             .filter { it.sdkSeemsValid }
+      // It's important to check validity here, in background thread,
+      // because it caches a result of checking if python binary is executable.
+      // If the first (uncached) invocation is invoked in EDT, it may throw exception and break UI rendering.
+      // See https://youtrack.jetbrains.com/issue/EDU-6371
+      .filter { it.sdkSeemsValid }
 
     if (baseSdks.isEmpty()) {
       return getSdksToInstall()
@@ -84,6 +84,13 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
     val fakeSdks = baseSdks.mapNotNull { baseSdk ->
       val homePath = baseSdk.homePath ?: return@mapNotNull null
       val languageLevel = baseSdk.languageLevel
+
+      // Filter out SDKs that don't match course requirements
+      if (isSdkApplicable(course, languageLevel) is Err) {
+        LOG.warn("PyLanguageSettings: Skipping SDK with languageLevel=$languageLevel (doesn't match course requirements)")
+        return@mapNotNull null
+      }
+
       val pythonVersion = languageLevel.toPythonVersion()
 
       // Create display name like "Python 3.13"
@@ -93,6 +100,8 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
 
       PySdkToCreateVirtualEnv.create(name, homePath, pythonVersion)
     }
+      // Sort by version descending - newer versions first
+      .sortedByDescending { it.languageLevel }
 
     return fakeSdks.takeIf { it.isNotEmpty() } ?: getSdksToInstall()
   }
@@ -101,17 +110,42 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
 
   override fun validate(course: Course?, courseLocation: String?): SettingsValidationResult {
     course ?: return SettingsValidationResult.OK
-    val sdk = projectSettings.sdk ?: return if (isSettingsInitialized) {
+    LOG.warn("validate: course=${course.name}, courseLocation=$courseLocation, isSettingsInitialized=$isSettingsInitialized")
+
+    // Check if this is an existing project by looking for SDK in jdk.table.xml
+    // We only check in-memory SDK registry, not filesystem, to avoid slow operations on EDT
+    val existingProjectSdk = courseLocation?.let { location ->
+      val venvPath = "$location/.idea/VirtualEnvironment"
+      LOG.warn("validate: Looking for SDK with venvPath=$venvPath")
+
+      val allSdks = com.jetbrains.python.configuration.PyConfigurableInterpreterList.getInstance(null).allPythonSdks
+      LOG.warn("validate: Found ${allSdks.size} SDKs in jdk.table.xml")
+
+      allSdks.find { sdk ->
+        val sdkPath = sdk.homePath
+        LOG.warn("validate: Checking SDK ${sdk.name} at $sdkPath")
+        sdkPath != null && sdkPath.startsWith(venvPath)
+      }?.also {
+        LOG.warn("validate: Found existing SDK for this project: ${it.name} at ${it.homePath}")
+      }
+    }
+
+    val sdk = existingProjectSdk ?: projectSettings.sdk ?: return if (isSettingsInitialized) {
+      LOG.warn("validate: SDK is null, isSettingsInitialized=$isSettingsInitialized")
       ValidationMessage(
         EduPythonBundle.message("error.no.python.interpreter", ENVIRONMENT_CONFIGURATION_LINK_PYTHON),
         ENVIRONMENT_CONFIGURATION_LINK_PYTHON
       ).ready()
     }
     else {
+      LOG.warn("validate: SDK is null, pending")
       SettingsValidationResult.Pending
     }
 
-    val sdkApplicable = isSdkApplicable(course, sdk.languageLevel)
+    val languageLevel = sdk.languageLevel
+    LOG.warn("validate: SDK name=${sdk.name}, type=${sdk.javaClass.simpleName}, languageLevel=$languageLevel, homePath=${sdk.homePath}")
+    val sdkApplicable = isSdkApplicable(course, languageLevel)
+    LOG.warn("validate: isSdkApplicable result = $sdkApplicable for course languageVersion=${course.languageVersion}")
     if (sdkApplicable is Err) {
       val message = "${sdkApplicable.error}<br>${EduPythonBundle.message("configure.python.environment.help")}"
       val validationMessage = ValidationMessage(message, ENVIRONMENT_CONFIGURATION_LINK_PYTHON)

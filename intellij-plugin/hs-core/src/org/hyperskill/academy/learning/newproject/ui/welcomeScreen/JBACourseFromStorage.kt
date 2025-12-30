@@ -2,6 +2,7 @@ package org.hyperskill.academy.learning.newproject.ui.welcomeScreen
 
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.CourseInfo
+import com.intellij.util.SlowOperations
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.Transient
@@ -93,7 +94,9 @@ class JBACourseFromStorage() : CourseInfo() {
    */
   val isLocationValid: Boolean
     @Transient
-    get() = location.isNotBlank() && LocalFileSystem.getInstance().findFileByPath(location) != null
+    get() = location.isNotBlank() && SlowOperations.knownIssue("EDU-XXXX").use {
+      LocalFileSystem.getInstance().findFileByPath(location) != null
+    }
 
   fun toCourse(): Course {
     val course = HyperskillCourse()
