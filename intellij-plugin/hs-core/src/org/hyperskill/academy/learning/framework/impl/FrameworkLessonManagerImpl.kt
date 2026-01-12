@@ -225,22 +225,39 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    * This prevents using stale test files that may be loaded from YAML.
    */
   private fun recreateTestFiles(project: Project, taskDir: VirtualFile, task: Task) {
-    // Try to get original test files from API cache first (correct content)
-    // If cache is empty, populate it from task.taskFiles to fix the current state
-    if (!originalTestFilesCache.containsKey(task.id)) {
-      val testFilesFromYaml = task.taskFiles.filterValues { taskFile ->
-        !taskFile.isLearnerCreated && taskFile.isTestFile
-      }
-      if (testFilesFromYaml.isNotEmpty()) {
-        originalTestFilesCache[task.id] = testFilesFromYaml
-        LOG.info("Initialized test files cache for task '${task.name}' (step ${task.id}) from YAML with ${testFilesFromYaml.size} files")
+    // Get current test files from task.taskFiles (loaded from API or YAML)
+    val currentTestFiles = task.taskFiles.filterValues { taskFile ->
+      !taskFile.isLearnerCreated && taskFile.isTestFile
+    }
+
+    val cachedTestFiles = originalTestFilesCache[task.id]
+
+    // Check if test files have changed (e.g., after Update Course from API)
+    // Compare by checking if file names or content hashes differ
+    val testFilesChanged = cachedTestFiles == null || run {
+      val cachedNames = cachedTestFiles.keys.sorted()
+      val currentNames = currentTestFiles.keys.sorted()
+      if (cachedNames != currentNames) {
+        true
+      } else {
+        // Check content hashes
+        cachedNames.any { name ->
+          val cachedHash = cachedTestFiles[name]?.contents?.textualRepresentation?.hashCode()
+          val currentHash = currentTestFiles[name]?.contents?.textualRepresentation?.hashCode()
+          cachedHash != currentHash
+        }
       }
     }
 
+    // Update cache if test files changed or cache is empty
+    if (testFilesChanged && currentTestFiles.isNotEmpty()) {
+      originalTestFilesCache[task.id] = currentTestFiles
+      val reason = if (cachedTestFiles == null) "initialized" else "updated"
+      LOG.info("Test files cache $reason for task '${task.name}' (step ${task.id}) with ${currentTestFiles.size} files")
+    }
+
     val testFiles: Collection<TaskFile> = originalTestFilesCache[task.id]?.values
-      ?: task.taskFiles.values.filter { taskFile ->
-        !taskFile.isLearnerCreated && taskFile.isTestFile
-      }
+      ?: currentTestFiles.values
 
     val source = if (originalTestFilesCache.containsKey(task.id)) "cache" else "task.taskFiles"
     LOG.info("Recreating ${testFiles.size} test files for task '${task.name}' from $source")
