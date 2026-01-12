@@ -13,6 +13,7 @@ import com.intellij.util.SlowOperations
 import com.intellij.util.io.storage.AbstractStorage
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.ext.shouldBePropagated
@@ -39,6 +40,10 @@ import java.nio.file.Paths
  */
 class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLessonManager, Disposable {
   private var storage: FrameworkStorage = createStorage(project)
+
+  // Cache of original test files from API for each task (by step ID)
+  // These are used to recreate test files with correct content when navigating between stages
+  private val originalTestFilesCache = java.util.concurrent.ConcurrentHashMap<Int, Map<String, TaskFile>>()
 
   override fun prepareNextTask(lesson: FrameworkLesson, taskDir: VirtualFile, showDialogIfConflict: Boolean) {
     applyTargetTaskChanges(lesson, 1, taskDir, showDialogIfConflict)
@@ -215,13 +220,29 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    * Recreates test files (files with isLearnerCreated = false) from the task definition.
    * These files are provided by the course author and should not be modified by students.
    * We recreate them when navigating to a new task to ensure they match the task definition.
+   *
+   * Uses original test files from API cache if available, otherwise falls back to task.taskFiles.
+   * This prevents using stale test files that may be loaded from YAML.
    */
   private fun recreateTestFiles(project: Project, taskDir: VirtualFile, task: Task) {
-    // Test files are files provided by the course author (isLearnerCreated = false)
-    // that are identified as test files by the language-specific configurator
-    // This uses configurator.isTestFile() which checks testDirs and other language-specific rules
-    val testFiles = task.taskFiles.values.filter { taskFile ->
-      !taskFile.isLearnerCreated && taskFile.isTestFile
+    // Try to get original test files from API cache first (correct content)
+    // Fall back to task.taskFiles if not available (may contain stale data from YAML)
+    val testFiles: Collection<TaskFile> = originalTestFilesCache[task.id]?.values
+      ?: task.taskFiles.values.filter { taskFile ->
+        !taskFile.isLearnerCreated && taskFile.isTestFile
+      }
+
+    val source = if (originalTestFilesCache.containsKey(task.id)) "API cache" else "task.taskFiles (YAML)"
+    LOG.info("Recreating ${testFiles.size} test files for task '${task.name}' from $source")
+
+    // ALT-10961: Debug logging to investigate incorrect test files issue
+    LOG.warn("ALT-10961 DEBUG: recreateTestFiles for task '${task.name}' (index=${task.index}, lesson=${task.lesson.name})")
+    LOG.warn("ALT-10961 DEBUG: Found ${testFiles.size} test files to recreate")
+
+    for (taskFile in testFiles) {
+      val preview = taskFile.contents.textualRepresentation.take(150).replace("\n", "\\n")
+      val hash = taskFile.contents.textualRepresentation.hashCode()
+      LOG.warn("ALT-10961 DEBUG:   - ${taskFile.name}: hash=$hash, size=${taskFile.contents.textualRepresentation.length}, preview='$preview'")
     }
 
     invokeAndWaitIfNeeded {
@@ -235,6 +256,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
               taskFile.contents,
               taskFile.isEditable
             )
+            LOG.warn("ALT-10961 DEBUG: Successfully recreated ${taskFile.name}")
           }
           catch (e: Exception) {
             LOG.warn("Failed to recreate test file ${taskFile.name} for task ${task.name}", e)
@@ -383,10 +405,36 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       LOG.error("Failed to get user changes for task `${task.name}`", e)
       UserChanges.empty()
     }
+    catch (e: NegativeArraySizeException) {
+      LOG.error("Corrupted storage data detected (negative array size), recreating storage", e)
+      // Storage is corrupted, recreate it completely
+      try {
+        Disposer.dispose(storage)
+        val storageFilePath = constructStoragePath(project)
+        AbstractStorage.deleteFiles(storageFilePath.toString())
+        storage = createStorage(project)
+        LOG.warn("Storage recreated successfully after corruption")
+      }
+      catch (recreateError: Exception) {
+        LOG.error("Failed to recreate storage after corruption", recreateError)
+      }
+      UserChanges.empty()
+    }
+  }
+
+  override fun storeOriginalTestFiles(task: Task) {
+    val testFiles = task.taskFiles.filterValues { taskFile ->
+      !taskFile.isLearnerCreated && taskFile.isTestFile
+    }
+    if (testFiles.isNotEmpty()) {
+      originalTestFilesCache[task.id] = testFiles
+      LOG.info("Stored ${testFiles.size} original test files for task '${task.name}' (step ${task.id})")
+    }
   }
 
   override fun dispose() {
     Disposer.dispose(storage)
+    originalTestFilesCache.clear()
   }
 
   private val Task.allFiles: FLTaskState
@@ -433,15 +481,34 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     private fun createStorage(project: Project): FrameworkStorage {
       val storageFilePath = constructStoragePath(project)
-      val storage = FrameworkStorage(storageFilePath)
-      return try {
+
+      try {
+        val storage = FrameworkStorage(storageFilePath)
         storage.migrate(VERSION)
-        storage
+        return storage
+      }
+      catch (e: IllegalStateException) {
+        // Storage already registered - this can happen when service is recreated during project sync
+        // Delete old storage files and create fresh storage
+        LOG.warn("Storage already registered at $storageFilePath, recreating", e)
+        try {
+          AbstractStorage.deleteFiles(storageFilePath.toString())
+        }
+        catch (deleteError: Exception) {
+          LOG.error("Failed to delete old storage files", deleteError)
+        }
+        return FrameworkStorage(storageFilePath, VERSION)
+      }
+      catch (e: NegativeArraySizeException) {
+        // Corrupted storage data - delete and recreate
+        LOG.error("Storage data corrupted at $storageFilePath (negative array size), recreating", e)
+        AbstractStorage.deleteFiles(storageFilePath.toString())
+        return FrameworkStorage(storageFilePath, VERSION)
       }
       catch (e: IOException) {
-        LOG.error(e)
+        LOG.error("Failed to initialize storage", e)
         AbstractStorage.deleteFiles(storageFilePath.toString())
-        FrameworkStorage(storageFilePath, VERSION)
+        return FrameworkStorage(storageFilePath, VERSION)
       }
     }
   }

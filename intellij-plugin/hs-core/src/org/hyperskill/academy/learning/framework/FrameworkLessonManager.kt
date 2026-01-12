@@ -25,6 +25,15 @@ interface FrameworkLessonManager : EduTestAware {
    */
   fun getTaskState(lesson: FrameworkLesson, task: Task): Map<String, String>
 
+  /**
+   * Stores original test files from API for a task.
+   * These files will be used to recreate test files with correct content when navigating between stages.
+   * Should be called after creating tasks from API response.
+   *
+   * @param task the task whose test files should be stored
+   */
+  fun storeOriginalTestFiles(task: Task)
+
   companion object {
     fun getInstance(project: Project): FrameworkLessonManager = project.service()
   }

@@ -18,7 +18,9 @@ import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.Lesson
 import org.hyperskill.academy.learning.courseFormat.attempts.Attempt
+import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTopic
@@ -472,11 +474,42 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
     /**
      * Create new tasks in lesson. Tasks get from stepSources
      */
-    fun getTasks(course: Course, stepSources: List<HyperskillStepSource>): List<Task> {
+    fun getTasks(course: Course, stepSources: List<HyperskillStepSource>, project: Project? = null): List<Task> {
       val hyperskillCourse = course as HyperskillCourse
+
+      // ALT-10961 DEBUG: Log what test files API returns for each stage
+      LOG.warn("ALT-10961 DEBUG: getTasks called with ${stepSources.size} step sources")
+      for ((index, stepSource) in stepSources.withIndex()) {
+        LOG.warn("ALT-10961 DEBUG: Step ${stepSource.id} (index=$index, title='${stepSource.title}')")
+        val options = stepSource.block?.options as? PyCharmStepOptions
+        val files = options?.files
+        if (files == null) {
+          LOG.warn("ALT-10961 DEBUG:   No files in API response")
+        } else {
+          LOG.warn("ALT-10961 DEBUG:   API returned ${files.size} files")
+          for (file in files) {
+            val isTest = "test" in file.name.lowercase()
+            if (isTest && !file.isLearnerCreated) {
+              val content = file.contents.textualRepresentation
+              val hash = content.hashCode()
+              val preview = content.take(150).replace("\n", "\\n")
+              LOG.warn("ALT-10961 DEBUG:   TEST FILE: ${file.name} (hash=$hash, size=${content.length}, isLearnerCreated=${file.isLearnerCreated})")
+              LOG.warn("ALT-10961 DEBUG:     preview: $preview")
+            }
+          }
+        }
+      }
+
       return stepSources.mapNotNull { step ->
         HyperskillTaskBuilder(course, step).build()
-          ?.also { hyperskillCourse.updateAdditionalFiles(step) }
+          ?.also { task ->
+            hyperskillCourse.updateAdditionalFiles(step)
+            // Store original test files from API for framework lessons
+            // This allows recreateTestFiles() to use correct test files instead of stale YAML data
+            if (project != null && task.lesson is FrameworkLesson) {
+              FrameworkLessonManager.getInstance(project).storeOriginalTestFiles(task)
+            }
+          }
       }
     }
 

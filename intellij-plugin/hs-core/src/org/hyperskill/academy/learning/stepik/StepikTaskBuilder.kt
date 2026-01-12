@@ -8,6 +8,7 @@ import com.jetbrains.rd.util.first
 import org.hyperskill.academy.learning.configuration.EduConfiguratorManager
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
+import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.ext.languageById
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTaskType
 import org.hyperskill.academy.learning.courseFormat.tasks.*
@@ -159,13 +160,18 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
 
   private fun initTaskFiles(
     task: Task,
-    comment: String = "You can experiment here, it won’t be checked\n",
+    comment: String = "You can experiment here, it won't be checked\n",
     codeTemplate: String? = null,
   ) {
     val options = step.options
     if (options is PyCharmStepOptions) {
-      options.files?.forEach {
-        task.addTaskFile(it)
+      // ALT-10961 DEBUG: Log TaskFile object identity
+      LOG.warn("ALT-10961 DEBUG: initTaskFiles for task ${task.name} (step ${task.id})")
+      options.files?.forEach { taskFile ->
+        val isTest = "test" in taskFile.name.lowercase()
+        LOG.warn("ALT-10961 DEBUG:   Adding TaskFile '${taskFile.name}' @${System.identityHashCode(taskFile)} " +
+                 "(isLearnerCreated=${taskFile.isLearnerCreated}, likelyTest=$isTest, contentHash=${taskFile.contents.textualRepresentation.hashCode()})")
+        task.addTaskFile(taskFile)
       }
     }
 
