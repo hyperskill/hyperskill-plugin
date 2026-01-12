@@ -395,11 +395,11 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     return stepSource
   }
 
-  private fun Lesson.addProblems(stepSources: List<HyperskillStepSource>): Result<List<Task>, String> {
+  private fun Lesson.addProblems(stepSources: List<HyperskillStepSource>, project: Project? = null): Result<List<Task>, String> {
     val existingTasksIds = items.map { it.id }
     val stepsSourceForAdding = stepSources.filter { it.id !in existingTasksIds }
 
-    val tasks = HyperskillConnector.getTasks(course, stepsSourceForAdding)
+    val tasks = HyperskillConnector.getTasks(course, stepsSourceForAdding, project)
     tasks.forEach(this::addTask)
     return Ok(tasks)
   }
@@ -444,7 +444,7 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
         localTopicLesson = localTopicsSection.createTopicLesson(topicNameSource)
       }
 
-      val tasks = localTopicLesson.addProblems(stepSources).onError { return@computeUnderProgress Err(it) }
+      val tasks = localTopicLesson.addProblems(stepSources, project).onError { return@computeUnderProgress Err(it) }
       localTopicsSection.init(this, false)
 
       if (project != null) {
