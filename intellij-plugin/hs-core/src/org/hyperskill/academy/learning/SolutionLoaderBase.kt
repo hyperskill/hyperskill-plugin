@@ -27,6 +27,7 @@ import org.hyperskill.academy.learning.courseFormat.ext.allTasks
 import org.hyperskill.academy.learning.courseFormat.ext.findTaskFileInDir
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.hasSolutions
+import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
@@ -312,6 +313,15 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       val taskDir = task.getDir(project.courseDir) ?: error("Directory for task `${task.name}` not found")
       for ((path, solution) in taskSolutions.solutions) {
         val taskFile = task.getTaskFile(path)
+
+        // Skip test files from submissions to prevent corrupted tests from being applied
+        // Test files should always come from step source (API), not from user submissions
+        // See ALT-10961: user submissions may contain stale test files from previous stages
+        if (taskFile != null && !taskFile.isLearnerCreated && taskFile.isTestFile) {
+          LOG.warn("Skipping test file '$path' from submission for task '${task.name}' - test files should come from API, not submissions")
+          continue
+        }
+
         if (taskFile == null) {
           GeneratorUtils.createChildFile(project, taskDir, path, InMemoryTextualContents(solution.text))
           val createdFile = task.getTaskFile(path)
