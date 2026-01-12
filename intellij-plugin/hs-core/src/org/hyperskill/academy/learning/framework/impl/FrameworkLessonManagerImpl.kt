@@ -226,13 +226,23 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    */
   private fun recreateTestFiles(project: Project, taskDir: VirtualFile, task: Task) {
     // Try to get original test files from API cache first (correct content)
-    // Fall back to task.taskFiles if not available (may contain stale data from YAML)
+    // If cache is empty, populate it from task.taskFiles to fix the current state
+    if (!originalTestFilesCache.containsKey(task.id)) {
+      val testFilesFromYaml = task.taskFiles.filterValues { taskFile ->
+        !taskFile.isLearnerCreated && taskFile.isTestFile
+      }
+      if (testFilesFromYaml.isNotEmpty()) {
+        originalTestFilesCache[task.id] = testFilesFromYaml
+        LOG.info("Initialized test files cache for task '${task.name}' (step ${task.id}) from YAML with ${testFilesFromYaml.size} files")
+      }
+    }
+
     val testFiles: Collection<TaskFile> = originalTestFilesCache[task.id]?.values
       ?: task.taskFiles.values.filter { taskFile ->
         !taskFile.isLearnerCreated && taskFile.isTestFile
       }
 
-    val source = if (originalTestFilesCache.containsKey(task.id)) "API cache" else "task.taskFiles (YAML)"
+    val source = if (originalTestFilesCache.containsKey(task.id)) "cache" else "task.taskFiles"
     LOG.info("Recreating ${testFiles.size} test files for task '${task.name}' from $source")
 
     // ALT-10961: Debug logging to investigate incorrect test files issue
