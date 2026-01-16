@@ -165,12 +165,7 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
   ) {
     val options = step.options
     if (options is PyCharmStepOptions) {
-      // ALT-10961 DEBUG: Log TaskFile object identity
-      LOG.warn("ALT-10961 DEBUG: initTaskFiles for task ${task.name} (step ${task.id})")
       options.files?.forEach { taskFile ->
-        val isTest = "test" in taskFile.name.lowercase()
-        LOG.warn("ALT-10961 DEBUG:   Adding TaskFile '${taskFile.name}' @${System.identityHashCode(taskFile)} " +
-                 "(isLearnerCreated=${taskFile.isLearnerCreated}, likelyTest=$isTest, contentHash=${taskFile.contents.textualRepresentation.hashCode()})")
         task.addTaskFile(taskFile)
       }
     }

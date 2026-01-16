@@ -477,29 +477,6 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
     fun getTasks(course: Course, stepSources: List<HyperskillStepSource>, project: Project? = null): List<Task> {
       val hyperskillCourse = course as HyperskillCourse
 
-      // ALT-10961 DEBUG: Log what test files API returns for each stage
-      LOG.warn("ALT-10961 DEBUG: getTasks called with ${stepSources.size} step sources")
-      for ((index, stepSource) in stepSources.withIndex()) {
-        LOG.warn("ALT-10961 DEBUG: Step ${stepSource.id} (index=$index, title='${stepSource.title}')")
-        val options = stepSource.block?.options as? PyCharmStepOptions
-        val files = options?.files
-        if (files == null) {
-          LOG.warn("ALT-10961 DEBUG:   No files in API response")
-        } else {
-          LOG.warn("ALT-10961 DEBUG:   API returned ${files.size} files")
-          for (file in files) {
-            val isTest = "test" in file.name.lowercase()
-            if (isTest && !file.isLearnerCreated) {
-              val content = file.contents.textualRepresentation
-              val hash = content.hashCode()
-              val preview = content.take(150).replace("\n", "\\n")
-              LOG.warn("ALT-10961 DEBUG:   TEST FILE: ${file.name} (hash=$hash, size=${content.length}, isLearnerCreated=${file.isLearnerCreated})")
-              LOG.warn("ALT-10961 DEBUG:     preview: $preview")
-            }
-          }
-        }
-      }
-
       return stepSources.mapNotNull { step ->
         HyperskillTaskBuilder(course, step).build()
           ?.also { task ->

@@ -11,6 +11,9 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.SlowOperations
 import com.intellij.util.io.storage.AbstractStorage
+import com.intellij.openapi.application.ApplicationManager
+import org.hyperskill.academy.learning.Err
+import org.hyperskill.academy.learning.Ok
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
@@ -24,6 +27,8 @@ import org.hyperskill.academy.learning.framework.propagateFilesOnNavigation
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.toCourseInfoHolder
 import org.hyperskill.academy.learning.ui.getUIName
+import org.hyperskill.academy.learning.stepik.PyCharmStepOptions
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
@@ -217,60 +222,110 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   /**
-   * Recreates test files (files with isLearnerCreated = false) from the task definition.
+   * Loads test files from API for a task and caches them.
+   * This is used as a fallback when the cache is empty (e.g., after IDE restart).
+   *
+   * @param task the task whose test files should be loaded
+   * @return map of test files (filename -> TaskFile), or null if loading failed
+   */
+  private fun loadTestFilesFromApi(task: Task): Map<String, TaskFile>? {
+    val stepId = task.id
+    if (stepId <= 0) {
+      LOG.warn("Cannot load test files from API: task '${task.name}' has invalid step ID: $stepId")
+      return null
+    }
+
+    LOG.info("Loading test files from API for task '${task.name}' (step $stepId)")
+
+    // Run network request in background thread (required because this may be called from EDT)
+    return try {
+      ApplicationManager.getApplication().executeOnPooledThread<Map<String, TaskFile>?> {
+        val stepSourceResult = HyperskillConnector.getInstance().getStepSource(stepId)
+        if (stepSourceResult is Err) {
+          LOG.warn("Failed to load step source from API for step $stepId: ${stepSourceResult.error}")
+          return@executeOnPooledThread null
+        }
+
+        val stepSource = (stepSourceResult as Ok).value
+        val options = stepSource.block?.options as? PyCharmStepOptions
+        if (options == null) {
+          LOG.warn("Step $stepId has no PyCharmStepOptions")
+          return@executeOnPooledThread null
+        }
+
+        val allFiles = options.files
+        if (allFiles.isNullOrEmpty()) {
+          LOG.warn("Step $stepId has no files in options")
+          return@executeOnPooledThread null
+        }
+
+        // Filter test files (not learner-created and likely a test file by name)
+        // Note: Cannot use taskFile.isTestFile here because TaskFile objects from API
+        // are not attached to a Task, and isTestFile requires task context.
+        val testFiles = allFiles.filter { taskFile ->
+          !taskFile.isLearnerCreated && "test" in taskFile.name.lowercase()
+        }
+
+        if (testFiles.isEmpty()) {
+          LOG.warn("Step $stepId has no test files")
+          return@executeOnPooledThread null
+        }
+
+        // Create copies of TaskFile objects and cache them
+        val copiedTestFiles = testFiles.associateBy(
+          { it.name },
+          { taskFile ->
+            TaskFile(taskFile.name, taskFile.contents).also {
+              it.isVisible = taskFile.isVisible
+              it.isEditable = taskFile.isEditable
+              it.isLearnerCreated = taskFile.isLearnerCreated
+            }
+          }
+        )
+
+        originalTestFilesCache[stepId] = copiedTestFiles
+        LOG.info("Loaded and cached ${copiedTestFiles.size} test files from API for task '${task.name}' (step $stepId)")
+
+        copiedTestFiles
+      }.get()
+    } catch (e: Exception) {
+      LOG.warn("Exception while loading test files from API for step $stepId", e)
+      null
+    }
+  }
+
+  /**
+   * Recreates test files (files with isLearnerCreated = false) from the cached task definition.
    * These files are provided by the course author and should not be modified by students.
    * We recreate them when navigating to a new task to ensure they match the task definition.
    *
-   * Uses original test files from API cache if available, otherwise falls back to task.taskFiles.
-   * This prevents using stale test files that may be loaded from YAML.
+   * IMPORTANT (ALT-10961): Only uses test files from [originalTestFilesCache] which is populated
+   * by [storeOriginalTestFiles] when fresh API data is received. Does NOT fall back to task.taskFiles
+   * because in framework lessons, task.taskFiles may be corrupted with test content from another stage
+   * (all stages share the same task directory on disk).
    */
   private fun recreateTestFiles(project: Project, taskDir: VirtualFile, task: Task) {
-    // Get current test files from task.taskFiles (loaded from API or YAML)
-    val currentTestFiles = task.taskFiles.filterValues { taskFile ->
-      !taskFile.isLearnerCreated && taskFile.isTestFile
-    }
+    // ALT-10961: Only use cached test files from API to prevent using corrupted task.taskFiles
+    // Cache is populated by storeOriginalTestFiles() when fresh API data is received.
+    // DO NOT update cache from task.taskFiles here - it may contain test content from another stage
+    // due to framework lesson stages sharing the same task directory.
+    var cachedTestFiles = originalTestFilesCache[task.id]
 
-    val cachedTestFiles = originalTestFilesCache[task.id]
-
-    // Check if test files have changed (e.g., after Update Course from API)
-    // Compare by checking if file names or content hashes differ
-    val testFilesChanged = cachedTestFiles == null || run {
-      val cachedNames = cachedTestFiles.keys.sorted()
-      val currentNames = currentTestFiles.keys.sorted()
-      if (cachedNames != currentNames) {
-        true
-      } else {
-        // Check content hashes
-        cachedNames.any { name ->
-          val cachedHash = cachedTestFiles[name]?.contents?.textualRepresentation?.hashCode()
-          val currentHash = currentTestFiles[name]?.contents?.textualRepresentation?.hashCode()
-          cachedHash != currentHash
-        }
+    if (cachedTestFiles == null) {
+      LOG.warn("No cached test files for task '${task.name}' (step ${task.id}). Attempting to load from API...")
+      cachedTestFiles = loadTestFilesFromApi(task)
+      if (cachedTestFiles == null) {
+        LOG.warn("Failed to load test files from API for task '${task.name}' (step ${task.id}). " +
+                 "Skipping test files recreation to avoid using potentially corrupted task.taskFiles.")
+        return
       }
     }
 
-    // Update cache if test files changed or cache is empty
-    if (testFilesChanged && currentTestFiles.isNotEmpty()) {
-      originalTestFilesCache[task.id] = currentTestFiles
-      val reason = if (cachedTestFiles == null) "initialized" else "updated"
-      LOG.info("Test files cache $reason for task '${task.name}' (step ${task.id}) with ${currentTestFiles.size} files")
-    }
+    val testFiles: Collection<TaskFile> = cachedTestFiles.values
 
-    val testFiles: Collection<TaskFile> = originalTestFilesCache[task.id]?.values
-      ?: currentTestFiles.values
-
-    val source = if (originalTestFilesCache.containsKey(task.id)) "cache" else "task.taskFiles"
-    LOG.info("Recreating ${testFiles.size} test files for task '${task.name}' from $source")
-
-    // ALT-10961: Debug logging to investigate incorrect test files issue
-    LOG.warn("ALT-10961 DEBUG: recreateTestFiles for task '${task.name}' (index=${task.index}, lesson=${task.lesson.name})")
-    LOG.warn("ALT-10961 DEBUG: Found ${testFiles.size} test files to recreate")
-
-    for (taskFile in testFiles) {
-      val preview = taskFile.contents.textualRepresentation.take(150).replace("\n", "\\n")
-      val hash = taskFile.contents.textualRepresentation.hashCode()
-      LOG.warn("ALT-10961 DEBUG:   - ${taskFile.name}: hash=$hash, size=${taskFile.contents.textualRepresentation.length}, preview='$preview'")
-    }
+    // Log test files info for diagnostics (ALT-10961)
+    val filesInfo = testFiles.joinToString { "${it.name}:${it.contents.textualRepresentation.hashCode()}" }
+    LOG.info("Recreating ${testFiles.size} test files for task '${task.name}' (step ${task.id}): [$filesInfo]")
 
     invokeAndWaitIfNeeded {
       runWriteAction {
@@ -283,7 +338,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
               taskFile.contents,
               taskFile.isEditable
             )
-            LOG.warn("ALT-10961 DEBUG: Successfully recreated ${taskFile.name}")
           }
           catch (e: Exception) {
             LOG.warn("Failed to recreate test file ${taskFile.name} for task ${task.name}", e)
@@ -454,9 +508,31 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       !taskFile.isLearnerCreated && taskFile.isTestFile
     }
     if (testFiles.isNotEmpty()) {
-      originalTestFilesCache[task.id] = testFiles
-      LOG.info("Stored ${testFiles.size} original test files for task '${task.name}' (step ${task.id})")
+      // Create copies of TaskFile objects to prevent modification when original task.taskFiles changes
+      // This is important because task.taskFiles contents can be updated (e.g., during Update Course)
+      // and we want to preserve the original test file contents
+      val copiedTestFiles = testFiles.mapValues { (_, taskFile) ->
+        TaskFile(taskFile.name, taskFile.contents).also {
+          it.isVisible = taskFile.isVisible
+          it.isEditable = taskFile.isEditable
+          it.isLearnerCreated = taskFile.isLearnerCreated
+        }
+      }
+      originalTestFilesCache[task.id] = copiedTestFiles
+      LOG.info("Stored ${copiedTestFiles.size} original test files for task '${task.name}' (step ${task.id})")
     }
+  }
+
+  override fun getOriginalTestFiles(task: Task): Collection<TaskFile>? {
+    return originalTestFilesCache[task.id]?.values
+  }
+
+  override fun ensureTestFilesCached(task: Task): Boolean {
+    if (originalTestFilesCache.containsKey(task.id)) {
+      return true
+    }
+    // Cache is empty, try to load from API
+    return loadTestFilesFromApi(task) != null
   }
 
   override fun dispose() {

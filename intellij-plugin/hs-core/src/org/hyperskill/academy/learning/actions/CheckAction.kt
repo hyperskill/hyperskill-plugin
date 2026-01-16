@@ -36,6 +36,7 @@ import org.hyperskill.academy.learning.checker.TaskChecker
 import org.hyperskill.academy.learning.checker.details.CheckDetailsView
 import org.hyperskill.academy.learning.checker.remote.RemoteTaskCheckerManager.remoteCheckerForTask
 import org.hyperskill.academy.learning.courseFormat.*
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.courseFormat.CheckResult.Companion.failedToCheck
 import org.hyperskill.academy.learning.courseFormat.ext.*
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
@@ -169,8 +170,31 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
       // that are identified as test files by the language-specific configurator
       // This uses configurator.isTestFile() which checks testDirs and other language-specific rules
       // We recreate them before Check to prevent cheating
-      val testFiles = task.taskFiles.values.filter { taskFile ->
-        !taskFile.isLearnerCreated && taskFile.isTestFile
+      //
+      // For framework lessons, we use cached test files from FrameworkLessonManager
+      // because task.taskFiles may contain stale data for non-current tasks.
+      // The cache is populated from API response when tasks are created/updated.
+      val testFiles: Collection<TaskFile> = if (task.lesson is FrameworkLesson) {
+        val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
+        // ALT-10961: Ensure test files are cached, loading from API if necessary.
+        // NEVER fall back to task.taskFiles as it may be corrupted with test content
+        // from another stage in framework lessons.
+        if (!frameworkLessonManager.ensureTestFilesCached(task)) {
+          LOG.warn("Failed to cache test files for framework task '${task.name}'. " +
+                   "Test files may be missing or incorrect.")
+        }
+        val cachedTestFiles = frameworkLessonManager.getOriginalTestFiles(task)
+        if (cachedTestFiles != null) {
+          LOG.info("Using ${cachedTestFiles.size} cached test files for framework task '${task.name}'")
+          cachedTestFiles
+        } else {
+          LOG.warn("No test files available for framework task '${task.name}' after attempting API load")
+          emptyList()
+        }
+      } else {
+        task.taskFiles.values.filter { taskFile ->
+          !taskFile.isLearnerCreated && taskFile.isTestFile
+        }
       }
 
       invokeAndWaitIfNeeded {
