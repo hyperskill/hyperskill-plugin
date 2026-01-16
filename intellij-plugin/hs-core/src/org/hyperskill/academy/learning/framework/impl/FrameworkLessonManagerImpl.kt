@@ -272,11 +272,12 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         }
 
         // Create copies of TaskFile objects and cache them
+        // Force isVisible = false for test files so they don't appear in Project View
         val copiedTestFiles = testFiles.associateBy(
           { it.name },
           { taskFile ->
             TaskFile(taskFile.name, taskFile.contents).also {
-              it.isVisible = taskFile.isVisible
+              it.isVisible = false
               it.isEditable = taskFile.isEditable
               it.isLearnerCreated = taskFile.isLearnerCreated
             }
@@ -511,9 +512,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // Create copies of TaskFile objects to prevent modification when original task.taskFiles changes
       // This is important because task.taskFiles contents can be updated (e.g., during Update Course)
       // and we want to preserve the original test file contents
+      // Force isVisible = false for test files so they don't appear in Project View
       val copiedTestFiles = testFiles.mapValues { (_, taskFile) ->
         TaskFile(taskFile.name, taskFile.contents).also {
-          it.isVisible = taskFile.isVisible
+          it.isVisible = false
           it.isEditable = taskFile.isEditable
           it.isLearnerCreated = taskFile.isLearnerCreated
         }

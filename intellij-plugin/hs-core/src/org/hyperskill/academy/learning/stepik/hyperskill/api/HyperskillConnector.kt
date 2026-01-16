@@ -485,6 +485,10 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
             // This allows recreateTestFiles() to use correct test files instead of stale YAML data
             if (project != null && task.lesson is FrameworkLesson) {
               FrameworkLessonManager.getInstance(project).storeOriginalTestFiles(task)
+              // Hide test files in Project View
+              task.taskFiles.values
+                .filter { !it.isLearnerCreated && it.isTestFile }
+                .forEach { it.isVisible = false }
             }
           }
       }
