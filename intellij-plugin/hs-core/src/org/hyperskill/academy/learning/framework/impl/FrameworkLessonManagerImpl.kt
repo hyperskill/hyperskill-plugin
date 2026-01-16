@@ -17,6 +17,7 @@ import org.hyperskill.academy.learning.Ok
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.ext.shouldBePropagated
@@ -240,7 +241,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // Run network request in background thread (required because this may be called from EDT)
     return try {
       ApplicationManager.getApplication().executeOnPooledThread<Map<String, TaskFile>?> {
-        val stepSourceResult = HyperskillConnector.getInstance().getStepSource(stepId)
+        // ALT-10961: Use anonymous request to get original test files from API.
+        // Authenticated requests return files from user's last submission instead of original stage files.
+        val stepSourceResult = HyperskillConnector.getInstance().getStepSourceAnonymous(stepId)
         if (stepSourceResult is Err) {
           LOG.warn("Failed to load step source from API for step $stepId: ${stepSourceResult.error}")
           return@executeOnPooledThread null
@@ -285,7 +288,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         )
 
         originalTestFilesCache[stepId] = copiedTestFiles
-        LOG.info("Loaded and cached ${copiedTestFiles.size} test files from API for task '${task.name}' (step $stepId)")
+        val filesInfo = copiedTestFiles.entries.joinToString { (name, file) ->
+          "$name:size=${file.contents.textualRepresentation.length}"
+        }
+        LOG.info("Loaded and cached ${copiedTestFiles.size} test files from API for task '${task.name}' (step $stepId): [$filesInfo]")
 
         copiedTestFiles
       }.get()
@@ -505,6 +511,15 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   override fun storeOriginalTestFiles(task: Task) {
+    // ALT-10961: Don't overwrite cache if it already contains data loaded from API.
+    // This is important because task.taskFiles may contain stale data from disk
+    // (in framework lessons, all stages share the same task directory).
+    // Data loaded from API via loadTestFilesFromApi() is always correct.
+    if (originalTestFilesCache.containsKey(task.id)) {
+      LOG.info("Cache already contains test files for task '${task.name}' (step ${task.id}), not overwriting")
+      return
+    }
+
     val testFiles = task.taskFiles.filterValues { taskFile ->
       !taskFile.isLearnerCreated && taskFile.isTestFile
     }
@@ -521,7 +536,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         }
       }
       originalTestFilesCache[task.id] = copiedTestFiles
-      LOG.info("Stored ${copiedTestFiles.size} original test files for task '${task.name}' (step ${task.id})")
+      val filesInfo = copiedTestFiles.entries.joinToString { (name, file) ->
+        "$name:size=${file.contents.textualRepresentation.length}"
+      }
+      LOG.info("Stored ${copiedTestFiles.size} original test files for task '${task.name}' (step ${task.id}): [$filesInfo]")
     }
   }
 
@@ -543,9 +561,14 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   private val Task.allFiles: FLTaskState
-    get() = taskFiles
-      .filterValues { it.isLearnerCreated } // Only track student-created files, exclude test files from framework storage
-      .mapValues { it.value.contents.textualRepresentation }
+    get() {
+      val configurator = course.configurator
+      return taskFiles
+        // Exclude test files from framework storage - they are recreated from task definition
+        // Use configurator.isTestFile() to properly identify test files for all languages
+        .filterValues { configurator?.isTestFile(this, it.name) != true }
+        .mapValues { it.value.contents.textualRepresentation }
+    }
 
   private fun FLTaskState.splitByKey(predicate: (String) -> Boolean): Pair<FLTaskState, FLTaskState> {
     val positive = HashMap<String, String>()

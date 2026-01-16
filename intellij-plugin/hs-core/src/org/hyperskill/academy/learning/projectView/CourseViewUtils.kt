@@ -26,7 +26,6 @@ import org.jetbrains.annotations.TestOnly
 import javax.swing.Icon
 
 object CourseViewUtils {
-
   fun modifyTaskChildNode(
     project: Project,
     childNode: AbstractTreeNode<*>,
@@ -47,7 +46,8 @@ object CourseViewUtils {
         val virtualFile = psiFile.virtualFile ?: return null
         val path = virtualFile.pathRelativeToTask(project)
         val visibleFile = task?.getTaskFile(path)
-        if (visibleFile?.isVisible == true) fileNodeFactory(childNode, psiFile) else null
+        val isTestFile = task?.let { isTestFile(it, path) } ?: false
+        if (visibleFile?.isVisible == true && !isTestFile) fileNodeFactory(childNode, psiFile) else null
       }
 
       else -> null
@@ -60,7 +60,7 @@ object CourseViewUtils {
     val hasTaskFileNotInsideSourceDir = task.hasVisibleTaskFilesNotInsideSourceDir(project)
     if (dirName == task.sourceDir) return hasTaskFileNotInsideSourceDir
     return task.taskFiles.values.any {
-      if (!it.isVisible) return@any false
+      if (!it.isVisible || isTestFile(task, it.name)) return@any false
       val virtualFile = it.getVirtualFile(project) ?: return@any false
       VfsUtil.isAncestor(dir.virtualFile, virtualFile, true)
     }
@@ -70,7 +70,7 @@ object CourseViewUtils {
     val taskDir = getDir(project.courseDir) ?: error("Directory for task $name not found")
     val sourceDir = findSourceDir(taskDir) ?: return false
     return taskFiles.values.any {
-      if (!it.isVisible) return@any false
+      if (!it.isVisible || isTestFile(this, it.name)) return@any false
       val virtualFile = it.getVirtualFile(project)
       if (virtualFile == null) {
         Logger.getInstance(Task::class.java).warn("VirtualFile for ${it.name} not found")
@@ -79,6 +79,15 @@ object CourseViewUtils {
 
       !VfsUtil.isAncestor(sourceDir, virtualFile, true)
     }
+  }
+
+  /**
+   * Checks if a file is a test file using the course configurator.
+   * This avoids using TaskFile.isTestFile extension which requires task reference to be set.
+   */
+  private fun isTestFile(task: Task, path: String): Boolean {
+    val configurator = task.course.configurator ?: return false
+    return configurator.isTestFile(task, path)
   }
 
   fun findTaskDirectory(project: Project, baseDir: PsiDirectory, task: Task): PsiDirectory? {

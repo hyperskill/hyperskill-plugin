@@ -177,6 +177,20 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
       if (result == null) Err("Can't get step source with $stepId id") else Ok(result)
     }
 
+  /**
+   * Gets step source using anonymous (unauthenticated) request.
+   * This is important for fetching original test files, because authenticated requests
+   * return files from user's last submission instead of original stage files.
+   * ALT-10961: Use this method for loading test files to get correct stage-specific tests.
+   */
+  fun getStepSourceAnonymous(stepId: Int): Result<HyperskillStepSource, String> {
+    val anonymousEndpoints: HyperskillEndpoints = getEndpoints(account = null, accessToken = null)
+    return anonymousEndpoints.steps(stepId.toString()).executeAndExtractFromBody().flatMap {
+      val result = it.steps.firstOrNull()
+      if (result == null) Err("Can't get step source with $stepId id") else Ok(result)
+    }
+  }
+
   fun getTaskToTopics(course: HyperskillCourse): MutableMap<Int, List<HyperskillTopic>> {
     val result = ConcurrentHashMap<Int, List<HyperskillTopic>>()
     for ((taskIndex, stage) in course.stages.withIndex()) {

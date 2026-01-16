@@ -56,8 +56,10 @@ abstract class HyperskillConfigurator<T : EduProjectSettings>(private val baseCo
   override fun isTestFile(task: Task, path: String): Boolean {
     // Use this.testDirs instead of delegating to baseConfigurator to respect overridden testDirs
     val isTestFile = path == testFileName || testDirs.any { testDir -> VfsUtilCore.isEqualOrAncestor(testDir, path) }
+    // ALT-10961: Also check for legacy Hyperskill test files that should be hidden
+    val isLegacyTestFile = path in LEGACY_HYPERSKILL_TEST_FILES
     val taskFile = task.getTaskFile(path)
-    return isTestFile || taskFile?.isVisible == false
+    return isTestFile || isLegacyTestFile || taskFile?.isVisible == false
   }
 
   override fun getMockFileName(course: Course, text: String): String? = baseConfigurator.getMockFileName(course, text)
@@ -68,5 +70,13 @@ abstract class HyperskillConfigurator<T : EduProjectSettings>(private val baseCo
 
   companion object {
     const val HYPERSKILL_TEST_DIR = "hstest"
+
+    /**
+     * Legacy test file names used in older Hyperskill projects.
+     * These files should be hidden in Project View but are not used for running tests
+     * when a proper test directory (e.g., `test/`) exists.
+     * Modern projects use `test/tests.py` inside the test directory instead.
+     */
+    private val LEGACY_HYPERSKILL_TEST_FILES = setOf("tests.py")
   }
 }

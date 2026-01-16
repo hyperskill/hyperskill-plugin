@@ -170,7 +170,11 @@ object NavigationUtils {
 
   private fun getFirstTaskFile(taskDir: VirtualFile, task: Task): VirtualFile? {
     val taskFiles = task.taskFiles.values
-    val firstVisibleTaskFile = taskFiles.sortedBy { it.name }.firstOrNull { it.isVisible } ?: return null
+    val configurator = task.course.configurator
+    val firstVisibleTaskFile = taskFiles
+      .sortedBy { it.name }
+      .firstOrNull { it.isVisible && configurator?.isTestFile(task, it.name) != true }
+      ?: return null
     return firstVisibleTaskFile.findTaskFileInDir(taskDir)
   }
 
