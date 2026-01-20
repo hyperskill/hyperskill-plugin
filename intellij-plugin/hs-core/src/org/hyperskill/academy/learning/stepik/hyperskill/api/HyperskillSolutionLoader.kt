@@ -38,7 +38,7 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
         "Hyperskill submission ${lastSubmission.id} for task ${task.name} is not instance of ${StepikBasedSubmission::class.simpleName} class"
       )
 
-    val files: Map<String, Solution> = when (task) {
+    val allFiles: Map<String, Solution> = when (task) {
       is EduTask -> lastSubmission.eduTaskFiles
       is CodeTask -> lastSubmission.codeTaskFiles(task)
       is UnsupportedTask -> emptyMap()
@@ -46,7 +46,15 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
         LOG.warn("Solutions for task ${task.name} of type ${task::class.simpleName} not loaded")
         emptyMap()
       }
-    }.filter { (_, solution) -> solution.isVisible }
+    }
+
+    LOG.info("loadSolution: task='${task.name}' (id=${task.id}), submissionId=${lastSubmission.id}, status=${lastSubmission.status}, " +
+             "allFiles=${allFiles.size} [${allFiles.entries.joinToString { "${it.key}:${it.value.text.length}chars,visible=${it.value.isVisible}" }}]")
+
+    val files = allFiles.filter { (_, solution) -> solution.isVisible }
+    if (files.size != allFiles.size) {
+      LOG.warn("loadSolution: task='${task.name}' - filtered out ${allFiles.size - files.size} invisible files!")
+    }
 
     return TaskSolutions(lastSubmission.time, lastSubmission.status?.toCheckStatus() ?: CheckStatus.Unchecked, files)
   }

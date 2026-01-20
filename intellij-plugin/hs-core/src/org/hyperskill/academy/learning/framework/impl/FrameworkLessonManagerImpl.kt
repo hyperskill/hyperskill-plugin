@@ -17,7 +17,6 @@ import org.hyperskill.academy.learning.Ok
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
-import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.ext.shouldBePropagated
@@ -51,6 +50,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   // These are used to recreate test files with correct content when navigating between stages
   private val originalTestFilesCache = java.util.concurrent.ConcurrentHashMap<Int, Map<String, TaskFile>>()
 
+  // Cache of original template files (visible non-test files) for each task (by step ID)
+  // These are used to calculate user changes correctly, since TaskFile.contents may be modified
+  private val originalTemplateFilesCache = java.util.concurrent.ConcurrentHashMap<Int, Map<String, String>>()
+
   override fun prepareNextTask(lesson: FrameworkLesson, taskDir: VirtualFile, showDialogIfConflict: Boolean) {
     applyTargetTaskChanges(lesson, 1, taskDir, showDialogIfConflict)
   }
@@ -64,14 +67,25 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       "Only solutions of framework tasks can be saved"
     }
 
+    LOG.info("saveExternalChanges: task='${task.name}' (id=${task.id}), externalState=${externalState.size} files")
+
     val propagatableFiles = task.allFiles.split(task).first
+    LOG.info("saveExternalChanges: task='${task.name}' - propagatableFiles (templates): " +
+             "[${propagatableFiles.entries.joinToString { "${it.key}:${it.value.length}chars,hash=${it.value.hashCode()}" }}]")
+
     // there may be visible editable files (f. e. binary files) that are not stored into submissions,
     // but we don't want to lose them after applying submission into a task
     val externalPropagatableFiles = externalState.split(task).first.toMutableMap()
+    LOG.info("saveExternalChanges: task='${task.name}' - externalPropagatableFiles (submission): " +
+             "[${externalPropagatableFiles.entries.joinToString { "${it.key}:${it.value.length}chars,hash=${it.value.hashCode()}" }}]")
+
     propagatableFiles.forEach { (path, text) ->
       externalPropagatableFiles.putIfAbsent(path, text)
     }
     val changes = calculateChanges(propagatableFiles, externalPropagatableFiles)
+    LOG.info("saveExternalChanges: task='${task.name}' - calculated ${changes.changes.size} changes: " +
+             "[${changes.changes.joinToString { it.javaClass.simpleName }}]")
+
     val currentRecord = task.record
     task.record = try {
       storage.updateUserChanges(currentRecord, changes)
@@ -80,6 +94,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       LOG.error("Failed to save solution for task `${task.name}`", e)
       currentRecord
     }
+    LOG.info("saveExternalChanges: task='${task.name}' - record updated from $currentRecord to ${task.record}")
     YamlFormatSynchronizer.saveItem(task)
   }
 
@@ -156,6 +171,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val currentTask = lesson.taskList[currentTaskIndex]
     val targetTask = lesson.taskList[targetTaskIndex]
 
+    LOG.info("=== Stage switch: '${currentTask.name}' (idx=$currentTaskIndex) -> '${targetTask.name}' (idx=$targetTaskIndex), delta=$taskIndexDelta ===")
+
     lesson.currentTaskIndex = targetTaskIndex
     SlowOperations.knownIssue("EDU-XXXX").use {
       YamlFormatSynchronizer.saveItem(lesson)
@@ -163,14 +180,17 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     val currentRecord = currentTask.record
     val targetRecord = targetTask.record
+    LOG.info("Records: current=$currentRecord, target=$targetRecord")
 
     val initialCurrentFiles = currentTask.allFiles
+    LOG.info("initialCurrentFiles (from currentTask.allFiles): ${initialCurrentFiles.mapValues { it.value.length.toString() + " chars, hash=" + it.value.hashCode() }}")
 
     // 1. Get difference between initial state of current task and previous task state
     // and construct previous state of current task.
     // Previous state is needed to determine if a user made any new change
     val previousCurrentUserChanges = getUserChangesFromStorage(currentTask)
     val previousCurrentState = HashMap(initialCurrentFiles).apply { previousCurrentUserChanges.apply(this) }
+    LOG.info("previousCurrentState (after applying storage changes): ${previousCurrentState.mapValues { it.value.length.toString() + " chars, hash=" + it.value.hashCode() }}")
 
     // 2. Calculate difference between initial state of current task and current state on local FS.
     // Update change list for current task in [storage] to have ability to restore state of current task in future
@@ -181,6 +201,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       LOG.error("Failed to save user changes for task `${currentTask.name}`", e)
       UpdatedUserChanges(currentRecord, UserChanges.empty())
     }
+    LOG.info("Saved currentTask changes: newRecord=$newCurrentRecord, changes=${currentUserChanges.changes.size}")
 
     // 3. Update record index to a new one.
     currentTask.record = newCurrentRecord
@@ -190,10 +211,14 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     // 4. Get difference (change list) between initial and latest states of target task
     val nextUserChanges = getUserChangesFromStorage(targetTask)
+    LOG.info("nextUserChanges (from storage for targetTask): ${nextUserChanges.changes.size} changes")
 
     // 5. Apply change lists to initial state to get latest states of current and target tasks
     val currentState = HashMap(initialCurrentFiles).apply { currentUserChanges.apply(this) }
-    val targetState = HashMap(targetTask.allFiles).apply { nextUserChanges.apply(this) }
+    val initialTargetFiles = targetTask.allFiles
+    LOG.info("initialTargetFiles (from targetTask.allFiles): ${initialTargetFiles.mapValues { it.value.length.toString() + " chars, hash=" + it.value.hashCode() }}")
+    val targetState = HashMap(initialTargetFiles).apply { nextUserChanges.apply(this) }
+    LOG.info("targetState (after applying storage changes): ${targetState.mapValues { it.value.length.toString() + " chars, hash=" + it.value.hashCode() }}")
 
     // 6. Calculate difference between latest states of current and target tasks
     // Note, there are special rules for hyperskill courses for now
@@ -202,13 +227,17 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // If a user navigated back to current task, didn't make any change and wants to navigate to next task again
     // we shouldn't try to propagate current changes to next task
     val currentTaskHasNewUserChanges = !(currentRecord != -1 && targetRecord != -1 && previousCurrentState == currentState)
+    LOG.info("currentTaskHasNewUserChanges=$currentTaskHasNewUserChanges, propagateFilesOnNavigation=${lesson.propagateFilesOnNavigation}")
 
     val changes = if (currentTaskHasNewUserChanges && taskIndexDelta == 1 && lesson.propagateFilesOnNavigation) {
+      LOG.info("Using PROPAGATION mode")
       calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict)
     }
     else {
+      LOG.info("Using DIFF mode (no propagation)")
       calculateChanges(currentState, targetState)
     }
+    LOG.info("Changes to apply: ${changes.changes.size} changes")
 
     // 7. Apply difference between latest states of current and target tasks on local FS
     changes.apply(project, taskDir, targetTask)
@@ -220,6 +249,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     SlowOperations.knownIssue("EDU-XXXX").use {
       YamlFormatSynchronizer.saveItem(targetTask)
     }
+    LOG.info("=== Stage switch complete ===")
   }
 
   /**
@@ -469,7 +499,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
   private fun getUserChangesFromFiles(initialState: FLTaskState, taskDir: VirtualFile): UserChanges {
     val currentState = getTaskStateFromFiles(initialState.keys, taskDir)
-    return calculateChanges(initialState, currentState)
+    LOG.info("getUserChangesFromFiles: initialState=${initialState.mapValues { "${it.value.length} chars, hash=${it.value.hashCode()}" }}")
+    LOG.info("getUserChangesFromFiles: diskState=${currentState.mapValues { "${it.value.length} chars, hash=${it.value.hashCode()}" }}")
+    val changes = calculateChanges(initialState, currentState)
+    LOG.info("getUserChangesFromFiles: calculated ${changes.changes.size} changes")
+    return changes
   }
 
   @Synchronized
@@ -555,19 +589,150 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     return loadTestFilesFromApi(task) != null
   }
 
+  /**
+   * Stores original template files (visible non-test files) for the task.
+   * These templates are used for calculating user changes correctly.
+   *
+   * IMPORTANT: Call this when task files are loaded from API (fresh data).
+   * Do NOT call after user may have modified files, as TaskFile.contents may be stale.
+   */
+  override fun storeOriginalTemplateFiles(task: Task) {
+    // Don't overwrite cache if it already contains data
+    if (originalTemplateFilesCache.containsKey(task.id)) {
+      LOG.info("Template cache already contains files for task '${task.name}' (step ${task.id}), not overwriting")
+      return
+    }
+
+    val templateFiles = task.taskFiles.filterValues { taskFile ->
+      taskFile.isVisible && !taskFile.isTestFile
+    }
+
+    if (templateFiles.isNotEmpty()) {
+      // Store only the content (as String), not the TaskFile objects
+      val cachedTemplates = templateFiles.mapValues { (_, taskFile) ->
+        taskFile.contents.textualRepresentation
+      }
+      originalTemplateFilesCache[task.id] = cachedTemplates
+      val filesInfo = cachedTemplates.entries.joinToString { (name, content) ->
+        "$name:size=${content.length}"
+      }
+      LOG.info("Stored ${cachedTemplates.size} original template files for task '${task.name}' (step ${task.id}): [$filesInfo]")
+    }
+  }
+
+  /**
+   * Loads template files from API and caches them.
+   * This is used as a fallback when the cache is empty.
+   */
+  private fun loadTemplateFilesFromApi(task: Task): Map<String, String>? {
+    val stepId = task.id
+    if (stepId <= 0) {
+      LOG.warn("Cannot load template files from API: task '${task.name}' has invalid step ID: $stepId")
+      return null
+    }
+
+    LOG.info("Loading template files from API for task '${task.name}' (step $stepId)")
+
+    return try {
+      ApplicationManager.getApplication().executeOnPooledThread<Map<String, String>?> {
+        val stepSourceResult = HyperskillConnector.getInstance().getStepSourceAnonymous(stepId)
+        if (stepSourceResult is Err) {
+          LOG.warn("Failed to load step source from API for step $stepId: ${stepSourceResult.error}")
+          return@executeOnPooledThread null
+        }
+
+        val stepSource = (stepSourceResult as Ok).value
+        val options = stepSource.block?.options as? PyCharmStepOptions
+        if (options == null) {
+          LOG.warn("Step $stepId has no PyCharmStepOptions")
+          return@executeOnPooledThread null
+        }
+
+        val allFiles = options.files
+        if (allFiles.isNullOrEmpty()) {
+          LOG.warn("Step $stepId has no files in options")
+          return@executeOnPooledThread null
+        }
+
+        // Filter visible non-test files
+        val templateFiles = allFiles.filter { taskFile ->
+          taskFile.isVisible && !taskFile.isLearnerCreated && "test" !in taskFile.name.lowercase()
+        }
+
+        if (templateFiles.isEmpty()) {
+          LOG.warn("Step $stepId has no template files")
+          return@executeOnPooledThread null
+        }
+
+        val cachedTemplates = templateFiles.associate { taskFile ->
+          taskFile.name to taskFile.contents.textualRepresentation
+        }
+
+        originalTemplateFilesCache[stepId] = cachedTemplates
+        val filesInfo = cachedTemplates.entries.joinToString { (name, content) ->
+          "$name:size=${content.length}"
+        }
+        LOG.info("Loaded and cached ${cachedTemplates.size} template files from API for task '${task.name}' (step $stepId): [$filesInfo]")
+
+        cachedTemplates
+      }.get()
+    } catch (e: Exception) {
+      LOG.warn("Exception while loading template files from API for step $stepId", e)
+      null
+    }
+  }
+
+  /**
+   * Ensures template files are cached for the task.
+   * If not cached, attempts to load from API.
+   */
+  fun ensureTemplateFilesCached(task: Task): Boolean {
+    if (originalTemplateFilesCache.containsKey(task.id)) {
+      return true
+    }
+    return loadTemplateFilesFromApi(task) != null
+  }
+
   override fun dispose() {
     Disposer.dispose(storage)
     originalTestFilesCache.clear()
+    originalTemplateFilesCache.clear()
   }
 
+  /**
+   * Returns the original template content for visible non-test files.
+   * Uses cached templates if available, otherwise loads from API.
+   *
+   * IMPORTANT: For framework lessons, we must use cached templates because TaskFile.contents
+   * may be modified when loading submissions, which would corrupt the diff calculation.
+   */
   private val Task.allFiles: FLTaskState
     get() {
-      val configurator = course.configurator
-      return taskFiles
-        // Exclude test files from framework storage - they are recreated from task definition
-        // Use configurator.isTestFile() to properly identify test files for all languages
-        .filterValues { configurator?.isTestFile(this, it.name) != true }
-        .mapValues { it.value.contents.textualRepresentation }
+      // Get list of visible non-test files
+      val visibleFiles = taskFiles.filterValues { it.isVisible && !it.isTestFile }
+
+      // Ensure templates are cached (load from API if needed)
+      if (!originalTemplateFilesCache.containsKey(id)) {
+        ensureTemplateFilesCached(this)
+      }
+
+      // Try to get cached templates
+      val cachedTemplates = originalTemplateFilesCache[id]
+      if (cachedTemplates != null) {
+        // Use cached templates, but also include any new learner-created files
+        val result = HashMap(cachedTemplates)
+        for ((path, taskFile) in visibleFiles) {
+          if (taskFile.isLearnerCreated && path !in result) {
+            // New learner-created file not in cache - add it
+            result[path] = taskFile.contents.textualRepresentation
+          }
+        }
+        return result
+      }
+
+      // No cache and API failed - fall back to TaskFile.contents (may be incorrect)
+      LOG.warn("No cached templates for task '${name}' (step $id), using TaskFile.contents (may be stale)")
+      return visibleFiles.mapValues { it.value.contents.textualRepresentation }
     }
 
   private fun FLTaskState.splitByKey(predicate: (String) -> Boolean): Pair<FLTaskState, FLTaskState> {

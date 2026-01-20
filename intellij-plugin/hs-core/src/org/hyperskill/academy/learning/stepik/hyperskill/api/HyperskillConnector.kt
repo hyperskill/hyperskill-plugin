@@ -495,10 +495,13 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
         HyperskillTaskBuilder(course, step).build()
           ?.also { task ->
             hyperskillCourse.updateAdditionalFiles(step)
-            // Store original test files from API for framework lessons
+            // Store original test and template files from API for framework lessons
             // This allows recreateTestFiles() to use correct test files instead of stale YAML data
+            // and saveExternalChanges() to correctly calculate diff from original templates
             if (project != null && task.lesson is FrameworkLesson) {
-              FrameworkLessonManager.getInstance(project).storeOriginalTestFiles(task)
+              val flm = FrameworkLessonManager.getInstance(project)
+              flm.storeOriginalTestFiles(task)
+              flm.storeOriginalTemplateFiles(task)
               // Hide test files in Project View
               task.taskFiles.values
                 .filter { !it.isLearnerCreated && it.isTestFile }

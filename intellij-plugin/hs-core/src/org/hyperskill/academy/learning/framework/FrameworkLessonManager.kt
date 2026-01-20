@@ -36,6 +36,18 @@ interface FrameworkLessonManager : EduTestAware {
   fun storeOriginalTestFiles(task: Task)
 
   /**
+   * Stores original template files (visible non-test files) from API for a task.
+   * These templates are used for calculating user changes correctly in [saveExternalChanges].
+   * Should be called after creating tasks from API response.
+   *
+   * IMPORTANT: Call this when task files are loaded from API (fresh data).
+   * Do NOT call after user may have modified files, as TaskFile.contents may be stale.
+   *
+   * @param task the task whose template files should be stored
+   */
+  fun storeOriginalTemplateFiles(task: Task)
+
+  /**
    * Retrieves cached original test files for a task.
    * These are the test files that were stored from API response when the task was created/updated.
    *
