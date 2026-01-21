@@ -29,8 +29,10 @@ import org.hyperskill.academy.learning.configurators.FakeGradleHyperskillConfigu
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.CourseMode
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.Lesson
 import org.hyperskill.academy.learning.courseFormat.LessonContainer
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.courseFormat.ext.customContentPath
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
@@ -162,6 +164,20 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
     SubmissionsManager.getInstance(project).course = course
     return course
+  }
+
+  /**
+   * Cache test files for all tasks in framework lessons to enable proper test file recreation during navigation.
+   * This is normally done when loading task data from API, but tests don't make API calls.
+   * Call this after course setup is complete (including any modifications to the course structure).
+   */
+  internal fun cacheFrameworkLessonTestFiles(course: Course) {
+    val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
+    for (lesson in course.lessons.filterIsInstance<FrameworkLesson>()) {
+      for (task in lesson.taskList) {
+        frameworkLessonManager.storeOriginalTestFiles(task)
+      }
+    }
   }
 
   protected fun getCourse(): Course = StudyTaskManager.getInstance(project).course!!

@@ -13,6 +13,7 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
 import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.createChildFile
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.junit.Before
 import org.junit.Test
 import java.util.*
@@ -613,6 +614,10 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : UpdateTestBase<T>() {
     } as T
     setupLocalCourse(eduCourse)
     localCourse = eduCourse
+
+    // Cache test files for all tasks in framework lessons to enable proper test file recreation during navigation
+    // This is normally done when loading task data from API, but tests don't make API calls
+    cacheFrameworkLessonTestFiles(eduCourse)
   }
 
   protected fun assertTaskFolder(treeBuilder: FileTreeBuilder.() -> Unit) = runInEdtAndWait {

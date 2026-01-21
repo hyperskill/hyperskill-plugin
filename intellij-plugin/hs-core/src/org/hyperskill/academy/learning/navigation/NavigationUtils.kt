@@ -335,7 +335,7 @@ object NavigationUtils {
   private fun setReadOnlyFlagToNonEditableFiles(project: Project, task: Task, readOnlyFlag: Boolean) {
     runWriteAction {
       for (taskFile in task.taskFiles.values.filter { !it.isEditable }) {
-        val virtualTaskFile = taskFile.getVirtualFile(project) ?: error("Cannot get a virtual file")
+        val virtualTaskFile = taskFile.getVirtualFile(project) ?: continue
         if (readOnlyFlag) {
           GeneratorUtils.addNonEditableFileToCourse(task.course, virtualTaskFile)
         }

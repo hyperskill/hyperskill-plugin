@@ -244,7 +244,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     // 8. Recreate test files (files with isLearnerCreated = false) from target task definition
     // These files are not tracked in framework storage, so we need to recreate them explicitly
-    recreateTestFiles(project, taskDir, targetTask)
+    recreateTestFiles(project, taskDir, currentTask, targetTask)
 
     SlowOperations.knownIssue("EDU-XXXX").use {
       YamlFormatSynchronizer.saveItem(targetTask)
@@ -340,44 +340,69 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    * by [storeOriginalTestFiles] when fresh API data is received. Does NOT fall back to task.taskFiles
    * because in framework lessons, task.taskFiles may be corrupted with test content from another stage
    * (all stages share the same task directory on disk).
+   *
+   * @param currentTask The task we're navigating FROM (used to identify old test files to delete)
+   * @param targetTask The task we're navigating TO (used to identify new test files to create)
    */
-  private fun recreateTestFiles(project: Project, taskDir: VirtualFile, task: Task) {
+  private fun recreateTestFiles(project: Project, taskDir: VirtualFile, currentTask: Task, targetTask: Task) {
+    // Get old test files from current task cache to determine which ones need to be deleted
+    val cachedCurrentTestFiles = originalTestFilesCache[currentTask.id] ?: emptyMap()
+    val currentTestFileNames = cachedCurrentTestFiles.keys
+
     // ALT-10961: Only use cached test files from API to prevent using corrupted task.taskFiles
     // Cache is populated by storeOriginalTestFiles() when fresh API data is received.
     // DO NOT update cache from task.taskFiles here - it may contain test content from another stage
     // due to framework lesson stages sharing the same task directory.
-    var cachedTestFiles = originalTestFilesCache[task.id]
+    var cachedTargetTestFiles = originalTestFilesCache[targetTask.id]
 
-    if (cachedTestFiles == null) {
-      LOG.warn("No cached test files for task '${task.name}' (step ${task.id}). Attempting to load from API...")
-      cachedTestFiles = loadTestFilesFromApi(task)
-      if (cachedTestFiles == null) {
-        LOG.warn("Failed to load test files from API for task '${task.name}' (step ${task.id}). " +
-                 "Skipping test files recreation to avoid using potentially corrupted task.taskFiles.")
-        return
+    if (cachedTargetTestFiles == null) {
+      LOG.warn("No cached test files for task '${targetTask.name}' (step ${targetTask.id}). Attempting to load from API...")
+      cachedTargetTestFiles = loadTestFilesFromApi(targetTask)
+    }
+
+    // If target task has no test files (null or empty), we still need to delete old test files
+    val targetTestFiles: Collection<TaskFile> = cachedTargetTestFiles?.values ?: emptyList()
+    val targetTestFileNames = targetTestFiles.map { it.name }.toSet()
+
+    // Delete test files from current task that are not in target task
+    val testFilesToDelete = currentTestFileNames - targetTestFileNames
+    if (testFilesToDelete.isNotEmpty()) {
+      LOG.info("Deleting ${testFilesToDelete.size} old test files: $testFilesToDelete")
+      invokeAndWaitIfNeeded {
+        runWriteAction {
+          for (fileName in testFilesToDelete) {
+            try {
+              taskDir.findFileByRelativePath(fileName)?.delete(this)
+            }
+            catch (e: Exception) {
+              LOG.warn("Failed to delete old test file $fileName", e)
+            }
+          }
+        }
       }
     }
 
-    val testFiles: Collection<TaskFile> = cachedTestFiles.values
+    // Create new test files if target task has any
+    if (targetTestFiles.isNotEmpty()) {
+      // Log test files info for diagnostics (ALT-10961)
+      val filesInfo = targetTestFiles.joinToString { "${it.name}:${it.contents.textualRepresentation.hashCode()}" }
+      LOG.info("Recreating ${targetTestFiles.size} test files for task '${targetTask.name}' (step ${targetTask.id}): [$filesInfo]")
 
-    // Log test files info for diagnostics (ALT-10961)
-    val filesInfo = testFiles.joinToString { "${it.name}:${it.contents.textualRepresentation.hashCode()}" }
-    LOG.info("Recreating ${testFiles.size} test files for task '${task.name}' (step ${task.id}): [$filesInfo]")
-
-    invokeAndWaitIfNeeded {
-      runWriteAction {
-        for (taskFile in testFiles) {
-          try {
-            GeneratorUtils.createChildFile(
-              project.toCourseInfoHolder(),
-              taskDir,
-              taskFile.name,
-              taskFile.contents,
-              taskFile.isEditable
-            )
-          }
-          catch (e: Exception) {
-            LOG.warn("Failed to recreate test file ${taskFile.name} for task ${task.name}", e)
+      invokeAndWaitIfNeeded {
+        runWriteAction {
+          for (taskFile in targetTestFiles) {
+            try {
+              GeneratorUtils.createChildFile(
+                project.toCourseInfoHolder(),
+                taskDir,
+                taskFile.name,
+                taskFile.contents,
+                taskFile.isEditable
+              )
+            }
+            catch (e: Exception) {
+              LOG.warn("Failed to recreate test file ${taskFile.name} for task ${targetTask.name}", e)
+            }
           }
         }
       }
