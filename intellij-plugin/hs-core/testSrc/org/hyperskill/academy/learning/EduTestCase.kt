@@ -163,6 +163,8 @@ abstract class EduTestCase : BasePlatformTestCase() {
     }
 
     SubmissionsManager.getInstance(project).course = course
+    // Cache test files for framework lessons to enable correct test file recreation during navigation
+    cacheFrameworkLessonTestFiles(course)
     return course
   }
 

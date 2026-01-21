@@ -348,12 +348,12 @@ class HyperskillTemplateBasedNavigationTest : NavigationTestBase() {
       courseProducer = ::HyperskillCourse
     ) {
       frameworkLesson("lesson1") {
-        eduTask("task1") {
+        eduTask("task1", stepId = 1) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("src/Bar.kt", "fun bar() {}")
           taskFile("test/Tests1.kt", "fun tests1() {}")
         }
-        eduTask("task2") {
+        eduTask("task2", stepId = 2) {
           taskFile("src/Task.kt", "fun foobar() {}")
           taskFile("src/Baz.kt", "fun baz() {}")
           taskFile("test/Tests2.kt", "fun tests2() {}")

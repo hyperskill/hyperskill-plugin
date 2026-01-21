@@ -481,17 +481,17 @@ class HyperskillNavigationTest : NavigationTestBase() {
   private fun createHyperskillCourse(completeStages: Boolean = true): HyperskillCourse {
     return hyperskillCourseWithFiles(completeStages = completeStages) {
       frameworkLesson("lesson1") {
-        eduTask("task1") {
+        eduTask("task1", stepId = 1) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("src/Baz.kt", "fun baz() {}")
           taskFile("test/Tests1.kt", "fun tests1() {}")
         }
-        eduTask("task2") {
+        eduTask("task2", stepId = 2) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("src/Baz.kt", "fun baz() {}")
           taskFile("test/Tests2.kt", "fun tests2() {}")
         }
-        eduTask("task3") {
+        eduTask("task3", stepId = 3) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("src/Baz.kt", "fun baz() {}")
           taskFile("test/Tests3.kt", "fun tests3() {}")

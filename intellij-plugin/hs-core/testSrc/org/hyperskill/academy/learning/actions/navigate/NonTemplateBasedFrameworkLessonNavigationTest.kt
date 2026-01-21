@@ -463,13 +463,13 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
   fun `test invisible non-test files don't propagate, visible test files propagate`() {
     val course = courseWithFiles(language = FakeGradleBasedLanguage) {
       frameworkLesson("lesson", isTemplateBased = false) {
-        eduTask("task1") {
+        eduTask("task1", stepId = 1) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("src/secret.kt", "fun f() = 17", visible = false)
           taskFile("src/invisible1.kt", "Hello", visible = false)
           taskFile("test/tests.kt", "fun tests1() {}", visible = true)
         }
-        eduTask("task2") {
+        eduTask("task2", stepId = 2) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("src/secret.kt", "fun f() = 42", visible = false)
           taskFile("src/invisible2.kt", "World!", visible = false)
@@ -527,21 +527,21 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
   fun `test propagate changes to tasks further the next one`() {
     val course = courseWithFiles(language = FakeGradleBasedLanguage) {
       frameworkLesson("lesson", isTemplateBased = false) {
-        eduTask("task1") {
+        eduTask("task1", stepId = 101) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("test/tests.kt", "fun tests() {}", visible = true)
 
           taskFile("src/invisible1.kt", "Hello", visible = false)
           taskFile("test/tests1.kt", "fun tests1() {}")
         }
-        eduTask("task2") {
+        eduTask("task2", stepId = 102) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("test/tests.kt", "fun tests() {}", visible = true)
 
           taskFile("src/invisible2.kt", "World!", visible = false)
           taskFile("test/tests2.kt", "fun tests2() {}")
         }
-        eduTask("task3") {
+        eduTask("task3", stepId = 103) {
           taskFile("src/Task.kt", "fun foo() {}")
           taskFile("test/tests.kt", "fun tests() {}", visible = true)
 
@@ -774,16 +774,16 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       language = FakeGradleBasedLanguage
     ) {
       frameworkLesson("lesson1", isTemplateBased = false) {
-        eduTask("task1") {
+        eduTask("task1", stepId = 201) {
           taskFile("src/Task1.kt", "fun main() {}")
           taskFile("src/Task2.kt", "fun main() {}")
         }
-        eduTask("task2") {
+        eduTask("task2", stepId = 202) {
           taskFile("src/Task1.kt", "fun main() {}")
           taskFile("src/Task2.kt", "fun main() {}")
           taskFile("runConfigurations/a.kt", createRunConfigurationTemplate("task2", "Task1"), visible = false)
         }
-        eduTask("task3") {
+        eduTask("task3", stepId = 203) {
           taskFile("src/Task1.kt", "fun main() {}")
           taskFile("src/Task2.kt", "fun main() {}")
           taskFile("runConfigurations/b.kt", createRunConfigurationTemplate("task3", "Task2"), visible = false)
@@ -842,12 +842,12 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
       language = FakeGradleBasedLanguage
     ) {
       frameworkLesson("lesson1", isTemplateBased = false) {
-        eduTask("task1") {
+        eduTask("task1", stepId = 301) {
           taskFile("src/Task1.kt", "fun main1() {}", editable = false)
           taskFile("src/Task2.kt", "fun main1() {}", editable = false)
           taskFile("src/Task3.kt", "fun main1() {}")
         }
-        eduTask("task2") {
+        eduTask("task2", stepId = 302) {
           taskFile("src/Task1.kt", "fun main2() {}", editable = false)
           taskFile("src/Task3.kt", "fun main2() {}")
           taskFile("src/Task4.kt", "fun main2() {}", editable = false)
@@ -912,11 +912,11 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
   private fun createFrameworkCourseWithVisibilityChange(initialVisibilityFlag: Boolean = false): Course =
     courseWithFiles(language = FakeGradleBasedLanguage) {
       frameworkLesson("lesson", isTemplateBased = false) {
-        eduTask("task1") {
+        eduTask("task1", stepId = 401) {
           taskFile("src/A.kt", "fun foo1() {}")
           taskFile("src/B.kt", "fun tests1() {}", visible = initialVisibilityFlag)
         }
-        eduTask("task2") {
+        eduTask("task2", stepId = 402) {
           taskFile("src/A.kt", "fun foo2() {}")
           taskFile("src/B.kt", "fun tests2() {}", visible = !initialVisibilityFlag)
         }
@@ -927,17 +927,17 @@ class NonTemplateBasedFrameworkLessonNavigationTest : NavigationTestBase() {
     language = FakeGradleBasedLanguage
   ) {
     frameworkLesson("lesson1", isTemplateBased = false) {
-      eduTask("task1") {
+      eduTask("task1", stepId = 501) {
         taskFile("src/Task.kt", "fun foo() {}")
         taskFile("src/Baz.kt", "fun baz() {}")
         taskFile("test/Tests1.kt", "fun tests1() {}")
       }
-      eduTask("task2") {
+      eduTask("task2", stepId = 502) {
         taskFile("src/Task.kt", "fun foo() {}")
         taskFile("src/Baz.kt", "fun baz() {}")
         taskFile("test/Tests2.kt", "fun tests2() {}")
       }
-      eduTask("task3") {
+      eduTask("task3", stepId = 503) {
         taskFile("src/Task.kt", "fun foo() {}")
         taskFile("src/Baz.kt", "fun baz() {}")
         taskFile("test/Tests3.kt", "fun tests3() {}")

@@ -786,6 +786,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   @TestOnly
   override fun cleanUpState() {
     storage.closeAndClean()
+    originalTestFilesCache.clear()
+    originalTemplateFilesCache.clear()
   }
 
   companion object {
