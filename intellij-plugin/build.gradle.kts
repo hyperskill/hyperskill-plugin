@@ -62,6 +62,11 @@ dependencies {
   // (not as a separate module). This is intentional: hs-core.xml is included via XInclude in plugin.xml
   implementation(project("hs-core"))
 
+  // Include hs-core tests in the main plugin tests
+  // hs-core uses base plugin which doesn't provide test infrastructure,
+  // so we run hs-core tests via the main plugin which has proper test setup
+  testImplementation(project("hs-core", "testOutput"))
+
   intellijPlatform {
     intellijIde(baseVersion)
 
@@ -90,6 +95,28 @@ dependencies {
     pluginModule(implementation(project("hs-localization")))
 
     testFramework(TestFrameworkType.Bundled)
+    testIntellijPlugins(commonTestPlugins)
+  }
+
+  // Test dependencies from hs-core (needed for running hs-core tests via main plugin)
+  testImplementationWithoutKotlin(libs.mockwebserver)
+  testImplementationWithoutKotlin(libs.mockk)
+}
+
+// Include hs-core test sources in the main plugin test source set
+// This allows running hs-core tests via :intellij-plugin:test
+java {
+  sourceSets {
+    test {
+      java.srcDirs(
+        project("hs-core").file("testSrc"),
+        project("hs-core").file("branches/$environmentName/testSrc")
+      )
+      resources.srcDirs(
+        project("hs-core").file("testResources"),
+        project("hs-core").file("branches/$environmentName/testResources")
+      )
+    }
   }
 }
 
@@ -113,6 +140,12 @@ val ideToPlugins = mapOf(
 
 tasks {
   val projectName = project.extensionProvider.flatMap { it.projectName }
+
+  // Configure test task to run from hs-core directory
+  // This is needed because hs-core tests use relative path "testData/" for test resources
+  test {
+    workingDir = project("hs-core").projectDir
+  }
 
   // Copy hs-core.xml and Hyperskill.xml to main plugin JAR for XInclude resolution.
   // These files are in hs-core module but need to be in the main JAR because
