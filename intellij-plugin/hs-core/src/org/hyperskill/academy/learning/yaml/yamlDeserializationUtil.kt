@@ -113,6 +113,17 @@ private fun processErrors(project: Project, configFile: VirtualFile, e: Throwabl
       }
     }
 
+    // Jackson's repackaged version of MarkedYAMLException
+    is com.fasterxml.jackson.dataformat.yaml.snakeyaml.error.MarkedYAMLException -> {
+      val message = yamlParsingErrorNotificationMessage(e.problem, e.contextMark?.line)
+      if (message != null) {
+        showError(project, e, configFile, message)
+      }
+      else {
+        showError(project, e, configFile)
+      }
+    }
+
     is JsonMappingException -> {
       val causeException = e.cause
       if (causeException?.message == null || causeException !is InvalidYamlFormatException) {

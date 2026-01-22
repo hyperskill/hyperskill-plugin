@@ -145,7 +145,8 @@ open class CoursesInfosStorageTestBase : EduTestCase() {
   fun testInProgressCoursesGroup() {
     val coursesStorage = getCoursesStorage()
     val course = course {}
-    coursesStorage.addCourse(course, "", 1, 10)
+    val location = createTempCourseLocation()
+    coursesStorage.addCourse(course, location, 1, 10)
     val coursesInGroups = coursesStorage.coursesInGroups()
     assertSize(1, coursesInGroups)
     assertEquals(EduCoreBundle.message("course.dialog.in.progress"), coursesInGroups.first().name)
@@ -155,7 +156,8 @@ open class CoursesInfosStorageTestBase : EduTestCase() {
   fun testCompletedCoursesGroup() {
     val coursesStorage = getCoursesStorage()
     val course = course {}
-    coursesStorage.addCourse(course, "", 10, 10)
+    val location = createTempCourseLocation()
+    coursesStorage.addCourse(course, location, 10, 10)
     val coursesInGroups = coursesStorage.coursesInGroups()
     assertSize(1, coursesInGroups)
     assertEquals(EduCoreBundle.message("course.dialog.completed"), coursesInGroups.first().name)
@@ -165,10 +167,23 @@ open class CoursesInfosStorageTestBase : EduTestCase() {
   fun testUntouchedCourse() {
     val coursesStorage = getCoursesStorage()
     val course = course {}
-    coursesStorage.addCourse(course, "", 0, 0)
+    val location = createTempCourseLocation()
+    coursesStorage.addCourse(course, location, 0, 0)
     val coursesInGroups = coursesStorage.coursesInGroups()
     assertSize(1, coursesInGroups)
     assertEquals(EduCoreBundle.message("course.dialog.in.progress"), coursesInGroups.first().name)
+  }
+
+  /**
+   * Creates a temporary directory for the course location that is visible to VFS.
+   * The VFS check in [JBACourseFromStorage.isLocationValid] requires the directory to be indexed.
+   */
+  private fun createTempCourseLocation(): String {
+    val tempDir = kotlin.io.path.createTempDirectory("course-test").toFile()
+    tempDir.deleteOnExit()
+    // Refresh VFS to make the directory visible
+    com.intellij.openapi.vfs.LocalFileSystem.getInstance().refreshAndFindFileByIoFile(tempDir)
+    return tempDir.absolutePath
   }
 
   private fun getCoursesStorage(): CoursesStorage {

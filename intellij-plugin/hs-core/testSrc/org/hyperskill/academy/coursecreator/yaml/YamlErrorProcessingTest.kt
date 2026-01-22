@@ -76,7 +76,10 @@ class YamlErrorProcessingTest : YamlTestCase() {
 
   @Test
   fun `test unexpected item type`() {
-    doTest(
+    // Unsupported task types are now silently logged instead of throwing exceptions (see yamlDeserializationUtil.kt)
+    // This test verifies that no exception is thrown for unsupported task types
+    val configFile = createConfigFile(
+      YamlConfigSettings.TASK_CONFIG,
       """
       |type: e
       |files:
@@ -88,9 +91,11 @@ class YamlErrorProcessingTest : YamlTestCase() {
       |  is_correct: true
       |- text: 2
       |  is_correct: false
-      |""".trimMargin(), YamlConfigSettings.TASK_CONFIG,
-      "Unsupported task type \"e\"", InvalidYamlFormatException::class.java
+      |""".trimMargin()
     )
+    // Should return null without throwing an exception
+    val result = deserializeItemProcessingErrors(configFile, project)
+    assertNull("Unsupported task types should return null without throwing", result)
   }
 
   @Test
