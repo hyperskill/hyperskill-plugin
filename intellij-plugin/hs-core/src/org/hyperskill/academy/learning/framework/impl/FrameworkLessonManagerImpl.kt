@@ -15,11 +15,13 @@ import com.intellij.openapi.application.ApplicationManager
 import org.hyperskill.academy.learning.Err
 import org.hyperskill.academy.learning.Ok
 import org.hyperskill.academy.learning.courseDir
+import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.ext.shouldBePropagated
+import org.hyperskill.academy.learning.courseFormat.ext.testDirs
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
@@ -370,12 +372,35 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       LOG.info("Deleting ${testFilesToDelete.size} old test files: $testFilesToDelete")
       invokeAndWaitIfNeeded {
         runWriteAction {
+          // Collect parent directories that may become empty after file deletion
+          val potentiallyEmptyDirs = mutableSetOf<VirtualFile>()
           for (fileName in testFilesToDelete) {
             try {
-              taskDir.findFileByRelativePath(fileName)?.delete(this)
+              val file = taskDir.findFileByRelativePath(fileName)
+              if (file != null) {
+                file.parent?.let { parent ->
+                  if (parent != taskDir) {
+                    potentiallyEmptyDirs.add(parent)
+                  }
+                }
+                file.delete(this)
+              }
             }
             catch (e: Exception) {
               LOG.warn("Failed to delete old test file $fileName", e)
+            }
+          }
+          // Delete empty parent directories (in reverse depth order to handle nested dirs)
+          val sortedDirs = potentiallyEmptyDirs.sortedByDescending { it.path.count { c -> c == '/' } }
+          for (dir in sortedDirs) {
+            try {
+              if (dir.isValid && dir.children.isEmpty()) {
+                LOG.info("Deleting empty directory: ${dir.name}")
+                dir.delete(this)
+              }
+            }
+            catch (e: Exception) {
+              LOG.warn("Failed to delete empty directory ${dir.name}", e)
             }
           }
         }
@@ -434,7 +459,15 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // https://jetbrains.team/p/edu/repositories/internal-documentation/files/subsystems/Framework%20Lessons/internal-part-ru.md
 
     // Calculate files that change propagation flag
-    val fromNonPropagatableToPropagatableFilesState = targetPropagatableFilesState.filter { it.key in currentNonPropagatableFilesState }
+    // Note: We also check currentTask.taskFiles directly because invisible files are not included
+    // in currentNonPropagatableFilesState (since allFiles only returns visible files)
+    // We check if file is invisible AND not in a test directory (test files are handled by recreateTestFiles)
+    val taskTestDirs = currentTask.testDirs
+    val fromNonPropagatableToPropagatableFilesState = targetPropagatableFilesState.filter { (path, _) ->
+      path in currentNonPropagatableFilesState ||
+      (currentTask.taskFiles[path]?.isVisible == false &&
+       taskTestDirs.none { testDir -> path.startsWith("$testDir/") || path == testDir })
+    }
     val fromPropagatableToNonPropagatableFilesState = targetNonPropagatableFilesState.filter { it.key in currentPropagatableFilesState }
 
     // We assume that files could not change a propagation flag from true to false (for example, from visible to invisible)
@@ -445,7 +478,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     // Only files that do not change a propagation flag can participate in propagating user changes.
     val newCurrentPropagatableFilesState = currentPropagatableFilesState.filter { it.key !in targetNonPropagatableFilesState }
-    val newTargetPropagatableFilesState = targetPropagatableFilesState.filter { it.key !in currentNonPropagatableFilesState }
+    // Exclude files that are changing visibility from invisible to visible
+    val newTargetPropagatableFilesState = targetPropagatableFilesState.filter { it.key !in fromNonPropagatableToPropagatableFilesState }
 
     // Files that change propagation flag are processed separately:
     // (Non-Propagatable -> Propagatable) - Changes for them are not propagated
@@ -579,8 +613,18 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return
     }
 
+    // Only cache files that are:
+    // 1. In test directories (actual test files that should be recreated during navigation)
+    // 2. NOT visible (visible test files should be propagated, not recreated)
+    // This excludes invisible files that are just using visibility change mechanism
+    // (not actually in test directories) - those are handled by visibility change logic.
+    val taskTestDirs = task.testDirs
     val testFiles = task.taskFiles.filterValues { taskFile ->
-      !taskFile.isLearnerCreated && taskFile.isTestFile
+      if (taskFile.isLearnerCreated) return@filterValues false
+      if (taskFile.isVisible) return@filterValues false // Visible test files should be propagated
+      val name = taskFile.name
+      val isInTestDir = taskTestDirs.any { testDir -> name.startsWith("$testDir/") || name == testDir }
+      isInTestDir
     }
     if (testFiles.isNotEmpty()) {
       // Create copies of TaskFile objects to prevent modification when original task.taskFiles changes
@@ -733,22 +777,37 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    */
   private val Task.allFiles: FLTaskState
     get() {
-      // Get list of visible non-test files
-      val visibleFiles = taskFiles.filterValues { it.isVisible && !it.isTestFile }
+      // Include both visible non-test files AND invisible non-test-directory files
+      // Test files (in test directories) are handled separately by recreateTestFiles
+      // Invisible non-test-directory files need to be in state for proper diff calculation
+      val taskTestDirs = testDirs
+      val filesForState = taskFiles.filterValues { taskFile ->
+        val name = taskFile.name
+        val isInTestDir = taskTestDirs.any { testDir -> name.startsWith("$testDir/") || name == testDir }
+        // Include visible non-test files
+        if (taskFile.isVisible && !isInTestDir) return@filterValues true
+        // Include invisible files that are NOT in test directories
+        if (!taskFile.isVisible && !isInTestDir) return@filterValues true
+        false
+      }
 
       // Ensure templates are cached (load from API if needed)
       if (!originalTemplateFilesCache.containsKey(id)) {
         ensureTemplateFilesCached(this)
       }
 
-      // Try to get cached templates
+      // Try to get cached templates for visible files
       val cachedTemplates = originalTemplateFilesCache[id]
       if (cachedTemplates != null) {
-        // Use cached templates, but also include any new learner-created files
+        // Start with cached templates (for visible files)
         val result = HashMap(cachedTemplates)
-        for ((path, taskFile) in visibleFiles) {
-          if (taskFile.isLearnerCreated && path !in result) {
-            // New learner-created file not in cache - add it
+        // Add invisible non-test files from taskFiles
+        for ((path, taskFile) in filesForState) {
+          if (!taskFile.isVisible && path !in result) {
+            result[path] = taskFile.contents.textualRepresentation
+          }
+          // Add learner-created visible files
+          if (taskFile.isLearnerCreated && taskFile.isVisible && path !in result) {
             result[path] = taskFile.contents.textualRepresentation
           }
         }
@@ -757,7 +816,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
       // No cache and API failed - fall back to TaskFile.contents (may be incorrect)
       LOG.warn("No cached templates for task '${name}' (step $id), using TaskFile.contents (may be stale)")
-      return visibleFiles.mapValues { it.value.contents.textualRepresentation }
+      return filesForState.mapValues { it.value.contents.textualRepresentation }
     }
 
   private fun FLTaskState.splitByKey(predicate: (String) -> Boolean): Pair<FLTaskState, FLTaskState> {
