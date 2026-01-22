@@ -31,7 +31,7 @@ class AdditionalFilesInsideYamlTest : EduTestCase() {
       .sortedBy { it.name }
 
     assertContentEquals(
-      listOf("file1.txt", "course-info.yaml", "course-remote-info.yaml", "lesson1/file2.txt", "lesson1/lesson-info.yaml"),
+      listOf("course-info.yaml", "course-remote-info.yaml", "file1.txt", "lesson1/file2.txt", "lesson1/lesson-info.yaml"),
       additionalFiles.map { it.name }
     )
   }

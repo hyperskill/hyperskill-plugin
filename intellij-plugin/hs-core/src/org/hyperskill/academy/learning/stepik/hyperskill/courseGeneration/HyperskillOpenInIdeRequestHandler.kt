@@ -12,8 +12,10 @@ import org.hyperskill.academy.learning.authUtils.requestFocus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.KOTLIN
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.Lesson
 import org.hyperskill.academy.learning.courseFormat.Section
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.courseFormat.ext.*
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
@@ -401,6 +403,22 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
 
     val tasks = HyperskillConnector.getTasks(course, stepsSourceForAdding, project)
     tasks.forEach(this::addTask)
+
+    // Store original test and template files from API for framework lessons
+    // This allows recreateTestFiles() to use correct test files instead of stale YAML data
+    // and saveExternalChanges() to correctly calculate diff from original templates
+    if (project != null && this is FrameworkLesson) {
+      val flm = FrameworkLessonManager.getInstance(project)
+      for (task in tasks) {
+        flm.storeOriginalTestFiles(task)
+        flm.storeOriginalTemplateFiles(task)
+        // Hide test files in Project View
+        task.taskFiles.values
+          .filter { !it.isLearnerCreated && it.isTestFile }
+          .forEach { it.isVisible = false }
+      }
+    }
+
     return Ok(tasks)
   }
 

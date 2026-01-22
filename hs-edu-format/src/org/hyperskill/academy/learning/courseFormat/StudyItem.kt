@@ -26,6 +26,13 @@ abstract class StudyItem() {
   @Transient
   private var _parent: ItemContainer? = null
 
+  /**
+   * Returns the parent container, or null if not set.
+   * Use this for safe access when the parent might not be set yet (e.g., during task creation).
+   */
+  val parentOrNull: ItemContainer?
+    get() = _parent
+
   open var parent: ItemContainer
     get() = _parent ?: error("Parent is null for StudyItem $name")
     set(value) {
