@@ -153,8 +153,7 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
             LOG.warn("Stage loading failed: ${loadResult.error}")
             showStageLoadingError(project, loadResult.error)
             // Return the project so user can retry later, but show error notification
-            course.selectedStage = request.stageId
-            runInEdt { openSelectedStage(hyperskillCourse, project) }
+            // Don't try to navigate - stages weren't loaded so there's nothing to open
             return project
           }
 

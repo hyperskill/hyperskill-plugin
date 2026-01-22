@@ -219,10 +219,11 @@ object NavigationUtils {
     }
     val taskFiles = task.taskFiles
 
-    val lesson = task.lesson
+    // Use parentOrNull for safe access - task may not have parent set yet during initial navigation
+    val lesson = task.parentOrNull as? Lesson
 
     // We should save student answers and apply diffs only in student mode
-    if (lesson is FrameworkLesson && lesson.course.isStudy && fromTask != null && fromTask.lesson == lesson) {
+    if (lesson is FrameworkLesson && lesson.course.isStudy && fromTask != null && fromTask.parentOrNull == lesson) {
       fromTask.saveStudentAnswersIfNeeded(project)
       prepareFilesForTargetTask(project, lesson, fromTask, task, showDialogIfConflict)
       project.course?.configurator?.courseBuilder?.refreshProject(project, RefreshCause.STRUCTURE_MODIFIED)

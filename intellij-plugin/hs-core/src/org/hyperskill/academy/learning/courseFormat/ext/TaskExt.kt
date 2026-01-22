@@ -22,6 +22,7 @@ import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.TASK
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.Lesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
@@ -42,9 +43,13 @@ val Task.project: Project? get() = course.project
 val Task.sourceDir: String? get() = course.sourceDir
 val Task.testDirs: List<String> get() = course.testDirs
 
-val Task.isFrameworkTask: Boolean get() = lesson is FrameworkLesson
+val Task.isFrameworkTask: Boolean get() = parentOrNull is FrameworkLesson
 
-val Task.dirName: String get() = if (isFrameworkTask && course.isStudy) TASK else name
+val Task.dirName: String
+  get() {
+    val lesson = parentOrNull as? FrameworkLesson ?: return name
+    return if (lesson.course.isStudy) TASK else name
+  }
 
 fun Task.findDir(lessonDir: VirtualFile?): VirtualFile? {
   return lessonDir?.findChild(dirName)
@@ -96,7 +101,7 @@ fun Task.hasChangedFiles(project: Project): Boolean {
 }
 
 fun Task.saveStudentAnswersIfNeeded(project: Project) {
-  if (lesson !is FrameworkLesson) return
+  if (parentOrNull !is FrameworkLesson) return
 
   getDir(project.courseDir) ?: return
   YamlFormatSynchronizer.saveItem(this)
@@ -205,6 +210,7 @@ fun Task.getFormattedTaskText(project: Project): String? {
  * But the task description and YAML files for the task are in the folder with the task name (f. e. `lesson/task1`)
  */
 fun Task.getTaskDirectory(project: Project): VirtualFile? {
+  val lesson = parentOrNull as? Lesson
   val taskDirectory = if (lesson is FrameworkLesson && course.isStudy) {
     lesson.getDir(project.courseDir)?.findChild(name)
   }

@@ -21,14 +21,16 @@ fun StudyItem.getDir(courseDir: VirtualFile): VirtualFile? {
   return when (this) {
     is Course -> courseDir
     is Section -> {
-      courseDir.findFileByRelativePath(parent.getPathToChildren())?.findChild(name)
+      val sectionParent = (parentOrNull as? StudyItem) ?: return null
+      courseDir.findFileByRelativePath(sectionParent.getPathToChildren())?.findChild(name)
     }
 
     is Lesson -> {
-      parent.getDir(courseDir)?.findFileByRelativePath(parent.getPathToChildren())?.findChild(name)
+      val lessonParent = (parentOrNull as? StudyItem) ?: return null
+      lessonParent.getDir(courseDir)?.findFileByRelativePath(lessonParent.getPathToChildren())?.findChild(name)
     }
 
-    is Task -> findDir(lesson.getDir(courseDir))
+    is Task -> (parentOrNull as? Lesson)?.getDir(courseDir)?.let { findDir(it) }
     else -> error("Can't find directory for the item $itemType")
   }
 }
