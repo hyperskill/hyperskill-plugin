@@ -82,16 +82,14 @@ class TabManager(private val project: Project) : Disposable {
     val result = mutableListOf(DESCRIPTION_TAB)
     val course = course
 
-    if (course.isStudy) {
-      if (course is HyperskillCourse && course.isTaskInProject(this)) {
-        result.add(TOPICS_TAB)
-      }
-      if (supportSubmissions && SubmissionsManager.getInstance(project).submissionsSupported()) {
-        result.add(SUBMISSIONS_TAB)
-      }
-      if (course is HyperskillCourse && course.isTaskInTopicsSection(this) && this !is TheoryTask) {
-        result.add(THEORY_TAB)
-      }
+    if (course is HyperskillCourse && course.isTaskInProject(this)) {
+      result.add(TOPICS_TAB)
+    }
+    if (supportSubmissions && SubmissionsManager.getInstance(project).submissionsSupported()) {
+      result.add(SUBMISSIONS_TAB)
+    }
+    if (course is HyperskillCourse && course.isTaskInTopicsSection(this) && this !is TheoryTask) {
+      result.add(THEORY_TAB)
     }
 
     return result

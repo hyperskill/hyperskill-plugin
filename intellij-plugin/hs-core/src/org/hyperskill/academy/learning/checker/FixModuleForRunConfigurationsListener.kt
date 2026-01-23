@@ -26,7 +26,7 @@ import org.hyperskill.academy.learning.courseFormat.ext.findSourceDir
  */
 class FixModuleForRunConfigurationsListener(private val project: Project) : RunManagerListener, ModuleRootListener {
 
-  private fun learnerMode(): Boolean = project.isEduProject() && project.course?.isStudy == true
+  private fun learnerMode(): Boolean = project.isEduProject() && project.course != null
 
   override fun runConfigurationAdded(settings: RunnerAndConfigurationSettings) {
     if (!learnerMode()) return

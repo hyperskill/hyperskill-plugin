@@ -95,11 +95,5 @@ fun wrapHintSwing(project: Project, hintElement: Element, displayedHintNumber: S
   val course = StudyTaskManager.getInstance(project).course
   val escapedHintTitle = hintTitle.xmlEscaped
   val hintHtml = hintElement.html()
-  return if (course != null && !course.isStudy) {
-    createExpandedHintBlockTemplate(hintHtml, displayedHintNumber, escapedHintTitle)
-  }
-  else {
-    createHintBlockTemplate(hintHtml, displayedHintNumber, escapedHintTitle)
-  }
+  return createHintBlockTemplate(hintHtml, displayedHintNumber, escapedHintTitle)
 }
-

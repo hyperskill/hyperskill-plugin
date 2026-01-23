@@ -30,13 +30,11 @@ import org.hyperskill.academy.learning.runReadActionInSmartMode
 abstract class EduTaskCheckerBase(task: EduTask, private val envChecker: EnvironmentChecker, project: Project) :
   TaskChecker<EduTask>(task, project) {
 
-  var activateRunToolWindow: Boolean = !task.course.isStudy
+  var activateRunToolWindow: Boolean = false
 
   override fun check(indicator: ProgressIndicator): CheckResult {
-    if (task.course.isStudy) {
-      runInEdt {
-        ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.RUN)?.hide(null)
-      }
+    runInEdt {
+      ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.RUN)?.hide(null)
     }
 
     val possibleError = envChecker.getEnvironmentError(project, task)

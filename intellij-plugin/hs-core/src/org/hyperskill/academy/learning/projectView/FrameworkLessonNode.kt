@@ -40,7 +40,7 @@ class FrameworkLessonNode private constructor(
   override val additionalInfo: String?
     get() {
       val course = item.course
-      return if (course is HyperskillCourse && course.isStudy && item == course.getProjectLesson()) {
+      return if (course is HyperskillCourse && item == course.getProjectLesson()) {
         val (tasksSolved, tasksTotal) = ProgressUtil.countProgress(item)
         if (tasksTotal == 0) {
           return null

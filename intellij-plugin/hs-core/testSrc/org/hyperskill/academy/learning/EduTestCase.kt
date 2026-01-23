@@ -26,19 +26,15 @@ import org.hyperskill.academy.learning.configuration.PlainTextConfigurator
 import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
 import org.hyperskill.academy.learning.configurators.FakeGradleConfigurator
 import org.hyperskill.academy.learning.configurators.FakeGradleHyperskillConfigurator
-import org.hyperskill.academy.learning.courseFormat.Course
-import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
-import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
-import org.hyperskill.academy.learning.courseFormat.Lesson
-import org.hyperskill.academy.learning.courseFormat.LessonContainer
-import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.courseFormat.ext.customContentPath
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getVirtualFile
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.newproject.CourseProjectGenerator
 import org.hyperskill.academy.learning.submissions.SubmissionsManager
 import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowFactory
@@ -95,6 +91,13 @@ abstract class EduTestCase : BasePlatformTestCase() {
 
   override fun tearDown() {
     try {
+      // Close all open editors to avoid "Editor is already disposed" errors in subsequent tests
+      runInEdtAndWait {
+        val fileEditorManager = FileEditorManager.getInstance(project)
+        for (file in fileEditorManager.openFiles) {
+          fileEditorManager.closeFile(file)
+        }
+      }
       EduTestServiceStateHelper.cleanUpState(project)
       // Workaround to minimize how test cases affect each other with leaking mocks
       clearAllMocks()

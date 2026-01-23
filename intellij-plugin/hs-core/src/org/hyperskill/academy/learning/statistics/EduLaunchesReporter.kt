@@ -66,7 +66,7 @@ object EduLaunchesReporter {
     val uid = PermanentInstallationID.get()
     val baseUrl = "https://plugins.jetbrains.com/plugins/list"
     val projectType = course.itemType
-    val role = if (course.isStudy) "student" else "teacher"
+    val role = "student"
     val id = if (course.id != 0) "&courseId=${course.id}" else ""
     return "$baseUrl?pluginId=$pluginId&build=$buildNumber&pluginVersion=${plugin.version}&os=$os&uuid=$uid&projectType=$projectType&role=$role$id"
   }

@@ -94,7 +94,7 @@ class CSharpCourseBuilder : EduCourseBuilder<CSharpProjectSettings> {
     val tasksToAdd = mutableListOf<Task>()
     course.visitTasks { task ->
       val taskParent = task.parent
-      if (course.isStudy && taskParent is FrameworkLesson && taskParent.currentTask() != task) return@visitTasks
+      if (taskParent is FrameworkLesson && taskParent.currentTask() != task) return@visitTasks
       val csproj = task.getCSProjFileNameWithoutExtension()
       val entity = projectModelEntities.remove(csproj)
       if (entity == null) {

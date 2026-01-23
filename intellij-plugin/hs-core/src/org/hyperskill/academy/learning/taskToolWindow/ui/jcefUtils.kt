@@ -77,11 +77,5 @@ fun wrapHintJCEF(project: Project, hintElement: Element, displayedHintNumber: St
   }
   val bulbIconWithTheme = if (!isUnitTestMode) getIconPath(bulbIcon) else ""
 
-  val study = course.isStudy
-  return if (study) {
-    String.format(HINT_BLOCK_TEMPLATE, bulbIconWithTheme, escapedHintTitle, displayedHintNumber, hintText)
-  }
-  else {
-    String.format(HINT_EXPANDED_BLOCK_TEMPLATE, bulbIconWithTheme, escapedHintTitle, displayedHintNumber, hintText)
-  }
+  return String.format(HINT_BLOCK_TEMPLATE, bulbIconWithTheme, escapedHintTitle, displayedHintNumber, hintText)
 }

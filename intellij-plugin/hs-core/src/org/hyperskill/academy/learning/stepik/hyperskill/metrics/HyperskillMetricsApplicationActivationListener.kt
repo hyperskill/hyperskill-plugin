@@ -10,7 +10,7 @@ class HyperskillMetricsApplicationActivationListener : ApplicationActivationList
     val project = ideFrame.project ?: return
     val task = project.selectedTaskFile?.task ?: return
     val course = task.course
-    if (!course.isStudy || course !is HyperskillCourse) {
+    if (course !is HyperskillCourse) {
       return
     }
     HyperskillMetricsService.getInstance().taskStarted(task)

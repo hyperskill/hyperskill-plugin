@@ -27,7 +27,6 @@ class SqlGradleStartupActivity : ProjectActivity {
     if (disable) return
     val course = project.course ?: return
     // Setup data sources only for learners for now
-    if (!course.isStudy) return
     if (course.configurator !is SqlGradleConfigurator) return
 
     val initializationState = SqlInitializationState.getInstance(project)

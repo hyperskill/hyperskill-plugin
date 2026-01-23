@@ -6,8 +6,6 @@ import org.hyperskill.academy.learning.courseFormat.Course
 
 class LearningObjectsPersister(private val project: Project) : CourseSetListener {
   override fun courseSet(course: Course) {
-    if (!course.isStudy) return
-
     val storageManager = LearningObjectsStorageManager.getInstance(project)
 
     storageManager.persistAllEduFiles(course)

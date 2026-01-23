@@ -56,9 +56,6 @@ class HyperskillCheckListener : CheckListener {
     }
 
     val course = task.lesson.course as? HyperskillCourse ?: return
-    if (!course.isStudy) {
-      return
-    }
 
     if (HyperskillSettings.INSTANCE.account == null) {
       EduNotificationManager.create(

@@ -13,8 +13,7 @@ import org.hyperskill.academy.learning.*
 
 private fun isRefactoringForbidden(project: Project?, element: PsiElement?): Boolean {
   if (project == null || element == null) return false
-  val course = project.course ?: return false
-  if (!course.isStudy) return false
+
   return when (element) {
     is PsiFile -> {
       // TODO: allow changing user created non-task files EDU-2556

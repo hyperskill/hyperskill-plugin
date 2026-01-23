@@ -36,8 +36,7 @@ abstract class EduNode<T : StudyItem>(
 
   open val additionalInfo: String?
     get() {
-      val item = item ?: return null
-      return if (!item.course.isStudy && item.presentableName != item.name) "(${item.name})" else null
+      return null
     }
 
   override fun hasProblemFileBeneath(): Boolean = false

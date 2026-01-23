@@ -31,7 +31,7 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
   override fun loadSolution(task: Task, submissions: List<Submission>): TaskSolutions {
     // submission.taskId can differ from task.id because some hyperskill submissions were stored on stepik and got stepik step ID instead
     // of hyperskill task ID, see EDU-5186
-    val lastSubmission: Submission = submissions.firstOrNull { if (!task.course.isStudy) true else it.taskId == task.id }
+    val lastSubmission: Submission = submissions.firstOrNull { it.taskId == task.id }
                                      ?: return TaskSolutions.EMPTY
     if (lastSubmission !is StepikBasedSubmission)
       error(
@@ -48,8 +48,10 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
       }
     }
 
-    LOG.info("loadSolution: task='${task.name}' (id=${task.id}), submissionId=${lastSubmission.id}, status=${lastSubmission.status}, " +
-             "allFiles=${allFiles.size} [${allFiles.entries.joinToString { "${it.key}:${it.value.text.length}chars,visible=${it.value.isVisible}" }}]")
+    LOG.info(
+      "loadSolution: task='${task.name}' (id=${task.id}), submissionId=${lastSubmission.id}, status=${lastSubmission.status}, " +
+             "allFiles=${allFiles.size} [${allFiles.entries.joinToString { "${it.key}:${it.value.text.length}chars,visible=${it.value.isVisible}" }}]"
+    )
 
     val files = allFiles.filter { (_, solution) -> solution.isVisible }
     if (files.size != allFiles.size) {
@@ -85,7 +87,7 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
 
   override fun updateTask(project: Project, task: Task, submissions: List<Submission>, force: Boolean): Boolean {
     val course = task.course as HyperskillCourse
-    if (course.isStudy && task.lesson == course.getProjectLesson() && submissions.any { it.taskId == task.id && it.status == CORRECT }) {
+    if (task.lesson == course.getProjectLesson() && submissions.any { it.taskId == task.id && it.status == CORRECT }) {
       markStageAsCompleted(task)
     }
     return super.updateTask(project, task, submissions, force)

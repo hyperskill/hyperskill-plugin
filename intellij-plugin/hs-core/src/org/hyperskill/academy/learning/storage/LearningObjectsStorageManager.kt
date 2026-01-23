@@ -110,7 +110,7 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
   }
 
   fun persistAllEduFiles(course: Course) {
-    if (project.course?.isStudy != true) return
+    if (project.course == null) return
 
     course.visitEduFiles { eduFile ->
       eduFile.persist(learningObjectsStorage)
@@ -118,7 +118,7 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
   }
 
   fun persistTaskEduFiles(task: Task) {
-    if (project.course?.isStudy != true) return
+    if (project.course == null) return
 
     for (taskFile in task.taskFiles.values) {
       taskFile.persist(learningObjectsStorage)
@@ -126,7 +126,7 @@ class LearningObjectsStorageManager(private val project: Project) : DumbAware, D
   }
 
   fun persistCourseAdditionalFiles(course: Course) {
-    if (project.course?.isStudy != true) return
+    if (project.course == null) return
 
     for (additionalFile in course.additionalFiles) {
       additionalFile.persist(learningObjectsStorage)

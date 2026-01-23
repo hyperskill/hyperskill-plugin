@@ -18,12 +18,8 @@ import com.intellij.psi.util.PsiUtilCore
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import org.hyperskill.academy.learning.EduUtilsKt.convertToHtml
 import org.hyperskill.academy.learning.courseDir
-import org.hyperskill.academy.learning.courseFormat.CheckStatus
-import org.hyperskill.academy.learning.courseFormat.DescriptionFormat
+import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.TASK
-import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
-import org.hyperskill.academy.learning.courseFormat.Lesson
-import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
@@ -47,8 +43,7 @@ val Task.isFrameworkTask: Boolean get() = parentOrNull is FrameworkLesson
 
 val Task.dirName: String
   get() {
-    val lesson = parentOrNull as? FrameworkLesson ?: return name
-    return if (lesson.course.isStudy) TASK else name
+    return TASK
   }
 
 fun Task.findDir(lessonDir: VirtualFile?): VirtualFile? {
@@ -211,7 +206,7 @@ fun Task.getFormattedTaskText(project: Project): String? {
  */
 fun Task.getTaskDirectory(project: Project): VirtualFile? {
   val lesson = parentOrNull as? Lesson
-  val taskDirectory = if (lesson is FrameworkLesson && course.isStudy) {
+  val taskDirectory = if (lesson is FrameworkLesson) {
     lesson.getDir(project.courseDir)?.findChild(name)
   }
   else {

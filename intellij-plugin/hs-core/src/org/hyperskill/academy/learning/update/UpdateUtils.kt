@@ -101,6 +101,11 @@ object UpdateUtils {
         updateTaskFiles(task, remoteTask.nonPropagatableFiles, true)
       }
     }
+
+    // Update the test files cache after updating task files from remote.
+    // This ensures the cache reflects the updated test files content (ALT-10961).
+    // Use updateOriginalTestFiles to force-update the cache (storeOriginalTestFiles won't overwrite).
+    flm.updateOriginalTestFiles(task)
   }
 
   private val Task.nonPropagatableFiles: Map<String, TaskFile>

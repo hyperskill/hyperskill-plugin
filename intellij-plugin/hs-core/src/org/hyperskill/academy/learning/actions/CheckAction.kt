@@ -36,7 +36,6 @@ import org.hyperskill.academy.learning.checker.TaskChecker
 import org.hyperskill.academy.learning.checker.details.CheckDetailsView
 import org.hyperskill.academy.learning.checker.remote.RemoteTaskCheckerManager.remoteCheckerForTask
 import org.hyperskill.academy.learning.courseFormat.*
-import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.courseFormat.CheckResult.Companion.failedToCheck
 import org.hyperskill.academy.learning.courseFormat.ext.*
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
@@ -44,6 +43,7 @@ import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.OutputTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.messages.EduCoreBundle.message
 import org.hyperskill.academy.learning.projectView.ProgressUtil.updateCourseProgress
 import org.hyperskill.academy.learning.stepik.hyperskill.checker.HyperskillCheckConnector.failedToSubmit
@@ -155,11 +155,9 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
 
       // Recreate test files from task definition before checking
       // This prevents students from cheating by modifying or deleting test files
-      if (task.course.isStudy) {
-        recreateTestFiles(taskDir)
-      }
+      recreateTestFiles(taskDir)
 
-      if (task.course.isStudy && task.course !is HyperskillCourse) {
+      if (task.course !is HyperskillCourse) {
         createTests(invisibleTestFiles)
       }
       return checker.check(indicator)
@@ -180,18 +178,22 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
         // NEVER fall back to task.taskFiles as it may be corrupted with test content
         // from another stage in framework lessons.
         if (!frameworkLessonManager.ensureTestFilesCached(task)) {
-          LOG.warn("Failed to cache test files for framework task '${task.name}'. " +
-                   "Test files may be missing or incorrect.")
+          LOG.warn(
+            "Failed to cache test files for framework task '${task.name}'. " +
+            "Test files may be missing or incorrect."
+          )
         }
         val cachedTestFiles = frameworkLessonManager.getOriginalTestFiles(task)
         if (cachedTestFiles != null) {
           LOG.info("Using ${cachedTestFiles.size} cached test files for framework task '${task.name}'")
           cachedTestFiles
-        } else {
+        }
+        else {
           LOG.warn("No test files available for framework task '${task.name}' after attempting API load")
           emptyList()
         }
-      } else {
+      }
+      else {
         task.taskFiles.values.filter { taskFile ->
           !taskFile.isLearnerCreated && taskFile.isTestFile
         }
@@ -262,11 +264,10 @@ class CheckAction() : ActionWithProgressIcon(), DumbAware {
       val checkResult = result
       requireNotNull(checkResult)
 
-      if (task.course.isStudy) {
-        task.status = checkResult.status
-        task.feedback = CheckFeedback(Date(), checkResult)
-        saveItem(task)
-      }
+      task.status = checkResult.status
+      task.feedback = CheckFeedback(Date(), checkResult)
+      saveItem(task)
+
       if (checker != null) {
         if (checkResult.status === CheckStatus.Failed) {
           checker.onTaskFailed()

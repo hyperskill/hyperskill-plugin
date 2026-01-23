@@ -120,7 +120,7 @@ fun VirtualFile.getContainingTask(holder: CourseInfoHolder<out Course?>): Task? 
   val taskDir = getTaskDir(holder) ?: return null
   val lessonDir = taskDir.parent ?: return null
   val lesson = lessonDir.getLesson(holder) ?: return null
-  return if (lesson is FrameworkLesson && course.isStudy) {
+  return if (lesson is FrameworkLesson) {
     lesson.currentTask()
   }
   else {

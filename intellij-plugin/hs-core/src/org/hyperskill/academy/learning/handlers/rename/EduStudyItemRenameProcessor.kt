@@ -11,17 +11,14 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.search.SearchScope
 import com.intellij.refactoring.rename.RenameDialog
 import com.intellij.refactoring.rename.RenamePsiFileProcessor
-import org.hyperskill.academy.coursecreator.CCStudyItemPathInputValidator
 import org.hyperskill.academy.coursecreator.framework.CCFrameworkLessonManager
 import org.hyperskill.academy.coursecreator.handlers.StudyItemRefactoringHandler
 import org.hyperskill.academy.coursecreator.presentableTitleName
 import org.hyperskill.academy.learning.RefreshCause
 import org.hyperskill.academy.learning.course
-import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.StudyItem
 import org.hyperskill.academy.learning.courseFormat.ext.configurator
-import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.studyItemType
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
@@ -90,14 +87,7 @@ abstract class EduStudyItemRenameProcessor : RenamePsiFileProcessor() {
 
         @Throws(ConfigurationException::class)
         override fun canRun() {
-          if (item.course.isStudy) {
-            throw ConfigurationException(EduCoreBundle.message("error.invalid.rename.message"))
-          }
-          val itemDir = item.getDir(project.courseDir)
-          val validator = CCStudyItemPathInputValidator(project, item.course, item.studyItemType, itemDir?.parent, item.name)
-          if (!validator.checkInput(newName)) {
-            throw ConfigurationException(validator.getErrorText(newName))
-          }
+          throw ConfigurationException(EduCoreBundle.message("error.invalid.rename.message"))
         }
       }
     }

@@ -31,9 +31,21 @@ interface FrameworkLessonManager : EduTestAware {
    * These files will be used to recreate test files with correct content when navigating between stages.
    * Should be called after creating tasks from API response.
    *
+   * Note: This method does NOT overwrite existing cache entries to protect API data.
+   * Use [updateOriginalTestFiles] when you need to update cache with fresh data (e.g., after course update).
+   *
    * @param task the task whose test files should be stored
    */
   fun storeOriginalTestFiles(task: Task)
+
+  /**
+   * Updates original test files cache for a task, overwriting any existing cached data.
+   * Use this method when updating test files from remote server (e.g., during course update).
+   * Unlike [storeOriginalTestFiles], this method WILL overwrite existing cache entries.
+   *
+   * @param task the task whose test files cache should be updated
+   */
+  fun updateOriginalTestFiles(task: Task)
 
   /**
    * Stores original template files (visible non-test files) from API for a task.

@@ -27,7 +27,7 @@ class HyperskillSubmissionsProvider : SubmissionsProvider {
   }
 
   override fun areSubmissionsAvailable(course: Course): Boolean {
-    return course is HyperskillCourse && course.isStudy
+    return course is HyperskillCourse
   }
 
   override fun getPlatformName(): String = EduNames.JBA

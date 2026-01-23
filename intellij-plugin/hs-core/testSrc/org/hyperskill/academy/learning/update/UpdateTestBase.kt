@@ -1,5 +1,7 @@
 package org.hyperskill.academy.learning.update
 
+import com.intellij.testFramework.runInEdtAndWait
+import com.intellij.util.ui.UIUtil
 import kotlinx.coroutines.runBlocking
 import org.hyperskill.academy.learning.CourseBuilder
 import org.hyperskill.academy.learning.actions.navigate.NavigationTestBase
@@ -36,6 +38,11 @@ abstract class UpdateTestBase<T : Course> : NavigationTestBase() {
         LOG.error(e)
         false
       }
+    }
+    // Update may trigger async operations via invokeLater (e.g., file system events).
+    // Process all pending EDT events to ensure those complete before test assertions.
+    runInEdtAndWait {
+      UIUtil.dispatchAllInvocationEvents()
     }
     if (isShouldBeUpdated) {
       assertTrue("Update failed", isUpdateSucceed)

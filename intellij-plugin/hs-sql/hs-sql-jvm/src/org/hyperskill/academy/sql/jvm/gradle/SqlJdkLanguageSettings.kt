@@ -44,9 +44,6 @@ class SqlJdkLanguageSettings : JdkLanguageSettings() {
   ): List<LabeledComponent<JComponent>> {
     val components = mutableListOf<LabeledComponent<JComponent>>()
     // It doesn't make sense to show a test language component for learners since it doesn't affect course creation anyhow
-    if (!course.isStudy) {
-      components += createTestLanguageComponent(disposable)
-    }
 
     // Non-null jdk means that `setupProjectSdksModel` successfully found bundled JDK.
     // So there is no reason to show JDK settings at all

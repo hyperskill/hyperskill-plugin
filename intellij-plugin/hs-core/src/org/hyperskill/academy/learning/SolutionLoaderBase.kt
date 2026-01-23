@@ -23,11 +23,7 @@ import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
-import org.hyperskill.academy.learning.courseFormat.ext.allTasks
-import org.hyperskill.academy.learning.courseFormat.ext.findTaskFileInDir
-import org.hyperskill.academy.learning.courseFormat.ext.getDir
-import org.hyperskill.academy.learning.courseFormat.ext.hasSolutions
-import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
+import org.hyperskill.academy.learning.courseFormat.ext.*
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
@@ -229,10 +225,12 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
     val lesson = task.lesson
     val isFrameworkTask = lesson is FrameworkLesson
     val isCurrentTask = isFrameworkTask && (lesson as FrameworkLesson).currentTask() == task
-    LOG.info("updateTask: task='${task.name}' (id=${task.id}), " +
-             "isFrameworkTask=$isFrameworkTask, isCurrentTask=$isCurrentTask, " +
-             "solutions=${taskSolutions.solutions.size}, checkStatus=${taskSolutions.checkStatus}, " +
-             "solutionFiles=[${taskSolutions.solutions.keys.joinToString()}]")
+    LOG.info(
+      "updateTask: task='${task.name}' (id=${task.id}), " +
+      "isFrameworkTask=$isFrameworkTask, isCurrentTask=$isCurrentTask, " +
+      "solutions=${taskSolutions.solutions.size}, checkStatus=${taskSolutions.checkStatus}, " +
+      "solutionFiles=[${taskSolutions.solutions.keys.joinToString()}]"
+    )
 
     if (taskSolutions.solutions.isNotEmpty()) {
       if (!taskSolutions.hasIncompatibleSolutions) {
@@ -294,7 +292,7 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
         task.status = taskSolutions.checkStatus
         YamlFormatSynchronizer.saveItem(task)
         val lesson = task.lesson
-        if (task.course.isStudy && lesson is FrameworkLesson && lesson.currentTask() != task) {
+        if (lesson is FrameworkLesson && lesson.currentTask() != task) {
           if (force || task.modifiedBefore(project, taskSolutions)) {
             applySolutionToNonCurrentTask(project, task, taskSolutions)
           }
@@ -311,8 +309,10 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
 
       val solutionMap = taskSolutions.solutions.mapValues { it.value.text }
-      LOG.info("applySolutionToNonCurrentTask: task='${task.name}' (id=${task.id}), " +
-               "saving ${solutionMap.size} solution files: [${solutionMap.entries.joinToString { "${it.key}:${it.value.length}chars" }}]")
+      LOG.info(
+        "applySolutionToNonCurrentTask: task='${task.name}' (id=${task.id}), " +
+               "saving ${solutionMap.size} solution files: [${solutionMap.entries.joinToString { "${it.key}:${it.value.length}chars" }}]"
+      )
 
       frameworkLessonManager.saveExternalChanges(task, solutionMap)
       for (taskFile in task.taskFiles.values) {

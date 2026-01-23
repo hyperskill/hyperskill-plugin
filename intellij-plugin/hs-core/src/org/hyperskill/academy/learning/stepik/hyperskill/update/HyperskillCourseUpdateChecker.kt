@@ -18,8 +18,8 @@ class HyperskillCourseUpdateChecker(project: Project) : CourseUpdateChecker(proj
     }
 
   override fun courseCanBeUpdated(): Boolean {
-    val hyperskillCourse = course as? HyperskillCourse ?: return false
-    return hyperskillCourse.isStudy
+    course as? HyperskillCourse ?: return false
+    return true
   }
 
   override val checkInterval: Long

@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.framework.impl
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
@@ -11,11 +12,9 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.SlowOperations
 import com.intellij.util.io.storage.AbstractStorage
-import com.intellij.openapi.application.ApplicationManager
 import org.hyperskill.academy.learning.Err
 import org.hyperskill.academy.learning.Ok
 import org.hyperskill.academy.learning.courseDir
-import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
@@ -27,10 +26,10 @@ import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.framework.propagateFilesOnNavigation
 import org.hyperskill.academy.learning.messages.EduCoreBundle
-import org.hyperskill.academy.learning.toCourseInfoHolder
-import org.hyperskill.academy.learning.ui.getUIName
 import org.hyperskill.academy.learning.stepik.PyCharmStepOptions
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.toCourseInfoHolder
+import org.hyperskill.academy.learning.ui.getUIName
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
@@ -72,21 +71,27 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     LOG.info("saveExternalChanges: task='${task.name}' (id=${task.id}), externalState=${externalState.size} files")
 
     val propagatableFiles = task.allFiles.split(task).first
-    LOG.info("saveExternalChanges: task='${task.name}' - propagatableFiles (templates): " +
-             "[${propagatableFiles.entries.joinToString { "${it.key}:${it.value.length}chars,hash=${it.value.hashCode()}" }}]")
+    LOG.info(
+      "saveExternalChanges: task='${task.name}' - propagatableFiles (templates): " +
+             "[${propagatableFiles.entries.joinToString { "${it.key}:${it.value.length}chars,hash=${it.value.hashCode()}" }}]"
+    )
 
     // there may be visible editable files (f. e. binary files) that are not stored into submissions,
     // but we don't want to lose them after applying submission into a task
     val externalPropagatableFiles = externalState.split(task).first.toMutableMap()
-    LOG.info("saveExternalChanges: task='${task.name}' - externalPropagatableFiles (submission): " +
-             "[${externalPropagatableFiles.entries.joinToString { "${it.key}:${it.value.length}chars,hash=${it.value.hashCode()}" }}]")
+    LOG.info(
+      "saveExternalChanges: task='${task.name}' - externalPropagatableFiles (submission): " +
+             "[${externalPropagatableFiles.entries.joinToString { "${it.key}:${it.value.length}chars,hash=${it.value.hashCode()}" }}]"
+    )
 
     propagatableFiles.forEach { (path, text) ->
       externalPropagatableFiles.putIfAbsent(path, text)
     }
     val changes = calculateChanges(propagatableFiles, externalPropagatableFiles)
-    LOG.info("saveExternalChanges: task='${task.name}' - calculated ${changes.changes.size} changes: " +
-             "[${changes.changes.joinToString { it.javaClass.simpleName }}]")
+    LOG.info(
+      "saveExternalChanges: task='${task.name}' - calculated ${changes.changes.size} changes: " +
+             "[${changes.changes.joinToString { it.javaClass.simpleName }}]"
+    )
 
     val currentRecord = task.record
     task.record = try {
@@ -327,7 +332,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
         copiedTestFiles
       }.get()
-    } catch (e: Exception) {
+    }
+    catch (e: Exception) {
       LOG.warn("Exception while loading test files from API for step $stepId", e)
       null
     }
@@ -348,7 +354,15 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    */
   private fun recreateTestFiles(project: Project, taskDir: VirtualFile, currentTask: Task, targetTask: Task) {
     // Get old test files from current task cache to determine which ones need to be deleted
-    val cachedCurrentTestFiles = originalTestFilesCache[currentTask.id] ?: emptyMap()
+    var cachedCurrentTestFiles = originalTestFilesCache[currentTask.id]
+    // Fallback to task.taskFiles for current task when cache is empty
+    if (cachedCurrentTestFiles == null) {
+      val taskTestDirs = currentTask.testDirs
+      cachedCurrentTestFiles = currentTask.taskFiles.filterValues { taskFile ->
+        !taskFile.isLearnerCreated && !taskFile.isVisible &&
+        taskTestDirs.any { testDir -> taskFile.name.startsWith("$testDir/") || taskFile.name == testDir }
+      }
+    }
     val currentTestFileNames = cachedCurrentTestFiles.keys
 
     // ALT-10961: Only use cached test files from API to prevent using corrupted task.taskFiles
@@ -360,6 +374,21 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     if (cachedTargetTestFiles == null) {
       LOG.warn("No cached test files for task '${targetTask.name}' (step ${targetTask.id}). Attempting to load from API...")
       cachedTargetTestFiles = loadTestFilesFromApi(targetTask)
+    }
+
+    // Fallback to task.taskFiles when cache is empty and API failed (e.g., in tests or offline mode)
+    // This is less reliable but better than not creating test files at all
+    if (cachedTargetTestFiles == null) {
+      LOG.warn("API also failed. Falling back to task.taskFiles for task '${targetTask.name}'")
+      val taskTestDirs = targetTask.testDirs
+      val testFilesFromTask = targetTask.taskFiles.filterValues { taskFile ->
+        !taskFile.isLearnerCreated && !taskFile.isVisible &&
+        taskTestDirs.any { testDir -> taskFile.name.startsWith("$testDir/") || taskFile.name == testDir }
+      }
+      if (testFilesFromTask.isNotEmpty()) {
+        cachedTargetTestFiles = testFilesFromTask
+        LOG.info("Using ${testFilesFromTask.size} test files from task.taskFiles for task '${targetTask.name}'")
+      }
     }
 
     // If target task has no test files (null or empty), we still need to delete old test files
@@ -413,22 +442,25 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       val filesInfo = targetTestFiles.joinToString { "${it.name}:${it.contents.textualRepresentation.hashCode()}" }
       LOG.info("Recreating ${targetTestFiles.size} test files for task '${targetTask.name}' (step ${targetTask.id}): [$filesInfo]")
 
-      invokeAndWaitIfNeeded {
-        runWriteAction {
-          for (taskFile in targetTestFiles) {
-            try {
-              GeneratorUtils.createChildFile(
-                project.toCourseInfoHolder(),
-                taskDir,
-                taskFile.name,
-                taskFile.contents,
-                taskFile.isEditable
-              )
-            }
-            catch (e: Exception) {
-              LOG.warn("Failed to recreate test file ${taskFile.name} for task ${targetTask.name}", e)
-            }
+      for (taskFile in targetTestFiles) {
+        try {
+          // createChildFile handles write action internally via runInWriteActionAndWait
+          val createdFile = GeneratorUtils.createChildFile(
+            project.toCourseInfoHolder(),
+            taskDir,
+            taskFile.name,
+            taskFile.contents,
+            taskFile.isEditable
+          )
+          if (createdFile == null) {
+            LOG.error("Failed to create test file ${taskFile.name} - createChildFile returned null")
           }
+          else {
+            LOG.info("Successfully created test file: ${createdFile.path}")
+          }
+        }
+        catch (e: Exception) {
+          LOG.error("Exception while recreating test file ${taskFile.name} for task ${targetTask.name}", e)
         }
       }
     }
@@ -478,7 +510,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     // Only files that do not change a propagation flag can participate in propagating user changes.
     val newCurrentPropagatableFilesState = currentPropagatableFilesState.filter { it.key !in targetNonPropagatableFilesState }
-    // Exclude files that are changing visibility from invisible to visible
     val newTargetPropagatableFilesState = targetPropagatableFilesState.filter { it.key !in fromNonPropagatableToPropagatableFilesState }
 
     // Files that change propagation flag are processed separately:
@@ -612,19 +643,19 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       LOG.info("Cache already contains test files for task '${task.name}' (step ${task.id}), not overwriting")
       return
     }
+    storeTestFilesInternal(task)
+  }
 
-    // Only cache files that are:
-    // 1. In test directories (actual test files that should be recreated during navigation)
-    // 2. NOT visible (visible test files should be propagated, not recreated)
-    // This excludes invisible files that are just using visibility change mechanism
-    // (not actually in test directories) - those are handled by visibility change logic.
-    val taskTestDirs = task.testDirs
+  override fun updateOriginalTestFiles(task: Task) {
+    // Force update the cache, used when task files are updated from remote server
+    // (e.g., during course update). Unlike storeOriginalTestFiles, this WILL overwrite.
+    LOG.info("Force updating test files cache for task '${task.name}' (step ${task.id})")
+    storeTestFilesInternal(task)
+  }
+
+  private fun storeTestFilesInternal(task: Task) {
     val testFiles = task.taskFiles.filterValues { taskFile ->
-      if (taskFile.isLearnerCreated) return@filterValues false
-      if (taskFile.isVisible) return@filterValues false // Visible test files should be propagated
-      val name = taskFile.name
-      val isInTestDir = taskTestDirs.any { testDir -> name.startsWith("$testDir/") || name == testDir }
-      isInTestDir
+      !taskFile.isLearnerCreated && taskFile.isTestFile
     }
     if (testFiles.isNotEmpty()) {
       // Create copies of TaskFile objects to prevent modification when original task.taskFiles changes
@@ -745,7 +776,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
         cachedTemplates
       }.get()
-    } catch (e: Exception) {
+    }
+    catch (e: Exception) {
       LOG.warn("Exception while loading template files from API for step $stepId", e)
       null
     }
@@ -774,6 +806,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    *
    * IMPORTANT: For framework lessons, we must use cached templates because TaskFile.contents
    * may be modified when loading submissions, which would corrupt the diff calculation.
+   *
+   * Note: Test files (files in test directories) are handled separately by recreateTestFiles,
+   * so they are excluded here. We use testDirs check directly instead of isTestFile because
+   * isTestFile in HyperskillConfigurator treats ALL invisible files as test files, but we
+   * need to include invisible non-test files for proper diff calculation.
    */
   private val Task.allFiles: FLTaskState
     get() {

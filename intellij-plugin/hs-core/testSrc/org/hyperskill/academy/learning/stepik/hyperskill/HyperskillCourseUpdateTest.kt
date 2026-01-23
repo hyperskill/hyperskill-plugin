@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.stepik.hyperskill
 
 import com.intellij.testFramework.LightPlatformTestCase
+import com.intellij.util.ui.UIUtil
 import org.hyperskill.academy.learning.EduExperimentalFeatures.NEW_COURSE_UPDATE
 import org.hyperskill.academy.learning.actions.NextTaskAction
 import org.hyperskill.academy.learning.actions.PreviousTaskAction
@@ -322,6 +323,9 @@ class HyperskillCourseUpdateTest : FrameworkLessonsUpdateTest<HyperskillCourse>(
   ) {
     val remoteCourse = changeCourse?.let { toRemoteCourse(changeCourse) }
     HyperskillCourseUpdater(project, localCourse).doUpdate(remoteCourse, problemsUpdates)
+    // doUpdate triggers async operations via invokeLater (e.g., navigateToTaskAfterUpdate).
+    // Process all pending EDT events to ensure those complete before test assertions.
+    UIUtil.dispatchAllInvocationEvents()
     val isProjectUpToDate = remoteCourse == null || localCourse.getProjectLesson()?.shouldBeUpdated(project, remoteCourse) == false
     assertTrue("Project is not up-to-date after update", isProjectUpToDate)
   }

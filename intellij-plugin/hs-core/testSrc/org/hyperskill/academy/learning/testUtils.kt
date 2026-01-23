@@ -23,7 +23,6 @@ import com.intellij.testFramework.TestActionEvent
 import com.intellij.util.ui.UIUtil
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
-import org.hyperskill.academy.coursecreator.handlers.CCVirtualFileListener
 import org.hyperskill.academy.learning.actions.CheckAction
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
@@ -149,7 +148,7 @@ fun Course.findTask(lessonName: String, taskName: String): Task {
 // TODO: set up more items which are enabled in real course project
 // TODO: come up with better name when we set up not only virtual file listeners
 inline fun withVirtualFileListener(project: Project, course: Course, disposable: Disposable, action: () -> Unit) {
-  val listener = if (course.isStudy) UserCreatedFileListener(project) else CCVirtualFileListener(project, disposable)
+  val listener = UserCreatedFileListener(project)
 
   val connection = ApplicationManager.getApplication().messageBus.connect()
   connection.subscribe(VirtualFileManager.VFS_CHANGES, listener)

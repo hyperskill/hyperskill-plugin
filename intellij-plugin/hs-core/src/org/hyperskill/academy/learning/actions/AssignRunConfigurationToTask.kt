@@ -14,7 +14,6 @@ import org.hyperskill.academy.learning.EduNames.RUN_CONFIGURATION_DIR
 import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
 import org.hyperskill.academy.learning.actions.RunTaskAction.Companion.RUN_CONFIGURATION_FILE_NAME
 import org.hyperskill.academy.learning.checker.CheckUtils
-import org.hyperskill.academy.learning.course
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.notification.EduNotificationManager
@@ -25,21 +24,7 @@ class AssignRunConfigurationToTask : AnAction(), DumbAware {
 
   override fun update(e: AnActionEvent) {
     e.presentation.isEnabledAndVisible = false
-
-    val project = e.project ?: return
-    val course = project.course ?: return
-    if (course.isStudy) return
-    val task = project.getCurrentTask() ?: return
-    val configurationToAssign = e.getConfigurationFromActionContext(project) ?: return
-
-    //don't enable the action if this configuration is already assigned to this task
-    val existingConfiguration = CheckUtils.getCustomRunConfigurationForRunner(project, task)
-    if (existingConfiguration == configurationToAssign) {
-      e.presentation.isVisible = true
-    }
-    else {
-      e.presentation.isEnabledAndVisible = true
-    }
+    return
   }
 
   override fun actionPerformed(e: AnActionEvent) {

@@ -172,9 +172,9 @@ object NavigationUtils {
     val taskFiles = task.taskFiles.values
     val configurator = task.course.configurator
     val firstVisibleTaskFile = taskFiles
-      .sortedBy { it.name }
-      .firstOrNull { it.isVisible && configurator?.isTestFile(task, it.name) != true }
-      ?: return null
+                                 .sortedBy { it.name }
+                                 .firstOrNull { it.isVisible && configurator?.isTestFile(task, it.name) != true }
+                               ?: return null
     return firstVisibleTaskFile.findTaskFileInDir(taskDir)
   }
 
@@ -223,7 +223,7 @@ object NavigationUtils {
     val lesson = task.parentOrNull as? Lesson
 
     // We should save student answers and apply diffs only in student mode
-    if (lesson is FrameworkLesson && lesson.course.isStudy && fromTask != null && fromTask.parentOrNull == lesson) {
+    if (lesson is FrameworkLesson && fromTask != null && fromTask.parentOrNull == lesson) {
       fromTask.saveStudentAnswersIfNeeded(project)
       prepareFilesForTargetTask(project, lesson, fromTask, task, showDialogIfConflict)
       project.course?.configurator?.courseBuilder?.refreshProject(project, RefreshCause.STRUCTURE_MODIFIED)
@@ -251,7 +251,7 @@ object NavigationUtils {
 
     ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.RUN)?.hide(null)
 
-    if (lesson is FrameworkLesson && lesson.course.isStudy) {
+    if (lesson is FrameworkLesson) {
       runInEdt {
         runWriteAction {
           setHighlightLevelForFilesInTask(task, project)

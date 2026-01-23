@@ -42,7 +42,6 @@ class RevertTaskAction : DumbAwareAction(), RightAlignedToolbarAction {
     val project = e.project ?: return
     val task = project.getCurrentTask() ?: return
     if (
-      !task.course.isStudy ||
       task.isChangedOnFailed // we disable revert action for tasks with changing on error
     ) {
       val presentation = e.presentation

@@ -8,7 +8,7 @@ import org.hyperskill.academy.learning.navigation.TaskNavigationExtension
 class SqlTaskNavigationExtension : TaskNavigationExtension {
   override fun onTaskNavigation(project: Project, task: Task, fromTask: Task?) {
     val lesson = task.lesson
-    if (lesson is FrameworkLesson && lesson.course.isStudy) {
+    if (lesson is FrameworkLesson) {
       attachSqlConsoleForOpenFiles(project, task)
       // Navigation was performed from another task of the same framework lessons
       if (fromTask != null && fromTask.lesson == lesson) {

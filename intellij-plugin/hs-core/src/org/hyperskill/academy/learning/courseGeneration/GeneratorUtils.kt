@@ -106,8 +106,7 @@ object GeneratorUtils {
   @Throws(IOException::class)
   private fun createTask(holder: CourseInfoHolder<out Course?>, task: Task, lessonDir: VirtualFile): VirtualFile {
     val isFirstInFrameworkLesson = task.parent is FrameworkLesson && task.index == 1
-    val isStudyCourse = task.course.isStudy
-    val (contentDir, configDir) = if (isStudyCourse && isFirstInFrameworkLesson) {
+    val (contentDir, configDir) = if (isFirstInFrameworkLesson) {
       // create config dir for yaml files and task description files
       val configDir = createUniqueDir(lessonDir, task)
       // create content dir with specific for framework lesson task name
@@ -119,7 +118,7 @@ object GeneratorUtils {
       taskDir to taskDir
     }
 
-    if (!isStudyCourse || task.parent !is FrameworkLesson || isFirstInFrameworkLesson) {
+    if (task.parent !is FrameworkLesson || isFirstInFrameworkLesson) {
       createTaskContent(holder, task, contentDir)
     }
 
@@ -293,19 +292,15 @@ object GeneratorUtils {
   @Throws(IOException::class)
   fun addNonEditableFileToCourse(course: Course, virtualTaskFile: VirtualFile) {
     checkIsWriteActionAllowed()
-    if (course.isStudy) {
-      course.addNonEditableFile(virtualTaskFile.path)
-      ReadOnlyAttributeUtil.setReadOnlyAttribute(virtualTaskFile, true)
-    }
+    course.addNonEditableFile(virtualTaskFile.path)
+    ReadOnlyAttributeUtil.setReadOnlyAttribute(virtualTaskFile, true)
   }
 
   @Throws(IOException::class)
   fun removeNonEditableFileFromCourse(course: Course, virtualTaskFile: VirtualFile) {
     ApplicationManager.getApplication().assertWriteAccessAllowed()
-    if (course.isStudy) {
-      course.removeNonEditableFile(virtualTaskFile.path)
-      ReadOnlyAttributeUtil.setReadOnlyAttribute(virtualTaskFile, false)
-    }
+    course.removeNonEditableFile(virtualTaskFile.path)
+    ReadOnlyAttributeUtil.setReadOnlyAttribute(virtualTaskFile, false)
   }
 
   @RequiresBlockingContext

@@ -14,25 +14,13 @@ import com.jetbrains.rd.util.reactive.RdFault
 import com.jetbrains.rd.util.reactive.adviseWithPrev
 import com.jetbrains.rd.util.reactive.fire
 import com.jetbrains.rdclient.util.idea.callSynchronously
-import com.jetbrains.rider.model.RdProjectFolderCriterion
-import com.jetbrains.rider.model.RdUnitTestCriterion
-import com.jetbrains.rider.model.RdUnitTestNavigateArgs
-import com.jetbrains.rider.model.RdUnitTestSession
-import com.jetbrains.rider.model.RdUnitTestSessionNodeDescriptor
-import com.jetbrains.rider.model.RdUnitTestStatus
-import com.jetbrains.rider.model.RdUnitTestTreeNode
-import com.jetbrains.rider.model.rdUnitTestHost
+import com.jetbrains.rider.model.*
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.workspace.getId
 import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
 import com.jetbrains.rider.protocol.protocol
 import com.jetbrains.rider.unitTesting.RiderUnitTestSessionConductor
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.*
 import org.hyperskill.academy.csharp.CSharpConfigurator
 import org.hyperskill.academy.csharp.TestResultData
 import org.hyperskill.academy.csharp.adviseResultData
@@ -65,10 +53,8 @@ class CSharpEduTaskChecker(task: EduTask, private val envChecker: EnvironmentChe
   }
 
   private fun prepareEnvironment(): CheckResult? {
-    if (task.course.isStudy) {
-      runInEdt {
-        ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.RUN)?.hide(null)
-      }
+    runInEdt {
+      ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.RUN)?.hide(null)
     }
 
     val possibleError = envChecker.getEnvironmentError(project, task)

@@ -10,7 +10,7 @@ class EditableFileProvider(private val project: Project) : WritingAccessProvider
   override fun requestWriting(files: Collection<VirtualFile>): Collection<VirtualFile> {
     val course = project.course
     // educators can modify all files
-    if (course == null || !course.isStudy) {
+    if (course == null) {
       return listOf()
     }
     return files.filter { !course.isEditableFile(it.path) }
@@ -19,7 +19,7 @@ class EditableFileProvider(private val project: Project) : WritingAccessProvider
   override fun isPotentiallyWritable(file: VirtualFile): Boolean {
     val course = project.course
     // educators can modify all files
-    if (course == null || !course.isStudy) {
+    if (course == null) {
       return true
     }
     return course.isEditableFile(file.path)

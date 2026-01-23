@@ -26,8 +26,7 @@ open class HyperskillMetricsService : PersistentStateComponent<HyperskillMetrics
   private val lock = Object()
 
   fun viewEvent(task: Task?) {
-    val hyperskillCourse = task?.course as? HyperskillCourse ?: return
-    if (!hyperskillCourse.isStudy) return
+    task?.course as? HyperskillCourse ?: return
 
     doAddViewEvent(task)
     taskStarted(task)

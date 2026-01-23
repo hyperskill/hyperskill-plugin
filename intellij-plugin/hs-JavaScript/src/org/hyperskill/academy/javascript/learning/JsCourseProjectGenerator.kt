@@ -12,7 +12,6 @@ import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.EduFile
-import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.getInternalTemplateText
 import org.hyperskill.academy.learning.newproject.CourseProjectGenerator
 
 class JsCourseProjectGenerator(builder: JsCourseBuilder, course: Course) : CourseProjectGenerator<JsNewProjectSettings>(builder, course) {
@@ -74,11 +73,6 @@ class JsCourseProjectGenerator(builder: JsCourseBuilder, course: Course) : Cours
   }
 
   override fun autoCreatedAdditionalFiles(holder: CourseInfoHolder<Course>): List<EduFile> {
-    val packageJsonFile = holder.courseDir.findChild(NodeModuleNamesUtil.PACKAGE_JSON)
-    if (packageJsonFile == null && !holder.course.isStudy) {
-      val templateText = getInternalTemplateText(NodeModuleNamesUtil.PACKAGE_JSON)
-      return listOf(EduFile(NodeModuleNamesUtil.PACKAGE_JSON, templateText))
-    }
     return emptyList()
   }
 

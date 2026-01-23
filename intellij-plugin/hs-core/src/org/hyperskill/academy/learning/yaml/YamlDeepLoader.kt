@@ -117,9 +117,6 @@ object YamlDeepLoader {
       deserializedCourse.reconnectHyperskillProject()
     }
 
-    if (!deserializedCourse.isStudy) {
-      deserializedCourse.setDescriptionInfo(project)
-    }
     return deserializedCourse
   }
 
