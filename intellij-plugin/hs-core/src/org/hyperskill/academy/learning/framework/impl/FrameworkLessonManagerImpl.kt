@@ -441,7 +441,19 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     if (cachedTargetTestFiles == null) {
       LOG.warn("No cached test files for task '${targetTask.name}' (step ${targetTask.id}). Attempting to load from API...")
-      cachedTargetTestFiles = loadTestFilesFromApi(targetTask)
+      // Load synchronously to ensure files are available before recreating
+      if (ApplicationManager.getApplication().isDispatchThread) {
+        try {
+          ApplicationManager.getApplication().executeOnPooledThread<Unit> {
+            loadTestFilesFromApiSync(targetTask)
+          }.get()
+          cachedTargetTestFiles = originalTestFilesCache[targetTask.id]
+        } catch (e: Exception) {
+          LOG.warn("Failed to load test files from API for task '${targetTask.name}'", e)
+        }
+      } else {
+        cachedTargetTestFiles = loadTestFilesFromApi(targetTask)
+      }
     }
 
     // Fallback to task.taskFiles when cache is empty and API failed (e.g., in tests or offline mode)
