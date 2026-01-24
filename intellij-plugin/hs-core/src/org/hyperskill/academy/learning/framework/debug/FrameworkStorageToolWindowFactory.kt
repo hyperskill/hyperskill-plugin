@@ -1,9 +1,12 @@
 package org.hyperskill.academy.learning.framework.debug
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -13,15 +16,13 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
-import com.intellij.util.ui.UIUtil
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
 import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.impl.FrameworkStorage
 import org.hyperskill.academy.learning.framework.storage.FileBasedFrameworkStorage
 import java.awt.BorderLayout
-import java.awt.Component
-import java.awt.Font
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,6 +42,7 @@ class FrameworkStorageToolWindowFactory : ToolWindowFactory, DumbAware {
 
     val panel = FrameworkStoragePanel(project)
     val content = toolWindow.contentManager.factory.createContent(panel, "Commit Tree", false)
+    content.setDisposer(panel)
     toolWindow.contentManager.addContent(content)
   }
 
@@ -52,13 +54,15 @@ class FrameworkStorageToolWindowFactory : ToolWindowFactory, DumbAware {
 
 /**
  * Panel displaying the Framework Storage commit tree.
+ * Automatically refreshes when storage changes.
  */
-class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout()) {
+class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout()), Disposable {
 
   private val tree: Tree
   private val rootNode = DefaultMutableTreeNode("Framework Storage")
   private val treeModel = DefaultTreeModel(rootNode)
   private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+  private var autoRefresh = true
 
   init {
     tree = Tree(treeModel)
@@ -68,7 +72,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     val scrollPane = JBScrollPane(tree)
     scrollPane.border = JBUI.Borders.empty()
 
-    // Toolbar with refresh button
+    // Toolbar with refresh button and auto-refresh toggle
     val toolbar = JPanel().apply {
       layout = BoxLayout(this, BoxLayout.X_AXIS)
       border = JBUI.Borders.empty(4)
@@ -78,13 +82,41 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         addActionListener { refreshTree() }
       }
       add(refreshButton)
+
+      add(Box.createHorizontalStrut(8))
+
+      val autoRefreshCheckbox = JCheckBox("Auto-refresh", autoRefresh).apply {
+        addActionListener { autoRefresh = isSelected }
+      }
+      add(autoRefreshCheckbox)
+
       add(Box.createHorizontalGlue())
     }
 
     add(toolbar, BorderLayout.NORTH)
     add(scrollPane, BorderLayout.CENTER)
 
+    // Subscribe to storage changes
+    subscribeToStorageChanges()
+
     refreshTree()
+  }
+
+  private fun subscribeToStorageChanges() {
+    val connection = project.messageBus.connect(this)
+    connection.subscribe(FrameworkStorageListener.TOPIC, object : FrameworkStorageListener {
+      override fun snapshotSaved(refId: Int, commitHash: String) {
+        if (autoRefresh) {
+          invokeLater { refreshTree() }
+        }
+      }
+
+      override fun headUpdated(refId: Int) {
+        if (autoRefresh) {
+          invokeLater { refreshTree() }
+        }
+      }
+    })
   }
 
   fun refreshTree() {
@@ -216,6 +248,10 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       tree.expandRow(row)
       row++
     }
+  }
+
+  override fun dispose() {
+    // Connection is automatically disposed via Disposer
   }
 
   // Node types for the tree

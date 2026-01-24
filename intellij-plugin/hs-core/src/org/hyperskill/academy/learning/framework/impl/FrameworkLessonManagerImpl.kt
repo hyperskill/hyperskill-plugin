@@ -27,6 +27,7 @@ import org.hyperskill.academy.learning.courseFormat.ext.testDirs
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
+import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.propagateFilesOnNavigation
 import org.hyperskill.academy.learning.framework.storage.Change
 import org.hyperskill.academy.learning.framework.storage.SnapshotDiff
@@ -317,6 +318,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     if (targetTask.record != -1) {
       storage.head = targetTask.record
       LOG.info("HEAD updated to ref ${targetTask.record} (task '${targetTask.name}')")
+      project.messageBus.syncPublisher(FrameworkStorageListener.TOPIC).headUpdated(targetTask.record)
     }
 
     LOG.info("=== Stage switch complete ===")
@@ -697,6 +699,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       storage.force()
       // Calculate changes on-the-fly by comparing initial state with saved snapshot
       val changes = SnapshotDiff.calculateChanges(initialState, state)
+      // Notify listeners about storage change
+      val commitHash = storage.resolveRef(newRefId)
+      if (commitHash != null) {
+        project.messageBus.syncPublisher(FrameworkStorageListener.TOPIC).snapshotSaved(newRefId, commitHash)
+      }
       UpdatedUserChanges(newRefId, changes)
     }
     catch (e: IOException) {
