@@ -105,7 +105,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
   // All commits data for filtering
   private var allCommitEntries: List<CommitEntry> = emptyList()
   private var commitsByRef: Map<Int, Set<String>> = emptyMap() // refId -> reachable commit hashes
-  private var lastKnownHeadRefId: Int = -1 // Track HEAD to detect changes
+  private var lastKnownTaskIndex: Int = -1 // Track current task to detect changes
 
   init {
     setupCommitList()
@@ -358,8 +358,6 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     isUpdatingStageComboBox = true
     try {
       val previousSelection = stageComboBox.selectedItem as? StageItem
-      val headChanged = lastKnownHeadRefId != headRefId && lastKnownHeadRefId != -1
-      lastKnownHeadRefId = headRefId
 
       stageComboBox.removeAllItems()
 
@@ -371,26 +369,34 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       val frameworkLesson = course?.lessons?.filterIsInstance<FrameworkLesson>()?.firstOrNull()
       val refIdSet = refs.map { it.refId }.toSet()
 
+      val currentTaskIndex = frameworkLesson?.currentTaskIndex ?: -1
+      val taskChanged = lastKnownTaskIndex != currentTaskIndex && lastKnownTaskIndex != -1
+      lastKnownTaskIndex = currentTaskIndex
+
       val stageItems = if (frameworkLesson != null) {
         // Show all tasks from course in order
+        // Use currentTaskIndex to determine HEAD (not record, since records can be duplicated)
         frameworkLesson.taskList.mapIndexed { index, task ->
           val stageNumber = index + 1
           val hasStorage = task.record != -1 && task.record in refIdSet
+          val isCurrentTask = index == currentTaskIndex
           StageItem.Stage(
             refId = task.record,
             name = "$stageNumber. ${task.name}",
-            isHead = task.record == headRefId,
-            hasStorage = hasStorage
+            isHead = isCurrentTask,
+            hasStorage = hasStorage,
+            taskIndex = index
           )
         }
       } else {
         // Fallback: show refs from storage
-        refs.sortedBy { it.refId }.map { ref ->
+        refs.sortedBy { it.refId }.mapIndexed { index, ref ->
           StageItem.Stage(
             refId = ref.refId,
             name = taskNames[ref.refId] ?: "Stage ${ref.refId}",
             isHead = ref.refId == headRefId,
-            hasStorage = true
+            hasStorage = true,
+            taskIndex = index
           )
         }
       }
@@ -399,12 +405,12 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         stageComboBox.addItem(item)
       }
 
-      // If HEAD changed, follow it; otherwise restore previous selection
+      // If current task changed, follow it; otherwise restore previous selection by taskIndex
       val itemToSelect = when {
-        headChanged -> stageItems.find { it.isHead } ?: StageItem.All
+        taskChanged -> stageItems.find { it.isHead } ?: StageItem.All
         previousSelection == StageItem.All -> StageItem.All
-        previousSelection != null && stageItems.any { it.refId == (previousSelection as? StageItem.Stage)?.refId } ->
-          stageItems.find { it.refId == (previousSelection as? StageItem.Stage)?.refId }
+        previousSelection is StageItem.Stage ->
+          stageItems.find { it.taskIndex == previousSelection.taskIndex } ?: stageItems.find { it.isHead } ?: StageItem.All
         else -> stageItems.find { it.isHead } ?: stageItems.firstOrNull { it.hasStorage } ?: StageItem.All
       }
       stageComboBox.selectedItem = itemToSelect
@@ -623,7 +629,13 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
   sealed class StageItem {
     data object All : StageItem()
-    data class Stage(val refId: Int, val name: String, val isHead: Boolean, val hasStorage: Boolean = true) : StageItem()
+    data class Stage(
+      val refId: Int,
+      val name: String,
+      val isHead: Boolean,
+      val hasStorage: Boolean = true,
+      val taskIndex: Int = -1
+    ) : StageItem()
   }
   data class CommitEntry(
     val hash: String,
