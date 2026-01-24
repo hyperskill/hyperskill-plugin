@@ -69,10 +69,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   // These are used to calculate user changes correctly, since TaskFile.contents may be modified
   private val originalTemplateFilesCache = java.util.concurrent.ConcurrentHashMap<Int, Map<String, String>>()
 
-  // Flag to track if propagation is active during multi-stage navigation (jump).
-  // Set to true after Replace, false after Keep or backward navigation.
-  // This allows showing dialogs for all intermediate stages during a jump with Replace.
-  private var propagationActive = false
+  // Flag to track user's propagation choice during multi-stage navigation (jump).
+  // - null: no choice made yet (first stage in jump) → show dialog
+  // - true: user chose Replace → show dialog for each subsequent stage
+  // - false: user chose Keep → auto-Keep for all subsequent stages without dialog
+  private var propagationActive: Boolean? = null
 
   // Flag to skip auto-save during navigation (prevents auto-save from creating commits
   // with "Auto-save" message when navigation code should be creating commits)
@@ -260,7 +261,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   ) {
     // Reset propagation flag on backward navigation
     if (taskIndexDelta < 0) {
-      propagationActive = false
+      propagationActive = null
     }
 
     lesson.currentTaskIndex = targetTaskIndex
@@ -345,7 +346,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict, targetHasStorage, currentRef, targetRef)
     }
     else {
-      propagationActive = false // No propagation happening
+      propagationActive = null // No propagation happening, reset for next navigation
       calculateChanges(currentState, targetState)
     }
 
@@ -660,6 +661,19 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val (currentPropagatableFilesState, currentNonPropagatableFilesState) = currentState.split(currentTask)
     val (targetPropagatableFilesState, targetNonPropagatableFilesState) = targetState.split(targetTask)
 
+    // If user previously chose Keep in this navigation sequence, auto-Keep without showing dialog
+    if (propagationActive == false) {
+      LOG.info("Auto-Keep for '$targetRef' (user chose Keep in previous step)")
+      val mergeMessage = "Merge from '${currentTask.name}': Keep target changes (auto)"
+      try {
+        storage.saveMergeSnapshot(targetRef, targetPropagatableFilesState, listOf(targetRef, currentRef), mergeMessage)
+        LOG.info("Created auto-Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
+      } catch (e: IOException) {
+        LOG.error("Failed to create auto-Keep merge commit for '$targetRef'", e)
+      }
+      return calculateChanges(currentState, targetState)
+    }
+
     // A lesson may have files that were non-propagatable in the previous step, but become propagatable in the new one.
     // We allow files to change a propagation flag from false to true (from non-propagatable to propagatable).
     // Course creators often have such use-case:
@@ -755,6 +769,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       )
     }
     else {
+      // When dialog is suppressed, default to Keep (preserve target's content).
+      // This is the safest default for automated scenarios (e.g., lesson updates).
+      // For project open, the caller should pass showDialogIfConflict=true to let user decide.
+      LOG.info("Dialog suppressed, using Keep to preserve target content for '${targetTask.name}'")
       Messages.YES
     }
 

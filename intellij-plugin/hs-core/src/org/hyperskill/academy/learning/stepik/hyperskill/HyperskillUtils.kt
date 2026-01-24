@@ -52,7 +52,9 @@ fun openSelectedStage(course: Course, project: Project) {
           FrameworkLessonManager.getInstance(project).syncCurrentTaskIndexFromStorage(lesson)
         }
         val fromTask = if (lesson is FrameworkLesson) lesson.currentTask() else taskList[0]
-        NavigationUtils.navigateToTask(project, taskList[index], fromTask, false)
+        // Show Keep/Replace dialog if there's a merge conflict when opening project.
+        // This lets user decide whether to propagate their changes or keep target's content.
+        NavigationUtils.navigateToTask(project, taskList[index], fromTask, showDialogIfConflict = true)
       }
     }
   }
