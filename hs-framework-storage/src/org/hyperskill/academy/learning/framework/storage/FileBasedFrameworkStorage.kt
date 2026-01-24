@@ -171,7 +171,7 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
       }
     }
 
-    val parentCommit = if (refId != -1) {
+    val parentCommitHash = if (refId != -1) {
       resolveRef(refId)
     } else if (parentRefId != -1) {
       resolveRef(parentRefId)
@@ -179,7 +179,16 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
       null
     }
 
-    val commitHash = saveCommit(snapshotHash, if (parentCommit != null) listOf(parentCommit) else emptyList(), message)
+    // Skip creating commit if snapshot is identical to parent's snapshot
+    if (parentCommitHash != null) {
+      val parentCommit = getCommit(parentCommitHash)
+      if (parentCommit.snapshotHash == snapshotHash) {
+        // No changes - return existing refId without creating new commit
+        return if (refId != -1) refId else parentRefId
+      }
+    }
+
+    val commitHash = saveCommit(snapshotHash, if (parentCommitHash != null) listOf(parentCommitHash) else emptyList(), message)
 
     val id = if (refId == -1) nextRefId.getAndIncrement() else refId
     updateRef(id, commitHash)
