@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.DumbAware
@@ -74,6 +75,8 @@ class FrameworkStorageToolWindowFactory : ToolWindowFactory, DumbAware {
  * Main panel with three-pane layout: commits | files | diff
  */
 class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout()), Disposable {
+
+  private val LOG = Logger.getInstance(FrameworkStoragePanel::class.java)
 
   private val listModel = DefaultListModel<CommitEntry>()
   private val commitList = JBList(listModel)
@@ -290,7 +293,9 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     headInfoLabel.text = if (headRefId != -1) "HEAD → ref/$headRefId" else "HEAD: not set"
 
     val taskNames = getTaskNames()
+    LOG.warn("ToolWindow: taskNames = $taskNames")
     val refs = storage.getAllRefs()
+    LOG.warn("ToolWindow: refs from storage = ${refs.map { "ref ${it.refId} -> ${it.commitHash.take(7)}" }}")
 
     // Build ref map
     val refsByCommit = mutableMapOf<String, MutableList<RefLabel>>()
@@ -357,13 +362,33 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       // Add "All" option
       stageComboBox.addItem(StageItem.All)
 
-      // Add stages sorted by refId
-      val stageItems = refs.sortedBy { it.refId }.map { ref ->
-        StageItem.Stage(
-          refId = ref.refId,
-          name = taskNames[ref.refId] ?: "Stage ${ref.refId}",
-          isHead = ref.refId == headRefId
-        )
+      // Get all tasks from course in order
+      val course = StudyTaskManager.getInstance(project).course
+      val frameworkLesson = course?.lessons?.filterIsInstance<FrameworkLesson>()?.firstOrNull()
+      val refIdSet = refs.map { it.refId }.toSet()
+
+      val stageItems = if (frameworkLesson != null) {
+        // Show all tasks from course in order
+        frameworkLesson.taskList.mapIndexed { index, task ->
+          val stageNumber = index + 1
+          val hasStorage = task.record != -1 && task.record in refIdSet
+          StageItem.Stage(
+            refId = task.record,
+            name = "$stageNumber. ${task.name}",
+            isHead = task.record == headRefId,
+            hasStorage = hasStorage
+          )
+        }
+      } else {
+        // Fallback: show refs from storage
+        refs.sortedBy { it.refId }.map { ref ->
+          StageItem.Stage(
+            refId = ref.refId,
+            name = taskNames[ref.refId] ?: "Stage ${ref.refId}",
+            isHead = ref.refId == headRefId,
+            hasStorage = true
+          )
+        }
       }
 
       for (item in stageItems) {
@@ -375,7 +400,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         previousSelection != null && stageItems.any { it.refId == (previousSelection as? StageItem.Stage)?.refId } ->
           stageItems.find { it.refId == (previousSelection as? StageItem.Stage)?.refId }
         previousSelection == StageItem.All -> StageItem.All
-        else -> stageItems.find { it.isHead } ?: StageItem.All
+        else -> stageItems.find { it.isHead } ?: stageItems.firstOrNull { it.hasStorage } ?: StageItem.All
       }
       stageComboBox.selectedItem = itemToSelect
     } finally {
@@ -391,8 +416,12 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     val filteredCommits = when (selectedItem) {
       is StageItem.All -> allCommitEntries
       is StageItem.Stage -> {
-        val reachableHashes = commitsByRef[selectedItem.refId] ?: emptySet()
-        allCommitEntries.filter { it.hash in reachableHashes }
+        if (selectedItem.refId == -1 || !selectedItem.hasStorage) {
+          emptyList() // No storage data for this stage
+        } else {
+          val reachableHashes = commitsByRef[selectedItem.refId] ?: emptySet()
+          allCommitEntries.filter { it.hash in reachableHashes }
+        }
       }
     }
 
@@ -589,7 +618,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
   sealed class StageItem {
     data object All : StageItem()
-    data class Stage(val refId: Int, val name: String, val isHead: Boolean) : StageItem()
+    data class Stage(val refId: Int, val name: String, val isHead: Boolean, val hasStorage: Boolean = true) : StageItem()
   }
   data class CommitEntry(
     val hash: String,
@@ -625,8 +654,20 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
           icon = AllIcons.Vcs.Branch
         }
         is StageItem.Stage -> {
-          text = if (item.isHead) "${item.name} (HEAD)" else item.name
-          icon = if (item.isHead) AllIcons.Actions.Checked else AllIcons.Nodes.Tag
+          val suffix = when {
+            item.isHead -> " (HEAD)"
+            !item.hasStorage -> " (no data)"
+            else -> ""
+          }
+          text = "${item.name}$suffix"
+          icon = when {
+            item.isHead -> AllIcons.Actions.Checked
+            !item.hasStorage -> AllIcons.General.Warning
+            else -> AllIcons.Nodes.Tag
+          }
+          if (!item.hasStorage && !isSelected) {
+            foreground = JBColor.GRAY
+          }
         }
         null -> {}
       }
