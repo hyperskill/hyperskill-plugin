@@ -82,6 +82,20 @@ interface FrameworkLessonManager : EduTestAware {
    */
   fun ensureTestFilesCached(task: Task): Boolean
 
+  /**
+   * Ensures template files (visible non-test files) are cached for a task, loading from API if necessary.
+   * This should be called before [saveExternalChanges] when the cache might be empty
+   * (e.g., after IDE restart when data is loaded from YAML instead of API).
+   *
+   * Unlike [storeOriginalTemplateFiles], this method loads fresh data from API
+   * instead of using potentially stale task.taskFiles.
+   *
+   * @param task the task whose template files should be cached
+   * @return true if template files are now cached (either already were or successfully loaded from API),
+   *         false if loading from API failed
+   */
+  fun ensureTemplateFilesCached(task: Task): Boolean
+
   companion object {
     fun getInstance(project: Project): FrameworkLessonManager = project.service()
   }

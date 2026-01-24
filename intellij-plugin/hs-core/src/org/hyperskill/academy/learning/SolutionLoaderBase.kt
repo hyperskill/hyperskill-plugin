@@ -222,15 +222,6 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
   open fun updateTask(project: Project, task: Task, submissions: List<Submission>, force: Boolean = false): Boolean {
     val taskSolutions = loadSolution(task, submissions)
     ProgressManager.checkCanceled()
-    val lesson = task.lesson
-    val isFrameworkTask = lesson is FrameworkLesson
-    val isCurrentTask = isFrameworkTask && (lesson as FrameworkLesson).currentTask() == task
-    LOG.info(
-      "updateTask: task='${task.name}' (id=${task.id}), " +
-      "isFrameworkTask=$isFrameworkTask, isCurrentTask=$isCurrentTask, " +
-      "solutions=${taskSolutions.solutions.size}, checkStatus=${taskSolutions.checkStatus}, " +
-      "solutionFiles=[${taskSolutions.solutions.keys.joinToString()}]"
-    )
 
     if (taskSolutions.solutions.isNotEmpty()) {
       if (!taskSolutions.hasIncompatibleSolutions) {
@@ -239,7 +230,6 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
     }
     else {
       if (taskSolutions.checkStatus != CheckStatus.Unchecked) {
-        LOG.info("updateTask: task='${task.name}' - solutions empty, only applying checkStatus=${taskSolutions.checkStatus}")
         applyCheckStatus(task, taskSolutions.checkStatus)
       }
     }
@@ -308,12 +298,12 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
     private fun applySolutionToNonCurrentTask(project: Project, task: Task, taskSolutions: TaskSolutions) {
       val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
 
-      val solutionMap = taskSolutions.solutions.mapValues { it.value.text }
-      LOG.info(
-        "applySolutionToNonCurrentTask: task='${task.name}' (id=${task.id}), " +
-               "saving ${solutionMap.size} solution files: [${solutionMap.entries.joinToString { "${it.key}:${it.value.length}chars" }}]"
-      )
+      // ALT-10961: Ensure template files are cached before saving external changes.
+      // Use ensureTemplateFilesCached which loads from API if cache is empty.
+      // storeOriginalTemplateFiles uses task.taskFiles which may have stale disk content.
+      frameworkLessonManager.ensureTemplateFilesCached(task)
 
+      val solutionMap = taskSolutions.solutions.mapValues { it.value.text }
       frameworkLessonManager.saveExternalChanges(task, solutionMap)
       for (taskFile in task.taskFiles.values) {
         val solution = taskSolutions.solutions[taskFile.name] ?: continue
@@ -358,6 +348,16 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
             }
           }
         }
+      }
+
+      // ALT-10961: Also save the current task's solution to storage.
+      // This ensures that when the user navigates away and back, the submission content
+      // is preserved instead of being replaced with the template.
+      val lesson = task.lesson
+      if (lesson is FrameworkLesson) {
+        val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
+        val solutionMap = taskSolutions.solutions.mapValues { it.value.text }
+        frameworkLessonManager.saveExternalChanges(task, solutionMap)
       }
     }
   }

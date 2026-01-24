@@ -123,6 +123,29 @@ When code differs between platform versions:
 
 - Only English is allowed in the code (comments, identifiers, strings)
 
+## Debugging
+
+When running the plugin with `./gradlew runIde` (or `runIdea`, `runPyCharm`, etc.), logs are located in the **sandbox directory**, not in the system logs:
+
+```
+intellij-plugin/build/idea-sandbox/idea-sandbox-<version>/log_runIdea/idea.log
+```
+
+For example:
+```
+intellij-plugin/build/idea-sandbox/idea-sandbox-253/log_runIdea/idea.log
+```
+
+To view logs in real-time:
+```bash
+tail -f intellij-plugin/build/idea-sandbox/idea-sandbox-*/log_runIdea/idea.log
+```
+
+To search for specific log entries:
+```bash
+grep "YourSearchPattern" intellij-plugin/build/idea-sandbox/idea-sandbox-*/log_runIdea/idea.log
+```
+
 ## Issue Tracker
 
 Report issues to [YouTrack EDU project](https://youtrack.jetbrains.com/issues/EDU).

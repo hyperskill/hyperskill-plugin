@@ -3,6 +3,7 @@ package org.hyperskill.academy.learning.courseGeneration
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
@@ -26,6 +27,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 @Suppress("UnstableApiUsage")
 object GeneratorUtils {
+  private val LOG = Logger.getInstance(GeneratorUtils::class.java)
 
   private val INVALID_SYMBOLS: Regex = """[/\\:<>"?*|;&]""".toRegex()
   private val INVALID_TRAILING_SYMBOLS: CharArray = charArrayOf(' ', '.', '!')
@@ -221,6 +223,9 @@ object GeneratorUtils {
     fileContents: FileContents,
     isEditable: Boolean = true
   ): VirtualFile? {
+    val contentPreview = fileContents.textualRepresentation.take(100).replace("\n", "\\n")
+    val caller = Thread.currentThread().stackTrace.drop(2).take(5).joinToString(" <- ") { "${it.className.substringAfterLast('.')}.${it.methodName}" }
+    LOG.warn("CREATE_FILE: ${parentDir.path}/$path (${fileContents.textualRepresentation.length} chars, editable=$isEditable) content='$contentPreview...' caller=[$caller]")
     return runInWriteActionAndWait {
       val file = doCreateChildFile(holder, parentDir, path, fileContents)
       val course = holder.course

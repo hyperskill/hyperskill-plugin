@@ -26,7 +26,9 @@ class UserChanges(val changes: List<Change>, val timestamp: Long = System.curren
   operator fun plus(otherChanges: List<Change>): UserChanges = UserChanges(changes + otherChanges)
 
   fun apply(project: Project, taskDir: VirtualFile, task: Task) {
+    LOG.warn("UserChanges.apply: applying ${changes.size} changes to taskDir=${taskDir.path}")
     for (change in changes) {
+      LOG.warn("UserChanges.apply: change=${change.javaClass.simpleName}(${change.path}, ${change.text.length} chars)")
       change.apply(project, taskDir, task)
     }
   }
@@ -45,6 +47,7 @@ class UserChanges(val changes: List<Change>, val timestamp: Long = System.curren
   }
 
   companion object {
+    private val LOG: Logger = Logger.getInstance(UserChanges::class.java)
 
     private val EMPTY = UserChanges(emptyList(), -1)
 
@@ -174,13 +177,16 @@ sealed class Change {
     constructor(input: DataInput) : super(input)
 
     override fun apply(project: Project, taskDir: VirtualFile, task: Task) {
+      LOG.warn("ChangeFile.apply: path=$path, taskDir=${taskDir.path}, textLength=${text.length}")
       val file = taskDir.findFileByRelativePath(path)
       if (file == null) {
-        LOG.warn("Can't find file `$path` in `$taskDir`")
+        LOG.warn("ChangeFile.apply: Can't find file `$path` in `$taskDir`")
         return
       }
+      LOG.warn("ChangeFile.apply: Found file at ${file.path}")
 
       if (file.isToEncodeContent) {
+        LOG.warn("ChangeFile.apply: Using binary content mode")
         file.doWithoutReadOnlyAttribute {
           runWriteAction {
             file.setBinaryContent(Base64.decodeBase64(text))
@@ -188,16 +194,21 @@ sealed class Change {
         }
       }
       else {
+        LOG.warn("ChangeFile.apply: Using document mode")
         EduDocumentListener.modifyWithoutListener(task, path) {
           val document = runReadAction { FileDocumentManager.getInstance().getDocument(file) }
           if (document != null) {
             val expandedText = StringUtil.convertLineSeparators(EduMacroUtils.expandMacrosForFile(project.toCourseInfoHolder(), file, text))
+            LOG.warn("ChangeFile.apply: Setting document text, expandedTextLength=${expandedText.length}")
             file.doWithoutReadOnlyAttribute {
               runUndoTransparentWriteAction { document.setText(expandedText) }
             }
+            // ALT-10961: Force save document to disk
+            FileDocumentManager.getInstance().saveDocument(document)
+            LOG.warn("ChangeFile.apply: Document text set and saved successfully")
           }
           else {
-            LOG.warn("Can't get document for `$file`")
+            LOG.warn("ChangeFile.apply: Can't get document for `$file`")
           }
         }
       }
@@ -272,16 +283,20 @@ sealed class Change {
       }
     }
 
+    // Marker for extended format - a string that won't appear in normal content
+    private const val EXTENDED_FORMAT_MARKER = "\u0000EXTENDED\u0000"
+
     @Throws(IOException::class)
     fun writeString(out: DataOutput, value: String) {
       val bytes = value.toByteArray(Charsets.UTF_8)
       if (bytes.size < UTF_ENCODING_THRESHOLD) {
         // Use standard UTF format for small strings (backward compatible)
+        // For empty strings, this correctly writes an empty UTF string
         out.writeUTF(value)
       }
       else {
-        // For large strings, write a marker, then length + bytes
-        out.writeUTF("") // Empty string as marker for extended format
+        // For large strings, write a special marker, then length + bytes
+        out.writeUTF(EXTENDED_FORMAT_MARKER)
         DataInputOutputUtil.writeINT(out, bytes.size)
         out.write(bytes)
       }
@@ -290,15 +305,21 @@ sealed class Change {
     @Throws(IOException::class)
     fun readString(input: DataInput): String {
       val utfString = input.readUTF()
-      if (utfString.isNotEmpty()) {
-        // Standard UTF format
+      if (utfString != EXTENDED_FORMAT_MARKER) {
+        // Standard UTF format (including empty strings)
         return utfString
       }
       // Extended format: read length + bytes
       val length = DataInputOutputUtil.readINT(input)
+      if (length < 0 || length > MAX_STRING_LENGTH) {
+        throw IOException("Corrupted data: invalid string length $length")
+      }
       val bytes = ByteArray(length)
       input.readFully(bytes)
       return String(bytes, Charsets.UTF_8)
     }
+
+    // Maximum reasonable string length (100 MB) to detect corruption
+    private const val MAX_STRING_LENGTH = 100 * 1024 * 1024
   }
 }

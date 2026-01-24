@@ -270,13 +270,25 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
     val lesson = course.getProjectLesson() ?: return
     val remoteLesson = remoteCourse.getProjectLesson() ?: return
 
+    LOG.warn("UPDATE_PROJECT_LESSON_START: timestamp=${System.currentTimeMillis()}, thread=${Thread.currentThread().name}")
+
     invokeAndWaitIfNeeded {
       if (project.isDisposed) return@invokeAndWaitIfNeeded
 
       for ((task, remoteTask) in lesson.taskList.zip(remoteLesson.taskList)) {
+        LOG.warn("UPDATE_PROJECT_LESSON: checking task='${task.name}' (id=${task.id}), status=${task.status}, " +
+                 "localUpdateDate=${task.updateDate}, remoteUpdateDate=${remoteTask.updateDate}, " +
+                 "needsUpdate=${task.updateDate.before(remoteTask.updateDate)}, timestamp=${System.currentTimeMillis()}")
         if (!task.updateDate.before(remoteTask.updateDate)) continue
 
-        if (task.status != CheckStatus.Solved) {
+        // Don't update files for current task - SolutionLoader will apply user's submissions
+        // This prevents race condition where update overwrites files before submissions are applied
+        // For non-current tasks, only update if status is Unchecked (no submissions yet)
+        val isCurrentTask = lesson.currentTaskIndex + 1 == task.index
+        val shouldUpdateFiles = !isCurrentTask && task.status == CheckStatus.Unchecked
+        LOG.warn("UPDATE_PROJECT_LESSON: task='${task.name}' needs update, status=${task.status}, " +
+                 "isCurrentTask=$isCurrentTask, shouldUpdateFiles=$shouldUpdateFiles")
+        if (shouldUpdateFiles) {
           // With current logic of next/prev action for hyperskill tasks
           // update of non-test files makes sense only for first task
           updateFrameworkLessonFiles(project, lesson, task, remoteTask, task.index == 1)

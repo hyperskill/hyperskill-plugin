@@ -5,15 +5,18 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.SlowOperations
 import com.intellij.util.io.storage.AbstractStorage
 import org.hyperskill.academy.learning.Err
 import org.hyperskill.academy.learning.Ok
+import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
@@ -68,40 +71,30 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       "Only solutions of framework tasks can be saved"
     }
 
-    LOG.info("saveExternalChanges: task='${task.name}' (id=${task.id}), externalState=${externalState.size} files")
+    LOG.warn("saveExternalChanges: task='${task.name}', externalState.keys=${externalState.keys}")
 
-    val propagatableFiles = task.allFiles.split(task).first
-    LOG.info(
-      "saveExternalChanges: task='${task.name}' - propagatableFiles (templates): " +
-             "[${propagatableFiles.entries.joinToString { "${it.key}:${it.value.length}chars,hash=${it.value.hashCode()}" }}]"
-    )
+    // Filter external state to only include propagatable files (exclude test files, etc.)
+    val externalPropagatableFiles = externalState.split(task).first
+    LOG.warn("saveExternalChanges: externalPropagatableFiles.keys=${externalPropagatableFiles.keys}")
 
-    // there may be visible editable files (f. e. binary files) that are not stored into submissions,
-    // but we don't want to lose them after applying submission into a task
-    val externalPropagatableFiles = externalState.split(task).first.toMutableMap()
-    LOG.info(
-      "saveExternalChanges: task='${task.name}' - externalPropagatableFiles (submission): " +
-             "[${externalPropagatableFiles.entries.joinToString { "${it.key}:${it.value.length}chars,hash=${it.value.hashCode()}" }}]"
-    )
-
-    propagatableFiles.forEach { (path, text) ->
-      externalPropagatableFiles.putIfAbsent(path, text)
+    // ALT-10961: For framework lessons, we must save the FULL submission content as AddFile changes.
+    // We cannot use calculateChanges(currentState, submission) because TaskFile.contents reflects
+    // the CURRENT disk content (which is shared across all stages), not each stage's template.
+    // By saving the full content, we ensure each stage has its correct submission content.
+    val changes = externalPropagatableFiles.map { (path, text) ->
+      Change.AddFile(path, text)
     }
-    val changes = calculateChanges(propagatableFiles, externalPropagatableFiles)
-    LOG.info(
-      "saveExternalChanges: task='${task.name}' - calculated ${changes.changes.size} changes: " +
-             "[${changes.changes.joinToString { it.javaClass.simpleName }}]"
-    )
+    LOG.warn("saveExternalChanges: changes=${changes.size}, files=${changes.map { "${it.path}:${it.text.length}chars" }}")
 
     val currentRecord = task.record
     task.record = try {
-      storage.updateUserChanges(currentRecord, changes)
+      storage.updateUserChanges(currentRecord, UserChanges(changes))
     }
     catch (e: IOException) {
       LOG.error("Failed to save solution for task `${task.name}`", e)
       currentRecord
     }
-    LOG.info("saveExternalChanges: task='${task.name}' - record updated from $currentRecord to ${task.record}")
+    LOG.warn("saveExternalChanges: task='${task.name}', record updated from $currentRecord to ${task.record}")
     YamlFormatSynchronizer.saveItem(task)
   }
 
@@ -187,45 +180,98 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     val currentRecord = currentTask.record
     val targetRecord = targetTask.record
-    LOG.info("Records: current=$currentRecord, target=$targetRecord")
 
-    val initialCurrentFiles = currentTask.allFiles
-    LOG.info("initialCurrentFiles (from currentTask.allFiles): ${initialCurrentFiles.mapValues { it.value.length.toString() + " chars, hash=" + it.value.hashCode() }}")
+    // ALT-10961: Try to load template files from API if cache is empty.
+    // This ensures we have correct templates for diff calculation.
+    // We load synchronously to ensure cache is filled before navigation proceeds.
+    if (!originalTemplateFilesCache.containsKey(currentTask.id)) {
+      if (ApplicationManager.getApplication().isDispatchThread) {
+        // On EDT - run API call on pooled thread and wait for result
+        try {
+          ApplicationManager.getApplication().executeOnPooledThread<Unit> {
+            loadTemplateFilesFromApiSync(currentTask)
+          }.get()
+        } catch (e: Exception) {
+          LOG.warn("Failed to load template files from API for task '${currentTask.name}'", e)
+        }
+      } else {
+        loadTemplateFilesFromApiSync(currentTask)
+      }
+    }
+    val cachedTemplates = originalTemplateFilesCache[currentTask.id]
+    val hasValidTemplateCache = cachedTemplates != null
+    LOG.warn("Navigation: currentTask='${currentTask.name}', hasValidTemplateCache=$hasValidTemplateCache, currentRecord=$currentRecord")
+
+    val initialCurrentFiles = if (hasValidTemplateCache) {
+      cachedTemplates
+    } else {
+      // No cached templates - we cannot correctly calculate user changes
+      // Use Task.allFiles as a fallback for state calculations, but DON'T update storage
+      currentTask.allFiles
+    }
 
     // 1. Get difference between initial state of current task and previous task state
     // and construct previous state of current task.
     // Previous state is needed to determine if a user made any new change
     val previousCurrentUserChanges = getUserChangesFromStorage(currentTask)
     val previousCurrentState = HashMap(initialCurrentFiles).apply { previousCurrentUserChanges.apply(this) }
-    LOG.info("previousCurrentState (after applying storage changes): ${previousCurrentState.mapValues { it.value.length.toString() + " chars, hash=" + it.value.hashCode() }}")
 
     // 2. Calculate difference between initial state of current task and current state on local FS.
     // Update change list for current task in [storage] to have ability to restore state of current task in future
-    val (newCurrentRecord, currentUserChanges) = try {
-      updateUserChanges(currentRecord, getUserChangesFromFiles(initialCurrentFiles, taskDir))
+    val (newCurrentRecord, currentUserChanges) = if (hasValidTemplateCache) {
+      // We have cached templates - calculate proper diff
+      try {
+        updateUserChanges(currentRecord, getUserChangesFromFiles(initialCurrentFiles, taskDir))
+      }
+      catch (e: IOException) {
+        LOG.error("Failed to save user changes for task `${currentTask.name}`", e)
+        UpdatedUserChanges(currentRecord, UserChanges.empty())
+      }
+    } else {
+      // ALT-10961: No cached templates - save full file content as AddFile changes.
+      // This preserves user changes while avoiding incorrect diff calculation.
+      // Similar to saveExternalChanges, we save the complete current state.
+      val currentDiskState = getTaskStateFromFiles(currentTask.taskFiles.keys, taskDir)
+      val (propagatableFiles, _) = currentDiskState.split(currentTask)
+      val fullContentChanges = propagatableFiles.map { (path, text) ->
+        Change.AddFile(path, text)
+      }
+      LOG.warn("Navigation: Saving full content for '${currentTask.name}' (no cached templates): ${fullContentChanges.size} files")
+      try {
+        updateUserChanges(currentRecord, UserChanges(fullContentChanges))
+      }
+      catch (e: IOException) {
+        LOG.error("Failed to save user changes for task `${currentTask.name}`", e)
+        UpdatedUserChanges(currentRecord, previousCurrentUserChanges)
+      }
     }
-    catch (e: IOException) {
-      LOG.error("Failed to save user changes for task `${currentTask.name}`", e)
-      UpdatedUserChanges(currentRecord, UserChanges.empty())
-    }
-    LOG.info("Saved currentTask changes: newRecord=$newCurrentRecord, changes=${currentUserChanges.changes.size}")
 
-    // 3. Update record index to a new one.
-    currentTask.record = newCurrentRecord
+    // 3. Update record index to a new one (only if it changed).
+    if (currentTask.record != newCurrentRecord) {
+      currentTask.record = newCurrentRecord
+    }
     SlowOperations.knownIssue("EDU-XXXX").use {
       YamlFormatSynchronizer.saveItem(currentTask)
     }
 
     // 4. Get difference (change list) between initial and latest states of target task
     val nextUserChanges = getUserChangesFromStorage(targetTask)
-    LOG.info("nextUserChanges (from storage for targetTask): ${nextUserChanges.changes.size} changes")
+    LOG.warn("Navigation: targetTask='${targetTask.name}', record=${targetTask.record}, nextUserChanges=${nextUserChanges.changes.size}")
+    nextUserChanges.changes.forEach { change ->
+      LOG.warn("Navigation: change=${change.javaClass.simpleName}(${change.path}, ${change.text.length} chars)")
+    }
 
     // 5. Apply change lists to initial state to get latest states of current and target tasks
     val currentState = HashMap(initialCurrentFiles).apply { currentUserChanges.apply(this) }
-    val initialTargetFiles = targetTask.allFiles
-    LOG.info("initialTargetFiles (from targetTask.allFiles): ${initialTargetFiles.mapValues { it.value.length.toString() + " chars, hash=" + it.value.hashCode() }}")
+    LOG.warn("Navigation: currentState=${currentState.mapValues { "${it.key}:${it.value.length}chars" }}")
+
+    // ALT-10961: For target task, we also prefer cached templates, but AddFile changes from
+    // saveExternalChanges will correctly overwrite any content in initialTargetFiles.
+    val cachedTargetTemplates = originalTemplateFilesCache[targetTask.id]
+    val initialTargetFiles = cachedTargetTemplates ?: targetTask.allFiles
+    LOG.warn("Navigation: initialTargetFiles=${initialTargetFiles.keys}, hasCachedTemplates=${cachedTargetTemplates != null}")
     val targetState = HashMap(initialTargetFiles).apply { nextUserChanges.apply(this) }
-    LOG.info("targetState (after applying storage changes): ${targetState.mapValues { it.value.length.toString() + " chars, hash=" + it.value.hashCode() }}")
+    LOG.warn("Navigation: targetState=${targetState.mapValues { "${it.key}:${it.value.length}chars" }}")
 
     // 6. Calculate difference between latest states of current and target tasks
     // Note, there are special rules for hyperskill courses for now
@@ -234,17 +280,13 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // If a user navigated back to current task, didn't make any change and wants to navigate to next task again
     // we shouldn't try to propagate current changes to next task
     val currentTaskHasNewUserChanges = !(currentRecord != -1 && targetRecord != -1 && previousCurrentState == currentState)
-    LOG.info("currentTaskHasNewUserChanges=$currentTaskHasNewUserChanges, propagateFilesOnNavigation=${lesson.propagateFilesOnNavigation}")
 
     val changes = if (currentTaskHasNewUserChanges && taskIndexDelta == 1 && lesson.propagateFilesOnNavigation) {
-      LOG.info("Using PROPAGATION mode")
       calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict)
     }
     else {
-      LOG.info("Using DIFF mode (no propagation)")
       calculateChanges(currentState, targetState)
     }
-    LOG.info("Changes to apply: ${changes.changes.size} changes")
 
     // 7. Apply difference between latest states of current and target tasks on local FS
     changes.apply(project, taskDir, targetTask)
@@ -252,6 +294,14 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // 8. Recreate test files (files with isLearnerCreated = false) from target task definition
     // These files are not tracked in framework storage, so we need to recreate them explicitly
     recreateTestFiles(project, taskDir, currentTask, targetTask)
+
+    // 9. ALT-10961: Force save all documents and refresh VFS to ensure changes are visible in editor
+    // Document changes may be in memory but not persisted or reflected in the editor
+    invokeAndWaitIfNeeded {
+      FileDocumentManager.getInstance().saveAllDocuments()
+      VfsUtil.markDirtyAndRefresh(false, true, true, taskDir)
+      LOG.info("Navigation: Saved documents and refreshed VFS for taskDir=${taskDir.path}")
+    }
 
     SlowOperations.knownIssue("EDU-XXXX").use {
       YamlFormatSynchronizer.saveItem(targetTask)
@@ -263,8 +313,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    * Loads test files from API for a task and caches them.
    * This is used as a fallback when the cache is empty (e.g., after IDE restart).
    *
+   * IMPORTANT: This method must NOT block EDT. If called from EDT, it starts async loading
+   * and returns null immediately. The caller should use task.taskFiles as fallback.
+   *
    * @param task the task whose test files should be loaded
-   * @return map of test files (filename -> TaskFile), or null if loading failed
+   * @return map of test files (filename -> TaskFile), or null if loading failed or is in progress
    */
   private fun loadTestFilesFromApi(task: Task): Map<String, TaskFile>? {
     val stepId = task.id
@@ -273,65 +326,80 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return null
     }
 
+    // Don't block EDT - start async loading and return null
+    // The caller will use task.taskFiles as fallback
+    if (ApplicationManager.getApplication().isDispatchThread) {
+      LOG.info("On EDT, starting async load for test files of task '${task.name}' (step $stepId)")
+      ApplicationManager.getApplication().executeOnPooledThread {
+        loadTestFilesFromApiSync(task)
+      }
+      return null
+    }
+
+    return loadTestFilesFromApiSync(task)
+  }
+
+  /**
+   * Synchronously loads test files from API. Must NOT be called from EDT.
+   */
+  private fun loadTestFilesFromApiSync(task: Task): Map<String, TaskFile>? {
+    val stepId = task.id
     LOG.info("Loading test files from API for task '${task.name}' (step $stepId)")
 
-    // Run network request in background thread (required because this may be called from EDT)
     return try {
-      ApplicationManager.getApplication().executeOnPooledThread<Map<String, TaskFile>?> {
-        // ALT-10961: Use anonymous request to get original test files from API.
-        // Authenticated requests return files from user's last submission instead of original stage files.
-        val stepSourceResult = HyperskillConnector.getInstance().getStepSourceAnonymous(stepId)
-        if (stepSourceResult is Err) {
-          LOG.warn("Failed to load step source from API for step $stepId: ${stepSourceResult.error}")
-          return@executeOnPooledThread null
-        }
+      // ALT-10961: Use anonymous request to get original test files from API.
+      // Authenticated requests return files from user's last submission instead of original stage files.
+      val stepSourceResult = HyperskillConnector.getInstance().getStepSourceAnonymous(stepId)
+      if (stepSourceResult is Err) {
+        LOG.warn("Failed to load step source from API for step $stepId: ${stepSourceResult.error}")
+        return null
+      }
 
-        val stepSource = (stepSourceResult as Ok).value
-        val options = stepSource.block?.options as? PyCharmStepOptions
-        if (options == null) {
-          LOG.warn("Step $stepId has no PyCharmStepOptions")
-          return@executeOnPooledThread null
-        }
+      val stepSource = (stepSourceResult as Ok).value
+      val options = stepSource.block?.options as? PyCharmStepOptions
+      if (options == null) {
+        LOG.warn("Step $stepId has no PyCharmStepOptions")
+        return null
+      }
 
-        val allFiles = options.files
-        if (allFiles.isNullOrEmpty()) {
-          LOG.warn("Step $stepId has no files in options")
-          return@executeOnPooledThread null
-        }
+      val allFiles = options.files
+      if (allFiles.isNullOrEmpty()) {
+        LOG.warn("Step $stepId has no files in options")
+        return null
+      }
 
-        // Filter test files (not learner-created and likely a test file by name)
-        // Note: Cannot use taskFile.isTestFile here because TaskFile objects from API
-        // are not attached to a Task, and isTestFile requires task context.
-        val testFiles = allFiles.filter { taskFile ->
-          !taskFile.isLearnerCreated && "test" in taskFile.name.lowercase()
-        }
+      // Filter test files (not learner-created and likely a test file by name)
+      // Note: Cannot use taskFile.isTestFile here because TaskFile objects from API
+      // are not attached to a Task, and isTestFile requires task context.
+      val testFiles = allFiles.filter { taskFile ->
+        !taskFile.isLearnerCreated && "test" in taskFile.name.lowercase()
+      }
 
-        if (testFiles.isEmpty()) {
-          LOG.warn("Step $stepId has no test files")
-          return@executeOnPooledThread null
-        }
+      if (testFiles.isEmpty()) {
+        LOG.warn("Step $stepId has no test files")
+        return null
+      }
 
-        // Create copies of TaskFile objects and cache them
-        // Force isVisible = false for test files so they don't appear in Project View
-        val copiedTestFiles = testFiles.associateBy(
-          { it.name },
-          { taskFile ->
-            TaskFile(taskFile.name, taskFile.contents).also {
-              it.isVisible = false
-              it.isEditable = taskFile.isEditable
-              it.isLearnerCreated = taskFile.isLearnerCreated
-            }
+      // Create copies of TaskFile objects and cache them
+      // Force isVisible = false for test files so they don't appear in Project View
+      val copiedTestFiles = testFiles.associateBy(
+        { it.name },
+        { taskFile ->
+          TaskFile(taskFile.name, taskFile.contents).also {
+            it.isVisible = false
+            it.isEditable = taskFile.isEditable
+            it.isLearnerCreated = taskFile.isLearnerCreated
           }
-        )
-
-        originalTestFilesCache[stepId] = copiedTestFiles
-        val filesInfo = copiedTestFiles.entries.joinToString { (name, file) ->
-          "$name:size=${file.contents.textualRepresentation.length}"
         }
-        LOG.info("Loaded and cached ${copiedTestFiles.size} test files from API for task '${task.name}' (step $stepId): [$filesInfo]")
+      )
 
-        copiedTestFiles
-      }.get()
+      originalTestFilesCache[stepId] = copiedTestFiles
+      val filesInfo = copiedTestFiles.entries.joinToString { (name, file) ->
+        "$name:size=${file.contents.textualRepresentation.length}"
+      }
+      LOG.info("Loaded and cached ${copiedTestFiles.size} test files from API for task '${task.name}' (step $stepId): [$filesInfo]")
+
+      copiedTestFiles
     }
     catch (e: Exception) {
       LOG.warn("Exception while loading test files from API for step $stepId", e)
@@ -589,11 +657,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
   private fun getUserChangesFromFiles(initialState: FLTaskState, taskDir: VirtualFile): UserChanges {
     val currentState = getTaskStateFromFiles(initialState.keys, taskDir)
-    LOG.info("getUserChangesFromFiles: initialState=${initialState.mapValues { "${it.value.length} chars, hash=${it.value.hashCode()}" }}")
-    LOG.info("getUserChangesFromFiles: diskState=${currentState.mapValues { "${it.value.length} chars, hash=${it.value.hashCode()}" }}")
-    val changes = calculateChanges(initialState, currentState)
-    LOG.info("getUserChangesFromFiles: calculated ${changes.changes.size} changes")
-    return changes
+    return calculateChanges(initialState, currentState)
   }
 
   @Synchronized
@@ -604,33 +668,100 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       UpdatedUserChanges(newRecord, changes)
     }
     catch (e: IOException) {
+      if (e.message?.contains("Corrupted data") == true) {
+        LOG.warn("Corrupted storage data detected during write, recreating storage: ${e.message}")
+        recreateStorage()
+        // After recreation, try to write again to the fresh storage
+        return try {
+          val newRecord = storage.updateUserChanges(-1, changes)
+          storage.force()
+          UpdatedUserChanges(newRecord, changes)
+        }
+        catch (retryError: IOException) {
+          LOG.error("Failed to update user changes after storage recreation", retryError)
+          UpdatedUserChanges(-1, UserChanges.empty())
+        }
+      }
       LOG.error("Failed to update user changes", e)
       UpdatedUserChanges(record, UserChanges.empty())
     }
   }
 
   private fun getUserChangesFromStorage(task: Task): UserChanges {
-    return try {
+    val rawChanges = try {
       storage.getUserChanges(task.record)
     }
     catch (e: IOException) {
-      LOG.error("Failed to get user changes for task `${task.name}`", e)
-      UserChanges.empty()
+      // Check if this is a corruption error that requires storage recreation
+      if (e.message?.contains("Corrupted data") == true) {
+        LOG.warn("Corrupted storage data detected, recreating storage: ${e.message}")
+        recreateStorage()
+      }
+      else {
+        LOG.error("Failed to get user changes for task `${task.name}`", e)
+      }
+      return UserChanges.empty()
     }
     catch (e: NegativeArraySizeException) {
-      LOG.error("Corrupted storage data detected (negative array size), recreating storage", e)
-      // Storage is corrupted, recreate it completely
-      try {
-        Disposer.dispose(storage)
-        val storageFilePath = constructStoragePath(project)
-        AbstractStorage.deleteFiles(storageFilePath.toString())
-        storage = createStorage(project)
-        LOG.warn("Storage recreated successfully after corruption")
+      LOG.warn("Corrupted storage data detected (negative array size: ${e.message}), recreating storage")
+      recreateStorage()
+      return UserChanges.empty()
+    }
+
+    // ALT-10961: Filter out test file changes from storage.
+    // Test files should never be in storage, but if they got there due to previous data corruption,
+    // we must filter them out to prevent corrupted test files from being applied.
+    // Test files are handled separately by recreateTestFiles() using API data.
+    val taskTestDirs = task.testDirs
+    val filteredChanges = rawChanges.changes.filter { change ->
+      val path = change.path
+      // Check if file is in a test directory
+      val isInTestDir = taskTestDirs.any { testDir -> path.startsWith("$testDir/") || path == testDir }
+      // Also check for common test file patterns (tests.py, test_*.py, *_test.py)
+      val fileName = path.substringAfterLast('/')
+      val isTestFileName = fileName == "tests.py" || fileName.startsWith("test_") || fileName.endsWith("_test.py")
+      val isTestFile = isInTestDir || isTestFileName
+      if (isTestFile) {
+        LOG.warn("Filtering out test file change from storage: ${change.javaClass.simpleName}($path)")
       }
-      catch (recreateError: Exception) {
-        LOG.error("Failed to recreate storage after corruption", recreateError)
+      !isTestFile
+    }
+
+    if (filteredChanges.size != rawChanges.changes.size) {
+      LOG.warn("Filtered ${rawChanges.changes.size - filteredChanges.size} test file changes from storage for task '${task.name}'")
+    }
+
+    return UserChanges(filteredChanges, rawChanges.timestamp)
+  }
+
+  private fun recreateStorage() {
+    try {
+      Disposer.dispose(storage)
+      val storageFilePath = constructStoragePath(project)
+      AbstractStorage.deleteFiles(storageFilePath.toString())
+      storage = createStorage(project)
+
+      // Reset all task records since they point to non-existent data in the new storage
+      resetAllTaskRecords()
+
+      LOG.warn("Storage recreated successfully after corruption")
+    }
+    catch (recreateError: Exception) {
+      LOG.error("Failed to recreate storage after corruption", recreateError)
+    }
+  }
+
+  private fun resetAllTaskRecords() {
+    val course = StudyTaskManager.getInstance(project).course ?: return
+    for (lesson in course.lessons) {
+      if (lesson !is FrameworkLesson) continue
+      for (task in lesson.taskList) {
+        if (task.record != -1) {
+          LOG.info("Resetting task record for '${task.name}' from ${task.record} to -1")
+          task.record = -1
+        }
       }
-      UserChanges.empty()
+      YamlFormatSynchronizer.saveItem(lesson)
     }
   }
 
@@ -703,9 +834,15 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return
     }
 
+    LOG.warn("storeOriginalTemplateFiles: task='${task.name}', taskFiles=${task.taskFiles.keys}")
+    task.taskFiles.forEach { (name, taskFile) ->
+      LOG.warn("storeOriginalTemplateFiles: file='$name', isVisible=${taskFile.isVisible}, isTestFile=${taskFile.isTestFile}")
+    }
+
     val templateFiles = task.taskFiles.filterValues { taskFile ->
       taskFile.isVisible && !taskFile.isTestFile
     }
+    LOG.warn("storeOriginalTemplateFiles: filtered templateFiles=${templateFiles.keys}")
 
     if (templateFiles.isNotEmpty()) {
       // Store only the content (as String), not the TaskFile objects
@@ -723,6 +860,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   /**
    * Loads template files from API and caches them.
    * This is used as a fallback when the cache is empty.
+   *
+   * IMPORTANT: This method must NOT block EDT. If called from EDT, it starts async loading
+   * and returns null immediately. The caller should use task.taskFiles as fallback.
    */
   private fun loadTemplateFilesFromApi(task: Task): Map<String, String>? {
     val stepId = task.id
@@ -731,51 +871,66 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return null
     }
 
+    // Don't block EDT - start async loading and return null
+    if (ApplicationManager.getApplication().isDispatchThread) {
+      LOG.info("On EDT, starting async load for template files of task '${task.name}' (step $stepId)")
+      ApplicationManager.getApplication().executeOnPooledThread {
+        loadTemplateFilesFromApiSync(task)
+      }
+      return null
+    }
+
+    return loadTemplateFilesFromApiSync(task)
+  }
+
+  /**
+   * Synchronously loads template files from API. Must NOT be called from EDT.
+   */
+  private fun loadTemplateFilesFromApiSync(task: Task): Map<String, String>? {
+    val stepId = task.id
     LOG.info("Loading template files from API for task '${task.name}' (step $stepId)")
 
     return try {
-      ApplicationManager.getApplication().executeOnPooledThread<Map<String, String>?> {
-        val stepSourceResult = HyperskillConnector.getInstance().getStepSourceAnonymous(stepId)
-        if (stepSourceResult is Err) {
-          LOG.warn("Failed to load step source from API for step $stepId: ${stepSourceResult.error}")
-          return@executeOnPooledThread null
-        }
+      val stepSourceResult = HyperskillConnector.getInstance().getStepSourceAnonymous(stepId)
+      if (stepSourceResult is Err) {
+        LOG.warn("Failed to load step source from API for step $stepId: ${stepSourceResult.error}")
+        return null
+      }
 
-        val stepSource = (stepSourceResult as Ok).value
-        val options = stepSource.block?.options as? PyCharmStepOptions
-        if (options == null) {
-          LOG.warn("Step $stepId has no PyCharmStepOptions")
-          return@executeOnPooledThread null
-        }
+      val stepSource = (stepSourceResult as Ok).value
+      val options = stepSource.block?.options as? PyCharmStepOptions
+      if (options == null) {
+        LOG.warn("Step $stepId has no PyCharmStepOptions")
+        return null
+      }
 
-        val allFiles = options.files
-        if (allFiles.isNullOrEmpty()) {
-          LOG.warn("Step $stepId has no files in options")
-          return@executeOnPooledThread null
-        }
+      val allFiles = options.files
+      if (allFiles.isNullOrEmpty()) {
+        LOG.warn("Step $stepId has no files in options")
+        return null
+      }
 
-        // Filter visible non-test files
-        val templateFiles = allFiles.filter { taskFile ->
-          taskFile.isVisible && !taskFile.isLearnerCreated && "test" !in taskFile.name.lowercase()
-        }
+      // Filter visible non-test files
+      val templateFiles = allFiles.filter { taskFile ->
+        taskFile.isVisible && !taskFile.isLearnerCreated && "test" !in taskFile.name.lowercase()
+      }
 
-        if (templateFiles.isEmpty()) {
-          LOG.warn("Step $stepId has no template files")
-          return@executeOnPooledThread null
-        }
+      if (templateFiles.isEmpty()) {
+        LOG.warn("Step $stepId has no template files")
+        return null
+      }
 
-        val cachedTemplates = templateFiles.associate { taskFile ->
-          taskFile.name to taskFile.contents.textualRepresentation
-        }
+      val cachedTemplates = templateFiles.associate { taskFile ->
+        taskFile.name to taskFile.contents.textualRepresentation
+      }
 
-        originalTemplateFilesCache[stepId] = cachedTemplates
-        val filesInfo = cachedTemplates.entries.joinToString { (name, content) ->
-          "$name:size=${content.length}"
-        }
-        LOG.info("Loaded and cached ${cachedTemplates.size} template files from API for task '${task.name}' (step $stepId): [$filesInfo]")
+      originalTemplateFilesCache[stepId] = cachedTemplates
+      val filesInfo = cachedTemplates.entries.joinToString { (name, content) ->
+        "$name:size=${content.length}"
+      }
+      LOG.info("Loaded and cached ${cachedTemplates.size} template files from API for task '${task.name}' (step $stepId): [$filesInfo]")
 
-        cachedTemplates
-      }.get()
+      cachedTemplates
     }
     catch (e: Exception) {
       LOG.warn("Exception while loading template files from API for step $stepId", e)
@@ -787,7 +942,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    * Ensures template files are cached for the task.
    * If not cached, attempts to load from API.
    */
-  fun ensureTemplateFilesCached(task: Task): Boolean {
+  override fun ensureTemplateFilesCached(task: Task): Boolean {
     if (originalTemplateFilesCache.containsKey(task.id)) {
       return true
     }
@@ -801,60 +956,20 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   /**
-   * Returns the original template content for visible non-test files.
-   * Uses cached templates if available, otherwise loads from API.
+   * Returns the state of all non-test files for this task.
+   * This includes both template files (visible, editable) and learner-created files.
    *
-   * IMPORTANT: For framework lessons, we must use cached templates because TaskFile.contents
-   * may be modified when loading submissions, which would corrupt the diff calculation.
+   * Test files are excluded because they are handled separately by [recreateTestFiles]
+   * using cached data from API to ensure correct test content for each stage.
    *
-   * Note: Test files (files in test directories) are handled separately by recreateTestFiles,
-   * so they are excluded here. We use testDirs check directly instead of isTestFile because
-   * isTestFile in HyperskillConfigurator treats ALL invisible files as test files, but we
-   * need to include invisible non-test files for proper diff calculation.
+   * IMPORTANT: This must return ALL non-test files (not just learner-created) because
+   * the framework storage tracks DIFFS from template state to user state. If we only
+   * returned learner-created files, the diff calculation would be incorrect.
    */
   private val Task.allFiles: FLTaskState
-    get() {
-      // Include both visible non-test files AND invisible non-test-directory files
-      // Test files (in test directories) are handled separately by recreateTestFiles
-      // Invisible non-test-directory files need to be in state for proper diff calculation
-      val taskTestDirs = testDirs
-      val filesForState = taskFiles.filterValues { taskFile ->
-        val name = taskFile.name
-        val isInTestDir = taskTestDirs.any { testDir -> name.startsWith("$testDir/") || name == testDir }
-        // Include visible non-test files
-        if (taskFile.isVisible && !isInTestDir) return@filterValues true
-        // Include invisible files that are NOT in test directories
-        if (!taskFile.isVisible && !isInTestDir) return@filterValues true
-        false
-      }
-
-      // Ensure templates are cached (load from API if needed)
-      if (!originalTemplateFilesCache.containsKey(id)) {
-        ensureTemplateFilesCached(this)
-      }
-
-      // Try to get cached templates for visible files
-      val cachedTemplates = originalTemplateFilesCache[id]
-      if (cachedTemplates != null) {
-        // Start with cached templates (for visible files)
-        val result = HashMap(cachedTemplates)
-        // Add invisible non-test files from taskFiles
-        for ((path, taskFile) in filesForState) {
-          if (!taskFile.isVisible && path !in result) {
-            result[path] = taskFile.contents.textualRepresentation
-          }
-          // Add learner-created visible files
-          if (taskFile.isLearnerCreated && taskFile.isVisible && path !in result) {
-            result[path] = taskFile.contents.textualRepresentation
-          }
-        }
-        return result
-      }
-
-      // No cache and API failed - fall back to TaskFile.contents (may be incorrect)
-      LOG.warn("No cached templates for task '${name}' (step $id), using TaskFile.contents (may be stale)")
-      return filesForState.mapValues { it.value.contents.textualRepresentation }
-    }
+    get() = taskFiles
+      .filterValues { !it.isTestFile } // Exclude test files - they are handled by recreateTestFiles
+      .mapValues { it.value.contents.textualRepresentation }
 
   private fun FLTaskState.splitByKey(predicate: (String) -> Boolean): Pair<FLTaskState, FLTaskState> {
     val positive = HashMap<String, String>()
@@ -868,8 +983,26 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     return positive to negative
   }
 
-  private fun FLTaskState.split(task: Task) = splitByKey {
-    task.taskFiles[it]?.shouldBePropagated() ?: true
+  private fun FLTaskState.split(task: Task) = splitByKey { path ->
+    val taskFile = task.taskFiles[path]
+    // ALT-10961: Also filter out test files by path pattern, not just by taskFile properties.
+    // This handles the case where test files exist in externalState (submission) but not in task.taskFiles.
+    val taskTestDirs = task.testDirs
+    // Check if file is in a test directory
+    val isInTestDir = taskTestDirs.any { testDir -> path.startsWith("$testDir/") || path == testDir }
+    // Also check for common test file patterns (tests.py, test_*.py, *_test.py)
+    val fileName = path.substringAfterLast('/')
+    val isTestFileName = fileName == "tests.py" || fileName.startsWith("test_") || fileName.endsWith("_test.py")
+    val isTestFilePath = isInTestDir || isTestFileName
+    if (isTestFilePath) {
+      LOG.info("split: path='$path' excluded as test file")
+      return@splitByKey false
+    }
+    val result = taskFile?.shouldBePropagated() ?: true
+    if (!result) {
+      LOG.warn("split: path='$path' excluded, isVisible=${taskFile.isVisible}, isEditable=${taskFile.isEditable}")
+    }
+    result
   }
 
   @TestOnly
@@ -897,10 +1030,13 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     private fun createStorage(project: Project): FrameworkStorage {
       val storageFilePath = constructStoragePath(project)
+      val storageExists = storageFilePath.toFile().exists()
+      LOG.warn("CREATE_STORAGE: path=$storageFilePath, exists=$storageExists")
 
       try {
         val storage = FrameworkStorage(storageFilePath)
         storage.migrate(VERSION)
+        LOG.warn("CREATE_STORAGE: success, version=${storage.version}")
         return storage
       }
       catch (e: IllegalStateException) {

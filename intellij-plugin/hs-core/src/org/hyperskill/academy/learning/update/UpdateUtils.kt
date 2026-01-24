@@ -50,6 +50,9 @@ object UpdateUtils {
     remoteTask: Task,
     updatePropagatableFiles: Boolean
   ) {
+    LOG.warn("UPDATE_FRAMEWORK_FILES: task='${task.name}' (id=${task.id}, status=${task.status}), " +
+             "lessonCurrentIndex=${lesson.currentTaskIndex}, taskIndex=${task.index}, " +
+             "updatePropagatableFiles=$updatePropagatableFiles, hasChangedFiles=${task.hasChangedFiles(project)}")
     fun updateTaskFiles(
       task: Task,
       remoteTaskFiles: Map<String, TaskFile>,

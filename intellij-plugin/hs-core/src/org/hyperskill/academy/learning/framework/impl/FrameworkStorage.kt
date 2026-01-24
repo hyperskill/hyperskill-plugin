@@ -10,6 +10,7 @@ import java.io.IOException
 import java.nio.file.Path
 
 class FrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePath) {
+
   constructor(storageFilePath: Path, version: Int) : this(storageFilePath) {
     setVersion(version)
   }
@@ -30,7 +31,8 @@ class FrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePath) {
     }
     else {
       withReadLock<UserChanges, IOException> {
-        readStream(record).use(UserChanges.Companion::read)
+        val bytes = readBytes(record)
+        DataInputStream(java.io.ByteArrayInputStream(bytes)).use { UserChanges.read(it) }
       }
     }
   }

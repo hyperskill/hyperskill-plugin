@@ -8,6 +8,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
@@ -227,6 +228,22 @@ object NavigationUtils {
       fromTask.saveStudentAnswersIfNeeded(project)
       prepareFilesForTargetTask(project, lesson, fromTask, task, showDialogIfConflict)
       project.course?.configurator?.courseBuilder?.refreshProject(project, RefreshCause.STRUCTURE_MODIFIED)
+
+      // Synchronously refresh VFS and reload cached documents to prevent "File Cache Conflict" dialogs.
+      // This is needed because prepareFilesForTargetTask modifies files on disk, and documents
+      // (even for closed files) may have cached content that doesn't match the new disk content.
+      val taskDir = task.getDir(project.courseDir)
+      if (taskDir != null) {
+        taskDir.refresh(false, true)
+        val allFiles = mutableListOf<VirtualFile>()
+        VfsUtil.iterateChildrenRecursively(taskDir, null) { file ->
+          if (!file.isDirectory) allFiles.add(file)
+          true
+        }
+        if (allFiles.isNotEmpty()) {
+          FileDocumentManager.getInstance().reloadFiles(*allFiles.toTypedArray())
+        }
+      }
     }
 
     val taskDir = task.getDir(project.courseDir) ?: return
@@ -293,8 +310,13 @@ object NavigationUtils {
       currentTask = frameworkLesson.currentTask() ?: break
     }
 
-    runWriteAction {
-      FileDocumentManager.getInstance().saveAllDocuments()
+    // Reload documents from disk to sync editor content with file changes made by prepareNextTask/preparePrevTask.
+    // This prevents "File Cache Conflict" dialogs when test files are recreated with different content.
+    val fileDocumentManager = FileDocumentManager.getInstance()
+    val editorManager = FileEditorManager.getInstance(project)
+    val openFiles = editorManager.openFiles
+    if (openFiles.isNotEmpty()) {
+      fileDocumentManager.reloadFiles(*openFiles)
     }
     setReadOnlyFlagToNonEditableFiles(project, currentTask, true)
   }
