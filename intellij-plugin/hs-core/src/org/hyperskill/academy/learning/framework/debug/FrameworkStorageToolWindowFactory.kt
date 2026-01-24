@@ -5,9 +5,14 @@ import com.intellij.diff.DiffManager
 import com.intellij.diff.requests.SimpleDiffRequest
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.fileTypes.FileTypeManager
+import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Splitter
@@ -32,6 +37,9 @@ import org.hyperskill.academy.learning.framework.impl.FrameworkStorage
 import org.hyperskill.academy.learning.framework.storage.FileBasedFrameworkStorage
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.datatransfer.StringSelection
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
@@ -123,6 +131,37 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         onCommitSelected(commitList.selectedValue)
       }
     })
+
+    // Context menu
+    commitList.addMouseListener(object : MouseAdapter() {
+      override fun mousePressed(e: MouseEvent) = handlePopup(e)
+      override fun mouseReleased(e: MouseEvent) = handlePopup(e)
+
+      private fun handlePopup(e: MouseEvent) {
+        if (e.isPopupTrigger) {
+          val index = commitList.locationToIndex(e.point)
+          if (index >= 0) {
+            commitList.selectedIndex = index
+            showCommitContextMenu(e)
+          }
+        }
+      }
+    })
+  }
+
+  private fun showCommitContextMenu(e: MouseEvent) {
+    val entry = commitList.selectedValue ?: return
+
+    val actionGroup = DefaultActionGroup().apply {
+      add(object : AnAction("Copy Commit Hash", "Copy full commit hash to clipboard", AllIcons.Actions.Copy) {
+        override fun actionPerformed(e: AnActionEvent) {
+          CopyPasteManager.getInstance().setContents(StringSelection(entry.hash))
+        }
+      })
+    }
+
+    val popupMenu = ActionManager.getInstance().createActionPopupMenu("FrameworkStorageCommitPopup", actionGroup)
+    popupMenu.component.show(commitList, e.x, e.y)
   }
 
   private fun setupFileTree() {
