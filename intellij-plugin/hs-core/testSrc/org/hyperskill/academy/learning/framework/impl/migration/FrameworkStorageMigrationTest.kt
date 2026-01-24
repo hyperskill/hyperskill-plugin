@@ -54,7 +54,7 @@ class FrameworkStorageMigrationTest : CourseGenerationTestBase<EmptyProjectSetti
       Change.AddFile("user_created.txt", "User content"),
       Change.ChangeFile("existing.txt", "Modified content")
     ))
-    val record = legacyStorage.createRecordWithData(oldChanges)
+    val legacyRefId = legacyStorage.createRecordWithData(oldChanges)
     Disposer.dispose(legacyStorage)
 
     // Create new storage wrapper
@@ -64,11 +64,12 @@ class FrameworkStorageMigrationTest : CourseGenerationTestBase<EmptyProjectSetti
     // Base state from API (without user's local changes)
     val baseState = mapOf("existing.txt" to "Original content", "template.txt" to "Template")
 
-    // Apply legacy changes on top of base state
-    val newRefId = storage.applyLegacyChangesAndSave(record, baseState)
+    // Apply legacy changes on top of base state (using new string ref)
+    val newRef = "stage_543"
+    storage.applyLegacyChangesAndSave(newRef, legacyRefId, baseState)
 
     // Verify the resulting snapshot contains merged state
-    val mergedState = storage.getSnapshot(newRefId)
+    val mergedState = storage.getSnapshot(newRef)
     assertEquals("Modified content", mergedState["existing.txt"])
     assertEquals("User content", mergedState["user_created.txt"])
     assertEquals("Template", mergedState["template.txt"])

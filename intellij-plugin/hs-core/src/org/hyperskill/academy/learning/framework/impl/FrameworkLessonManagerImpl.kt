@@ -45,6 +45,12 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
+ * Extension to get storage ref for a task.
+ * @see getStorageRef
+ */
+private fun Task.storageRef(): String = getStorageRef()
+
+/**
  * Keeps list of [Change]s for each task. Change list is difference between initial task state and latest one.
  *
  * Allows navigating between tasks in framework lessons in learner mode (where only current task is visible for a learner)
@@ -70,12 +76,24 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     applyTargetTaskChanges(lesson, -1, taskDir, showDialogIfConflict)
   }
 
-  private fun getParentRefId(task: Task): Int {
-    val lesson = task.lesson as? FrameworkLesson ?: return -1
+  /**
+   * Get the parent task's storage ref.
+   * For a task at index N, the parent is the task at index N-1.
+   * Returns null if there's no parent (first task in lesson).
+   */
+  private fun getParentRef(task: Task): String? {
+    val lesson = task.lesson as? FrameworkLesson ?: return null
     val taskIndex = task.index
     return if (taskIndex > 1) {
-      lesson.taskList.getOrNull(taskIndex - 2)?.record ?: -1
-    } else -1
+      lesson.taskList.getOrNull(taskIndex - 2)?.storageRef()
+    } else null
+  }
+
+  /**
+   * Check if a task has data in storage.
+   */
+  private fun hasStorageData(task: Task): Boolean {
+    return storage.hasRef(task.storageRef())
   }
 
   override fun saveExternalChanges(task: Task, externalState: Map<String, String>) {
@@ -83,41 +101,42 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       "Only solutions of framework tasks can be saved"
     }
 
-    LOG.warn("saveExternalChanges: task='${task.name}', externalState.keys=${externalState.keys}")
+    val ref = task.storageRef()
+    val parentRef = getParentRef(task)
+    LOG.warn("saveExternalChanges: task='${task.name}', ref=$ref, externalState.keys=${externalState.keys}")
 
     // Filter external state to only include propagatable files (exclude test files, etc.)
     val externalPropagatableFiles = externalState.split(task).first
     LOG.warn("saveExternalChanges: externalPropagatableFiles.keys=${externalPropagatableFiles.keys}")
 
-    val currentRefId = task.record
-    val parentRefId = if (currentRefId == -1) getParentRefId(task) else -1
-
     // Save the API state as a snapshot
     val message = "Load submission from server for '${task.name}'"
-    var newRefId = try {
-      storage.saveSnapshot(currentRefId, externalPropagatableFiles, parentRefId, message)
+    try {
+      storage.saveSnapshot(ref, externalPropagatableFiles, parentRef, message)
     }
     catch (e: IOException) {
       LOG.error("Failed to save solution for task `${task.name}`", e)
-      currentRefId
     }
 
     // Migration: If legacy storage has changes for this task's old refId, apply them on top.
     // This preserves user's local changes that weren't submitted to the server.
-    if (currentRefId != -1 && storage.hasLegacyChanges(currentRefId)) {
-      LOG.info("Migrating legacy changes for task '${task.name}' (refId=$currentRefId)")
-      newRefId = try {
-        storage.applyLegacyChangesAndSave(newRefId, externalPropagatableFiles)
+    val legacyRefId = task.record
+    if (legacyRefId != -1 && storage.hasLegacyChanges(legacyRefId)) {
+      LOG.info("Migrating legacy changes for task '${task.name}' (legacyRefId=$legacyRefId)")
+      try {
+        storage.applyLegacyChangesAndSave(ref, legacyRefId, externalPropagatableFiles, parentRef)
       }
       catch (e: IOException) {
         LOG.error("Failed to apply legacy changes for task `${task.name}`", e)
-        newRefId
       }
     }
 
-    task.record = newRefId
-    LOG.warn("saveExternalChanges: task='${task.name}', record updated from $currentRefId to ${task.record}, parentRefId=$parentRefId")
-    YamlFormatSynchronizer.saveItem(task)
+    // Clear legacy record since we now use computed refs
+    if (task.record != -1) {
+      task.record = -1
+      YamlFormatSynchronizer.saveItem(task)
+    }
+    LOG.warn("saveExternalChanges: task='${task.name}', saved to ref=$ref, parentRef=$parentRef")
   }
 
   override fun updateUserChanges(task: Task, newInitialState: Map<String, String>) {
@@ -131,11 +150,12 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       "Changes timestamp makes sense only for framework tasks"
     }
 
+    val ref = task.storageRef()
     return try {
-      storage.getSnapshotTimestamp(task.record)
+      storage.getSnapshotTimestamp(ref)
     }
     catch (e: IOException) {
-      LOG.warn("Failed to get snapshot timestamp for task `${task.name}`", e)
+      LOG.warn("Failed to get snapshot timestamp for task `${task.name}` (ref=$ref)", e)
       0L
     }
   }
@@ -178,8 +198,12 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       YamlFormatSynchronizer.saveItem(lesson)
     }
 
-    val currentRefId = currentTask.record
-    val targetRefId = targetTask.record
+    val currentRef = currentTask.storageRef()
+    val targetRef = targetTask.storageRef()
+    val currentHasStorage = hasStorageData(currentTask)
+    val targetHasStorage = hasStorageData(targetTask)
+
+    LOG.info("Navigation refs: current=$currentRef (hasStorage=$currentHasStorage), target=$targetRef (hasStorage=$targetHasStorage)")
 
     // ALT-10961: Try to load template files from API if cache is empty.
     // This ensures we have correct templates for diff calculation.
@@ -200,7 +224,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
     val cachedTemplates = originalTemplateFilesCache[currentTask.id]
     val hasValidTemplateCache = cachedTemplates != null
-    LOG.warn("Navigation: currentTask='${currentTask.name}', hasValidTemplateCache=$hasValidTemplateCache, currentRefId=$currentRefId")
+    LOG.warn("Navigation: currentTask='${currentTask.name}', hasValidTemplateCache=$hasValidTemplateCache, ref=$currentRef")
 
     val initialCurrentFiles = if (hasValidTemplateCache) {
       cachedTemplates
@@ -221,17 +245,17 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // 1. After IDE restart, templates may not be available (cache empty, API may fail)
     // 2. Diffs (ChangeFile) require correct templates to apply
     // 3. Full snapshots are self-contained and don't need templates
-    val (newCurrentRefId, currentUserChanges) = if (hasValidTemplateCache) {
+    val currentUserChanges = if (hasValidTemplateCache) {
       // We have cached templates - save full current disk state as a snapshot
       val currentDiskState = getTaskStateFromFiles(initialCurrentFiles.keys, taskDir)
       val (propagatableFiles, _) = currentDiskState.split(currentTask)
       val navMessage = "Save changes before navigating from '${currentTask.name}' to '${targetTask.name}'"
       try {
-        saveSnapshot(currentRefId, propagatableFiles, getParentRefId(currentTask), initialCurrentFiles, navMessage)
+        saveSnapshot(currentRef, propagatableFiles, getParentRef(currentTask), initialCurrentFiles, navMessage)
       }
       catch (e: IOException) {
         LOG.error("Failed to save snapshot for task `${currentTask.name}`", e)
-        UpdatedUserChanges(currentRefId, UserChanges.empty())
+        UserChanges.empty()
       }
     } else {
       // ALT-10961: No cached templates - DON'T save new changes.
@@ -239,20 +263,20 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // Saving current disk state would overwrite the correct submission-based changes.
       // Use existing storage changes which were saved by loadSolutionsInBackground.
       LOG.warn("Navigation: No cached templates for '${currentTask.name}', using existing storage changes (not updating)")
-      UpdatedUserChanges(currentRefId, previousCurrentUserChanges)
+      previousCurrentUserChanges
     }
 
-    // 3. Update ref ID if it changed.
-    if (currentTask.record != newCurrentRefId) {
-      currentTask.record = newCurrentRefId
-    }
-    SlowOperations.knownIssue("EDU-XXXX").use {
-      YamlFormatSynchronizer.saveItem(currentTask)
+    // 3. Clear legacy record if present (we now use computed refs)
+    if (currentTask.record != -1) {
+      currentTask.record = -1
+      SlowOperations.knownIssue("EDU-XXXX").use {
+        YamlFormatSynchronizer.saveItem(currentTask)
+      }
     }
 
     // 4. Get difference (change list) between initial and latest states of target task
     val nextUserChanges = getUserChangesFromStorage(targetTask)
-    LOG.warn("Navigation: targetTask='${targetTask.name}', record=${targetTask.record}, nextUserChanges=${nextUserChanges.changes.size}")
+    LOG.warn("Navigation: targetTask='${targetTask.name}', ref=$targetRef, nextUserChanges=${nextUserChanges.changes.size}")
     nextUserChanges.changes.forEach { change ->
       LOG.warn("Navigation: change=${change.javaClass.simpleName}(${change.path}, ${change.text.length} chars)")
     }
@@ -288,7 +312,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     // If a user navigated back to current task, didn't make any change and wants to navigate to next task again
     // we shouldn't try to propagate current changes to next task
-    val currentTaskHasNewUserChanges = !(currentRefId != -1 && targetRefId != -1 && previousCurrentState == currentState)
+    val currentTaskHasNewUserChanges = !(currentHasStorage && targetHasStorage && previousCurrentState == currentState)
 
     val changes = if (currentTaskHasNewUserChanges && taskIndexDelta == 1 && lesson.propagateFilesOnNavigation) {
       calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict)
@@ -312,16 +336,18 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       LOG.info("Navigation: Saved documents and refreshed VFS for taskDir=${taskDir.path}")
     }
 
-    SlowOperations.knownIssue("EDU-XXXX").use {
-      YamlFormatSynchronizer.saveItem(targetTask)
+    // Clear legacy record for target task if present
+    if (targetTask.record != -1) {
+      targetTask.record = -1
+      SlowOperations.knownIssue("EDU-XXXX").use {
+        YamlFormatSynchronizer.saveItem(targetTask)
+      }
     }
 
     // Update HEAD to point to the current (target) task
-    if (targetTask.record != -1) {
-      storage.head = targetTask.record
-      LOG.info("HEAD updated to ref ${targetTask.record} (task '${targetTask.name}')")
-      project.messageBus.syncPublisher(FrameworkStorageListener.TOPIC).headUpdated(targetTask.record)
-    }
+    storage.head = targetRef
+    LOG.info("HEAD updated to ref $targetRef (task '${targetTask.name}')")
+    project.messageBus.syncPublisher(FrameworkStorageListener.TOPIC).headUpdated(targetRef)
 
     LOG.info("=== Stage switch complete ===")
   }
@@ -689,43 +715,54 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     return calculateChanges(initialState, currentState)
   }
 
+  /**
+   * Save a snapshot and return the calculated user changes.
+   *
+   * @param ref The ref name (e.g., "stage_543")
+   * @param state The file state to save
+   * @param parentRef Optional parent ref for commit chain
+   * @param initialState The initial state for calculating changes (templates)
+   * @param message Commit message
+   * @return UserChanges calculated from initialState -> state
+   */
   @Synchronized
   private fun saveSnapshot(
-    refId: Int,
+    ref: String,
     state: Map<String, String>,
-    parentRefId: Int = -1,
+    parentRef: String? = null,
     initialState: Map<String, String> = emptyMap(),
     message: String = ""
-  ): UpdatedUserChanges {
+  ): UserChanges {
     return try {
-      val newRefId = storage.saveSnapshot(refId, state, parentRefId, message)
+      val created = storage.saveSnapshot(ref, state, parentRef, message)
       storage.force()
       // Calculate changes on-the-fly by comparing initial state with saved snapshot
       val changes = SnapshotDiff.calculateChanges(initialState, state)
       // Notify listeners about storage change
-      val commitHash = storage.resolveRef(newRefId)
-      if (commitHash != null) {
-        project.messageBus.syncPublisher(FrameworkStorageListener.TOPIC).snapshotSaved(newRefId, commitHash)
+      if (created) {
+        val commitHash = storage.resolveRef(ref)
+        if (commitHash != null) {
+          project.messageBus.syncPublisher(FrameworkStorageListener.TOPIC).snapshotSaved(ref, commitHash)
+        }
       }
-      UpdatedUserChanges(newRefId, changes)
+      changes
     }
     catch (e: IOException) {
       if (e.message?.contains("Corrupted data") == true) {
         LOG.warn("Corrupted storage data detected during snapshot write, recreating storage: ${e.message}")
         recreateStorage()
         return try {
-          val newRefId = storage.saveSnapshot(-1, state, parentRefId, message)
+          storage.saveSnapshot(ref, state, parentRef, message)
           storage.force()
-          val changes = SnapshotDiff.calculateChanges(initialState, state)
-          UpdatedUserChanges(newRefId, changes)
+          SnapshotDiff.calculateChanges(initialState, state)
         }
         catch (retryError: IOException) {
           LOG.error("Failed to save snapshot after storage recreation", retryError)
-          UpdatedUserChanges(-1, UserChanges.empty())
+          UserChanges.empty()
         }
       }
       LOG.error("Failed to save snapshot", e)
-      UpdatedUserChanges(refId, UserChanges.empty())
+      UserChanges.empty()
     }
   }
 
@@ -734,11 +771,12 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    * This is the git-like approach: we store full snapshots and compute diffs when needed.
    */
   private fun getUserChangesFromStorage(task: Task): UserChanges {
-    if (task.record == -1) return UserChanges.empty()
+    val ref = task.storageRef()
+    if (!storage.hasRef(ref)) return UserChanges.empty()
 
     // Get snapshot from storage
     val snapshot = try {
-      storage.getSnapshot(task.record)
+      storage.getSnapshot(ref)
     }
     catch (e: IOException) {
       if (e.message?.contains("Corrupted data") == true) {
@@ -782,7 +820,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     // Get timestamp from storage
     val timestamp = try {
-      storage.getSnapshotTimestamp(task.record)
+      storage.getSnapshotTimestamp(ref)
     }
     catch (e: IOException) {
       0L
@@ -896,10 +934,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       }
       LOG.info("Stored ${cachedTemplates.size} original template files for task '${task.name}' (step ${task.id}): [$filesInfo]")
 
-      // ALT-10961: If task has no record yet, save these templates as the initial snapshot in storage.
+      // ALT-10961: If task has no data in storage yet, save these templates as the initial snapshot.
       // This ensures we have a base state even after IDE restart/offline.
-      if (task.record == -1) {
-        LOG.info("Task '${task.name}' has no record, saving templates as initial snapshot")
+      if (!hasStorageData(task)) {
+        LOG.info("Task '${task.name}' has no storage data, saving templates as initial snapshot")
         saveExternalChanges(task, cachedTemplates)
       }
     }
@@ -1115,8 +1153,3 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
   }
 }
-
-private data class UpdatedUserChanges(
-  val refId: Int,
-  val changes: UserChanges
-)

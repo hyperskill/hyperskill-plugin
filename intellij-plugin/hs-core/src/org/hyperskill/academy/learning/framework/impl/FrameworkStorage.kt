@@ -56,11 +56,11 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
     }
 
   /**
-   * HEAD points to the current stage's ref ID (like git HEAD).
-   * Returns -1 if HEAD is not set.
+   * HEAD points to the current stage's ref (like git HEAD).
+   * Returns null if HEAD is not set.
    */
-  var head: Int
-    get() = if (hasFileBasedStorage()) getFileBasedStorage().getHead() else -1
+  var head: String?
+    get() = if (hasFileBasedStorage()) getFileBasedStorage().getHead() else null
     set(value) = getFileBasedStorage().setHead(value)
 
   /**
@@ -81,10 +81,10 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
   }
 
   /**
-   * Get all ref IDs in the storage.
+   * Get all ref names in the storage.
    */
-  fun getAllRefIds(): List<Int> {
-    return if (hasFileBasedStorage()) getFileBasedStorage().getAllRefIds() else emptyList()
+  fun getAllRefNames(): List<String> {
+    return if (hasFileBasedStorage()) getFileBasedStorage().getAllRefNames() else emptyList()
   }
 
   /**
@@ -109,10 +109,17 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
   }
 
   /**
-   * Resolve ref ID to commit hash.
+   * Resolve ref name to commit hash.
    */
-  fun resolveRef(refId: Int): String? {
-    return if (hasFileBasedStorage()) getFileBasedStorage().resolveRef(refId) else null
+  fun resolveRef(ref: String): String? {
+    return if (hasFileBasedStorage()) getFileBasedStorage().resolveRef(ref) else null
+  }
+
+  /**
+   * Check if a ref exists in the storage.
+   */
+  fun hasRef(ref: String): Boolean {
+    return if (hasFileBasedStorage()) getFileBasedStorage().hasRef(ref) else false
   }
 
   /**
@@ -140,25 +147,29 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
    * Get the snapshot (full state) for a ref.
    */
   @Throws(IOException::class)
-  fun getSnapshot(refId: Int): Map<String, String> {
-    return getFileBasedStorage().getSnapshot(refId)
+  fun getSnapshot(ref: String?): Map<String, String> {
+    return getFileBasedStorage().getSnapshot(ref)
   }
 
   /**
    * Get the timestamp when snapshot was saved.
    */
   @Throws(IOException::class)
-  fun getSnapshotTimestamp(refId: Int): Long {
-    return getFileBasedStorage().getSnapshotTimestamp(refId)
+  fun getSnapshotTimestamp(ref: String?): Long {
+    return getFileBasedStorage().getSnapshotTimestamp(ref)
   }
 
   /**
-   * Save a snapshot (full state) and return the new ref ID.
+   * Save a snapshot (full state).
+   * @param ref The ref name (e.g., "stage_543")
+   * @param state The file state to save
+   * @param parentRef Optional parent ref for commit chain
    * @param message Commit message describing the reason for this snapshot
+   * @return true if a new commit was created, false if snapshot was identical
    */
   @Throws(IOException::class)
-  fun saveSnapshot(refId: Int, state: Map<String, String>, parentRefId: Int = -1, message: String = ""): Int {
-    return getFileBasedStorage().saveSnapshot(refId, state, parentRefId, message)
+  fun saveSnapshot(ref: String, state: Map<String, String>, parentRef: String? = null, message: String = ""): Boolean {
+    return getFileBasedStorage().saveSnapshot(ref, state, parentRef, message)
   }
 
   @Throws(IOException::class)
@@ -169,33 +180,35 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
   }
 
   /**
-   * Check if legacy storage has changes for a specific ref.
+   * Check if legacy storage has changes for a specific legacy ref ID.
+   * @param legacyRefId The old integer ref ID (from task.record in old format)
    */
-  fun hasLegacyChanges(refId: Int): Boolean {
+  fun hasLegacyChanges(legacyRefId: Int): Boolean {
     if (!hasLegacyStorage()) return false
     return try {
       val legacyStorage = LegacyFrameworkStorage(storagePath)
       try {
-        legacyStorage.getRecordInfo(refId) != null
+        legacyStorage.getRecordInfo(legacyRefId) != null
       } finally {
         Disposer.dispose(legacyStorage)
       }
     } catch (e: Exception) {
-      LOG.warn("Failed to check legacy changes for ref $refId", e)
+      LOG.warn("Failed to check legacy changes for ref $legacyRefId", e)
       false
     }
   }
 
   /**
-   * Get changes from legacy storage for a specific ref.
-   * Returns null if no legacy changes exist.
+   * Get changes from legacy storage for a specific legacy ref ID.
+   * @param legacyRefId The old integer ref ID (from task.record in old format)
+   * @return UserChanges or null if no legacy changes exist
    */
-  fun getLegacyChanges(refId: Int): UserChanges? {
+  fun getLegacyChanges(legacyRefId: Int): UserChanges? {
     if (!hasLegacyStorage()) return null
     return try {
       val legacyStorage = LegacyFrameworkStorage(storagePath)
       try {
-        when (val refInfo = legacyStorage.getRecordInfo(refId)) {
+        when (val refInfo = legacyStorage.getRecordInfo(legacyRefId)) {
           is LegacyFrameworkStorage.RecordInfo.Legacy -> refInfo.changes
           is LegacyFrameworkStorage.RecordInfo.Snapshot -> {
             // Convert snapshot to changes (all as AddFile)
@@ -208,7 +221,7 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
         Disposer.dispose(legacyStorage)
       }
     } catch (e: Exception) {
-      LOG.warn("Failed to get legacy changes for ref $refId", e)
+      LOG.warn("Failed to get legacy changes for ref $legacyRefId", e)
       null
     }
   }
@@ -217,14 +230,15 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
    * Apply legacy changes on top of base state and save as new snapshot.
    * This is used during project open to preserve user's local changes from old storage.
    *
-   * @param refId The ref ID (Task.record)
+   * @param ref The new string ref (e.g., "stage_543")
+   * @param legacyRefId The old integer ref ID (from task.record in old format)
    * @param baseState The base state (e.g., from API or templates)
-   * @return The new ref ID after saving, or the original refId if no changes applied
+   * @param parentRef Optional parent ref for commit chain
    */
-  fun applyLegacyChangesAndSave(refId: Int, baseState: Map<String, String>): Int {
-    val legacyChanges = getLegacyChanges(refId) ?: return refId
+  fun applyLegacyChangesAndSave(ref: String, legacyRefId: Int, baseState: Map<String, String>, parentRef: String? = null) {
+    val legacyChanges = getLegacyChanges(legacyRefId) ?: return
 
-    LOG.info("Applying legacy changes for ref $refId: ${legacyChanges.changes.size} changes")
+    LOG.info("Applying legacy changes for ref $ref (legacyRefId=$legacyRefId): ${legacyChanges.changes.size} changes")
 
     // Apply changes to base state
     val mergedState = baseState.toMutableMap()
@@ -254,7 +268,7 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
     }
 
     // Save merged state as new snapshot
-    return saveSnapshot(refId, mergedState)
+    saveSnapshot(ref, mergedState, parentRef)
   }
 
   /**

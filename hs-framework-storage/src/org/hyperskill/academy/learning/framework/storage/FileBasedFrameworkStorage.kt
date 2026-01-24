@@ -7,7 +7,6 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.zip.DeflaterOutputStream
 import java.util.zip.InflaterInputStream
 
@@ -19,19 +18,11 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
   private val headFile = baseDir.resolve("HEAD")
 
   private val contentHashIndex = ConcurrentHashMap<String, String>() // SHA-256 -> SHA-256 (exists)
-  private val nextRefId = AtomicInteger(1)
 
   init {
     Files.createDirectories(objectsDir)
     Files.createDirectories(refsDir)
-    initializeNextRefId()
     initializeContentHashIndex()
-  }
-
-  private fun initializeNextRefId() {
-    val existingRefs = refsDir.toFile().list() ?: return
-    val maxId = existingRefs.mapNotNull { it.toIntOrNull() }.maxOrNull() ?: 0
-    nextRefId.set(maxId + 1)
   }
 
   private fun initializeContentHashIndex() {
@@ -63,30 +54,30 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
   // ==================== HEAD ====================
 
   /**
-   * Get the current HEAD ref ID.
+   * Get the current HEAD ref.
    * HEAD points to the current stage (like git HEAD points to current branch/commit).
-   * Returns -1 if HEAD is not set.
+   * Returns null if HEAD is not set.
    */
-  fun getHead(): Int {
-    if (!Files.exists(headFile)) return -1
+  fun getHead(): String? {
+    if (!Files.exists(headFile)) return null
     return try {
-      Files.readAllLines(headFile).firstOrNull()?.toIntOrNull() ?: -1
+      Files.readAllLines(headFile).firstOrNull()?.takeIf { it.isNotEmpty() }
     } catch (e: Exception) {
-      -1
+      null
     }
   }
 
   /**
-   * Set HEAD to point to a ref ID.
-   * @param refId The ref ID to point to, or -1 to clear HEAD
+   * Set HEAD to point to a ref.
+   * @param ref The ref to point to, or null to clear HEAD
    */
-  fun setHead(refId: Int) {
-    if (refId == -1) {
+  fun setHead(ref: String?) {
+    if (ref == null) {
       Files.deleteIfExists(headFile)
     } else {
       val tempFile = Files.createTempFile(baseDir, "head", ".tmp")
       try {
-        Files.write(tempFile, listOf(refId.toString()))
+        Files.write(tempFile, listOf(ref))
         Files.move(tempFile, headFile, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
       } finally {
         Files.deleteIfExists(tempFile)
@@ -99,9 +90,8 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
    * Returns null if HEAD is not set or points to invalid ref.
    */
   fun getHeadCommit(): String? {
-    val headRefId = getHead()
-    if (headRefId == -1) return null
-    return resolveRef(headRefId)
+    val headRef = getHead() ?: return null
+    return resolveRef(headRef)
   }
 
   /**
@@ -110,21 +100,20 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
    */
   @Throws(IOException::class)
   fun getHeadSnapshot(): Map<String, String>? {
-    val headRefId = getHead()
-    if (headRefId == -1) return null
-    return getSnapshot(headRefId)
+    val headRef = getHead() ?: return null
+    return getSnapshot(headRef)
   }
 
   // ==================== Snapshots ====================
 
   /**
    * Get the snapshot (full state) for a ref.
-   * Returns empty map if refId is -1.
+   * Returns empty map if ref is null.
    */
   @Throws(IOException::class)
-  fun getSnapshot(refId: Int): Map<String, String> {
-    if (refId == -1) return emptyMap()
-    val commitHash = resolveRef(refId) ?: throw IOException("Ref $refId not found")
+  fun getSnapshot(ref: String?): Map<String, String> {
+    if (ref == null) return emptyMap()
+    val commitHash = resolveRef(ref) ?: throw IOException("Ref $ref not found")
     return readSnapshotState(commitHash)
   }
 
@@ -132,9 +121,9 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
    * Get the timestamp when snapshot was saved.
    */
   @Throws(IOException::class)
-  fun getSnapshotTimestamp(refId: Int): Long {
-    if (refId == -1) return 0L
-    val commitHash = resolveRef(refId) ?: return 0L
+  fun getSnapshotTimestamp(ref: String?): Long {
+    if (ref == null) return 0L
+    val commitHash = resolveRef(ref) ?: return 0L
     return getCommit(commitHash).timestamp
   }
 
@@ -157,8 +146,17 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
     }
   }
 
+  /**
+   * Save a snapshot (full state) for a ref.
+   *
+   * @param ref The ref name (e.g., "stage_543" or "step_12345"). Must not be null.
+   * @param state The file state to save (path -> content)
+   * @param parentRef Optional parent ref for creating commit chain
+   * @param message Optional commit message
+   * @return true if a new commit was created, false if snapshot was identical to parent
+   */
   @Throws(IOException::class)
-  fun saveSnapshot(refId: Int, state: Map<String, String>, parentRefId: Int = -1, message: String = ""): Int {
+  fun saveSnapshot(ref: String, state: Map<String, String>, parentRef: String? = null, message: String = ""): Boolean {
     val snapshotMap = state.mapValues { (_, text) ->
       saveBlob(text)
     }
@@ -171,28 +169,21 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
       }
     }
 
-    val parentCommitHash = if (refId != -1) {
-      resolveRef(refId)
-    } else if (parentRefId != -1) {
-      resolveRef(parentRefId)
-    } else {
-      null
-    }
+    // Check for existing ref first, then fall back to parent
+    val parentCommitHash = resolveRef(ref) ?: parentRef?.let { resolveRef(it) }
 
     // Skip creating commit if snapshot is identical to parent's snapshot
     if (parentCommitHash != null) {
       val parentCommit = getCommit(parentCommitHash)
       if (parentCommit.snapshotHash == snapshotHash) {
-        // No changes - return existing refId without creating new commit
-        return if (refId != -1) refId else parentRefId
+        // No changes - don't create new commit
+        return false
       }
     }
 
     val commitHash = saveCommit(snapshotHash, if (parentCommitHash != null) listOf(parentCommitHash) else emptyList(), message)
-
-    val id = if (refId == -1) nextRefId.getAndIncrement() else refId
-    updateRef(id, commitHash)
-    return id
+    updateRef(ref, commitHash)
+    return true
   }
 
   private fun saveCommit(snapshotHash: String, parentHashes: List<String>, message: String): String {
@@ -231,22 +222,30 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
     }
   }
 
-  fun resolveRef(refId: Int): String? = getRefCommitHash(refId)
+  /**
+   * Resolve a ref name to its commit hash.
+   */
+  fun resolveRef(ref: String): String? = getRefCommitHash(ref)
 
   /**
-   * Get all ref IDs in the storage.
-   * Returns a list of all ref IDs (stage identifiers).
+   * Check if a ref exists in the storage.
    */
-  fun getAllRefIds(): List<Int> {
+  fun hasRef(ref: String): Boolean = Files.exists(refsDir.resolve(ref))
+
+  /**
+   * Get all ref names in the storage.
+   * Returns a list of all ref names (e.g., "stage_543", "step_12345").
+   */
+  fun getAllRefNames(): List<String> {
     val refs = refsDir.toFile().list() ?: return emptyList()
-    return refs.mapNotNull { it.toIntOrNull() }.sorted()
+    return refs.filter { !it.endsWith(".tmp") }.sorted()
   }
 
   /**
    * Data class representing a ref with its commit information.
    */
   data class RefInfo(
-    val refId: Int,
+    val ref: String,
     val commitHash: String,
     val commit: Commit,
     val isHead: Boolean
@@ -257,15 +256,15 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
    * Returns a list of RefInfo objects with commit details.
    */
   fun getAllRefs(): List<RefInfo> {
-    val headRefId = getHead()
-    return getAllRefIds().mapNotNull { refId ->
-      val commitHash = resolveRef(refId) ?: return@mapNotNull null
+    val headRef = getHead()
+    return getAllRefNames().mapNotNull { ref ->
+      val commitHash = resolveRef(ref) ?: return@mapNotNull null
       val commit = try {
         getCommit(commitHash)
       } catch (e: Exception) {
         return@mapNotNull null
       }
-      RefInfo(refId, commitHash, commit, refId == headRefId)
+      RefInfo(ref, commitHash, commit, ref == headRef)
     }
   }
 
@@ -445,8 +444,8 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
     return baos.toByteArray()
   }
 
-  private fun updateRef(id: Int, commitHash: String) {
-    val refPath = refsDir.resolve(id.toString())
+  private fun updateRef(ref: String, commitHash: String) {
+    val refPath = refsDir.resolve(ref)
     val tempFile = Files.createTempFile(refsDir, "ref", ".tmp")
     try {
       Files.write(tempFile, listOf(commitHash))
@@ -456,8 +455,8 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
     }
   }
 
-  private fun getRefCommitHash(id: Int): String? {
-    val refPath = refsDir.resolve(id.toString())
+  private fun getRefCommitHash(ref: String): String? {
+    val refPath = refsDir.resolve(ref)
     if (!Files.exists(refPath)) return null
     return Files.readAllLines(refPath).firstOrNull()
   }

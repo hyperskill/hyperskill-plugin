@@ -2,6 +2,9 @@ package org.hyperskill.academy.learning.framework.storage
 
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.nio.file.Files
@@ -38,16 +41,16 @@ class FileBasedFrameworkStorageTest {
   @Test
   fun `test save and get snapshot`() {
     val state = mapOf("test.txt" to "content")
-    val id = storage.saveSnapshot(-1, state)
-    val restored = storage.getSnapshot(id)
+    storage.saveSnapshot("stage_1", state)
+    val restored = storage.getSnapshot("stage_1")
     assertEquals(state, restored)
   }
 
   @Test
   fun `test save and get snapshot with multiple files`() {
     val state = mapOf("file1.txt" to "content1", "file2.txt" to "content2")
-    val id = storage.saveSnapshot(-1, state)
-    val restored = storage.getSnapshot(id)
+    storage.saveSnapshot("stage_1", state)
+    val restored = storage.getSnapshot("stage_1")
     assertEquals(state, restored)
   }
 
@@ -96,8 +99,8 @@ class FileBasedFrameworkStorageTest {
     val state1 = mapOf("a.txt" to content)
     val state2 = mapOf("b.txt" to content)
 
-    storage.saveSnapshot(-1, state1)
-    storage.saveSnapshot(-1, state2)
+    storage.saveSnapshot("stage_1", state1)
+    storage.saveSnapshot("stage_2", state2)
 
     // Count files in objects directory (excluding subdirectories)
     val objectsCount = Files.walk(storageDir.resolve("objects"))
@@ -113,12 +116,12 @@ class FileBasedFrameworkStorageTest {
   @Test
   fun `test commit history`() {
     val state1 = mapOf("file.txt" to "content1")
-    val id = storage.saveSnapshot(-1, state1)
-    val commitHash1 = storage.resolveRef(id)!!
+    storage.saveSnapshot("stage_1", state1)
+    val commitHash1 = storage.resolveRef("stage_1")!!
 
     val state2 = mapOf("file.txt" to "content2")
-    storage.saveSnapshot(id, state2)
-    val commitHash2 = storage.resolveRef(id)!!
+    storage.saveSnapshot("stage_1", state2)  // Update same ref
+    val commitHash2 = storage.resolveRef("stage_1")!!
 
     val commit2 = storage.getCommit(commitHash2)
     assertEquals(listOf(commitHash1), commit2.parentHashes)
@@ -154,38 +157,38 @@ class FileBasedFrameworkStorageTest {
   @Test
   fun `test cross-ref history`() {
     val state1 = mapOf("file.txt" to "content1")
-    val id1 = storage.saveSnapshot(-1, state1)
-    val commitHash1 = storage.resolveRef(id1)!!
+    storage.saveSnapshot("stage_1", state1)
+    val commitHash1 = storage.resolveRef("stage_1")!!
 
     val state2 = mapOf("file.txt" to "content2")
-    // Save state2 as a NEW ref (id2), but with id1's commit as parent
-    val id2 = storage.saveSnapshot(-1, state2, id1)
-    val commitHash2 = storage.resolveRef(id2)!!
+    // Save state2 as a NEW ref (stage_2), but with stage_1's commit as parent
+    storage.saveSnapshot("stage_2", state2, "stage_1")
+    val commitHash2 = storage.resolveRef("stage_2")!!
 
     val commit2 = storage.getCommit(commitHash2)
     assertEquals(listOf(commitHash1), commit2.parentHashes)
 
     // Verify refs are separate pointers to shared/linked commit history
-    assertEquals(commitHash2, storage.resolveRef(id2))
-    assertEquals(commitHash1, storage.resolveRef(id1))
+    assertEquals(commitHash2, storage.resolveRef("stage_2"))
+    assertEquals(commitHash1, storage.resolveRef("stage_1"))
   }
 
   @Test
   fun `test HEAD not set initially`() {
-    assertEquals(-1, storage.getHead())
-    assertEquals(null, storage.getHeadCommit())
-    assertEquals(null, storage.getHeadSnapshot())
+    assertNull(storage.getHead())
+    assertNull(storage.getHeadCommit())
+    assertNull(storage.getHeadSnapshot())
   }
 
   @Test
   fun `test HEAD set and get`() {
     val state = mapOf("file.txt" to "content")
-    val refId = storage.saveSnapshot(-1, state)
+    storage.saveSnapshot("stage_1", state)
 
-    storage.setHead(refId)
+    storage.setHead("stage_1")
 
-    assertEquals(refId, storage.getHead())
-    assertEquals(storage.resolveRef(refId), storage.getHeadCommit())
+    assertEquals("stage_1", storage.getHead())
+    assertEquals(storage.resolveRef("stage_1"), storage.getHeadCommit())
     assertEquals(state, storage.getHeadSnapshot())
   }
 
@@ -194,26 +197,67 @@ class FileBasedFrameworkStorageTest {
     val state1 = mapOf("file.txt" to "content1")
     val state2 = mapOf("file.txt" to "content2")
 
-    val ref1 = storage.saveSnapshot(-1, state1)
-    val ref2 = storage.saveSnapshot(-1, state2, ref1)
+    storage.saveSnapshot("stage_1", state1)
+    storage.saveSnapshot("stage_2", state2, "stage_1")
 
     // Simulate navigation: HEAD points to current stage
-    storage.setHead(ref1)
+    storage.setHead("stage_1")
     assertEquals(state1, storage.getHeadSnapshot())
 
-    storage.setHead(ref2)
+    storage.setHead("stage_2")
     assertEquals(state2, storage.getHeadSnapshot())
   }
 
   @Test
   fun `test HEAD clear`() {
     val state = mapOf("file.txt" to "content")
-    val refId = storage.saveSnapshot(-1, state)
-    storage.setHead(refId)
-    assertEquals(refId, storage.getHead())
+    storage.saveSnapshot("stage_1", state)
+    storage.setHead("stage_1")
+    assertEquals("stage_1", storage.getHead())
 
-    storage.setHead(-1)  // Clear HEAD
-    assertEquals(-1, storage.getHead())
-    assertEquals(null, storage.getHeadSnapshot())
+    storage.setHead(null)  // Clear HEAD
+    assertNull(storage.getHead())
+    assertNull(storage.getHeadSnapshot())
+  }
+
+  @Test
+  fun `test hasRef`() {
+    assertFalse(storage.hasRef("stage_1"))
+
+    val state = mapOf("file.txt" to "content")
+    storage.saveSnapshot("stage_1", state)
+
+    assertTrue(storage.hasRef("stage_1"))
+    assertFalse(storage.hasRef("stage_2"))
+  }
+
+  @Test
+  fun `test getAllRefNames`() {
+    assertEquals(emptyList<String>(), storage.getAllRefNames())
+
+    storage.saveSnapshot("stage_1", mapOf("a.txt" to "a"))
+    storage.saveSnapshot("stage_2", mapOf("b.txt" to "b"))
+    storage.saveSnapshot("step_123", mapOf("c.txt" to "c"))
+
+    val refs = storage.getAllRefNames()
+    assertEquals(listOf("stage_1", "stage_2", "step_123"), refs)
+  }
+
+  @Test
+  fun `test skip empty commit when snapshot is identical`() {
+    val state = mapOf("file.txt" to "content")
+
+    // First save creates a commit
+    val created1 = storage.saveSnapshot("stage_1", state)
+    assertTrue(created1)
+    val hash1 = storage.resolveRef("stage_1")!!
+
+    // Second save with identical content should not create new commit
+    val created2 = storage.saveSnapshot("stage_1", state)
+    assertFalse(created2)
+    val hash2 = storage.resolveRef("stage_1")!!
+
+    // Hash should be the same (no new commit)
+    assertEquals(hash1, hash2)
   }
 }

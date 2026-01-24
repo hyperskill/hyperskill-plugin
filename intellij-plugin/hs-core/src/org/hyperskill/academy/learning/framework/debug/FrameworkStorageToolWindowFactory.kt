@@ -33,8 +33,11 @@ import com.intellij.util.ui.JBUI
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
 import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.impl.FrameworkStorage
+import org.hyperskill.academy.learning.framework.impl.getStorageRef
 import org.hyperskill.academy.learning.framework.storage.FileBasedFrameworkStorage
 import java.awt.BorderLayout
 import java.awt.Component
@@ -104,7 +107,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
   // All commits data for filtering
   private var allCommitEntries: List<CommitEntry> = emptyList()
-  private var commitsByRef: Map<Int, Set<String>> = emptyMap() // refId -> reachable commit hashes
+  private var commitsByRef: Map<String, Set<String>> = emptyMap() // ref -> reachable commit hashes
   private var lastKnownTaskIndex: Int = -1 // Track current task to detect changes
 
   init {
@@ -259,11 +262,11 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
   private fun subscribeToStorageChanges() {
     val connection = project.messageBus.connect(this)
     connection.subscribe(FrameworkStorageListener.TOPIC, object : FrameworkStorageListener {
-      override fun snapshotSaved(refId: Int, commitHash: String) {
+      override fun snapshotSaved(ref: String, commitHash: String) {
         if (autoRefresh) invokeLater { refreshList() }
       }
 
-      override fun headUpdated(refId: Int) {
+      override fun headUpdated(ref: String?) {
         if (autoRefresh) invokeLater { refreshList() }
       }
     })
@@ -287,23 +290,23 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     val storage = currentStorage ?: return
 
     val version = storage.version
-    val headRefId = storage.head
+    val headRef = storage.head
     val headCommitHash = storage.getHeadCommit()
 
     storageInfoLabel.text = "Storage v$version"
-    headInfoLabel.text = if (headRefId != -1) "HEAD → ref/$headRefId" else "HEAD: not set"
+    headInfoLabel.text = if (headRef != null) "HEAD → $headRef" else "HEAD: not set"
 
-    val taskNames = getTaskNames()
-    LOG.warn("ToolWindow: taskNames = $taskNames")
+    val taskNamesByRef = getTaskNamesByRef()
+    LOG.warn("ToolWindow: taskNamesByRef = $taskNamesByRef")
     val refs = storage.getAllRefs()
-    LOG.warn("ToolWindow: refs from storage = ${refs.map { "ref ${it.refId} -> ${it.commitHash.take(7)}" }}")
+    LOG.warn("ToolWindow: refs from storage = ${refs.map { "${it.ref} -> ${it.commitHash.take(7)}" }}")
 
     // Build ref map
     val refsByCommit = mutableMapOf<String, MutableList<RefLabel>>()
     for (ref in refs) {
       val label = RefLabel(
-        refId = ref.refId,
-        taskName = taskNames[ref.refId] ?: "Stage ${ref.refId}",
+        ref = ref.ref,
+        taskName = taskNamesByRef[ref.ref] ?: ref.ref,
         isHead = ref.isHead
       )
       refsByCommit.getOrPut(ref.commitHash) { mutableListOf() }.add(label)
@@ -311,21 +314,21 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
     // Collect commits and build reachability map per ref
     val allCommits = mutableMapOf<String, CommitData>()
-    val reachableByRef = mutableMapOf<Int, MutableSet<String>>()
+    val reachableByRef = mutableMapOf<String, MutableSet<String>>()
 
-    fun collectCommitsForRef(hash: String, refId: Int, visited: MutableSet<String>, depth: Int = 0) {
+    fun collectCommitsForRef(hash: String, ref: String, visited: MutableSet<String>, depth: Int = 0) {
       if (hash in visited || depth > 50) return
       visited.add(hash)
-      reachableByRef.getOrPut(refId) { mutableSetOf() }.add(hash)
+      reachableByRef.getOrPut(ref) { mutableSetOf() }.add(hash)
       val commit = storage.getCommit(hash) ?: return
       allCommits[hash] = CommitData(hash, commit)
       for (parentHash in commit.parentHashes) {
-        collectCommitsForRef(parentHash, refId, visited, depth + 1)
+        collectCommitsForRef(parentHash, ref, visited, depth + 1)
       }
     }
 
     for (ref in refs) {
-      collectCommitsForRef(ref.commitHash, ref.refId, mutableSetOf())
+      collectCommitsForRef(ref.commitHash, ref.ref, mutableSetOf())
     }
 
     commitsByRef = reachableByRef
@@ -344,7 +347,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     }
 
     // Update stage selector
-    updateStageSelector(refs, taskNames, headRefId)
+    updateStageSelector(refs, taskNamesByRef, headRef)
 
     // Apply filter
     filterCommitsBySelectedStage()
@@ -352,8 +355,8 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
   private fun updateStageSelector(
     refs: List<FileBasedFrameworkStorage.RefInfo>,
-    taskNames: Map<Int, String>,
-    headRefId: Int
+    taskNamesByRef: Map<String, String>,
+    headRef: String?
   ) {
     isUpdatingStageComboBox = true
     try {
@@ -367,7 +370,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       // Get all tasks from course in order
       val course = StudyTaskManager.getInstance(project).course
       val frameworkLesson = course?.lessons?.filterIsInstance<FrameworkLesson>()?.firstOrNull()
-      val refIdSet = refs.map { it.refId }.toSet()
+      val existingRefs = refs.map { it.ref }.toSet()
 
       val currentTaskIndex = frameworkLesson?.currentTaskIndex ?: -1
       val taskChanged = lastKnownTaskIndex != currentTaskIndex && lastKnownTaskIndex != -1
@@ -375,13 +378,14 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
       val stageItems = if (frameworkLesson != null) {
         // Show all tasks from course in order
-        // Use currentTaskIndex to determine HEAD (not record, since records can be duplicated)
+        // Use currentTaskIndex to determine HEAD
         frameworkLesson.taskList.mapIndexed { index, task ->
           val stageNumber = index + 1
-          val hasStorage = task.record != -1 && task.record in refIdSet
+          val taskRef = task.getStorageRef()
+          val hasStorage = taskRef in existingRefs
           val isCurrentTask = index == currentTaskIndex
           StageItem.Stage(
-            refId = task.record,
+            ref = taskRef,
             name = "$stageNumber. ${task.name}",
             isHead = isCurrentTask,
             hasStorage = hasStorage,
@@ -390,11 +394,11 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         }
       } else {
         // Fallback: show refs from storage
-        refs.sortedBy { it.refId }.mapIndexed { index, ref ->
+        refs.sortedBy { it.ref }.mapIndexed { index, ref ->
           StageItem.Stage(
-            refId = ref.refId,
-            name = taskNames[ref.refId] ?: "Stage ${ref.refId}",
-            isHead = ref.refId == headRefId,
+            ref = ref.ref,
+            name = taskNamesByRef[ref.ref] ?: ref.ref,
+            isHead = ref.ref == headRef,
             hasStorage = true,
             taskIndex = index
           )
@@ -427,10 +431,10 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     val filteredCommits = when (selectedItem) {
       is StageItem.All -> allCommitEntries
       is StageItem.Stage -> {
-        if (selectedItem.refId == -1 || !selectedItem.hasStorage) {
+        if (!selectedItem.hasStorage) {
           emptyList() // No storage data for this stage
         } else {
-          val reachableHashes = commitsByRef[selectedItem.refId] ?: emptySet()
+          val reachableHashes = commitsByRef[selectedItem.ref] ?: emptySet()
           allCommitEntries.filter { it.hash in reachableHashes }
         }
       }
@@ -604,15 +608,17 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     diffPanel.repaint()
   }
 
-  private fun getTaskNames(): Map<Int, String> {
+  /**
+   * Get task names keyed by their storage ref.
+   */
+  private fun getTaskNamesByRef(): Map<String, String> {
     val course = StudyTaskManager.getInstance(project).course ?: return emptyMap()
-    val result = mutableMapOf<Int, String>()
+    val result = mutableMapOf<String, String>()
     for (lesson in course.lessons) {
       if (lesson !is FrameworkLesson) continue
       for (task in lesson.taskList) {
-        if (task.record != -1) {
-          result[task.record] = task.name
-        }
+        val ref = task.getStorageRef()
+        result[ref] = task.name
       }
     }
     return result
@@ -624,13 +630,13 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
   // Data classes
   enum class ChangeType { ADDED, MODIFIED, DELETED }
-  data class RefLabel(val refId: Int, val taskName: String, val isHead: Boolean)
+  data class RefLabel(val ref: String, val taskName: String, val isHead: Boolean)
   data class CommitData(val hash: String, val commit: FileBasedFrameworkStorage.Commit)
 
   sealed class StageItem {
     data object All : StageItem()
     data class Stage(
-      val refId: Int,
+      val ref: String,
       val name: String,
       val isHead: Boolean,
       val hasStorage: Boolean = true,

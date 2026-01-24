@@ -10,16 +10,16 @@ interface FrameworkStorageListener {
 
   /**
    * Called when a new snapshot is saved to storage.
-   * @param refId The ref ID that was updated
+   * @param ref The ref name that was updated (e.g., "stage_543")
    * @param commitHash The hash of the new commit
    */
-  fun snapshotSaved(refId: Int, commitHash: String)
+  fun snapshotSaved(ref: String, commitHash: String)
 
   /**
    * Called when HEAD is updated to point to a different ref.
-   * @param refId The new HEAD ref ID, or -1 if HEAD was cleared
+   * @param ref The new HEAD ref, or null if HEAD was cleared
    */
-  fun headUpdated(refId: Int)
+  fun headUpdated(ref: String?)
 
   companion object {
     @JvmField
