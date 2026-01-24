@@ -158,7 +158,7 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
   }
 
   @Throws(IOException::class)
-  fun saveSnapshot(refId: Int, state: Map<String, String>, parentRefId: Int = -1): Int {
+  fun saveSnapshot(refId: Int, state: Map<String, String>, parentRefId: Int = -1, message: String = ""): Int {
     val snapshotMap = state.mapValues { (_, text) ->
       saveBlob(text)
     }
@@ -179,14 +179,14 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
       null
     }
 
-    val commitHash = saveCommit(snapshotHash, if (parentCommit != null) listOf(parentCommit) else emptyList())
+    val commitHash = saveCommit(snapshotHash, if (parentCommit != null) listOf(parentCommit) else emptyList(), message)
 
     val id = if (refId == -1) nextRefId.getAndIncrement() else refId
     updateRef(id, commitHash)
     return id
   }
 
-  private fun saveCommit(snapshotHash: String, parentHashes: List<String>): String {
+  private fun saveCommit(snapshotHash: String, parentHashes: List<String>, message: String): String {
     return saveObject(COMMIT_TYPE) { out ->
       out.writeUTF(snapshotHash)
       FrameworkStorageUtils.writeINT(out, parentHashes.size)
@@ -194,6 +194,7 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
         out.writeUTF(parentHash)
       }
       FrameworkStorageUtils.writeLONG(out, System.currentTimeMillis())
+      out.writeUTF(message)
     }
   }
 
@@ -205,7 +206,13 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
       parentHashes.add(input.readUTF())
     }
     val timestamp = FrameworkStorageUtils.readLONG(input)
-    return Commit(snapshotHash, parentHashes, timestamp)
+    // Read message if available (backwards compatibility with old commits)
+    val message = try {
+      input.readUTF()
+    } catch (e: Exception) {
+      ""
+    }
+    return Commit(snapshotHash, parentHashes, timestamp, message)
   }
 
   fun getCommit(hash: String): Commit {
@@ -253,7 +260,12 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
     }
   }
 
-  data class Commit(val snapshotHash: String, val parentHashes: List<String>, val timestamp: Long)
+  data class Commit(
+    val snapshotHash: String,
+    val parentHashes: List<String>,
+    val timestamp: Long,
+    val message: String = ""
+  )
 
   /**
    * Get snapshot state directly by snapshot hash (for debugging).

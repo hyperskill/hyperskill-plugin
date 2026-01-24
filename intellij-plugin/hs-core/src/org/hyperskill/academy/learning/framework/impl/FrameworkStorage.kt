@@ -154,10 +154,11 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
 
   /**
    * Save a snapshot (full state) and return the new ref ID.
+   * @param message Commit message describing the reason for this snapshot
    */
   @Throws(IOException::class)
-  fun saveSnapshot(refId: Int, state: Map<String, String>, parentRefId: Int = -1): Int {
-    return getFileBasedStorage().saveSnapshot(refId, state, parentRefId)
+  fun saveSnapshot(refId: Int, state: Map<String, String>, parentRefId: Int = -1, message: String = ""): Int {
+    return getFileBasedStorage().saveSnapshot(refId, state, parentRefId, message)
   }
 
   @Throws(IOException::class)

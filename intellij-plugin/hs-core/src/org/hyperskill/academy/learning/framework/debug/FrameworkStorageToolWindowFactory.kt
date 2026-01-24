@@ -97,7 +97,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
   private fun setupCommitList() {
     commitList.cellRenderer = CommitListCellRenderer()
-    commitList.fixedCellHeight = 26
+    commitList.fixedCellHeight = -1 // Auto-size based on content
     commitList.selectionMode = ListSelectionModel.SINGLE_SELECTION
     commitList.addListSelectionListener(ListSelectionListener {
       if (!it.valueIsAdjusting) {
@@ -268,7 +268,8 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
           timestamp = commitData.commit.timestamp,
           parentHashes = commitData.commit.parentHashes,
           snapshotHash = commitData.commit.snapshotHash,
-          refs = refsByCommit[commitData.hash] ?: emptyList()
+          refs = refsByCommit[commitData.hash] ?: emptyList(),
+          message = commitData.commit.message
         )
       )
     }
@@ -464,7 +465,8 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     val timestamp: Long,
     val parentHashes: List<String>,
     val snapshotHash: String,
-    val refs: List<RefLabel>
+    val refs: List<RefLabel>,
+    val message: String
   )
   data class FileChange(
     val path: String,
@@ -504,6 +506,12 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
       // Time
       append(dateFormat.format(Date(value.timestamp)), SimpleTextAttributes.GRAYED_ATTRIBUTES)
+
+      // Message
+      if (value.message.isNotBlank()) {
+        append(" - ", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+        append(value.message, SimpleTextAttributes.REGULAR_ATTRIBUTES)
+      }
     }
 
     private fun headBadgeAttributes() = SimpleTextAttributes(

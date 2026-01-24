@@ -93,8 +93,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val parentRefId = if (currentRefId == -1) getParentRefId(task) else -1
 
     // Save the API state as a snapshot
+    val message = "Load submission from server for '${task.name}'"
     var newRefId = try {
-      storage.saveSnapshot(currentRefId, externalPropagatableFiles, parentRefId)
+      storage.saveSnapshot(currentRefId, externalPropagatableFiles, parentRefId, message)
     }
     catch (e: IOException) {
       LOG.error("Failed to save solution for task `${task.name}`", e)
@@ -224,8 +225,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // We have cached templates - save full current disk state as a snapshot
       val currentDiskState = getTaskStateFromFiles(initialCurrentFiles.keys, taskDir)
       val (propagatableFiles, _) = currentDiskState.split(currentTask)
+      val navMessage = "Save changes before navigating from '${currentTask.name}' to '${targetTask.name}'"
       try {
-        saveSnapshot(currentRefId, propagatableFiles, getParentRefId(currentTask), initialCurrentFiles)
+        saveSnapshot(currentRefId, propagatableFiles, getParentRefId(currentTask), initialCurrentFiles, navMessage)
       }
       catch (e: IOException) {
         LOG.error("Failed to save snapshot for task `${currentTask.name}`", e)
@@ -692,10 +694,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     refId: Int,
     state: Map<String, String>,
     parentRefId: Int = -1,
-    initialState: Map<String, String> = emptyMap()
+    initialState: Map<String, String> = emptyMap(),
+    message: String = ""
   ): UpdatedUserChanges {
     return try {
-      val newRefId = storage.saveSnapshot(refId, state, parentRefId)
+      val newRefId = storage.saveSnapshot(refId, state, parentRefId, message)
       storage.force()
       // Calculate changes on-the-fly by comparing initial state with saved snapshot
       val changes = SnapshotDiff.calculateChanges(initialState, state)
@@ -711,7 +714,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         LOG.warn("Corrupted storage data detected during snapshot write, recreating storage: ${e.message}")
         recreateStorage()
         return try {
-          val newRefId = storage.saveSnapshot(-1, state, parentRefId)
+          val newRefId = storage.saveSnapshot(-1, state, parentRefId, message)
           storage.force()
           val changes = SnapshotDiff.calculateChanges(initialState, state)
           UpdatedUserChanges(newRefId, changes)
