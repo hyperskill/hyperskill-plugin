@@ -96,6 +96,16 @@ interface FrameworkLessonManager : EduTestAware {
    */
   fun ensureTemplateFilesCached(task: Task): Boolean
 
+  /**
+   * Synchronizes the lesson's currentTaskIndex with the storage HEAD.
+   * This should be called when opening a project to ensure the in-memory state
+   * matches the persisted storage state.
+   *
+   * @param lesson the framework lesson to synchronize
+   * @return true if synchronization was successful, false if HEAD is not set or doesn't match any task
+   */
+  fun syncCurrentTaskIndexFromStorage(lesson: FrameworkLesson): Boolean
+
   companion object {
     fun getInstance(project: Project): FrameworkLessonManager = project.service()
   }

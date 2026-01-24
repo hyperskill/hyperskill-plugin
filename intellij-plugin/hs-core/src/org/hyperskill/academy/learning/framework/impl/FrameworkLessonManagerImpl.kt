@@ -5,7 +5,9 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.FileDocumentManagerListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
@@ -30,7 +32,6 @@ import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.propagateFilesOnNavigation
 import org.hyperskill.academy.learning.framework.storage.Change
-import org.hyperskill.academy.learning.framework.storage.SnapshotDiff
 import org.hyperskill.academy.learning.framework.storage.UserChanges
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.stepik.PyCharmStepOptions
@@ -67,6 +68,30 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   // Cache of original template files (visible non-test files) for each task (by step ID)
   // These are used to calculate user changes correctly, since TaskFile.contents may be modified
   private val originalTemplateFilesCache = java.util.concurrent.ConcurrentHashMap<Int, Map<String, String>>()
+
+  // Flag to track if propagation is active during multi-stage navigation (jump).
+  // Set to true after Replace, false after Keep or backward navigation.
+  // This allows showing dialogs for all intermediate stages during a jump with Replace.
+  private var propagationActive = false
+
+  // Flag to skip auto-save during navigation (prevents auto-save from creating commits
+  // with "Auto-save" message when navigation code should be creating commits)
+  private var isNavigating = false
+
+  // Flag to track if currentTaskIndex has been synced with storage HEAD.
+  // Auto-save is skipped until sync is done to prevent saving wrong stage content.
+  private var isStorageSynced = false
+
+  init {
+    // Subscribe to file save events to persist changes to storage
+    val connection = project.messageBus.connect(this)
+    connection.subscribe(FileDocumentManagerListener.TOPIC, object : FileDocumentManagerListener {
+      override fun beforeAllDocumentsSaving() {
+        // Called when user saves all documents (Ctrl+S) or before IDE closes
+        saveCurrentTaskSnapshot()
+      }
+    })
+  }
 
   override fun prepareNextTask(lesson: FrameworkLesson, taskDir: VirtualFile, showDialogIfConflict: Boolean) {
     applyTargetTaskChanges(lesson, 1, taskDir, showDialogIfConflict)
@@ -164,15 +189,27 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     require(task.lesson == lesson) {
       "The task is not a part of this lesson"
     }
-    val initialFiles = task.allFiles
-    val changes = if (lesson.currentTaskIndex + 1 == task.index) {
+
+    // For current task, read from disk
+    if (lesson.currentTaskIndex + 1 == task.index) {
       val taskDir = task.getDir(project.courseDir) ?: return emptyMap()
-      getUserChangesFromFiles(initialFiles, taskDir)
+      val initialFiles = task.allFiles
+      val changes = getUserChangesFromFiles(initialFiles, taskDir)
+      return HashMap(initialFiles).apply { changes.apply(this) }
     }
-    else {
-      getUserChangesFromStorage(task)
+
+    // For other tasks, read snapshot directly from storage
+    val ref = task.storageRef()
+    return if (storage.hasRef(ref)) {
+      try {
+        storage.getSnapshot(ref)
+      } catch (e: IOException) {
+        LOG.warn("Failed to get snapshot for task '${task.name}' (ref=$ref), falling back to templates", e)
+        task.allFiles
+      }
+    } else {
+      task.allFiles
     }
-    return HashMap(initialFiles).apply { changes.apply(this) }
   }
 
   /**
@@ -193,6 +230,39 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     LOG.info("=== Stage switch: '${currentTask.name}' (idx=$currentTaskIndex) -> '${targetTask.name}' (idx=$targetTaskIndex), delta=$taskIndexDelta ===")
 
+    // Set navigation flag to prevent auto-save from creating commits during navigation
+    // Use try-finally to guarantee the flag is reset even if an exception occurs
+    isNavigating = true
+    try {
+      applyTargetTaskChangesImpl(lesson, currentTask, targetTask, currentTaskIndex, targetTaskIndex, taskIndexDelta, taskDir, showDialogIfConflict)
+    }
+    finally {
+      isNavigating = false
+      // After navigation, currentTaskIndex is correct - enable auto-save
+      isStorageSynced = true
+    }
+
+    LOG.info("=== Stage switch complete ===")
+  }
+
+  /**
+   * Implementation of applyTargetTaskChanges, extracted to allow try-finally wrapper.
+   */
+  private fun applyTargetTaskChangesImpl(
+    lesson: FrameworkLesson,
+    currentTask: Task,
+    targetTask: Task,
+    currentTaskIndex: Int,
+    targetTaskIndex: Int,
+    taskIndexDelta: Int,
+    taskDir: VirtualFile,
+    showDialogIfConflict: Boolean
+  ) {
+    // Reset propagation flag on backward navigation
+    if (taskIndexDelta < 0) {
+      propagationActive = false
+    }
+
     lesson.currentTaskIndex = targetTaskIndex
     SlowOperations.knownIssue("EDU-XXXX").use {
       YamlFormatSynchronizer.saveItem(lesson)
@@ -205,65 +275,26 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     LOG.info("Navigation refs: current=$currentRef (hasStorage=$currentHasStorage), target=$targetRef (hasStorage=$targetHasStorage)")
 
-    // ALT-10961: Try to load template files from API if cache is empty.
-    // This ensures we have correct templates for diff calculation.
-    // We load synchronously to ensure cache is filled before navigation proceeds.
-    if (!originalTemplateFilesCache.containsKey(currentTask.id)) {
-      if (ApplicationManager.getApplication().isDispatchThread) {
-        // On EDT - run API call on pooled thread and wait for result
-        try {
-          ApplicationManager.getApplication().executeOnPooledThread<Unit> {
-            loadTemplateFilesFromApiSync(currentTask)
-          }.get()
-        } catch (e: Exception) {
-          LOG.warn("Failed to load template files from API for task '${currentTask.name}'", e)
-        }
-      } else {
-        loadTemplateFilesFromApiSync(currentTask)
-      }
-    }
-    val cachedTemplates = originalTemplateFilesCache[currentTask.id]
-    val hasValidTemplateCache = cachedTemplates != null
-    LOG.warn("Navigation: currentTask='${currentTask.name}', hasValidTemplateCache=$hasValidTemplateCache, ref=$currentRef")
+    // 1. Get current disk state (what's currently on disk)
+    // Use template file keys to know which files to read
+    val templateFiles = originalTemplateFilesCache[currentTask.id] ?: currentTask.allFiles
+    val currentDiskState = getTaskStateFromFiles(templateFiles.keys, taskDir)
+    val (currentPropagatableFiles, _) = currentDiskState.split(currentTask)
 
-    val initialCurrentFiles = if (hasValidTemplateCache) {
-      cachedTemplates
-    } else {
-      // No cached templates - we cannot correctly calculate user changes
-      // Use Task.allFiles as a fallback for state calculations, but DON'T update storage
-      currentTask.allFiles
-    }
-
-    // 1. Get difference between initial state of current task and previous task state
-    // and construct previous state of current task.
-    // Previous state is needed to determine if a user made any new change
-    val previousCurrentUserChanges = getUserChangesFromStorage(currentTask)
-    val previousCurrentState = HashMap(initialCurrentFiles).apply { previousCurrentUserChanges.apply(this) }
-
-    // 2. Save FULL state (snapshot) to storage for the current task.
-    // ALT-10961: We save complete state snapshots, not diffs, because:
-    // 1. After IDE restart, templates may not be available (cache empty, API may fail)
-    // 2. Diffs (ChangeFile) require correct templates to apply
-    // 3. Full snapshots are self-contained and don't need templates
-    val currentUserChanges = if (hasValidTemplateCache) {
-      // We have cached templates - save full current disk state as a snapshot
-      val currentDiskState = getTaskStateFromFiles(initialCurrentFiles.keys, taskDir)
-      val (propagatableFiles, _) = currentDiskState.split(currentTask)
+    // 2. Save current state to storage ONLY when navigating FORWARD.
+    // When navigating backward, the disk content belongs to the stage we're leaving,
+    // not the stage we're going from. Saving it would corrupt the current stage's snapshot.
+    if (taskIndexDelta > 0) {
       val navMessage = "Save changes before navigating from '${currentTask.name}' to '${targetTask.name}'"
       try {
-        saveSnapshot(currentRef, propagatableFiles, getParentRef(currentTask), initialCurrentFiles, navMessage)
+        storage.saveSnapshot(currentRef, currentPropagatableFiles, getParentRef(currentTask), navMessage)
+        LOG.info("Saved snapshot for current task '${currentTask.name}' (ref=$currentRef)")
       }
       catch (e: IOException) {
         LOG.error("Failed to save snapshot for task `${currentTask.name}`", e)
-        UserChanges.empty()
       }
     } else {
-      // ALT-10961: No cached templates - DON'T save new changes.
-      // After IDE restart, the disk content might be from a different stage.
-      // Saving current disk state would overwrite the correct submission-based changes.
-      // Use existing storage changes which were saved by loadSolutionsInBackground.
-      LOG.warn("Navigation: No cached templates for '${currentTask.name}', using existing storage changes (not updating)")
-      previousCurrentUserChanges
+      LOG.info("Navigation: Moving backward, not saving current task '${currentTask.name}' (would corrupt snapshot)")
     }
 
     // 3. Clear legacy record if present (we now use computed refs)
@@ -274,50 +305,47 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       }
     }
 
-    // 4. Get difference (change list) between initial and latest states of target task
-    val nextUserChanges = getUserChangesFromStorage(targetTask)
-    LOG.warn("Navigation: targetTask='${targetTask.name}', ref=$targetRef, nextUserChanges=${nextUserChanges.changes.size}")
-    nextUserChanges.changes.forEach { change ->
-      LOG.warn("Navigation: change=${change.javaClass.simpleName}(${change.path}, ${change.text.length} chars)")
-    }
-
-    // 5. Apply change lists to initial state to get latest states of current and target tasks
-    val currentState = HashMap(initialCurrentFiles).apply { currentUserChanges.apply(this) }
+    // 4. Get current state for diff calculation
+    // For forward navigation: use disk state (we just saved it)
+    // For backward navigation: use disk state (what's currently there)
+    val currentState: FLTaskState = currentPropagatableFiles
     LOG.warn("Navigation: currentState=${currentState.mapValues { "${it.key}:${it.value.length}chars" }}")
 
-    // ALT-10961: For target task, also try to load templates from API if cache is empty.
-    // This ensures we have correct templates for state calculations after IDE restart.
-    if (!originalTemplateFilesCache.containsKey(targetTask.id)) {
-      if (ApplicationManager.getApplication().isDispatchThread) {
-        try {
-          ApplicationManager.getApplication().executeOnPooledThread<Unit> {
-            loadTemplateFilesFromApiSync(targetTask)
-          }.get()
-        } catch (e: Exception) {
-          LOG.warn("Failed to load template files from API for target task '${targetTask.name}'", e)
-        }
-      } else {
-        loadTemplateFilesFromApiSync(targetTask)
+    // 5. Get target state directly from storage snapshot (no template-based diff calculation needed)
+    // This is simpler and more reliable than calculating diffs from templates.
+    val targetState: FLTaskState = if (targetHasStorage) {
+      try {
+        storage.getSnapshot(targetRef)
+      } catch (e: IOException) {
+        LOG.error("Failed to get snapshot for target task '${targetTask.name}' (ref=$targetRef), falling back to templates", e)
+        targetTask.allFiles
       }
+    } else {
+      // No storage data for target - use template files
+      targetTask.allFiles
     }
-    val cachedTargetTemplates = originalTemplateFilesCache[targetTask.id]
-    val initialTargetFiles = cachedTargetTemplates ?: targetTask.allFiles
-    LOG.warn("Navigation: initialTargetFiles=${initialTargetFiles.keys}, hasCachedTemplates=${cachedTargetTemplates != null}")
-    val targetState = HashMap(initialTargetFiles).apply { nextUserChanges.apply(this) }
-    LOG.warn("Navigation: targetState=${targetState.mapValues { "${it.key}:${it.value.length}chars" }}")
+    LOG.warn("Navigation: targetState=${targetState.mapValues { "${it.key}:${it.value.length}chars" }}, fromStorage=$targetHasStorage")
 
     // 6. Calculate difference between latest states of current and target tasks
     // Note, there are special rules for hyperskill courses for now
     // All user changes from the current task should be propagated to next task as is
+    //
+    // Check if merge is needed using git-like ancestor check:
+    // - If current commit is ancestor of target commit → no merge needed (changes already propagated)
+    // - If current commit is NOT ancestor of target commit → need merge, show Keep/Replace dialog
+    val currentCommitIsAncestorOfTarget = targetHasStorage && storage.isAncestor(currentRef, targetRef)
+    val needsMerge = !currentCommitIsAncestorOfTarget && targetHasStorage && taskIndexDelta == 1 && lesson.propagateFilesOnNavigation
+    LOG.info("Merge check: currentRef=$currentRef, targetRef=$targetRef, isAncestor=$currentCommitIsAncestorOfTarget, needsMerge=$needsMerge")
 
-    // If a user navigated back to current task, didn't make any change and wants to navigate to next task again
-    // we shouldn't try to propagate current changes to next task
-    val currentTaskHasNewUserChanges = !(currentHasStorage && targetHasStorage && previousCurrentState == currentState)
+    // Track if merge commit was created (to skip redundant snapshot save in step 10)
+    var mergeCommitCreated = false
 
-    val changes = if (currentTaskHasNewUserChanges && taskIndexDelta == 1 && lesson.propagateFilesOnNavigation) {
-      calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict)
+    val changes = if (needsMerge) {
+      mergeCommitCreated = true // Merge commit will be created in calculatePropagationChanges
+      calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict, targetHasStorage, currentRef, targetRef)
     }
     else {
+      propagationActive = false // No propagation happening
       calculateChanges(currentState, targetState)
     }
 
@@ -344,12 +372,28 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       }
     }
 
+    // 10. Save snapshot for target stage after forward navigation.
+    // Skip if merge commit was already created (to avoid redundant commits).
+    // Only save for:
+    // - Target without storage (first visit to this stage)
+    // - Navigation without merge (ancestor check passed, no Keep/Replace dialog)
+    if (taskIndexDelta > 0 && !mergeCommitCreated) {
+      val finalDiskState = getTaskStateFromFiles(targetState.keys, taskDir)
+      val (finalPropagatableFiles, _) = finalDiskState.split(targetTask)
+      val message = "Navigate to '${targetTask.name}'"
+      try {
+        storage.saveSnapshot(targetRef, finalPropagatableFiles, getParentRef(targetTask), message)
+        LOG.info("Saved snapshot for target task '${targetTask.name}' (ref=$targetRef)")
+      }
+      catch (e: IOException) {
+        LOG.error("Failed to save snapshot for target task '${targetTask.name}'", e)
+      }
+    }
+
     // Update HEAD to point to the current (target) task
     storage.head = targetRef
     LOG.info("HEAD updated to ref $targetRef (task '${targetTask.name}')")
     project.messageBus.syncPublisher(FrameworkStorageListener.TOPIC).headUpdated(targetRef)
-
-    LOG.info("=== Stage switch complete ===")
   }
 
   /**
@@ -594,13 +638,24 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    *
    * In case, when it's impossible due to simultaneous incompatible user changes in [currentState] and [targetState],
    * it asks user to choose what change he wants to apply.
+   *
+   * Creates merge commits with two parents when user chooses Keep or Replace:
+   * - Replace: merge commit with content from current stage (propagate changes)
+   * - Keep: merge commit with content from target stage (preserve target's changes)
+   *
+   * @param targetHasStorage true if target task has saved snapshot in storage
+   * @param currentRef ref of the current task (for merge commit parent)
+   * @param targetRef ref of the target task (for merge commit parent)
    */
   private fun calculatePropagationChanges(
     targetTask: Task,
     currentTask: Task,
     currentState: Map<String, String>,
     targetState: Map<String, String>,
-    showDialogIfConflict: Boolean
+    showDialogIfConflict: Boolean,
+    targetHasStorage: Boolean,
+    currentRef: String,
+    targetRef: String
   ): UserChanges {
     val (currentPropagatableFilesState, currentNonPropagatableFilesState) = currentState.split(currentTask)
     val (targetPropagatableFilesState, targetNonPropagatableFilesState) = targetState.split(targetTask)
@@ -668,13 +723,13 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return nonPropagatableFileChanges + propagatableFileChanges
     }
 
-    // target task initialization
-    if (targetTask.record == -1) {
+    // Target task has no saved state - propagate changes without asking
+    if (!targetHasStorage) {
       return calculateCurrentTaskChanges()
     }
 
-    // if current and target states of propagatable files are the same
-    // it needs to calculate only diff for non-propagatable files and for files that change the propagation flag from false to true
+    // If current and target propagatable files are identical - no need for dialog
+    // Just calculate diff for non-propagatable files
     if (newCurrentPropagatableFilesState == newTargetPropagatableFilesState) {
       return calculateChanges(
         currentNonPropagatableFilesState,
@@ -682,6 +737,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       )
     }
 
+    // Target has saved state AND content differs - ask user before overwriting
     val keepConflictingChanges = if (showDialogIfConflict) {
       val currentTaskName = "${currentTask.getUIName()} ${currentTask.index}"
       val targetTaskName = "${targetTask.getUIName()} ${targetTask.index}"
@@ -703,9 +759,31 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     return if (keepConflictingChanges == Messages.YES) {
+      // User chose Keep - create merge commit with target's content
+      // This records that we "merged" but kept our version (like git merge with "ours" strategy)
+      propagationActive = false
+      val mergeMessage = "Merge from '${currentTask.name}': Keep target changes"
+      try {
+        // Parents: [targetRef, currentRef] - we're merging currentRef into targetRef
+        storage.saveMergeSnapshot(targetRef, targetPropagatableFilesState, listOf(targetRef, currentRef), mergeMessage)
+        LOG.info("Created Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
+      } catch (e: IOException) {
+        LOG.error("Failed to create Keep merge commit for '$targetRef'", e)
+      }
       calculateChanges(currentState, targetState)
     }
     else {
+      // User chose Replace - create merge commit with current's content
+      // This propagates changes from current stage to target stage
+      propagationActive = true
+      val mergeMessage = "Merge from '${currentTask.name}': Replace with propagated changes"
+      try {
+        // Parents: [targetRef, currentRef] - we're merging currentRef into targetRef
+        storage.saveMergeSnapshot(targetRef, currentPropagatableFilesState, listOf(targetRef, currentRef), mergeMessage)
+        LOG.info("Created Replace merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
+      } catch (e: IOException) {
+        LOG.error("Failed to create Replace merge commit for '$targetRef'", e)
+      }
       calculateCurrentTaskChanges()
     }
   }
@@ -713,120 +791,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   private fun getUserChangesFromFiles(initialState: FLTaskState, taskDir: VirtualFile): UserChanges {
     val currentState = getTaskStateFromFiles(initialState.keys, taskDir)
     return calculateChanges(initialState, currentState)
-  }
-
-  /**
-   * Save a snapshot and return the calculated user changes.
-   *
-   * @param ref The ref name (e.g., "stage_543")
-   * @param state The file state to save
-   * @param parentRef Optional parent ref for commit chain
-   * @param initialState The initial state for calculating changes (templates)
-   * @param message Commit message
-   * @return UserChanges calculated from initialState -> state
-   */
-  @Synchronized
-  private fun saveSnapshot(
-    ref: String,
-    state: Map<String, String>,
-    parentRef: String? = null,
-    initialState: Map<String, String> = emptyMap(),
-    message: String = ""
-  ): UserChanges {
-    return try {
-      val created = storage.saveSnapshot(ref, state, parentRef, message)
-      storage.force()
-      // Calculate changes on-the-fly by comparing initial state with saved snapshot
-      val changes = SnapshotDiff.calculateChanges(initialState, state)
-      // Notify listeners about storage change
-      if (created) {
-        val commitHash = storage.resolveRef(ref)
-        if (commitHash != null) {
-          project.messageBus.syncPublisher(FrameworkStorageListener.TOPIC).snapshotSaved(ref, commitHash)
-        }
-      }
-      changes
-    }
-    catch (e: IOException) {
-      if (e.message?.contains("Corrupted data") == true) {
-        LOG.warn("Corrupted storage data detected during snapshot write, recreating storage: ${e.message}")
-        recreateStorage()
-        return try {
-          storage.saveSnapshot(ref, state, parentRef, message)
-          storage.force()
-          SnapshotDiff.calculateChanges(initialState, state)
-        }
-        catch (retryError: IOException) {
-          LOG.error("Failed to save snapshot after storage recreation", retryError)
-          UserChanges.empty()
-        }
-      }
-      LOG.error("Failed to save snapshot", e)
-      UserChanges.empty()
-    }
-  }
-
-  /**
-   * Get user changes from storage by loading snapshot and calculating diff on-the-fly.
-   * This is the git-like approach: we store full snapshots and compute diffs when needed.
-   */
-  private fun getUserChangesFromStorage(task: Task): UserChanges {
-    val ref = task.storageRef()
-    if (!storage.hasRef(ref)) return UserChanges.empty()
-
-    // Get snapshot from storage
-    val snapshot = try {
-      storage.getSnapshot(ref)
-    }
-    catch (e: IOException) {
-      if (e.message?.contains("Corrupted data") == true) {
-        LOG.warn("Corrupted storage data detected, recreating storage: ${e.message}")
-        recreateStorage()
-      }
-      else {
-        LOG.error("Failed to get snapshot for task `${task.name}`", e)
-      }
-      return UserChanges.empty()
-    }
-    catch (e: NegativeArraySizeException) {
-      LOG.warn("Corrupted storage data detected (negative array size: ${e.message}), recreating storage")
-      recreateStorage()
-      return UserChanges.empty()
-    }
-
-    // Get initial state (templates) from cache or task.allFiles
-    val initialState = originalTemplateFilesCache[task.id] ?: task.allFiles
-
-    // Calculate diff: what changes are needed to go from initialState to snapshot
-    val changes = SnapshotDiff.calculateChanges(initialState, snapshot)
-
-    // Filter out test file changes (they shouldn't be in storage, but filter just in case)
-    val taskTestDirs = task.testDirs
-    val filteredChanges = changes.changes.filter { change ->
-      val path = change.path
-      val isInTestDir = taskTestDirs.any { testDir -> path.startsWith("$testDir/") || path == testDir }
-      val fileName = path.substringAfterLast('/')
-      val isTestFileName = fileName == "tests.py" || fileName.startsWith("test_") || fileName.endsWith("_test.py")
-      val isTestFile = isInTestDir || isTestFileName
-      if (isTestFile) {
-        LOG.warn("Filtering out test file from snapshot: ${change.javaClass.simpleName}($path)")
-      }
-      !isTestFile
-    }
-
-    if (filteredChanges.size != changes.changes.size) {
-      LOG.warn("Filtered ${changes.changes.size - filteredChanges.size} test files from snapshot for task '${task.name}'")
-    }
-
-    // Get timestamp from storage
-    val timestamp = try {
-      storage.getSnapshotTimestamp(ref)
-    }
-    catch (e: IOException) {
-      0L
-    }
-
-    return UserChanges(filteredChanges, timestamp)
   }
 
   private fun recreateStorage() {
@@ -1042,6 +1006,59 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   /**
+   * Saves a snapshot of the current task's state from disk.
+   * Called when files are saved (Ctrl+S, auto-save, before IDE closes).
+   * This ensures user changes are persisted even without navigation.
+   */
+  private fun saveCurrentTaskSnapshot() {
+    // Skip auto-save during navigation - navigation code handles saving with proper messages
+    if (isNavigating) return
+
+    // Skip auto-save until currentTaskIndex is synced with storage HEAD.
+    // This prevents saving wrong stage content when project opens and currentTaskIndex is still 0.
+    if (!isStorageSynced) {
+      LOG.info("saveCurrentTaskSnapshot: skipped - storage not synced yet")
+      return
+    }
+
+    val course = StudyTaskManager.getInstance(project).course ?: return
+    val lesson = course.lessons.filterIsInstance<FrameworkLesson>().firstOrNull() ?: return
+    val currentTask = lesson.currentTask() ?: return
+    val taskDir = currentTask.getDir(project.courseDir) ?: return
+
+    // Get cached templates or fall back to task.allFiles
+    val initialFiles = originalTemplateFilesCache[currentTask.id] ?: currentTask.allFiles
+    if (initialFiles.isEmpty()) return
+
+    // Read current disk state
+    val currentDiskState = getTaskStateFromFiles(initialFiles.keys, taskDir)
+    val (propagatableFiles, _) = currentDiskState.split(currentTask)
+
+    // Check if there are actual changes compared to saved snapshot
+    val ref = currentTask.storageRef()
+    val existingSnapshot = try {
+      if (storage.hasRef(ref)) storage.getSnapshot(ref) else emptyMap()
+    } catch (e: IOException) {
+      emptyMap()
+    }
+
+    if (propagatableFiles == existingSnapshot) {
+      // No changes to save
+      return
+    }
+
+    // Save snapshot
+    try {
+      val created = storage.saveSnapshot(ref, propagatableFiles, getParentRef(currentTask), "Auto-save changes for '${currentTask.name}'")
+      if (created) {
+        LOG.info("Auto-saved snapshot for task '${currentTask.name}' (ref=$ref)")
+      }
+    } catch (e: IOException) {
+      LOG.warn("Failed to auto-save snapshot for task '${currentTask.name}'", e)
+    }
+  }
+
+  /**
    * Returns the state of all non-test files for this task.
    * This includes both template files (visible, editable) and learner-created files.
    *
@@ -1103,6 +1120,34 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     storage.closeAndClean()
     originalTestFilesCache.clear()
     originalTemplateFilesCache.clear()
+  }
+
+  override fun syncCurrentTaskIndexFromStorage(lesson: FrameworkLesson): Boolean {
+    val head = storage.head ?: run {
+      // No HEAD means fresh storage - mark as synced since currentTaskIndex=0 is correct
+      isStorageSynced = true
+      return false
+    }
+
+    // Find the task whose storageRef matches HEAD
+    val taskIndex = lesson.taskList.indexOfFirst { it.storageRef() == head }
+    if (taskIndex == -1) {
+      LOG.warn("syncCurrentTaskIndexFromStorage: HEAD=$head but no task found with matching storageRef")
+      // Still mark as synced to allow auto-save to work
+      isStorageSynced = true
+      return false
+    }
+
+    if (lesson.currentTaskIndex != taskIndex) {
+      LOG.info("syncCurrentTaskIndexFromStorage: syncing currentTaskIndex from ${lesson.currentTaskIndex} to $taskIndex (HEAD=$head)")
+      lesson.currentTaskIndex = taskIndex
+      SlowOperations.knownIssue("EDU-XXXX").use {
+        YamlFormatSynchronizer.saveItem(lesson)
+      }
+    }
+
+    isStorageSynced = true
+    return true
   }
 
   companion object {

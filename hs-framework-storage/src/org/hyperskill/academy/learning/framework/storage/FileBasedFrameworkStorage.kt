@@ -170,16 +170,19 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
     }
 
     // Check for existing ref first, then fall back to parent
-    val parentCommitHash = resolveRef(ref) ?: parentRef?.let { resolveRef(it) }
+    val existingCommitHash = resolveRef(ref)
+    val parentCommitHash = existingCommitHash ?: parentRef?.let { resolveRef(it) }
 
-    // Skip creating commit if snapshot is identical to parent's snapshot
-    if (parentCommitHash != null) {
+    // Skip creating commit only if we're updating an EXISTING ref with identical content
+    if (existingCommitHash != null && parentCommitHash != null) {
       val parentCommit = getCommit(parentCommitHash)
       if (parentCommit.snapshotHash == snapshotHash) {
-        // No changes - don't create new commit
+        // Same content, same ref - no need to create new commit
         return false
       }
     }
+    // Note: We always create a new commit for NEW refs even if snapshot is identical to parent.
+    // This preserves the correct parent chain. Snapshot deduplication still saves space.
 
     val commitHash = saveCommit(snapshotHash, if (parentCommitHash != null) listOf(parentCommitHash) else emptyList(), message)
     updateRef(ref, commitHash)
@@ -273,7 +276,75 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
     val parentHashes: List<String>,
     val timestamp: Long,
     val message: String = ""
-  )
+  ) {
+    /**
+     * Returns true if this is a merge commit (has more than one parent).
+     */
+    val isMerge: Boolean get() = parentHashes.size > 1
+  }
+
+  /**
+   * Check if a commit is an ancestor of another commit.
+   * Uses BFS to traverse the parent chain.
+   *
+   * @param potentialAncestor The commit hash that might be an ancestor
+   * @param descendant The commit hash to check ancestry from
+   * @return true if potentialAncestor is in the ancestor chain of descendant
+   */
+  fun isAncestor(potentialAncestor: String?, descendant: String?): Boolean {
+    if (potentialAncestor == null || descendant == null) return false
+    if (potentialAncestor == descendant) return true
+
+    val visited = mutableSetOf<String>()
+    val queue = ArrayDeque<String>()
+    queue.add(descendant)
+
+    while (queue.isNotEmpty()) {
+      val current = queue.removeFirst()
+      if (current == potentialAncestor) return true
+      if (current in visited) continue
+      visited.add(current)
+
+      val commit = try {
+        getCommit(current)
+      } catch (e: Exception) {
+        continue
+      }
+
+      queue.addAll(commit.parentHashes)
+    }
+    return false
+  }
+
+  /**
+   * Save a merge snapshot with multiple parents.
+   * Used when merging changes from one stage to another (Keep/Replace dialog).
+   *
+   * @param ref The ref name to update
+   * @param state The file state to save
+   * @param parentRefs List of parent refs (typically [sourceRef, targetRef] for merge)
+   * @param message Commit message describing the merge
+   * @return true if a new commit was created
+   */
+  @Throws(IOException::class)
+  fun saveMergeSnapshot(ref: String, state: Map<String, String>, parentRefs: List<String>, message: String): Boolean {
+    val snapshotMap = state.mapValues { (_, text) -> saveBlob(text) }
+
+    val snapshotHash = saveObject(SNAPSHOT_TYPE) { out ->
+      FrameworkStorageUtils.writeINT(out, snapshotMap.size)
+      for ((path, blobHash) in snapshotMap) {
+        out.writeUTF(path)
+        out.writeUTF(blobHash)
+      }
+    }
+
+    // Resolve all parent refs to commit hashes
+    val parentCommitHashes = parentRefs.mapNotNull { resolveRef(it) }
+
+    val commitHash = saveCommit(snapshotHash, parentCommitHashes, message)
+    updateRef(ref, commitHash)
+    return true
+  }
 
   /**
    * Get snapshot state directly by snapshot hash (for debugging).

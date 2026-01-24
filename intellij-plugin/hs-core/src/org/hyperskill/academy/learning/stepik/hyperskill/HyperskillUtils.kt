@@ -19,6 +19,7 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTopic
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
 import org.hyperskill.academy.learning.courseGeneration.ProjectOpener
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.navigation.NavigationUtils
 import org.hyperskill.academy.learning.notification.EduNotificationManager
@@ -45,6 +46,11 @@ fun openSelectedStage(course: Course, project: Project) {
       val lesson = course.lessons[0]
       val taskList = lesson.taskList
       if (taskList.size > index) {
+        // Sync currentTaskIndex with storage HEAD before navigation
+        // to avoid creating incorrect merge commits when project opens
+        if (lesson is FrameworkLesson) {
+          FrameworkLessonManager.getInstance(project).syncCurrentTaskIndexFromStorage(lesson)
+        }
         val fromTask = if (lesson is FrameworkLesson) lesson.currentTask() else taskList[0]
         NavigationUtils.navigateToTask(project, taskList[index], fromTask, false)
       }

@@ -3,6 +3,7 @@ package org.hyperskill.academy.learning.framework.storage
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -259,5 +260,36 @@ class FileBasedFrameworkStorageTest {
 
     // Hash should be the same (no new commit)
     assertEquals(hash1, hash2)
+  }
+
+  @Test
+  fun `test create new ref with identical content as parent`() {
+    val state = mapOf("file.txt" to "content")
+
+    // First save creates a commit for stage_1
+    val created1 = storage.saveSnapshot("stage_1", state)
+    assertTrue(created1)
+    val hash1 = storage.resolveRef("stage_1")!!
+
+    // Save identical content to a NEW ref (stage_2) with stage_1 as parent
+    // This creates a new commit to preserve correct parent chain
+    val created2 = storage.saveSnapshot("stage_2", state, "stage_1")
+    assertTrue(created2) // New commit created for correct parent chain
+
+    // Ref should exist
+    assertTrue(storage.hasRef("stage_2"))
+    val hash2 = storage.resolveRef("stage_2")!!
+
+    // Different commits (to preserve parent chain)
+    assertNotEquals(hash1, hash2)
+
+    // But stage_2's commit should have stage_1's commit as parent
+    val commit2 = storage.getCommit(hash2)
+    assertEquals(listOf(hash1), commit2.parentHashes)
+
+    // Verify both refs are listed
+    val refs = storage.getAllRefNames()
+    assertTrue(refs.contains("stage_1"))
+    assertTrue(refs.contains("stage_2"))
   }
 }

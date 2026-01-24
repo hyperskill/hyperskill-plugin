@@ -724,6 +724,12 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
       }
 
+      // Merge indicator
+      if (value.parentHashes.size > 1) {
+        append(" MERGE ", mergeBadgeAttributes())
+        append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+      }
+
       // Hash
       append(value.hash.take(7), commitHashAttributes())
       append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
@@ -731,12 +737,23 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       // Time
       append(dateFormat.format(Date(value.timestamp)), SimpleTextAttributes.GRAYED_ATTRIBUTES)
 
+      // Parents info for merge commits
+      if (value.parentHashes.size > 1) {
+        append(" (", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+        append("${value.parentHashes.size} parents", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+        append(")", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+      }
+
       // Message
       if (value.message.isNotBlank()) {
         append(" - ", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         append(value.message, SimpleTextAttributes.REGULAR_ATTRIBUTES)
       }
     }
+
+    private fun mergeBadgeAttributes() = SimpleTextAttributes(
+      SimpleTextAttributes.STYLE_BOLD, JBColor(0xFFFFFF, 0xFFFFFF), JBColor(0xD97706, 0xF59E0B)
+    )
 
     private fun headBadgeAttributes() = SimpleTextAttributes(
       SimpleTextAttributes.STYLE_BOLD, JBColor(0xFFFFFF, 0xFFFFFF), JBColor(0x9065AF, 0xB07FCC)

@@ -172,6 +172,36 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
     return getFileBasedStorage().saveSnapshot(ref, state, parentRef, message)
   }
 
+  /**
+   * Save a merge snapshot with multiple parents.
+   * Used when merging changes from one stage to another (Keep/Replace dialog).
+   *
+   * @param ref The ref name to update
+   * @param state The file state to save
+   * @param parentRefs List of parent refs (typically [sourceRef, targetRef] for merge)
+   * @param message Commit message describing the merge
+   * @return true if a new commit was created
+   */
+  @Throws(IOException::class)
+  fun saveMergeSnapshot(ref: String, state: Map<String, String>, parentRefs: List<String>, message: String): Boolean {
+    return getFileBasedStorage().saveMergeSnapshot(ref, state, parentRefs, message)
+  }
+
+  /**
+   * Check if a commit is an ancestor of another commit.
+   * Uses BFS to traverse the parent chain, supporting multiple parents (merge commits).
+   *
+   * @param potentialAncestorRef The ref that might be an ancestor
+   * @param descendantRef The ref to check ancestry from
+   * @return true if potentialAncestorRef's commit is in the ancestor chain of descendantRef's commit
+   */
+  fun isAncestor(potentialAncestorRef: String, descendantRef: String): Boolean {
+    if (!hasFileBasedStorage()) return false
+    val ancestorCommit = resolveRef(potentialAncestorRef) ?: return false
+    val descendantCommit = resolveRef(descendantRef) ?: return false
+    return getFileBasedStorage().isAncestor(ancestorCommit, descendantCommit)
+  }
+
   @Throws(IOException::class)
   fun migrate(newVersion: Int) {
     val currentVersion = version
