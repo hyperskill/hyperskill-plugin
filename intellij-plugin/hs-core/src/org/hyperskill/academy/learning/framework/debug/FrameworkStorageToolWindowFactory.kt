@@ -31,6 +31,7 @@ import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.impl.FrameworkStorage
 import org.hyperskill.academy.learning.framework.storage.FileBasedFrameworkStorage
 import java.awt.BorderLayout
+import java.awt.Component
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
@@ -82,17 +83,35 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
   private var currentCommitSnapshot: Map<String, String> = emptyMap()
   private var parentCommitSnapshot: Map<String, String> = emptyMap()
 
+  // Stage selector
+  private val stageComboBox = JComboBox<StageItem>()
+  private var isUpdatingStageComboBox = false
+
   // Header labels
   private val storageInfoLabel = JLabel()
   private val headInfoLabel = JLabel()
+
+  // All commits data for filtering
+  private var allCommitEntries: List<CommitEntry> = emptyList()
+  private var commitsByRef: Map<Int, Set<String>> = emptyMap() // refId -> reachable commit hashes
 
   init {
     setupCommitList()
     setupFileTree()
     setupDiffPanel()
+    setupStageSelector()
     setupLayout()
     subscribeToStorageChanges()
     refreshList()
+  }
+
+  private fun setupStageSelector() {
+    stageComboBox.renderer = StageItemRenderer()
+    stageComboBox.addActionListener {
+      if (!isUpdatingStageComboBox) {
+        filterCommitsBySelectedStage()
+      }
+    }
   }
 
   private fun setupCommitList() {
@@ -138,6 +157,10 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         layout = BoxLayout(this, BoxLayout.X_AXIS)
         border = JBUI.Borders.empty(4)
 
+        add(JLabel("Stage: "))
+        add(Box.createHorizontalStrut(4))
+        add(stageComboBox)
+        add(Box.createHorizontalStrut(8))
         add(JButton(AllIcons.Actions.Refresh).apply {
           toolTipText = "Refresh"
           addActionListener { refreshList() }
@@ -241,37 +264,101 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       refsByCommit.getOrPut(ref.commitHash) { mutableListOf() }.add(label)
     }
 
-    // Collect commits
+    // Collect commits and build reachability map per ref
     val allCommits = mutableMapOf<String, CommitData>()
-    val visited = mutableSetOf<String>()
+    val reachableByRef = mutableMapOf<Int, MutableSet<String>>()
 
-    fun collectCommits(hash: String, depth: Int = 0) {
+    fun collectCommitsForRef(hash: String, refId: Int, visited: MutableSet<String>, depth: Int = 0) {
       if (hash in visited || depth > 50) return
       visited.add(hash)
+      reachableByRef.getOrPut(refId) { mutableSetOf() }.add(hash)
       val commit = storage.getCommit(hash) ?: return
       allCommits[hash] = CommitData(hash, commit)
       for (parentHash in commit.parentHashes) {
-        collectCommits(parentHash, depth + 1)
+        collectCommitsForRef(parentHash, refId, visited, depth + 1)
       }
     }
 
     for (ref in refs) {
-      collectCommits(ref.commitHash)
+      collectCommitsForRef(ref.commitHash, ref.refId, mutableSetOf())
     }
 
-    // Sort and add to model
+    commitsByRef = reachableByRef
+
+    // Build all commit entries
     val sortedCommits = allCommits.values.sortedByDescending { it.commit.timestamp }
-    for (commitData in sortedCommits) {
-      listModel.addElement(
-        CommitEntry(
-          hash = commitData.hash,
-          timestamp = commitData.commit.timestamp,
-          parentHashes = commitData.commit.parentHashes,
-          snapshotHash = commitData.commit.snapshotHash,
-          refs = refsByCommit[commitData.hash] ?: emptyList(),
-          message = commitData.commit.message
-        )
+    allCommitEntries = sortedCommits.map { commitData ->
+      CommitEntry(
+        hash = commitData.hash,
+        timestamp = commitData.commit.timestamp,
+        parentHashes = commitData.commit.parentHashes,
+        snapshotHash = commitData.commit.snapshotHash,
+        refs = refsByCommit[commitData.hash] ?: emptyList(),
+        message = commitData.commit.message
       )
+    }
+
+    // Update stage selector
+    updateStageSelector(refs, taskNames, headRefId)
+
+    // Apply filter
+    filterCommitsBySelectedStage()
+  }
+
+  private fun updateStageSelector(
+    refs: List<FileBasedFrameworkStorage.RefInfo>,
+    taskNames: Map<Int, String>,
+    headRefId: Int
+  ) {
+    isUpdatingStageComboBox = true
+    try {
+      val previousSelection = stageComboBox.selectedItem as? StageItem
+      stageComboBox.removeAllItems()
+
+      // Add "All" option
+      stageComboBox.addItem(StageItem.All)
+
+      // Add stages sorted by refId
+      val stageItems = refs.sortedBy { it.refId }.map { ref ->
+        StageItem.Stage(
+          refId = ref.refId,
+          name = taskNames[ref.refId] ?: "Stage ${ref.refId}",
+          isHead = ref.refId == headRefId
+        )
+      }
+
+      for (item in stageItems) {
+        stageComboBox.addItem(item)
+      }
+
+      // Select HEAD stage by default, or restore previous selection
+      val itemToSelect = when {
+        previousSelection != null && stageItems.any { it.refId == (previousSelection as? StageItem.Stage)?.refId } ->
+          stageItems.find { it.refId == (previousSelection as? StageItem.Stage)?.refId }
+        previousSelection == StageItem.All -> StageItem.All
+        else -> stageItems.find { it.isHead } ?: StageItem.All
+      }
+      stageComboBox.selectedItem = itemToSelect
+    } finally {
+      isUpdatingStageComboBox = false
+    }
+  }
+
+  private fun filterCommitsBySelectedStage() {
+    listModel.clear()
+
+    val selectedItem = stageComboBox.selectedItem as? StageItem ?: return
+
+    val filteredCommits = when (selectedItem) {
+      is StageItem.All -> allCommitEntries
+      is StageItem.Stage -> {
+        val reachableHashes = commitsByRef[selectedItem.refId] ?: emptySet()
+        allCommitEntries.filter { it.hash in reachableHashes }
+      }
+    }
+
+    for (entry in filteredCommits) {
+      listModel.addElement(entry)
     }
   }
 
@@ -460,6 +547,11 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
   enum class ChangeType { ADDED, MODIFIED, DELETED }
   data class RefLabel(val refId: Int, val taskName: String, val isHead: Boolean)
   data class CommitData(val hash: String, val commit: FileBasedFrameworkStorage.Commit)
+
+  sealed class StageItem {
+    data object All : StageItem()
+    data class Stage(val refId: Int, val name: String, val isHead: Boolean) : StageItem()
+  }
   data class CommitEntry(
     val hash: String,
     val timestamp: Long,
@@ -474,6 +566,35 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     val oldContent: String?,
     val newContent: String?
   )
+
+  /**
+   * Cell renderer for stage selector.
+   */
+  inner class StageItemRenderer : DefaultListCellRenderer() {
+    override fun getListCellRendererComponent(
+      list: JList<*>?,
+      value: Any?,
+      index: Int,
+      isSelected: Boolean,
+      cellHasFocus: Boolean
+    ): Component {
+      super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus)
+
+      when (val item = value as? StageItem) {
+        is StageItem.All -> {
+          text = "All stages"
+          icon = AllIcons.Vcs.Branch
+        }
+        is StageItem.Stage -> {
+          text = if (item.isHead) "${item.name} (HEAD)" else item.name
+          icon = if (item.isHead) AllIcons.Actions.Checked else AllIcons.Nodes.Tag
+        }
+        null -> {}
+      }
+
+      return this
+    }
+  }
 
   /**
    * Cell renderer for commit list.
