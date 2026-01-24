@@ -115,6 +115,20 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
     return if (hasFileBasedStorage()) getFileBasedStorage().resolveRef(refId) else null
   }
 
+  /**
+   * Get snapshot by its hash directly (for debugging).
+   */
+  fun getSnapshotByHash(snapshotHash: String): Map<String, String>? {
+    return if (hasFileBasedStorage()) {
+      try {
+        getFileBasedStorage().getSnapshotByHash(snapshotHash)
+      } catch (e: Exception) {
+        LOG.warn("Failed to get snapshot by hash $snapshotHash", e)
+        null
+      }
+    } else null
+  }
+
   var isDisposed: Boolean = false
     private set
 

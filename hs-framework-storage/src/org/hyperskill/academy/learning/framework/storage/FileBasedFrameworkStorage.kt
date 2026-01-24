@@ -255,6 +255,19 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
 
   data class Commit(val snapshotHash: String, val parentHashes: List<String>, val timestamp: Long)
 
+  /**
+   * Get snapshot state directly by snapshot hash (for debugging).
+   * Reads the snapshot object and resolves all blob hashes to their content.
+   */
+  @Throws(IOException::class)
+  fun getSnapshotByHash(snapshotHash: String): Map<String, String> {
+    return readObject(snapshotHash) { type, input ->
+      if (type != SNAPSHOT_TYPE) throw IOException("Object $snapshotHash is not a snapshot (type=$type)")
+      val snapshotMap = readSnapshotMap(input)
+      snapshotMap.mapValues { (_, blobHash) -> readBlob(blobHash) }
+    }
+  }
+
   @Throws(IOException::class)
   private fun saveBlob(text: String): String {
     val hash = hashContent(text)

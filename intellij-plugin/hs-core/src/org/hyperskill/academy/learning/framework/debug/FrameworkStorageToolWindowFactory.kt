@@ -1,19 +1,28 @@
 package org.hyperskill.academy.learning.framework.debug
 
+import com.intellij.diff.DiffContentFactory
+import com.intellij.diff.DiffManager
+import com.intellij.diff.requests.SimpleDiffRequest
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Splitter
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.ColoredListCellRenderer
+import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.JBColor
+import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
 import org.hyperskill.academy.learning.StudyTaskManager
@@ -22,15 +31,18 @@ import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.impl.FrameworkStorage
 import org.hyperskill.academy.learning.framework.storage.FileBasedFrameworkStorage
 import java.awt.BorderLayout
-import java.awt.Component
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.swing.*
+import javax.swing.event.ListSelectionListener
+import javax.swing.event.TreeSelectionListener
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.DefaultTreeModel
 
 /**
  * ToolWindow for debugging Framework Storage.
- * Shows the commit list like VCS log with refs (stages) and HEAD.
+ * Shows commits, changed files, and diffs.
  * Only visible in internal/development mode.
  */
 class FrameworkStorageToolWindowFactory : ToolWindowFactory, DumbAware {
@@ -50,67 +62,132 @@ class FrameworkStorageToolWindowFactory : ToolWindowFactory, DumbAware {
 }
 
 /**
- * Panel displaying the Framework Storage commits like VCS log.
+ * Main panel with three-pane layout: commits | files | diff
  */
 class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout()), Disposable {
 
   private val listModel = DefaultListModel<CommitEntry>()
   private val commitList = JBList(listModel)
-  private val dateFormat = SimpleDateFormat("dd MMM yyyy HH:mm:ss")
+  private val dateFormat = SimpleDateFormat("dd MMM HH:mm:ss")
+
+  private val fileTreeRoot = DefaultMutableTreeNode("Changes")
+  private val fileTreeModel = DefaultTreeModel(fileTreeRoot)
+  private val fileTree = Tree(fileTreeModel)
+
+  private val diffPanel = JPanel(BorderLayout())
+  private val diffPlaceholder = JBLabel("Select a file to view diff", SwingConstants.CENTER)
+
   private var autoRefresh = true
+  private var currentStorage: FrameworkStorage? = null
+  private var currentCommitSnapshot: Map<String, String> = emptyMap()
+  private var parentCommitSnapshot: Map<String, String> = emptyMap()
 
   // Header labels
   private val storageInfoLabel = JLabel()
   private val headInfoLabel = JLabel()
 
   init {
-    commitList.cellRenderer = CommitListCellRenderer()
-    commitList.fixedCellHeight = 28
-
-    val scrollPane = JBScrollPane(commitList)
-    scrollPane.border = JBUI.Borders.empty()
-
-    // Header panel with storage info
-    val headerPanel = JPanel().apply {
-      layout = BoxLayout(this, BoxLayout.Y_AXIS)
-      border = JBUI.Borders.empty(8, 8, 4, 8)
-
-      add(storageInfoLabel)
-      add(Box.createVerticalStrut(2))
-      add(headInfoLabel)
-    }
-
-    // Toolbar
-    val toolbar = JPanel().apply {
-      layout = BoxLayout(this, BoxLayout.X_AXIS)
-      border = JBUI.Borders.empty(4)
-
-      val refreshButton = JButton("Refresh").apply {
-        icon = AllIcons.Actions.Refresh
-        addActionListener { refreshList() }
-      }
-      add(refreshButton)
-
-      add(Box.createHorizontalStrut(8))
-
-      val autoRefreshCheckbox = JCheckBox("Auto-refresh", autoRefresh).apply {
-        addActionListener { autoRefresh = isSelected }
-      }
-      add(autoRefreshCheckbox)
-
-      add(Box.createHorizontalGlue())
-    }
-
-    val topPanel = JPanel(BorderLayout()).apply {
-      add(toolbar, BorderLayout.NORTH)
-      add(headerPanel, BorderLayout.CENTER)
-    }
-
-    add(topPanel, BorderLayout.NORTH)
-    add(scrollPane, BorderLayout.CENTER)
-
+    setupCommitList()
+    setupFileTree()
+    setupDiffPanel()
+    setupLayout()
     subscribeToStorageChanges()
     refreshList()
+  }
+
+  private fun setupCommitList() {
+    commitList.cellRenderer = CommitListCellRenderer()
+    commitList.fixedCellHeight = 26
+    commitList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+    commitList.addListSelectionListener(ListSelectionListener {
+      if (!it.valueIsAdjusting) {
+        onCommitSelected(commitList.selectedValue)
+      }
+    })
+  }
+
+  private fun setupFileTree() {
+    fileTree.isRootVisible = false
+    fileTree.cellRenderer = FileTreeCellRenderer()
+    fileTree.addTreeSelectionListener(TreeSelectionListener {
+      val node = fileTree.lastSelectedPathComponent as? DefaultMutableTreeNode
+      val fileChange = node?.userObject as? FileChange
+      if (fileChange != null) {
+        showDiff(fileChange)
+      }
+    })
+  }
+
+  private fun setupDiffPanel() {
+    diffPanel.add(diffPlaceholder, BorderLayout.CENTER)
+  }
+
+  private fun setupLayout() {
+    // Left panel: commits list
+    val commitsPanel = JPanel(BorderLayout()).apply {
+      // Header
+      val headerPanel = JPanel().apply {
+        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        border = JBUI.Borders.empty(4, 8)
+        add(storageInfoLabel)
+        add(headInfoLabel)
+      }
+
+      // Toolbar
+      val toolbar = JPanel().apply {
+        layout = BoxLayout(this, BoxLayout.X_AXIS)
+        border = JBUI.Borders.empty(4)
+
+        add(JButton(AllIcons.Actions.Refresh).apply {
+          toolTipText = "Refresh"
+          addActionListener { refreshList() }
+        })
+        add(Box.createHorizontalStrut(4))
+        add(JCheckBox("Auto", autoRefresh).apply {
+          toolTipText = "Auto-refresh on changes"
+          addActionListener { autoRefresh = isSelected }
+        })
+        add(Box.createHorizontalGlue())
+      }
+
+      val topPanel = JPanel(BorderLayout()).apply {
+        add(toolbar, BorderLayout.NORTH)
+        add(headerPanel, BorderLayout.CENTER)
+      }
+
+      add(topPanel, BorderLayout.NORTH)
+      add(JBScrollPane(commitList), BorderLayout.CENTER)
+    }
+
+    // Middle panel: file tree
+    val filesPanel = JPanel(BorderLayout()).apply {
+      border = JBUI.Borders.customLine(JBColor.border(), 0, 1, 0, 1)
+      add(JBLabel("Changed Files").apply {
+        border = JBUI.Borders.empty(4, 8)
+      }, BorderLayout.NORTH)
+      add(JBScrollPane(fileTree), BorderLayout.CENTER)
+    }
+
+    // Right panel: diff
+    val rightPanel = JPanel(BorderLayout()).apply {
+      add(JBLabel("Diff").apply {
+        border = JBUI.Borders.empty(4, 8)
+      }, BorderLayout.NORTH)
+      add(diffPanel, BorderLayout.CENTER)
+    }
+
+    // Create splitters
+    val rightSplitter = OnePixelSplitter(false, 0.35f).apply {
+      firstComponent = filesPanel
+      secondComponent = rightPanel
+    }
+
+    val mainSplitter = OnePixelSplitter(false, 0.3f).apply {
+      firstComponent = commitsPanel
+      secondComponent = rightSplitter
+    }
+
+    add(mainSplitter, BorderLayout.CENTER)
   }
 
   private fun subscribeToStorageChanges() {
@@ -128,9 +205,12 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
   fun refreshList() {
     listModel.clear()
+    clearFileTree()
+    clearDiff()
 
     val storagePath = Paths.get(FileUtil.join(project.basePath!!, Project.DIRECTORY_STORE_FOLDER, "frameworkLessonHistory", "storage"))
-    val storage = try {
+    currentStorage?.dispose()
+    currentStorage = try {
       FrameworkStorage(storagePath)
     } catch (e: Exception) {
       storageInfoLabel.text = "Error: ${e.message}"
@@ -138,72 +218,223 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       return
     }
 
-    try {
-      val version = storage.version
-      val headRefId = storage.head
-      val headCommitHash = storage.getHeadCommit()
+    val storage = currentStorage ?: return
 
-      storageInfoLabel.text = "Storage v$version"
-      headInfoLabel.text = if (headRefId != -1) {
-        "HEAD → ref/$headRefId (${headCommitHash?.take(8) ?: "???"})"
-      } else {
-        "HEAD: not set"
+    val version = storage.version
+    val headRefId = storage.head
+    val headCommitHash = storage.getHeadCommit()
+
+    storageInfoLabel.text = "Storage v$version"
+    headInfoLabel.text = if (headRefId != -1) "HEAD → ref/$headRefId" else "HEAD: not set"
+
+    val taskNames = getTaskNames()
+    val refs = storage.getAllRefs()
+
+    // Build ref map
+    val refsByCommit = mutableMapOf<String, MutableList<RefLabel>>()
+    for (ref in refs) {
+      val label = RefLabel(
+        refId = ref.refId,
+        taskName = taskNames[ref.refId] ?: "Stage ${ref.refId}",
+        isHead = ref.isHead
+      )
+      refsByCommit.getOrPut(ref.commitHash) { mutableListOf() }.add(label)
+    }
+
+    // Collect commits
+    val allCommits = mutableMapOf<String, CommitData>()
+    val visited = mutableSetOf<String>()
+
+    fun collectCommits(hash: String, depth: Int = 0) {
+      if (hash in visited || depth > 50) return
+      visited.add(hash)
+      val commit = storage.getCommit(hash) ?: return
+      allCommits[hash] = CommitData(hash, commit)
+      for (parentHash in commit.parentHashes) {
+        collectCommits(parentHash, depth + 1)
       }
+    }
 
-      val taskNames = getTaskNames()
-      val refs = storage.getAllRefs()
+    for (ref in refs) {
+      collectCommits(ref.commitHash)
+    }
 
-      // Build ref map: commitHash -> list of refs pointing to it
-      val refsByCommit = mutableMapOf<String, MutableList<RefLabel>>()
-      for (ref in refs) {
-        val label = RefLabel(
-          refId = ref.refId,
-          taskName = taskNames[ref.refId] ?: "Stage ${ref.refId}",
-          isHead = ref.isHead
+    // Sort and add to model
+    val sortedCommits = allCommits.values.sortedByDescending { it.commit.timestamp }
+    for (commitData in sortedCommits) {
+      listModel.addElement(
+        CommitEntry(
+          hash = commitData.hash,
+          timestamp = commitData.commit.timestamp,
+          parentHashes = commitData.commit.parentHashes,
+          snapshotHash = commitData.commit.snapshotHash,
+          refs = refsByCommit[commitData.hash] ?: emptyList()
         )
-        refsByCommit.getOrPut(ref.commitHash) { mutableListOf() }.add(label)
+      )
+    }
+  }
+
+  private fun onCommitSelected(entry: CommitEntry?) {
+    clearFileTree()
+    clearDiff()
+    if (entry == null) return
+
+    val storage = currentStorage ?: return
+
+    try {
+      // Load current commit's snapshot
+      currentCommitSnapshot = loadSnapshot(storage, entry.snapshotHash)
+
+      // Load parent's snapshot (if exists)
+      parentCommitSnapshot = if (entry.parentHashes.isNotEmpty()) {
+        val parentCommit = storage.getCommit(entry.parentHashes.first())
+        if (parentCommit != null) {
+          loadSnapshot(storage, parentCommit.snapshotHash)
+        } else emptyMap()
+      } else emptyMap()
+
+      // Calculate changes
+      val changes = calculateChanges(parentCommitSnapshot, currentCommitSnapshot)
+
+      // Populate file tree
+      populateFileTree(changes)
+
+    } catch (e: Exception) {
+      fileTreeRoot.add(DefaultMutableTreeNode("Error: ${e.message}"))
+      fileTreeModel.reload()
+    }
+  }
+
+  private fun loadSnapshot(storage: FrameworkStorage, snapshotHash: String): Map<String, String> {
+    return storage.getSnapshotByHash(snapshotHash) ?: emptyMap()
+  }
+
+  private fun calculateChanges(oldState: Map<String, String>, newState: Map<String, String>): List<FileChange> {
+    val changes = mutableListOf<FileChange>()
+
+    // Added files
+    for ((path, content) in newState) {
+      if (path !in oldState) {
+        changes.add(FileChange(path, ChangeType.ADDED, null, content))
       }
+    }
 
-      // Collect all unique commits and sort by timestamp (newest first)
-      val allCommits = mutableMapOf<String, CommitData>()
-      val visited = mutableSetOf<String>()
+    // Modified files
+    for ((path, newContent) in newState) {
+      val oldContent = oldState[path]
+      if (oldContent != null && oldContent != newContent) {
+        changes.add(FileChange(path, ChangeType.MODIFIED, oldContent, newContent))
+      }
+    }
 
-      fun collectCommits(hash: String, depth: Int = 0) {
-        if (hash in visited || depth > 50) return
-        visited.add(hash)
+    // Deleted files
+    for ((path, oldContent) in oldState) {
+      if (path !in newState) {
+        changes.add(FileChange(path, ChangeType.DELETED, oldContent, null))
+      }
+    }
 
-        val commit = storage.getCommit(hash) ?: return
-        allCommits[hash] = CommitData(hash, commit)
+    return changes.sortedBy { it.path }
+  }
 
-        for (parentHash in commit.parentHashes) {
-          collectCommits(parentHash, depth + 1)
+  private fun populateFileTree(changes: List<FileChange>) {
+    fileTreeRoot.removeAllChildren()
+
+    if (changes.isEmpty()) {
+      fileTreeRoot.add(DefaultMutableTreeNode("No changes"))
+    } else {
+      // Group by directory
+      val byDir = changes.groupBy { it.path.substringBeforeLast('/', "") }
+
+      for ((dir, files) in byDir.entries.sortedBy { it.key }) {
+        if (dir.isEmpty()) {
+          // Root level files
+          for (file in files) {
+            fileTreeRoot.add(DefaultMutableTreeNode(file))
+          }
+        } else {
+          val dirNode = DefaultMutableTreeNode(dir)
+          for (file in files) {
+            dirNode.add(DefaultMutableTreeNode(file))
+          }
+          fileTreeRoot.add(dirNode)
         }
       }
-
-      // Start from all refs
-      for (ref in refs) {
-        collectCommits(ref.commitHash)
-      }
-
-      // Sort by timestamp descending
-      val sortedCommits = allCommits.values.sortedByDescending { it.commit.timestamp }
-
-      // Add to list model
-      for (commitData in sortedCommits) {
-        val refs = refsByCommit[commitData.hash] ?: emptyList()
-        listModel.addElement(
-          CommitEntry(
-            hash = commitData.hash,
-            timestamp = commitData.commit.timestamp,
-            parentHashes = commitData.commit.parentHashes,
-            refs = refs
-          )
-        )
-      }
-
-    } finally {
-      storage.dispose()
     }
+
+    fileTreeModel.reload()
+    expandAllTreeNodes()
+  }
+
+  private fun expandAllTreeNodes() {
+    var row = 0
+    while (row < fileTree.rowCount) {
+      fileTree.expandRow(row)
+      row++
+    }
+  }
+
+  private fun showDiff(fileChange: FileChange) {
+    diffPanel.removeAll()
+
+    val oldContent = fileChange.oldContent ?: ""
+    val newContent = fileChange.newContent ?: ""
+
+    try {
+      val diffContentFactory = DiffContentFactory.getInstance()
+      val fileType = FileTypeManager.getInstance().getFileTypeByFileName(fileChange.path)
+
+      val oldDiffContent = diffContentFactory.create(project, oldContent, fileType)
+      val newDiffContent = diffContentFactory.create(project, newContent, fileType)
+
+      val title = when (fileChange.type) {
+        ChangeType.ADDED -> "Added: ${fileChange.path}"
+        ChangeType.MODIFIED -> "Modified: ${fileChange.path}"
+        ChangeType.DELETED -> "Deleted: ${fileChange.path}"
+      }
+
+      val request = SimpleDiffRequest(title, oldDiffContent, newDiffContent, "Before", "After")
+      val diffComponent = DiffManager.getInstance().createRequestPanel(project, this, null)
+      diffComponent.setRequest(request)
+
+      diffPanel.add(diffComponent.component, BorderLayout.CENTER)
+    } catch (e: Exception) {
+      // Fallback to simple text view
+      val textArea = JTextArea().apply {
+        isEditable = false
+        text = buildString {
+          appendLine("=== ${fileChange.path} (${fileChange.type}) ===")
+          appendLine()
+          if (fileChange.oldContent != null) {
+            appendLine("--- OLD ---")
+            appendLine(fileChange.oldContent)
+            appendLine()
+          }
+          if (fileChange.newContent != null) {
+            appendLine("+++ NEW +++")
+            appendLine(fileChange.newContent)
+          }
+        }
+      }
+      diffPanel.add(JBScrollPane(textArea), BorderLayout.CENTER)
+    }
+
+    diffPanel.revalidate()
+    diffPanel.repaint()
+  }
+
+  private fun clearFileTree() {
+    fileTreeRoot.removeAllChildren()
+    fileTreeModel.reload()
+    currentCommitSnapshot = emptyMap()
+    parentCommitSnapshot = emptyMap()
+  }
+
+  private fun clearDiff() {
+    diffPanel.removeAll()
+    diffPanel.add(diffPlaceholder, BorderLayout.CENTER)
+    diffPanel.revalidate()
+    diffPanel.repaint()
   }
 
   private fun getTaskNames(): Map<Int, String> {
@@ -220,23 +451,32 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     return result
   }
 
-  override fun dispose() {}
+  override fun dispose() {
+    currentStorage?.dispose()
+  }
 
   // Data classes
+  enum class ChangeType { ADDED, MODIFIED, DELETED }
   data class RefLabel(val refId: Int, val taskName: String, val isHead: Boolean)
   data class CommitData(val hash: String, val commit: FileBasedFrameworkStorage.Commit)
   data class CommitEntry(
     val hash: String,
     val timestamp: Long,
     val parentHashes: List<String>,
+    val snapshotHash: String,
     val refs: List<RefLabel>
+  )
+  data class FileChange(
+    val path: String,
+    val type: ChangeType,
+    val oldContent: String?,
+    val newContent: String?
   )
 
   /**
-   * Cell renderer for commit list - styled like VCS log.
+   * Cell renderer for commit list.
    */
   inner class CommitListCellRenderer : ColoredListCellRenderer<CommitEntry>() {
-
     override fun customizeCellRenderer(
       list: JList<out CommitEntry>,
       value: CommitEntry?,
@@ -248,7 +488,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
       icon = AllIcons.Vcs.CommitNode
 
-      // Refs (branches/tags) - shown first like in git log
+      // Refs
       for (ref in value.refs) {
         if (ref.isHead) {
           append(" HEAD ", headBadgeAttributes())
@@ -258,48 +498,66 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
       }
 
-      // Commit hash
-      append(value.hash.take(8), commitHashAttributes())
+      // Hash
+      append(value.hash.take(7), commitHashAttributes())
       append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
 
-      // Timestamp
+      // Time
       append(dateFormat.format(Date(value.timestamp)), SimpleTextAttributes.GRAYED_ATTRIBUTES)
-
-      // Parent info
-      if (value.parentHashes.isNotEmpty()) {
-        append("  ←", SimpleTextAttributes.GRAYED_ATTRIBUTES)
-        for (parent in value.parentHashes) {
-          append(" ${parent.take(7)}", parentHashAttributes())
-        }
-      }
     }
 
     private fun headBadgeAttributes() = SimpleTextAttributes(
-      SimpleTextAttributes.STYLE_BOLD,
-      JBColor.namedColor("Git.Log.Ref.LocalBranch", JBColor(0xFFFFFF, 0xFFFFFF)),
-      JBColor.namedColor("Git.Log.Ref.LocalBranch.bg", JBColor(0x9065AF, 0xB07FCC))
+      SimpleTextAttributes.STYLE_BOLD, JBColor(0xFFFFFF, 0xFFFFFF), JBColor(0x9065AF, 0xB07FCC)
     )
 
     private fun headRefBadgeAttributes() = SimpleTextAttributes(
-      SimpleTextAttributes.STYLE_BOLD,
-      JBColor.namedColor("Git.Log.Ref.LocalBranch", JBColor(0xFFFFFF, 0xFFFFFF)),
-      JBColor.namedColor("Git.Log.Ref.LocalBranch.bg", JBColor(0x1A7F37, 0x3FB950))
+      SimpleTextAttributes.STYLE_BOLD, JBColor(0xFFFFFF, 0xFFFFFF), JBColor(0x1A7F37, 0x3FB950)
     )
 
     private fun refBadgeAttributes() = SimpleTextAttributes(
-      SimpleTextAttributes.STYLE_PLAIN,
-      JBColor.namedColor("Git.Log.Ref.RemoteBranch", JBColor(0xFFFFFF, 0xFFFFFF)),
-      JBColor.namedColor("Git.Log.Ref.RemoteBranch.bg", JBColor(0x6E7781, 0x6E7781))
+      SimpleTextAttributes.STYLE_PLAIN, JBColor(0xFFFFFF, 0xFFFFFF), JBColor(0x6E7781, 0x6E7781)
     )
 
     private fun commitHashAttributes() = SimpleTextAttributes(
-      SimpleTextAttributes.STYLE_PLAIN,
-      JBColor.namedColor("Git.Commit.Hash", JBColor(0xCF222E, 0xF85149))
+      SimpleTextAttributes.STYLE_PLAIN, JBColor(0xCF222E, 0xF85149)
     )
+  }
 
-    private fun parentHashAttributes() = SimpleTextAttributes(
-      SimpleTextAttributes.STYLE_PLAIN,
-      JBColor.namedColor("Git.Commit.Hash.Muted", JBColor(0x8B949E, 0x8B949E))
-    )
+  /**
+   * Cell renderer for file tree.
+   */
+  inner class FileTreeCellRenderer : ColoredTreeCellRenderer() {
+    override fun customizeCellRenderer(
+      tree: JTree,
+      value: Any?,
+      selected: Boolean,
+      expanded: Boolean,
+      leaf: Boolean,
+      row: Int,
+      hasFocus: Boolean
+    ) {
+      val node = (value as? DefaultMutableTreeNode)?.userObject ?: return
+
+      when (node) {
+        is String -> {
+          icon = if (leaf) AllIcons.General.Information else AllIcons.Nodes.Folder
+          append(node, SimpleTextAttributes.REGULAR_ATTRIBUTES)
+        }
+        is FileChange -> {
+          val fileName = node.path.substringAfterLast('/')
+          icon = when (node.type) {
+            ChangeType.ADDED -> AllIcons.General.Add
+            ChangeType.MODIFIED -> AllIcons.Actions.Edit
+            ChangeType.DELETED -> AllIcons.General.Remove
+          }
+          val attrs = when (node.type) {
+            ChangeType.ADDED -> SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor(0x1A7F37, 0x3FB950))
+            ChangeType.MODIFIED -> SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor(0x9A6700, 0xD29922))
+            ChangeType.DELETED -> SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor(0xCF222E, 0xF85149))
+          }
+          append(fileName, attrs)
+        }
+      }
+    }
   }
 }
