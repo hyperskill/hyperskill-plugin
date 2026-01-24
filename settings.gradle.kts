@@ -3,6 +3,7 @@ import java.util.Properties
 rootProject.name = "hyperskill-plugin"
 include(
   "hs-edu-format",
+  "hs-framework-storage",
   "intellij-plugin",
   "intellij-plugin:hs-core",
   "intellij-plugin:hs-jvm-core",

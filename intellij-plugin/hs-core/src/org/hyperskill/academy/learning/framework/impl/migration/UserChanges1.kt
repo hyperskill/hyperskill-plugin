@@ -1,8 +1,8 @@
 package org.hyperskill.academy.learning.framework.impl.migration
 
 import com.intellij.util.io.DataInputOutputUtil
-import org.hyperskill.academy.learning.framework.impl.Change
-import org.hyperskill.academy.learning.framework.impl.FrameworkStorageData
+import org.hyperskill.academy.learning.framework.storage.Change
+import org.hyperskill.academy.learning.framework.storage.FrameworkStorageData
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException

@@ -20,8 +20,10 @@ import org.hyperskill.academy.learning.courseFormat.ext.getDocument
 import org.hyperskill.academy.learning.courseFormat.ext.visitTasks
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.framework.impl.FLTaskState
+import org.hyperskill.academy.learning.framework.impl.apply
 import org.hyperskill.academy.learning.framework.impl.calculateChanges
 import org.hyperskill.academy.learning.framework.impl.getTaskStateFromFiles
+import org.hyperskill.academy.learning.framework.storage.UserChanges
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.notification.EduNotificationManager
 import org.jetbrains.annotations.TestOnly

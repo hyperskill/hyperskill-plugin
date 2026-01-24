@@ -5,6 +5,8 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.VirtualFile
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.LessonContainer
+import org.hyperskill.academy.learning.framework.storage.Change
+import org.hyperskill.academy.learning.framework.storage.UserChanges
 import org.hyperskill.academy.learning.isToEncodeContent
 import org.hyperskill.academy.learning.loadEncodedContent
 

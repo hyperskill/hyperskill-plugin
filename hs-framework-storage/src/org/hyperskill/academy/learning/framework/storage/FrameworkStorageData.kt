@@ -1,4 +1,4 @@
-package org.hyperskill.academy.learning.framework.impl
+package org.hyperskill.academy.learning.framework.storage
 
 import java.io.DataOutput
 import java.io.IOException

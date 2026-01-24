@@ -6,6 +6,7 @@ package org.hyperskill.academy.learning.framework.impl
 import com.intellij.util.io.StorageLockContext
 import com.intellij.util.io.storage.AbstractRecordsTable
 import com.intellij.util.io.storage.AbstractStorage
+import org.hyperskill.academy.learning.framework.storage.FrameworkStorageData
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.IOException

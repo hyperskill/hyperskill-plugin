@@ -197,6 +197,8 @@ tasks {
   buildPlugin {
     dependsOn(":hs-edu-format:jar")
     dependsOn(":hs-edu-format:sourcesJar")
+    dependsOn(":hs-framework-storage:jar")
+    dependsOn(":hs-framework-storage:sourcesJar")
     dependsOn(*subprojects.mapNotNull { it.tasks.findByName(VERIFY_CLASSES_TASK_NAME) }.toTypedArray())
     doLast {
       copyFormatJars()
@@ -327,6 +329,7 @@ fun buildDir(): String {
 fun copyFormatJars() {
   copy {
     from("../hs-edu-format/build/libs/")
+    from("../hs-framework-storage/build/libs/")
     into("build/distributions")
     include("*.jar")
   }
