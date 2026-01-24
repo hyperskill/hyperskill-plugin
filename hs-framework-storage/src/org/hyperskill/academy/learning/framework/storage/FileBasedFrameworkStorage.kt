@@ -217,6 +217,42 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
 
   fun resolveRef(refId: Int): String? = getRefCommitHash(refId)
 
+  /**
+   * Get all ref IDs in the storage.
+   * Returns a list of all ref IDs (stage identifiers).
+   */
+  fun getAllRefIds(): List<Int> {
+    val refs = refsDir.toFile().list() ?: return emptyList()
+    return refs.mapNotNull { it.toIntOrNull() }.sorted()
+  }
+
+  /**
+   * Data class representing a ref with its commit information.
+   */
+  data class RefInfo(
+    val refId: Int,
+    val commitHash: String,
+    val commit: Commit,
+    val isHead: Boolean
+  )
+
+  /**
+   * Get information about all refs in the storage.
+   * Returns a list of RefInfo objects with commit details.
+   */
+  fun getAllRefs(): List<RefInfo> {
+    val headRefId = getHead()
+    return getAllRefIds().mapNotNull { refId ->
+      val commitHash = resolveRef(refId) ?: return@mapNotNull null
+      val commit = try {
+        getCommit(commitHash)
+      } catch (e: Exception) {
+        return@mapNotNull null
+      }
+      RefInfo(refId, commitHash, commit, refId == headRefId)
+    }
+  }
+
   data class Commit(val snapshotHash: String, val parentHashes: List<String>, val timestamp: Long)
 
   @Throws(IOException::class)

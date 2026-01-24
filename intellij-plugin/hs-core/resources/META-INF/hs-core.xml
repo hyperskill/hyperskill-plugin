@@ -219,6 +219,10 @@
     <toolWindow id="HyperskillEducational.CheckDetails" anchor="bottom" canCloseContents="true" doNotActivateOnStart="true"
                 factoryClass="org.hyperskill.academy.learning.checker.details.CheckDetailsToolWindowFactory"
                 icon="org.hyperskill.academy.EducationalCoreIcons.CheckPanel.CheckDetailsToolWindow"/>
+    <!-- Framework Storage debug tool window - only visible in internal mode -->
+    <toolWindow id="Framework Storage" anchor="bottom" secondary="true" doNotActivateOnStart="true"
+                factoryClass="org.hyperskill.academy.learning.framework.debug.FrameworkStorageToolWindowFactory"
+                icon="AllIcons.Vcs.Branch"/>
 
     <!-- should be last, otherwise project tree will be changed with GradleTreeStructureProvider -->
     <highlightErrorFilter implementation="org.hyperskill.academy.learning.editor.EduHighlightErrorFilter"/>

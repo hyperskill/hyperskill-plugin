@@ -80,6 +80,41 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
     return if (hasFileBasedStorage()) getFileBasedStorage().getHeadSnapshot() else null
   }
 
+  /**
+   * Get all ref IDs in the storage.
+   */
+  fun getAllRefIds(): List<Int> {
+    return if (hasFileBasedStorage()) getFileBasedStorage().getAllRefIds() else emptyList()
+  }
+
+  /**
+   * Get information about all refs in the storage.
+   */
+  fun getAllRefs(): List<FileBasedFrameworkStorage.RefInfo> {
+    return if (hasFileBasedStorage()) getFileBasedStorage().getAllRefs() else emptyList()
+  }
+
+  /**
+   * Get commit by hash.
+   */
+  fun getCommit(hash: String): FileBasedFrameworkStorage.Commit? {
+    return if (hasFileBasedStorage()) {
+      try {
+        getFileBasedStorage().getCommit(hash)
+      } catch (e: Exception) {
+        LOG.warn("Failed to get commit $hash", e)
+        null
+      }
+    } else null
+  }
+
+  /**
+   * Resolve ref ID to commit hash.
+   */
+  fun resolveRef(refId: Int): String? {
+    return if (hasFileBasedStorage()) getFileBasedStorage().resolveRef(refId) else null
+  }
+
   var isDisposed: Boolean = false
     private set
 
