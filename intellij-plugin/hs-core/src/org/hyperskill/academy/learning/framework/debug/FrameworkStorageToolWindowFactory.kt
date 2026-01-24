@@ -6,15 +6,14 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.ColoredTreeCellRenderer
+import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
 import org.hyperskill.academy.learning.StudyTaskManager
@@ -23,16 +22,15 @@ import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.impl.FrameworkStorage
 import org.hyperskill.academy.learning.framework.storage.FileBasedFrameworkStorage
 import java.awt.BorderLayout
+import java.awt.Component
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.swing.*
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.DefaultTreeModel
 
 /**
  * ToolWindow for debugging Framework Storage.
- * Shows the commit tree with refs (stages) and HEAD.
+ * Shows the commit list like VCS log with refs (stages) and HEAD.
  * Only visible in internal/development mode.
  */
 class FrameworkStorageToolWindowFactory : ToolWindowFactory, DumbAware {
@@ -41,45 +39,55 @@ class FrameworkStorageToolWindowFactory : ToolWindowFactory, DumbAware {
     if (!project.isEduProject()) return
 
     val panel = FrameworkStoragePanel(project)
-    val content = toolWindow.contentManager.factory.createContent(panel, "Commit Tree", false)
+    val content = toolWindow.contentManager.factory.createContent(panel, "Commits", false)
     content.setDisposer(panel)
     toolWindow.contentManager.addContent(content)
   }
 
   override fun shouldBeAvailable(project: Project): Boolean {
-    // Only show in internal mode and for edu projects
     return ApplicationManager.getApplication().isInternal && project.isEduProject()
   }
 }
 
 /**
- * Panel displaying the Framework Storage commit tree.
- * Automatically refreshes when storage changes.
+ * Panel displaying the Framework Storage commits like VCS log.
  */
 class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout()), Disposable {
 
-  private val tree: Tree
-  private val rootNode = DefaultMutableTreeNode("Framework Storage")
-  private val treeModel = DefaultTreeModel(rootNode)
-  private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+  private val listModel = DefaultListModel<CommitEntry>()
+  private val commitList = JBList(listModel)
+  private val dateFormat = SimpleDateFormat("dd MMM yyyy HH:mm:ss")
   private var autoRefresh = true
 
-  init {
-    tree = Tree(treeModel)
-    tree.isRootVisible = true
-    tree.cellRenderer = CommitTreeCellRenderer()
+  // Header labels
+  private val storageInfoLabel = JLabel()
+  private val headInfoLabel = JLabel()
 
-    val scrollPane = JBScrollPane(tree)
+  init {
+    commitList.cellRenderer = CommitListCellRenderer()
+    commitList.fixedCellHeight = 28
+
+    val scrollPane = JBScrollPane(commitList)
     scrollPane.border = JBUI.Borders.empty()
 
-    // Toolbar with refresh button and auto-refresh toggle
+    // Header panel with storage info
+    val headerPanel = JPanel().apply {
+      layout = BoxLayout(this, BoxLayout.Y_AXIS)
+      border = JBUI.Borders.empty(8, 8, 4, 8)
+
+      add(storageInfoLabel)
+      add(Box.createVerticalStrut(2))
+      add(headInfoLabel)
+    }
+
+    // Toolbar
     val toolbar = JPanel().apply {
       layout = BoxLayout(this, BoxLayout.X_AXIS)
       border = JBUI.Borders.empty(4)
 
       val refreshButton = JButton("Refresh").apply {
         icon = AllIcons.Actions.Refresh
-        addActionListener { refreshTree() }
+        addActionListener { refreshList() }
       }
       add(refreshButton)
 
@@ -93,138 +101,108 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       add(Box.createHorizontalGlue())
     }
 
-    add(toolbar, BorderLayout.NORTH)
+    val topPanel = JPanel(BorderLayout()).apply {
+      add(toolbar, BorderLayout.NORTH)
+      add(headerPanel, BorderLayout.CENTER)
+    }
+
+    add(topPanel, BorderLayout.NORTH)
     add(scrollPane, BorderLayout.CENTER)
 
-    // Subscribe to storage changes
     subscribeToStorageChanges()
-
-    refreshTree()
+    refreshList()
   }
 
   private fun subscribeToStorageChanges() {
     val connection = project.messageBus.connect(this)
     connection.subscribe(FrameworkStorageListener.TOPIC, object : FrameworkStorageListener {
       override fun snapshotSaved(refId: Int, commitHash: String) {
-        if (autoRefresh) {
-          invokeLater { refreshTree() }
-        }
+        if (autoRefresh) invokeLater { refreshList() }
       }
 
       override fun headUpdated(refId: Int) {
-        if (autoRefresh) {
-          invokeLater { refreshTree() }
-        }
+        if (autoRefresh) invokeLater { refreshList() }
       }
     })
   }
 
-  fun refreshTree() {
-    rootNode.removeAllChildren()
+  fun refreshList() {
+    listModel.clear()
 
     val storagePath = Paths.get(FileUtil.join(project.basePath!!, Project.DIRECTORY_STORE_FOLDER, "frameworkLessonHistory", "storage"))
     val storage = try {
       FrameworkStorage(storagePath)
     } catch (e: Exception) {
-      rootNode.add(DefaultMutableTreeNode(ErrorNode("Failed to open storage: ${e.message}")))
-      treeModel.reload()
+      storageInfoLabel.text = "Error: ${e.message}"
+      headInfoLabel.text = ""
       return
     }
 
     try {
-      // Add storage info
       val version = storage.version
-      val head = storage.head
-      val headCommit = storage.getHeadCommit()
+      val headRefId = storage.head
+      val headCommitHash = storage.getHeadCommit()
 
-      val infoNode = DefaultMutableTreeNode(InfoNode("Storage v$version"))
-      rootNode.add(infoNode)
-
-      // Add HEAD info
-      val headNode = if (head != -1) {
-        DefaultMutableTreeNode(HeadNode(head, headCommit?.take(8) ?: "???"))
+      storageInfoLabel.text = "Storage v$version"
+      headInfoLabel.text = if (headRefId != -1) {
+        "HEAD → ref/$headRefId (${headCommitHash?.take(8) ?: "???"})"
       } else {
-        DefaultMutableTreeNode(HeadNode(-1, "not set"))
+        "HEAD: not set"
       }
-      rootNode.add(headNode)
 
-      // Get task names from course
       val taskNames = getTaskNames()
-
-      // Add refs (stages)
       val refs = storage.getAllRefs()
-      if (refs.isEmpty()) {
-        rootNode.add(DefaultMutableTreeNode(InfoNode("No refs yet")))
-      } else {
-        val refsNode = DefaultMutableTreeNode(InfoNode("Refs (${refs.size})"))
-        rootNode.add(refsNode)
 
-        // Build commit graph
-        val commitMap = mutableMapOf<String, MutableList<FileBasedFrameworkStorage.RefInfo>>()
-        for (ref in refs) {
-          commitMap.getOrPut(ref.commitHash) { mutableListOf() }.add(ref)
+      // Build ref map: commitHash -> list of refs pointing to it
+      val refsByCommit = mutableMapOf<String, MutableList<RefLabel>>()
+      for (ref in refs) {
+        val label = RefLabel(
+          refId = ref.refId,
+          taskName = taskNames[ref.refId] ?: "Stage ${ref.refId}",
+          isHead = ref.isHead
+        )
+        refsByCommit.getOrPut(ref.commitHash) { mutableListOf() }.add(label)
+      }
+
+      // Collect all unique commits and sort by timestamp (newest first)
+      val allCommits = mutableMapOf<String, CommitData>()
+      val visited = mutableSetOf<String>()
+
+      fun collectCommits(hash: String, depth: Int = 0) {
+        if (hash in visited || depth > 50) return
+        visited.add(hash)
+
+        val commit = storage.getCommit(hash) ?: return
+        allCommits[hash] = CommitData(hash, commit)
+
+        for (parentHash in commit.parentHashes) {
+          collectCommits(parentHash, depth + 1)
         }
+      }
 
-        // Group refs by their commits and show tree
-        for (ref in refs.sortedBy { it.refId }) {
-          val taskName = taskNames[ref.refId] ?: "Stage ${ref.refId}"
-          val refNode = DefaultMutableTreeNode(
-            RefNode(
-              refId = ref.refId,
-              taskName = taskName,
-              commitHash = ref.commitHash,
-              isHead = ref.isHead
-            )
+      // Start from all refs
+      for (ref in refs) {
+        collectCommits(ref.commitHash)
+      }
+
+      // Sort by timestamp descending
+      val sortedCommits = allCommits.values.sortedByDescending { it.commit.timestamp }
+
+      // Add to list model
+      for (commitData in sortedCommits) {
+        val refs = refsByCommit[commitData.hash] ?: emptyList()
+        listModel.addElement(
+          CommitEntry(
+            hash = commitData.hash,
+            timestamp = commitData.commit.timestamp,
+            parentHashes = commitData.commit.parentHashes,
+            refs = refs
           )
-          refsNode.add(refNode)
-
-          // Add commit info as child
-          val commitNode = DefaultMutableTreeNode(
-            CommitNode(
-              hash = ref.commitHash,
-              snapshotHash = ref.commit.snapshotHash,
-              parentHashes = ref.commit.parentHashes,
-              timestamp = ref.commit.timestamp
-            )
-          )
-          refNode.add(commitNode)
-
-          // Add parent chain (up to 3 levels)
-          addParentCommits(storage, ref.commit.parentHashes, commitNode, 3)
-        }
+        )
       }
 
     } finally {
       storage.dispose()
-    }
-
-    treeModel.reload()
-    expandAll()
-  }
-
-  private fun addParentCommits(
-    storage: FrameworkStorage,
-    parentHashes: List<String>,
-    parentNode: DefaultMutableTreeNode,
-    depth: Int
-  ) {
-    if (depth <= 0 || parentHashes.isEmpty()) return
-
-    for (parentHash in parentHashes) {
-      val commit = storage.getCommit(parentHash)
-      if (commit != null) {
-        val commitNode = DefaultMutableTreeNode(
-          CommitNode(
-            hash = parentHash,
-            snapshotHash = commit.snapshotHash,
-            parentHashes = commit.parentHashes,
-            timestamp = commit.timestamp,
-            isParent = true
-          )
-        )
-        parentNode.add(commitNode)
-        addParentCommits(storage, commit.parentHashes, commitNode, depth - 1)
-      }
     }
   }
 
@@ -235,122 +213,93 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       if (lesson !is FrameworkLesson) continue
       for (task in lesson.taskList) {
         if (task.record != -1) {
-          result[task.record] = "${lesson.name} / ${task.name}"
+          result[task.record] = task.name
         }
       }
     }
     return result
   }
 
-  private fun expandAll() {
-    var row = 0
-    while (row < tree.rowCount) {
-      tree.expandRow(row)
-      row++
-    }
-  }
+  override fun dispose() {}
 
-  override fun dispose() {
-    // Connection is automatically disposed via Disposer
-  }
-
-  // Node types for the tree
-  data class InfoNode(val text: String)
-  data class ErrorNode(val text: String)
-  data class HeadNode(val refId: Int, val commitHash: String)
-  data class RefNode(val refId: Int, val taskName: String, val commitHash: String, val isHead: Boolean)
-  data class CommitNode(
+  // Data classes
+  data class RefLabel(val refId: Int, val taskName: String, val isHead: Boolean)
+  data class CommitData(val hash: String, val commit: FileBasedFrameworkStorage.Commit)
+  data class CommitEntry(
     val hash: String,
-    val snapshotHash: String,
-    val parentHashes: List<String>,
     val timestamp: Long,
-    val isParent: Boolean = false
+    val parentHashes: List<String>,
+    val refs: List<RefLabel>
   )
 
   /**
-   * Custom cell renderer for the commit tree.
+   * Cell renderer for commit list - styled like VCS log.
    */
-  inner class CommitTreeCellRenderer : ColoredTreeCellRenderer() {
+  inner class CommitListCellRenderer : ColoredListCellRenderer<CommitEntry>() {
 
     override fun customizeCellRenderer(
-      tree: JTree,
-      value: Any?,
+      list: JList<out CommitEntry>,
+      value: CommitEntry?,
+      index: Int,
       selected: Boolean,
-      expanded: Boolean,
-      leaf: Boolean,
-      row: Int,
       hasFocus: Boolean
     ) {
-      val node = (value as? DefaultMutableTreeNode)?.userObject ?: return
+      if (value == null) return
 
-      when (node) {
-        is String -> {
-          icon = AllIcons.Nodes.Folder
-          append(node, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
-        }
+      icon = AllIcons.Vcs.CommitNode
 
-        is InfoNode -> {
-          icon = AllIcons.General.Information
-          append(node.text, SimpleTextAttributes.GRAYED_ATTRIBUTES)
-        }
-
-        is ErrorNode -> {
-          icon = AllIcons.General.Error
-          append(node.text, SimpleTextAttributes.ERROR_ATTRIBUTES)
-        }
-
-        is HeadNode -> {
-          icon = AllIcons.Vcs.Branch
-          append("HEAD", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
-          append(" -> ", SimpleTextAttributes.GRAYED_ATTRIBUTES)
-          if (node.refId != -1) {
-            append("ref/${node.refId}", headRefAttributes())
-            append(" (${node.commitHash})", SimpleTextAttributes.GRAYED_ATTRIBUTES)
-          } else {
-            append(node.commitHash, SimpleTextAttributes.GRAYED_ATTRIBUTES)
-          }
-        }
-
-        is RefNode -> {
-          if (node.isHead) {
-            icon = AllIcons.Debugger.Db_set_breakpoint
-            append("* ", headRefAttributes())
-          } else {
-            icon = AllIcons.Vcs.BranchNode
-          }
-          append("ref/${node.refId}", if (node.isHead) headRefAttributes() else refAttributes())
+      // Refs (branches/tags) - shown first like in git log
+      for (ref in value.refs) {
+        if (ref.isHead) {
+          append(" HEAD ", headBadgeAttributes())
           append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
-          append(node.taskName, SimpleTextAttributes.REGULAR_ATTRIBUTES)
-          append(" [${node.commitHash.take(8)}]", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
+        append(" ${ref.taskName} ", if (ref.isHead) headRefBadgeAttributes() else refBadgeAttributes())
+        append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+      }
 
-        is CommitNode -> {
-          icon = if (node.isParent) AllIcons.Vcs.History else AllIcons.Vcs.CommitNode
-          val hashAttr = if (node.isParent) SimpleTextAttributes.GRAYED_ATTRIBUTES else commitHashAttributes()
-          append(node.hash.take(8), hashAttr)
-          append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
-          append(dateFormat.format(Date(node.timestamp)), SimpleTextAttributes.GRAYED_ATTRIBUTES)
-          if (node.parentHashes.isNotEmpty()) {
-            append(" <- ", SimpleTextAttributes.GRAYED_ATTRIBUTES)
-            append(node.parentHashes.joinToString(", ") { it.take(8) }, SimpleTextAttributes.GRAYED_ATTRIBUTES)
-          }
+      // Commit hash
+      append(value.hash.take(8), commitHashAttributes())
+      append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+
+      // Timestamp
+      append(dateFormat.format(Date(value.timestamp)), SimpleTextAttributes.GRAYED_ATTRIBUTES)
+
+      // Parent info
+      if (value.parentHashes.isNotEmpty()) {
+        append("  ←", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+        for (parent in value.parentHashes) {
+          append(" ${parent.take(7)}", parentHashAttributes())
         }
       }
     }
 
-    private fun headRefAttributes() = SimpleTextAttributes(
+    private fun headBadgeAttributes() = SimpleTextAttributes(
       SimpleTextAttributes.STYLE_BOLD,
-      JBColor.namedColor("Git.Branch.Current", JBColor(0x1A7F37, 0x3FB950))
+      JBColor.namedColor("Git.Log.Ref.LocalBranch", JBColor(0xFFFFFF, 0xFFFFFF)),
+      JBColor.namedColor("Git.Log.Ref.LocalBranch.bg", JBColor(0x9065AF, 0xB07FCC))
     )
 
-    private fun refAttributes() = SimpleTextAttributes(
+    private fun headRefBadgeAttributes() = SimpleTextAttributes(
+      SimpleTextAttributes.STYLE_BOLD,
+      JBColor.namedColor("Git.Log.Ref.LocalBranch", JBColor(0xFFFFFF, 0xFFFFFF)),
+      JBColor.namedColor("Git.Log.Ref.LocalBranch.bg", JBColor(0x1A7F37, 0x3FB950))
+    )
+
+    private fun refBadgeAttributes() = SimpleTextAttributes(
       SimpleTextAttributes.STYLE_PLAIN,
-      JBColor.namedColor("Git.Branch", JBColor(0x6E7781, 0x8B949E))
+      JBColor.namedColor("Git.Log.Ref.RemoteBranch", JBColor(0xFFFFFF, 0xFFFFFF)),
+      JBColor.namedColor("Git.Log.Ref.RemoteBranch.bg", JBColor(0x6E7781, 0x6E7781))
     )
 
     private fun commitHashAttributes() = SimpleTextAttributes(
       SimpleTextAttributes.STYLE_PLAIN,
       JBColor.namedColor("Git.Commit.Hash", JBColor(0xCF222E, 0xF85149))
+    )
+
+    private fun parentHashAttributes() = SimpleTextAttributes(
+      SimpleTextAttributes.STYLE_PLAIN,
+      JBColor.namedColor("Git.Commit.Hash.Muted", JBColor(0x8B949E, 0x8B949E))
     )
   }
 }
