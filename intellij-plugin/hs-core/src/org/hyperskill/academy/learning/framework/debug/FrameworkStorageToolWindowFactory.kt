@@ -105,6 +105,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
   // All commits data for filtering
   private var allCommitEntries: List<CommitEntry> = emptyList()
   private var commitsByRef: Map<Int, Set<String>> = emptyMap() // refId -> reachable commit hashes
+  private var lastKnownHeadRefId: Int = -1 // Track HEAD to detect changes
 
   init {
     setupCommitList()
@@ -357,6 +358,9 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     isUpdatingStageComboBox = true
     try {
       val previousSelection = stageComboBox.selectedItem as? StageItem
+      val headChanged = lastKnownHeadRefId != headRefId && lastKnownHeadRefId != -1
+      lastKnownHeadRefId = headRefId
+
       stageComboBox.removeAllItems()
 
       // Add "All" option
@@ -395,11 +399,12 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         stageComboBox.addItem(item)
       }
 
-      // Select HEAD stage by default, or restore previous selection
+      // If HEAD changed, follow it; otherwise restore previous selection
       val itemToSelect = when {
+        headChanged -> stageItems.find { it.isHead } ?: StageItem.All
+        previousSelection == StageItem.All -> StageItem.All
         previousSelection != null && stageItems.any { it.refId == (previousSelection as? StageItem.Stage)?.refId } ->
           stageItems.find { it.refId == (previousSelection as? StageItem.Stage)?.refId }
-        previousSelection == StageItem.All -> StageItem.All
         else -> stageItems.find { it.isHead } ?: stageItems.firstOrNull { it.hasStorage } ?: StageItem.All
       }
       stageComboBox.selectedItem = itemToSelect
