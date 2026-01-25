@@ -32,6 +32,7 @@ import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.propagateFilesOnNavigation
 import org.hyperskill.academy.learning.framework.storage.Change
+import org.hyperskill.academy.learning.framework.ui.PropagationConflictDialog
 import org.hyperskill.academy.learning.framework.storage.UserChanges
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.stepik.PyCharmStepOptions
@@ -170,6 +171,45 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // No-op: With snapshot-based storage, we don't need to update change types.
     // We store full snapshots and calculate diffs on-the-fly when needed.
     // The diff calculation uses the current initial state, so it always produces correct change types.
+  }
+
+  override fun addNewFilesToSnapshot(task: Task, newFiles: Map<String, String>) {
+    if (newFiles.isEmpty()) return
+
+    require(task.lesson is FrameworkLesson) {
+      "Only framework task snapshots can be updated"
+    }
+
+    val ref = task.storageRef()
+
+    // Only update if snapshot exists (user visited this task before)
+    if (!storage.hasRef(ref)) {
+      LOG.info("addNewFilesToSnapshot: No snapshot exists for task '${task.name}' (ref=$ref), skipping")
+      return
+    }
+
+    try {
+      // Get current snapshot
+      val currentSnapshot = storage.getSnapshot(ref)
+
+      // Add only files that don't exist in the snapshot
+      val filesToAdd = newFiles.filterKeys { it !in currentSnapshot }
+      if (filesToAdd.isEmpty()) {
+        LOG.info("addNewFilesToSnapshot: All new files already exist in snapshot for task '${task.name}'")
+        return
+      }
+
+      // Merge: existing snapshot + new files
+      val mergedSnapshot = currentSnapshot + filesToAdd
+
+      // Save updated snapshot
+      val message = "Add ${filesToAdd.size} new template files from server"
+      storage.saveSnapshot(ref, mergedSnapshot, null, message)
+      LOG.info("addNewFilesToSnapshot: Added ${filesToAdd.size} new files to snapshot for task '${task.name}': ${filesToAdd.keys}")
+    }
+    catch (e: IOException) {
+      LOG.error("Failed to add new files to snapshot for task '${task.name}'", e)
+    }
   }
 
   override fun getChangesTimestamp(task: Task): Long {
@@ -342,13 +382,21 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // Track if merge commit was created (to skip redundant snapshot save in step 10)
     var mergeCommitCreated = false
 
-    val changes = if (needsMerge) {
-      mergeCommitCreated = true // Merge commit will be created in calculatePropagationChanges
-      calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict, targetHasStorage, currentRef, targetRef)
-    }
-    else {
-      propagationActive = null // No propagation happening, reset for next navigation
-      calculateChanges(currentState, targetState)
+    val changes = when {
+      needsMerge -> {
+        mergeCommitCreated = true // Merge commit will be created in calculatePropagationChanges
+        calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict, targetHasStorage, currentRef, targetRef)
+      }
+      // First visit to new stage (forward navigation with propagation enabled):
+      // Keep all current files and add only NEW files from target templates
+      !targetHasStorage && taskIndexDelta > 0 && lesson.propagateFilesOnNavigation -> {
+        LOG.info("First visit to '${targetTask.name}': propagating current state + adding new template files")
+        calculateFirstVisitChanges(currentState, targetState, targetTask)
+      }
+      else -> {
+        propagationActive = null // No propagation happening, reset for next navigation
+        calculateChanges(currentState, targetState)
+      }
     }
 
     // 7. Apply difference between latest states of current and target tasks on local FS
@@ -753,31 +801,27 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     // Target has saved state AND content differs - ask user before overwriting
-    val keepConflictingChanges = if (showDialogIfConflict) {
+    val keepChanges = if (showDialogIfConflict) {
       val currentTaskName = "${currentTask.getUIName()} ${currentTask.index}"
       val targetTaskName = "${targetTask.getUIName()} ${targetTask.index}"
-      val message = EduCoreBundle.message(
-        "framework.lesson.changes.conflict.message", currentTaskName, targetTaskName, targetTaskName,
-        currentTaskName
-      )
-      Messages.showYesNoDialog(
+      val result = PropagationConflictDialog.show(
         project,
-        message,
-        EduCoreBundle.message("framework.lesson.changes.conflicting.changes.title"),
-        EduCoreBundle.message("framework.lesson.changes.conflicting.changes.keep"),
-        EduCoreBundle.message("framework.lesson.changes.conflicting.changes.replace"),
-        null
+        currentTaskName,
+        targetTaskName,
+        newCurrentPropagatableFilesState,
+        newTargetPropagatableFilesState
       )
+      result == PropagationConflictDialog.Result.KEEP
     }
     else {
       // When dialog is suppressed, default to Keep (preserve target's content).
       // This is the safest default for automated scenarios (e.g., lesson updates).
       // For project open, the caller should pass showDialogIfConflict=true to let user decide.
       LOG.info("Dialog suppressed, using Keep to preserve target content for '${targetTask.name}'")
-      Messages.YES
+      true
     }
 
-    return if (keepConflictingChanges == Messages.YES) {
+    return if (keepChanges) {
       // User chose Keep - create merge commit with target's content
       // This records that we "merged" but kept our version (like git merge with "ours" strategy)
       propagationActive = false
@@ -805,6 +849,51 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       }
       calculateCurrentTaskChanges()
     }
+  }
+
+  /**
+   * Calculates changes for first visit to a new stage (forward navigation without existing snapshot).
+   *
+   * The key difference from [calculateChanges]:
+   * - For propagatable files: keep user's current state, only ADD new files from target templates
+   * - For non-propagatable files: use target templates (user couldn't modify them anyway)
+   *
+   * This preserves user's code while adding any new template files the author added for this stage.
+   *
+   * @param currentState Current propagatable files from disk (user's code)
+   * @param targetState Target templates (all visible non-test files from target task)
+   * @param targetTask The task we're navigating to (used to determine file propagation status)
+   */
+  private fun calculateFirstVisitChanges(
+    currentState: FLTaskState,
+    targetState: FLTaskState,
+    targetTask: Task
+  ): UserChanges {
+    val changes = mutableListOf<Change>()
+
+    for ((path, text) in targetState) {
+      val taskFile = targetTask.taskFiles[path]
+      val isPropagatable = taskFile?.shouldBePropagated() ?: true
+
+      if (isPropagatable) {
+        // Propagatable files: only add if NEW (not in current state)
+        // Files in both: keep current (no change)
+        // Files in current but not target: keep (no removal)
+        if (path !in currentState) {
+          LOG.info("First visit: adding new propagatable file '$path'")
+          changes += Change.PropagateLearnerCreatedTaskFile(path, text)
+        }
+      }
+      else {
+        // Non-propagatable files (e.g., read-only reference files):
+        // Always use target version since user couldn't modify them
+        LOG.info("First visit: adding non-propagatable file '$path'")
+        changes += Change.AddFile(path, text)
+      }
+    }
+
+    LOG.info("First visit changes: ${changes.size} changes (new files)")
+    return UserChanges(changes)
   }
 
   private fun getUserChangesFromFiles(initialState: FLTaskState, taskDir: VirtualFile): UserChanges {
@@ -923,6 +1012,27 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         LOG.info("Task '${task.name}' has no storage data, saving templates as initial snapshot")
         saveExternalChanges(task, cachedTemplates)
       }
+    }
+  }
+
+  override fun updateOriginalTemplateFiles(task: Task) {
+    // Force update the cache, used when task files are updated from remote server
+    // (e.g., during course update). Unlike storeOriginalTemplateFiles, this WILL overwrite.
+    LOG.info("Force updating template files cache for task '${task.name}' (step ${task.id})")
+
+    val templateFiles = task.taskFiles.filterValues { taskFile ->
+      taskFile.isVisible && !taskFile.isTestFile
+    }
+
+    if (templateFiles.isNotEmpty()) {
+      val cachedTemplates = templateFiles.mapValues { (_, taskFile) ->
+        taskFile.contents.textualRepresentation
+      }
+      originalTemplateFilesCache[task.id] = cachedTemplates
+      val filesInfo = cachedTemplates.entries.joinToString { (name, content) ->
+        "$name:size=${content.length}"
+      }
+      LOG.info("Updated ${cachedTemplates.size} original template files for task '${task.name}' (step ${task.id}): [$filesInfo]")
     }
   }
 

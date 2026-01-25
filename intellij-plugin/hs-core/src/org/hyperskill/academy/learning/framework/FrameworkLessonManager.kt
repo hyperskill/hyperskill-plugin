@@ -15,6 +15,15 @@ interface FrameworkLessonManager : EduTestAware {
   fun saveExternalChanges(task: Task, externalState: Map<String, String>, submissionId: Long? = null)
   fun updateUserChanges(task: Task, newInitialState: Map<String, String>)
 
+  /**
+   * Adds new files to an existing snapshot without overwriting existing files.
+   * Used when server adds new template files to a task that user has already visited.
+   *
+   * @param task the task whose snapshot should be updated
+   * @param newFiles map of new file paths to their contents
+   */
+  fun addNewFilesToSnapshot(task: Task, newFiles: Map<String, String>)
+
   fun getChangesTimestamp(task: Task): Long
 
   /**
@@ -46,6 +55,15 @@ interface FrameworkLessonManager : EduTestAware {
    * @param task the task whose test files cache should be updated
    */
   fun updateOriginalTestFiles(task: Task)
+
+  /**
+   * Updates original template files cache for a task, overwriting any existing cached data.
+   * Use this method when updating template files from remote server (e.g., during course update).
+   * Unlike [storeOriginalTemplateFiles], this method WILL overwrite existing cache entries.
+   *
+   * @param task the task whose template files cache should be updated
+   */
+  fun updateOriginalTemplateFiles(task: Task)
 
   /**
    * Stores original template files (visible non-test files) from API for a task.

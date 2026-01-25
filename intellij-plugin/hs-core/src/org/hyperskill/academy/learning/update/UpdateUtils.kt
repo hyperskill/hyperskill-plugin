@@ -14,6 +14,7 @@ import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
+import org.hyperskill.academy.learning.framework.propagateFilesOnNavigation
 import org.hyperskill.academy.learning.invokeLater
 import org.hyperskill.academy.learning.navigation.NavigationUtils
 import org.hyperskill.academy.learning.toCourseInfoHolder
@@ -92,8 +93,24 @@ object UpdateUtils {
 
     val flm = FrameworkLessonManager.getInstance(project)
 
-    if (lesson.currentTaskIndex != task.index - 1) {
+    // Find new propagatable files added by author (exist in remote but not in local)
+    val newPropagatableFiles = remoteTask.taskFiles.filter { (path, taskFile) ->
+      path !in task.taskFiles && taskFile.shouldBePropagated()
+    }
+    if (newPropagatableFiles.isNotEmpty()) {
+      LOG.info("Found ${newPropagatableFiles.size} new template files from server: ${newPropagatableFiles.keys}")
+    }
+
+    val isCurrentTask = lesson.currentTaskIndex == task.index - 1
+
+    if (!isCurrentTask) {
       updateTaskFiles(task, remoteTask.nonPropagatableFiles, false)
+      // Add new propagatable files to model (not to disk - will be written when navigating)
+      if (newPropagatableFiles.isNotEmpty()) {
+        updateTaskFiles(task, newPropagatableFiles, false)
+        // Update storage snapshot with new files
+        flm.addNewFilesToSnapshot(task, newPropagatableFiles.mapValues { it.value.contents.textualRepresentation })
+      }
       flm.updateUserChanges(task, task.taskFiles.mapValues { (_, taskFile) -> taskFile.contents.textualRepresentation })
     }
     else {
@@ -102,17 +119,82 @@ object UpdateUtils {
       }
       else {
         updateTaskFiles(task, remoteTask.nonPropagatableFiles, true)
+        // Add new propagatable files to disk and model for current task
+        if (newPropagatableFiles.isNotEmpty()) {
+          updateTaskFiles(task, newPropagatableFiles, true)
+          // Storage will be updated on next auto-save
+        }
       }
     }
 
-    // Update the test files cache after updating task files from remote.
-    // This ensures the cache reflects the updated test files content (ALT-10961).
-    // Use updateOriginalTestFiles to force-update the cache (storeOriginalTestFiles won't overwrite).
+    // Propagate new files to all subsequent stages (only in non-template-based mode)
+    // This mimics what would happen if files existed from the beginning
+    if (newPropagatableFiles.isNotEmpty() && lesson.propagateFilesOnNavigation) {
+      propagateNewFilesToSubsequentStages(lesson, task, newPropagatableFiles, flm)
+    }
+
+    // Update the test and template files caches after updating task files from remote.
+    // This ensures the caches reflect the updated content (ALT-10961).
+    // Use update* methods to force-update the cache (store* methods won't overwrite).
     flm.updateOriginalTestFiles(task)
+    flm.updateOriginalTemplateFiles(task)
   }
 
   private val Task.nonPropagatableFiles: Map<String, TaskFile>
     get() = taskFiles.filter { !it.value.shouldBePropagated() }
+
+  /**
+   * Propagates new template files to all subsequent stages in the lesson.
+   * This mimics what would happen if files existed from the beginning -
+   * they would naturally propagate through all stages.
+   *
+   * @param lesson the framework lesson
+   * @param sourceTask the task where new files were added
+   * @param newFiles map of new propagatable files
+   * @param flm the framework lesson manager
+   */
+  private fun propagateNewFilesToSubsequentStages(
+    lesson: FrameworkLesson,
+    sourceTask: Task,
+    newFiles: Map<String, TaskFile>,
+    flm: FrameworkLessonManager
+  ) {
+    val sourceTaskIndex = sourceTask.index
+    val subsequentTasks = lesson.taskList.filter { it.index > sourceTaskIndex }
+
+    if (subsequentTasks.isEmpty()) {
+      LOG.info("No subsequent stages to propagate new files to")
+      return
+    }
+
+    LOG.info("Propagating ${newFiles.size} new files to ${subsequentTasks.size} subsequent stages")
+
+    val newFilesContent = newFiles.mapValues { it.value.contents.textualRepresentation }
+
+    for (subsequentTask in subsequentTasks) {
+      // Add files to task model (only if not already present)
+      var addedToModel = 0
+      for ((path, taskFile) in newFiles) {
+        if (path !in subsequentTask.taskFiles) {
+          // Create a copy of TaskFile for each subsequent task
+          val copiedTaskFile = TaskFile(taskFile.name, taskFile.contents).also {
+            it.isVisible = taskFile.isVisible
+            it.isEditable = taskFile.isEditable
+            it.isLearnerCreated = taskFile.isLearnerCreated
+          }
+          subsequentTask.addTaskFile(copiedTaskFile)
+          addedToModel++
+        }
+      }
+
+      // Add files to storage snapshot (only if snapshot exists)
+      flm.addNewFilesToSnapshot(subsequentTask, newFilesContent)
+
+      if (addedToModel > 0) {
+        LOG.info("Propagated $addedToModel new files to stage '${subsequentTask.name}'")
+      }
+    }
+  }
 
   private fun removeReadOnlyFlags(project: Project, taskFile: TaskFile) {
     val virtualTaskFile = taskFile.getVirtualFile(project) ?: return
