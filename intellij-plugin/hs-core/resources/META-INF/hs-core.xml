@@ -175,6 +175,12 @@
       <reference ref="HyperskillEducational.PreviousTask"/>
       <reference ref="HyperskillEducational.NextTask"/>
     </group>
+
+    <!-- Help menu actions -->
+    <action id="HyperskillEducational.CollectDiagnosticData"
+            class="org.hyperskill.academy.learning.actions.CollectDiagnosticDataAction">
+      <add-to-group group-id="HelpMenu" anchor="before" relative-to-action="About"/>
+    </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
