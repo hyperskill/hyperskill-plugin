@@ -92,11 +92,17 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
   private val diffPanel = JPanel(BorderLayout())
   private val diffPlaceholder = JBLabel("Select a file to view diff", SwingConstants.CENTER)
+  private val fileStatusLabel = JBLabel(" ").apply {
+    border = JBUI.Borders.empty(4, 8)
+    font = font.deriveFont(font.size2D - 1)
+  }
 
   private var autoRefresh = true
+  private var showAllFiles = false
   private var currentStorage: FrameworkStorage? = null
   private var currentCommitSnapshot: Map<String, FileEntry> = emptyMap()
   private var parentCommitSnapshot: Map<String, FileEntry> = emptyMap()
+  private var currentSelectedCommit: CommitEntry? = null
 
   // Stage selector
   private val stageComboBox = JComboBox<StageItem>()
@@ -180,8 +186,18 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       val fileChange = node?.userObject as? FileChange
       if (fileChange != null) {
         showDiff(fileChange)
+        updateFileStatus(fileChange)
+      } else {
+        fileStatusLabel.text = " "
       }
     })
+  }
+
+  private fun updateFileStatus(fileChange: FileChange) {
+    val visible = if (fileChange.isVisible) "visible" else "hidden"
+    val editable = if (fileChange.isEditable) "editable" else "read-only"
+    val propagatable = if (fileChange.isPropagatable) "propagatable" else "non-propagatable"
+    fileStatusLabel.text = "${fileChange.path}: $visible, $editable, $propagatable"
   }
 
   private fun setupDiffPanel() {
@@ -232,10 +248,21 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     // Middle panel: file tree
     val filesPanel = JPanel(BorderLayout()).apply {
       border = JBUI.Borders.customLine(JBColor.border(), 0, 1, 0, 1)
-      add(JBLabel("Changed Files").apply {
-        border = JBUI.Borders.empty(4, 8)
-      }, BorderLayout.NORTH)
+      val headerPanel = JPanel(BorderLayout()).apply {
+        add(JBLabel("Files").apply {
+          border = JBUI.Borders.empty(4, 8)
+        }, BorderLayout.WEST)
+        add(JCheckBox("All", showAllFiles).apply {
+          toolTipText = "Show all files in snapshot (not just changes)"
+          addActionListener {
+            showAllFiles = isSelected
+            refreshFileTree()
+          }
+        }, BorderLayout.EAST)
+      }
+      add(headerPanel, BorderLayout.NORTH)
       add(JBScrollPane(fileTree), BorderLayout.CENTER)
+      add(fileStatusLabel, BorderLayout.SOUTH)
     }
 
     // Right panel: diff
@@ -449,6 +476,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
   private fun onCommitSelected(entry: CommitEntry?) {
     clearFileTree()
     clearDiff()
+    currentSelectedCommit = entry
     if (entry == null) return
 
     val storage = currentStorage ?: return
@@ -465,16 +493,44 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
         } else emptyMap()
       } else emptyMap()
 
-      // Calculate changes
-      val changes = calculateChanges(parentCommitSnapshot, currentCommitSnapshot)
-
       // Populate file tree
-      populateFileTree(changes)
+      refreshFileTree()
 
     } catch (e: Exception) {
       fileTreeRoot.add(DefaultMutableTreeNode("Error: ${e.message}"))
       fileTreeModel.reload()
     }
+  }
+
+  private fun refreshFileTree() {
+    clearFileTree()
+    clearDiff()
+
+    if (currentCommitSnapshot.isEmpty()) return
+
+    val files = if (showAllFiles) {
+      // Show all files in snapshot
+      getAllFiles(currentCommitSnapshot)
+    } else {
+      // Show only changes
+      calculateChanges(parentCommitSnapshot, currentCommitSnapshot)
+    }
+
+    populateFileTree(files)
+  }
+
+  private fun getAllFiles(snapshot: Map<String, FileEntry>): List<FileChange> {
+    return snapshot.map { (path, entry) ->
+      FileChange(
+        path = path,
+        type = ChangeType.ADDED, // Use ADDED to show file content in diff
+        oldContent = null,
+        newContent = entry.content,
+        isVisible = entry.isVisible,
+        isEditable = entry.isEditable,
+        isPropagatable = entry.isPropagatable
+      )
+    }.sortedBy { it.path }
   }
 
   private fun loadSnapshot(storage: FrameworkStorage, snapshotHash: String): Map<String, FileEntry> {
@@ -487,7 +543,15 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     // Added files
     for ((path, entry) in newState) {
       if (path !in oldState) {
-        changes.add(FileChange(path, ChangeType.ADDED, null, entry.content))
+        changes.add(FileChange(
+          path = path,
+          type = ChangeType.ADDED,
+          oldContent = null,
+          newContent = entry.content,
+          isVisible = entry.isVisible,
+          isEditable = entry.isEditable,
+          isPropagatable = entry.isPropagatable
+        ))
       }
     }
 
@@ -495,14 +559,30 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     for ((path, newEntry) in newState) {
       val oldEntry = oldState[path]
       if (oldEntry != null && oldEntry.content != newEntry.content) {
-        changes.add(FileChange(path, ChangeType.MODIFIED, oldEntry.content, newEntry.content))
+        changes.add(FileChange(
+          path = path,
+          type = ChangeType.MODIFIED,
+          oldContent = oldEntry.content,
+          newContent = newEntry.content,
+          isVisible = newEntry.isVisible,
+          isEditable = newEntry.isEditable,
+          isPropagatable = newEntry.isPropagatable
+        ))
       }
     }
 
     // Deleted files
     for ((path, oldEntry) in oldState) {
       if (path !in newState) {
-        changes.add(FileChange(path, ChangeType.DELETED, oldEntry.content, null))
+        changes.add(FileChange(
+          path = path,
+          type = ChangeType.DELETED,
+          oldContent = oldEntry.content,
+          newContent = null,
+          isVisible = oldEntry.isVisible,
+          isEditable = oldEntry.isEditable,
+          isPropagatable = oldEntry.isPropagatable
+        ))
       }
     }
 
@@ -678,7 +758,10 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     val path: String,
     val type: ChangeType,
     val oldContent: String?,
-    val newContent: String?
+    val newContent: String?,
+    val isVisible: Boolean = true,
+    val isEditable: Boolean = true,
+    val isPropagatable: Boolean = true
   )
 
   /**
@@ -828,8 +911,34 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
             ChangeType.DELETED -> SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor(0xCF222E, 0xF85149))
           }
           append(fileName, attrs)
+
+          // Metadata badges
+          append("  ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+          if (!node.isVisible) {
+            append(" H ", hiddenBadgeAttributes())
+            append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+          }
+          if (!node.isEditable) {
+            append(" RO ", readOnlyBadgeAttributes())
+            append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+          }
+          if (!node.isPropagatable) {
+            append(" NP ", nonPropagatableBadgeAttributes())
+          }
         }
       }
     }
+
+    private fun hiddenBadgeAttributes() = SimpleTextAttributes(
+      SimpleTextAttributes.STYLE_BOLD, JBColor(0xFFFFFF, 0xFFFFFF), JBColor(0x6E7781, 0x8B949E)
+    )
+
+    private fun readOnlyBadgeAttributes() = SimpleTextAttributes(
+      SimpleTextAttributes.STYLE_BOLD, JBColor(0xFFFFFF, 0xFFFFFF), JBColor(0x0969DA, 0x58A6FF)
+    )
+
+    private fun nonPropagatableBadgeAttributes() = SimpleTextAttributes(
+      SimpleTextAttributes.STYLE_BOLD, JBColor(0xFFFFFF, 0xFFFFFF), JBColor(0xBF8700, 0xD29922)
+    )
   }
 }

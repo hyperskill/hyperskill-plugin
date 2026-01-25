@@ -7,6 +7,7 @@ import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.LessonContainer
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.shouldBePropagated
+import org.hyperskill.academy.learning.courseFormat.ext.testDirs
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.framework.storage.Change
@@ -136,30 +137,40 @@ fun FLTaskState.toFileEntries(): Map<String, FileEntry> =
 
 /**
  * Converts a content-only state map to FileEntry map, extracting metadata from task's TaskFile objects.
- * Only includes metadata for files that have non-default values to save space.
+ *
+ * Metadata resolution priority:
+ * 1. Path patterns (test files are ALWAYS non-visible, non-propagatable)
+ * 2. task.taskFiles (from API)
+ * 3. Default metadata (visible, editable, propagatable)
  *
  * @param task The task containing TaskFile objects with metadata
- * @param cachedNonPropagatableFiles Optional cached non-propagatable files with metadata
+ * @param cachedNonPropagatableFiles Deprecated, not used anymore
  */
+@Suppress("UNUSED_PARAMETER")
 fun FLTaskState.toFileEntries(
   task: Task,
   cachedNonPropagatableFiles: Map<String, TaskFile>? = null
-): Map<String, FileEntry> = mapValues { (path, content) ->
-  // Try to get metadata from cached non-propagatable files first
-  val cachedTaskFile = cachedNonPropagatableFiles?.get(path)
-  val taskFile = cachedTaskFile ?: task.taskFiles[path]
+): Map<String, FileEntry> {
+  val testDirs = task.testDirs
+  return mapValues { (path, content) ->
+    // 1. Path patterns have highest priority - test files are ALWAYS hidden
+    if (FileEntry.isTestFilePath(path, testDirs)) {
+      return@mapValues FileEntry.create(content, visible = false, editable = false, propagatable = false)
+    }
 
-  if (taskFile != null) {
-    FileEntry.create(
-      content = content,
-      visible = taskFile.isVisible,
-      editable = taskFile.isEditable,
-      propagatable = taskFile.shouldBePropagated()
-      // highlightLevel uses default "ALL_PROBLEMS" as TaskFile doesn't have this property
-    )
-  } else {
-    // No metadata available, use defaults
-    FileEntry(content)
+    // 2. Check task.taskFiles - metadata from API
+    val taskFile = task.taskFiles[path]
+    if (taskFile != null) {
+      FileEntry.create(
+        content = content,
+        visible = taskFile.isVisible,
+        editable = taskFile.isEditable,
+        propagatable = taskFile.shouldBePropagated()
+      )
+    } else {
+      // 3. Default: user file
+      FileEntry(content)
+    }
   }
 }
 

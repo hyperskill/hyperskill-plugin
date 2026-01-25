@@ -43,5 +43,50 @@ data class FileEntry(
       if (highlightLevel != "ALL_PROBLEMS") metadata["highlightLevel"] = highlightLevel
       return FileEntry(content, metadata)
     }
+
+    /**
+     * Creates a FileEntry by inferring metadata from file path.
+     * Test files (in test directories or matching test patterns) are marked as
+     * non-visible, non-editable, and non-propagatable.
+     * All other files use default metadata (visible, editable, propagatable).
+     *
+     * @param content The file content
+     * @param path The file path relative to task directory
+     * @param testDirs List of test directory names (e.g., ["test", "tests"])
+     */
+    fun createFromPath(
+      content: String,
+      path: String,
+      testDirs: List<String> = emptyList()
+    ): FileEntry {
+      val isTestFile = isTestFilePath(path, testDirs)
+      return if (isTestFile) {
+        create(content, visible = false, editable = false, propagatable = false)
+      } else {
+        FileEntry(content) // defaults: visible=true, editable=true, propagatable=true
+      }
+    }
+
+    /**
+     * Checks if a file path represents a test file based on directory and naming patterns.
+     */
+    fun isTestFilePath(path: String, testDirs: List<String> = emptyList()): Boolean {
+      // Check if file is in a test directory
+      val isInTestDir = testDirs.any { testDir ->
+        path.startsWith("$testDir/") || path == testDir
+      }
+      if (isInTestDir) return true
+
+      // Check for common test file patterns
+      val fileName = path.substringAfterLast('/')
+      return fileName == "tests.py" ||
+             fileName.startsWith("test_") ||
+             fileName.endsWith("_test.py") ||
+             fileName.endsWith("Test.java") ||
+             fileName.endsWith("Test.kt") ||
+             fileName.endsWith("Tests.java") ||
+             fileName.endsWith("Tests.kt") ||
+             fileName == "__init__.py" && (path.contains("/test") || path.startsWith("test"))
+    }
   }
 }

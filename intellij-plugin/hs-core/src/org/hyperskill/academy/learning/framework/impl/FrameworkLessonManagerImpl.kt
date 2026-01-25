@@ -1355,49 +1355,71 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     userFilesFromDisk: FLTaskState
   ): Map<String, FileEntry> {
     val result = HashMap<String, FileEntry>()
-    val cachedNonPropagatableFiles = originalNonPropagatableFilesCache[task.id]
+    val testDirs = task.testDirs
 
-    // Add user files with metadata from task.taskFiles
-    for ((path, content) in userFilesFromDisk) {
-      val taskFile = task.taskFiles[path]
-      result[path] = if (taskFile != null) {
-        FileEntry.create(
-          content = content,
-          visible = taskFile.isVisible,
-          editable = taskFile.isEditable,
-          propagatable = taskFile.shouldBePropagated()
-        )
-      } else {
-        // Learner-created file, use defaults
-        FileEntry(content)
-      }
+    // Try to get existing snapshot for metadata preservation
+    val existingSnapshot = try {
+      val ref = task.storageRef()
+      if (storage.hasRef(ref)) storage.getSnapshot(ref) else null
+    } catch (e: Exception) {
+      LOG.warn("buildFullSnapshotState: failed to get existing snapshot", e)
+      null
     }
 
-    // Add non-propagatable files from cache (not from disk - disk may have wrong stage's files)
-    if (cachedNonPropagatableFiles != null) {
-      for ((path, taskFile) in cachedNonPropagatableFiles) {
-        result[path] = FileEntry.create(
-          content = taskFile.contents.textualRepresentation,
-          visible = taskFile.isVisible,
-          editable = taskFile.isEditable,
-          propagatable = taskFile.shouldBePropagated()
-        )
-      }
-    } else {
-      // Fallback: use non-propagatable files from task model (may be stale but better than nothing)
-      for ((path, taskFile) in task.taskFiles) {
-        if (!taskFile.shouldBePropagated() && path !in result) {
-          result[path] = FileEntry.create(
-            content = taskFile.contents.textualRepresentation,
-            visible = taskFile.isVisible,
-            editable = taskFile.isEditable,
-            propagatable = taskFile.shouldBePropagated()
-          )
-        }
+    // Add user files with metadata from: 1) existing snapshot, 2) task.taskFiles, 3) path patterns
+    for ((path, content) in userFilesFromDisk) {
+      result[path] = resolveFileEntryMetadata(path, content, existingSnapshot, task, testDirs)
+    }
+
+    // Add non-propagatable files from task.taskFiles (content from API, metadata resolved)
+    for ((path, taskFile) in task.taskFiles) {
+      if (!taskFile.shouldBePropagated() && path !in result) {
+        val content = taskFile.contents.textualRepresentation
+        result[path] = resolveFileEntryMetadata(path, content, existingSnapshot, task, testDirs)
       }
     }
 
     return result
+  }
+
+  /**
+   * Resolves metadata for a file entry using the following priority:
+   * 1. Path patterns (test files are ALWAYS non-visible, non-propagatable)
+   * 2. task.taskFiles (from API)
+   * 3. Existing snapshot (preserves user's storage state for non-test files)
+   * 4. Default metadata (visible, editable, propagatable)
+   */
+  private fun resolveFileEntryMetadata(
+    path: String,
+    content: String,
+    existingSnapshot: Map<String, FileEntry>?,
+    task: Task,
+    testDirs: List<String>
+  ): FileEntry {
+    // 1. Path patterns have highest priority - test files are ALWAYS hidden/non-propagatable
+    if (FileEntry.isTestFilePath(path, testDirs)) {
+      return FileEntry.create(content, visible = false, editable = false, propagatable = false)
+    }
+
+    // 2. Check task.taskFiles - metadata from API (author's intent)
+    val taskFile = task.taskFiles[path]
+    if (taskFile != null) {
+      return FileEntry.create(
+        content = content,
+        visible = taskFile.isVisible,
+        editable = taskFile.isEditable,
+        propagatable = taskFile.shouldBePropagated()
+      )
+    }
+
+    // 3. Check existing snapshot - preserves metadata for user files
+    val existingEntry = existingSnapshot?.get(path)
+    if (existingEntry != null) {
+      return FileEntry(content, existingEntry.metadata)
+    }
+
+    // 4. Default: user file (visible, editable, propagatable)
+    return FileEntry(content)
   }
 
   private fun FLTaskState.splitByKey(predicate: (String) -> Boolean): Pair<FLTaskState, FLTaskState> {
