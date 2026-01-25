@@ -132,15 +132,19 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val parentRef = getParentRef(task)
     LOG.warn("saveExternalChanges: task='${task.name}', ref=$ref, submissionId=$submissionId, externalState.keys=${externalState.keys}")
 
-    // Filter external state to only include propagatable files (exclude test files, etc.)
+    // Filter external state to only include propagatable files (exclude test files from submission)
     val externalPropagatableFiles = externalState.split(task).first
     LOG.warn("saveExternalChanges: externalPropagatableFiles.keys=${externalPropagatableFiles.keys}")
 
-    // Save the API state as a snapshot
+    // Build full snapshot: user files from submission + test files from cache
+    val fullSnapshot = buildFullSnapshotState(task, externalPropagatableFiles)
+
+    // Save the full snapshot
     val submissionInfo = if (submissionId != null) " (submission #$submissionId)" else ""
     val message = "Load submission from server for '${task.name}'$submissionInfo"
     try {
-      storage.saveSnapshot(ref, externalPropagatableFiles, parentRef, message)
+      storage.saveSnapshot(ref, fullSnapshot, parentRef, message)
+      LOG.info("Saved full snapshot for external changes: ${fullSnapshot.size} files")
     }
     catch (e: IOException) {
       LOG.error("Failed to save solution for task `${task.name}`", e)
@@ -152,7 +156,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     if (legacyRefId != -1 && storage.hasLegacyChanges(legacyRefId)) {
       LOG.info("Migrating legacy changes for task '${task.name}' (legacyRefId=$legacyRefId)")
       try {
-        storage.applyLegacyChangesAndSave(ref, legacyRefId, externalPropagatableFiles, parentRef)
+        storage.applyLegacyChangesAndSave(ref, legacyRefId, fullSnapshot, parentRef)
       }
       catch (e: IOException) {
         LOG.error("Failed to apply legacy changes for task `${task.name}`", e)
@@ -327,10 +331,12 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // When navigating backward, the disk content belongs to the stage we're leaving,
     // not the stage we're going from. Saving it would corrupt the current stage's snapshot.
     if (taskIndexDelta > 0) {
+      // Build full snapshot: user files from disk + test files from cache
+      val fullSnapshot = buildFullSnapshotState(currentTask, currentPropagatableFiles)
       val navMessage = "Save changes before navigating from '${currentTask.name}' to '${targetTask.name}'"
       try {
-        storage.saveSnapshot(currentRef, currentPropagatableFiles, getParentRef(currentTask), navMessage)
-        LOG.info("Saved snapshot for current task '${currentTask.name}' (ref=$currentRef)")
+        storage.saveSnapshot(currentRef, fullSnapshot, getParentRef(currentTask), navMessage)
+        LOG.info("Saved full snapshot for current task '${currentTask.name}' (ref=$currentRef): ${fullSnapshot.size} files")
       }
       catch (e: IOException) {
         LOG.error("Failed to save snapshot for task `${currentTask.name}`", e)
@@ -428,12 +434,15 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // - Target without storage (first visit to this stage)
     // - Navigation without merge (ancestor check passed, no Keep/Replace dialog)
     if (taskIndexDelta > 0 && !mergeCommitCreated) {
-      val finalDiskState = getTaskStateFromFiles(targetState.keys, taskDir)
+      // Read user files from disk, then build full snapshot with test files
+      val userFileKeys = targetTask.allFiles.keys
+      val finalDiskState = getTaskStateFromFiles(userFileKeys, taskDir)
       val (finalPropagatableFiles, _) = finalDiskState.split(targetTask)
+      val fullSnapshot = buildFullSnapshotState(targetTask, finalPropagatableFiles)
       val message = "Navigate to '${targetTask.name}'"
       try {
-        storage.saveSnapshot(targetRef, finalPropagatableFiles, getParentRef(targetTask), message)
-        LOG.info("Saved snapshot for target task '${targetTask.name}' (ref=$targetRef)")
+        storage.saveSnapshot(targetRef, fullSnapshot, getParentRef(targetTask), message)
+        LOG.info("Saved full snapshot for target task '${targetTask.name}' (ref=$targetRef): ${fullSnapshot.size} files")
       }
       catch (e: IOException) {
         LOG.error("Failed to save snapshot for target task '${targetTask.name}'", e)
@@ -545,72 +554,25 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   /**
-   * Recreates test files (files with isLearnerCreated = false) from the cached task definition.
-   * These files are provided by the course author and should not be modified by students.
-   * We recreate them when navigating to a new task to ensure they match the task definition.
+   * Recreates test files from storage snapshot, cache, or API.
+   * Test files are provided by the course author and should not be modified by students.
    *
-   * IMPORTANT (ALT-10961): Only uses test files from [originalTestFilesCache] which is populated
-   * by [storeOriginalTestFiles] when fresh API data is received. Does NOT fall back to task.taskFiles
-   * because in framework lessons, task.taskFiles may be corrupted with test content from another stage
-   * (all stages share the same task directory on disk).
+   * Priority for getting test files:
+   * 1. Storage snapshot (if exists) - most reliable, persisted
+   * 2. In-memory cache - populated from API
+   * 3. API request - fresh data from server
+   * 4. task.taskFiles - last resort fallback
    *
    * @param currentTask The task we're navigating FROM (used to identify old test files to delete)
    * @param targetTask The task we're navigating TO (used to identify new test files to create)
    */
   private fun recreateTestFiles(project: Project, taskDir: VirtualFile, currentTask: Task, targetTask: Task) {
-    // Get old test files from current task cache to determine which ones need to be deleted
-    var cachedCurrentTestFiles = originalTestFilesCache[currentTask.id]
-    // Fallback to task.taskFiles for current task when cache is empty
-    if (cachedCurrentTestFiles == null) {
-      val taskTestDirs = currentTask.testDirs
-      cachedCurrentTestFiles = currentTask.taskFiles.filterValues { taskFile ->
-        !taskFile.isLearnerCreated && !taskFile.isVisible &&
-        taskTestDirs.any { testDir -> taskFile.name.startsWith("$testDir/") || taskFile.name == testDir }
-      }
-    }
-    val currentTestFileNames = cachedCurrentTestFiles.keys
+    // Get test files for current task (to know what to delete)
+    val currentTestFileNames = getTestFileNames(currentTask)
 
-    // ALT-10961: Only use cached test files from API to prevent using corrupted task.taskFiles
-    // Cache is populated by storeOriginalTestFiles() when fresh API data is received.
-    // DO NOT update cache from task.taskFiles here - it may contain test content from another stage
-    // due to framework lesson stages sharing the same task directory.
-    var cachedTargetTestFiles = originalTestFilesCache[targetTask.id]
-
-    if (cachedTargetTestFiles == null) {
-      LOG.warn("No cached test files for task '${targetTask.name}' (step ${targetTask.id}). Attempting to load from API...")
-      // Load synchronously to ensure files are available before recreating
-      if (ApplicationManager.getApplication().isDispatchThread) {
-        try {
-          ApplicationManager.getApplication().executeOnPooledThread<Unit> {
-            loadTestFilesFromApiSync(targetTask)
-          }.get()
-          cachedTargetTestFiles = originalTestFilesCache[targetTask.id]
-        } catch (e: Exception) {
-          LOG.warn("Failed to load test files from API for task '${targetTask.name}'", e)
-        }
-      } else {
-        cachedTargetTestFiles = loadTestFilesFromApi(targetTask)
-      }
-    }
-
-    // Fallback to task.taskFiles when cache is empty and API failed (e.g., in tests or offline mode)
-    // This is less reliable but better than not creating test files at all
-    if (cachedTargetTestFiles == null) {
-      LOG.warn("API also failed. Falling back to task.taskFiles for task '${targetTask.name}'")
-      val taskTestDirs = targetTask.testDirs
-      val testFilesFromTask = targetTask.taskFiles.filterValues { taskFile ->
-        !taskFile.isLearnerCreated && !taskFile.isVisible &&
-        taskTestDirs.any { testDir -> taskFile.name.startsWith("$testDir/") || taskFile.name == testDir }
-      }
-      if (testFilesFromTask.isNotEmpty()) {
-        cachedTargetTestFiles = testFilesFromTask
-        LOG.info("Using ${testFilesFromTask.size} test files from task.taskFiles for task '${targetTask.name}'")
-      }
-    }
-
-    // If target task has no test files (null or empty), we still need to delete old test files
-    val targetTestFiles: Collection<TaskFile> = cachedTargetTestFiles?.values ?: emptyList()
-    val targetTestFileNames = targetTestFiles.map { it.name }.toSet()
+    // Get test files for target task from storage, cache, or API
+    val targetTestFilesContent = getTestFilesContent(targetTask)
+    val targetTestFileNames = targetTestFilesContent.keys
 
     // Delete test files from current task that are not in target task
     val testFilesToDelete = currentTestFileNames - targetTestFileNames
@@ -654,33 +616,128 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     // Create new test files if target task has any
-    if (targetTestFiles.isNotEmpty()) {
-      // Log test files info for diagnostics (ALT-10961)
-      val filesInfo = targetTestFiles.joinToString { "${it.name}:${it.contents.textualRepresentation.hashCode()}" }
-      LOG.info("Recreating ${targetTestFiles.size} test files for task '${targetTask.name}' (step ${targetTask.id}): [$filesInfo]")
+    if (targetTestFilesContent.isNotEmpty()) {
+      val filesInfo = targetTestFilesContent.entries.joinToString { "${it.key}:${it.value.hashCode()}" }
+      LOG.info("Recreating ${targetTestFilesContent.size} test files for task '${targetTask.name}' (step ${targetTask.id}): [$filesInfo]")
 
-      for (taskFile in targetTestFiles) {
+      for ((filePath, content) in targetTestFilesContent) {
         try {
           // createChildFile handles write action internally via runInWriteActionAndWait
+          // Test files are always non-editable (read-only)
           val createdFile = GeneratorUtils.createChildFile(
-            project.toCourseInfoHolder(),
+            project,
             taskDir,
-            taskFile.name,
-            taskFile.contents,
-            taskFile.isEditable
+            filePath,
+            content,
+            false // isEditable = false for test files
           )
           if (createdFile == null) {
-            LOG.error("Failed to create test file ${taskFile.name} - createChildFile returned null")
+            LOG.error("Failed to create test file $filePath - createChildFile returned null")
           }
           else {
             LOG.info("Successfully created test file: ${createdFile.path}")
           }
         }
         catch (e: Exception) {
-          LOG.error("Exception while recreating test file ${taskFile.name} for task ${targetTask.name}", e)
+          LOG.error("Exception while recreating test file $filePath for task ${targetTask.name}", e)
         }
       }
     }
+  }
+
+  /**
+   * Gets test file names for a task (for deletion during navigation).
+   */
+  private fun getTestFileNames(task: Task): Set<String> {
+    // Try storage snapshot first
+    val ref = task.storageRef()
+    if (storage.hasRef(ref)) {
+      try {
+        val snapshot = storage.getSnapshot(ref)
+        val testDirs = task.testDirs
+        return snapshot.keys.filter { path ->
+          testDirs.any { testDir -> path.startsWith("$testDir/") || path == testDir } ||
+          path.contains("test", ignoreCase = true)
+        }.toSet()
+      } catch (e: IOException) {
+        LOG.warn("Failed to get snapshot for test file names", e)
+      }
+    }
+
+    // Fallback to cache
+    val cached = originalTestFilesCache[task.id]
+    if (cached != null) {
+      return cached.keys
+    }
+
+    // Fallback to task model
+    val testDirs = task.testDirs
+    return task.taskFiles.filterValues { taskFile ->
+      !taskFile.isLearnerCreated && !taskFile.isVisible &&
+      testDirs.any { testDir -> taskFile.name.startsWith("$testDir/") || taskFile.name == testDir }
+    }.keys
+  }
+
+  /**
+   * Gets test file content for a task from storage, cache, or API.
+   * Returns map of path -> content.
+   */
+  private fun getTestFilesContent(task: Task): Map<String, String> {
+    val testDirs = task.testDirs
+
+    // 1. Try storage snapshot first (most reliable)
+    val ref = task.storageRef()
+    if (storage.hasRef(ref)) {
+      try {
+        val snapshot = storage.getSnapshot(ref)
+        val testFiles = snapshot.filterKeys { path ->
+          testDirs.any { testDir -> path.startsWith("$testDir/") || path == testDir } ||
+          path.contains("test", ignoreCase = true)
+        }
+        if (testFiles.isNotEmpty()) {
+          LOG.info("Got ${testFiles.size} test files from storage snapshot for task '${task.name}'")
+          return testFiles
+        }
+      } catch (e: IOException) {
+        LOG.warn("Failed to get test files from snapshot", e)
+      }
+    }
+
+    // 2. Try in-memory cache
+    val cached = originalTestFilesCache[task.id]
+    if (cached != null) {
+      LOG.info("Got ${cached.size} test files from cache for task '${task.name}'")
+      return cached.mapValues { it.value.contents.textualRepresentation }
+    }
+
+    // 3. Try loading from API
+    LOG.info("No cached test files for task '${task.name}', loading from API...")
+    if (ApplicationManager.getApplication().isDispatchThread) {
+      try {
+        ApplicationManager.getApplication().executeOnPooledThread<Unit> {
+          loadTestFilesFromApiSync(task)
+        }.get()
+        val loaded = originalTestFilesCache[task.id]
+        if (loaded != null) {
+          return loaded.mapValues { it.value.contents.textualRepresentation }
+        }
+      } catch (e: Exception) {
+        LOG.warn("Failed to load test files from API for task '${task.name}'", e)
+      }
+    } else {
+      loadTestFilesFromApi(task)
+      val loaded = originalTestFilesCache[task.id]
+      if (loaded != null) {
+        return loaded.mapValues { it.value.contents.textualRepresentation }
+      }
+    }
+
+    // 4. Fallback to task.taskFiles
+    LOG.warn("All sources failed, falling back to task.taskFiles for task '${task.name}'")
+    return task.taskFiles.filterValues { taskFile ->
+      !taskFile.isLearnerCreated && !taskFile.isVisible &&
+      testDirs.any { testDir -> taskFile.name.startsWith("$testDir/") || taskFile.name == testDir }
+    }.mapValues { it.value.contents.textualRepresentation }
   }
 
   /**
@@ -1155,15 +1212,15 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val currentTask = lesson.currentTask() ?: return
     val taskDir = currentTask.getDir(project.courseDir) ?: return
 
-    // Get cached templates or fall back to task.allFiles
-    val initialFiles = originalTemplateFilesCache[currentTask.id] ?: currentTask.allFiles
-    if (initialFiles.isEmpty()) return
+    // Get user file keys (non-test files)
+    val userFileKeys = originalTemplateFilesCache[currentTask.id]?.keys ?: currentTask.allFiles.keys
+    if (userFileKeys.isEmpty()) return
 
-    // Read current disk state
-    val currentDiskState = getTaskStateFromFiles(initialFiles.keys, taskDir)
+    // Read current disk state (only user files)
+    val currentDiskState = getTaskStateFromFiles(userFileKeys, taskDir)
     val (propagatableFiles, _) = currentDiskState.split(currentTask)
 
-    // Check if there are actual changes compared to saved snapshot
+    // Check if there are actual changes compared to saved snapshot (compare only user files)
     val ref = currentTask.storageRef()
     val existingSnapshot = try {
       if (storage.hasRef(ref)) storage.getSnapshot(ref) else emptyMap()
@@ -1171,16 +1228,21 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       emptyMap()
     }
 
-    if (propagatableFiles == existingSnapshot) {
+    // Extract only user files from existing snapshot for comparison
+    val existingUserFiles = existingSnapshot.filterKeys { it in userFileKeys }
+    if (propagatableFiles == existingUserFiles) {
       // No changes to save
       return
     }
 
-    // Save snapshot
+    // Build full snapshot: user files from disk + test files from cache
+    val fullSnapshot = buildFullSnapshotState(currentTask, propagatableFiles)
+
+    // Save full snapshot
     try {
-      val created = storage.saveSnapshot(ref, propagatableFiles, getParentRef(currentTask), "Auto-save changes for '${currentTask.name}'")
+      val created = storage.saveSnapshot(ref, fullSnapshot, getParentRef(currentTask), "Auto-save changes for '${currentTask.name}'")
       if (created) {
-        LOG.info("Auto-saved snapshot for task '${currentTask.name}' (ref=$ref)")
+        LOG.info("Auto-saved full snapshot for task '${currentTask.name}' (ref=$ref): ${fullSnapshot.size} files")
       }
     } catch (e: IOException) {
       LOG.warn("Failed to auto-save snapshot for task '${currentTask.name}'", e)
@@ -1188,20 +1250,56 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   /**
-   * Returns the state of all non-test files for this task.
+   * Returns the state of all non-test files for this task (user-editable files).
    * This includes both template files (visible, editable) and learner-created files.
    *
-   * Test files are excluded because they are handled separately by [recreateTestFiles]
-   * using cached data from API to ensure correct test content for each stage.
-   *
-   * IMPORTANT: This must return ALL non-test files (not just learner-created) because
-   * the framework storage tracks DIFFS from template state to user state. If we only
-   * returned learner-created files, the diff calculation would be incorrect.
+   * Test files are excluded here because they are handled separately.
+   * For full snapshot including tests, use [getFullTaskState].
    */
   private val Task.allFiles: FLTaskState
     get() = taskFiles
-      .filterValues { !it.isTestFile } // Exclude test files - they are handled by recreateTestFiles
+      .filterValues { !it.isTestFile }
       .mapValues { it.value.contents.textualRepresentation }
+
+  /**
+   * Returns ALL files for this task including test files.
+   * Used for creating complete snapshots.
+   */
+  private val Task.allFilesIncludingTests: FLTaskState
+    get() = taskFiles.mapValues { it.value.contents.textualRepresentation }
+
+  /**
+   * Builds complete task state for snapshot: user files from disk + test files from cache.
+   * Test files are taken from cache (not disk) because disk may have tests from another stage.
+   *
+   * @param task The task to build state for
+   * @param taskDir The task directory on disk
+   * @param userFilesFromDisk User files read from disk
+   * @return Complete state with user files and test files
+   */
+  private fun buildFullSnapshotState(
+    task: Task,
+    userFilesFromDisk: FLTaskState
+  ): FLTaskState {
+    val result = HashMap(userFilesFromDisk)
+
+    // Add test files from cache (not from disk - disk may have wrong stage's tests)
+    val cachedTestFiles = originalTestFilesCache[task.id]
+    if (cachedTestFiles != null) {
+      for ((path, taskFile) in cachedTestFiles) {
+        result[path] = taskFile.contents.textualRepresentation
+      }
+    } else {
+      // Fallback: use test files from task model (may be stale but better than nothing)
+      for ((path, taskFile) in task.taskFiles) {
+        if (taskFile.isTestFile && path !in result) {
+          result[path] = taskFile.contents.textualRepresentation
+        }
+      }
+    }
+
+    return result
+  }
 
   private fun FLTaskState.splitByKey(predicate: (String) -> Boolean): Pair<FLTaskState, FLTaskState> {
     val positive = HashMap<String, String>()
