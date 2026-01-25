@@ -369,16 +369,18 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
     commitsByRef = reachableByRef
 
-    // Build all commit entries
+    // Build all commit entries with visible changes info
     val sortedCommits = allCommits.values.sortedByDescending { it.commit.timestamp }
     allCommitEntries = sortedCommits.map { commitData ->
+      val hasVisibleChanges = calculateHasVisibleChanges(storage, commitData, allCommits)
       CommitEntry(
         hash = commitData.hash,
         timestamp = commitData.commit.timestamp,
         parentHashes = commitData.commit.parentHashes,
         snapshotHash = commitData.commit.snapshotHash,
         refs = refsByCommit[commitData.hash] ?: emptyList(),
-        message = commitData.commit.message
+        message = commitData.commit.message,
+        hasVisibleChanges = hasVisibleChanges
       )
     }
 
@@ -476,8 +478,11 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       }
     }
 
+    // Only show commits that have visible file changes or have refs (stage boundaries)
     for (entry in filteredCommits) {
-      listModel.addElement(entry)
+      if (entry.hasVisibleChanges || entry.refs.isNotEmpty()) {
+        listModel.addElement(entry)
+      }
     }
   }
 
@@ -597,6 +602,60 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     }
 
     return changes.sortedBy { it.path }
+  }
+
+  /**
+   * Calculate if a commit has any visible file changes compared to its parent.
+   * A commit with refs is always considered to have visible changes (it marks a stage boundary).
+   */
+  private fun calculateHasVisibleChanges(
+    storage: FrameworkStorage,
+    commitData: CommitData,
+    allCommits: Map<String, CommitData>
+  ): Boolean {
+    try {
+      // Load current commit's snapshot
+      val currentSnapshot = storage.getSnapshotByHash(commitData.commit.snapshotHash) ?: return true
+
+      // If no parent, this is an initial commit - check if it has any visible files
+      if (commitData.commit.parentHashes.isEmpty()) {
+        return currentSnapshot.values.any { it.isVisible }
+      }
+
+      // Load parent's snapshot
+      val parentHash = commitData.commit.parentHashes.first()
+      val parentCommit = allCommits[parentHash]?.commit ?: storage.getCommit(parentHash) ?: return true
+      val parentSnapshot = storage.getSnapshotByHash(parentCommit.snapshotHash) ?: return true
+
+      // Check for any visible file changes
+      // Added visible files
+      for ((path, entry) in currentSnapshot) {
+        if (entry.isVisible && path !in parentSnapshot) {
+          return true
+        }
+      }
+
+      // Modified visible files
+      for ((path, newEntry) in currentSnapshot) {
+        if (!newEntry.isVisible) continue
+        val oldEntry = parentSnapshot[path]
+        if (oldEntry != null && oldEntry.content != newEntry.content) {
+          return true
+        }
+      }
+
+      // Deleted visible files
+      for ((path, oldEntry) in parentSnapshot) {
+        if (oldEntry.isVisible && path !in currentSnapshot) {
+          return true
+        }
+      }
+
+      return false
+    } catch (e: Exception) {
+      LOG.warn("Failed to calculate visible changes for commit ${commitData.hash}", e)
+      return true // Assume has changes on error
+    }
   }
 
   private fun populateFileTree(changes: List<FileChange>) {
@@ -791,7 +850,8 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     val parentHashes: List<String>,
     val snapshotHash: String,
     val refs: List<RefLabel>,
-    val message: String
+    val message: String,
+    val hasVisibleChanges: Boolean = true
   )
   data class FileChange(
     val path: String,

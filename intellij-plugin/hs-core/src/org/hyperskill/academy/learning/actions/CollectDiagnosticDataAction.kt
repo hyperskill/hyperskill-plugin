@@ -113,7 +113,7 @@ class CollectDiagnosticDataAction : DumbAwareAction(
       appendLine()
 
       appendLine("=== Plugin Information ===")
-      val pluginId = PluginId.getId("org.hyperskill.academy.learning")
+      val pluginId = PluginId.getId("org.hyperskill.academy")
       val plugin = PluginManagerCore.getPlugin(pluginId)
       appendLine("Plugin ID: $pluginId")
       appendLine("Plugin Version: ${plugin?.version ?: "Unknown"}")
