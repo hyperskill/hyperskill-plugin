@@ -311,6 +311,17 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     taskDir: VirtualFile,
     showDialogIfConflict: Boolean
   ) {
+    val navigationStartTime = System.currentTimeMillis()
+    var lastStepTime = navigationStartTime
+
+    fun logTiming(step: String) {
+      val now = System.currentTimeMillis()
+      val stepDuration = now - lastStepTime
+      val totalDuration = now - navigationStartTime
+      LOG.info("Navigation timing: $step took ${stepDuration}ms (total: ${totalDuration}ms)")
+      lastStepTime = now
+    }
+
     // Reset propagation flag on backward navigation
     if (taskIndexDelta < 0) {
       propagationActive = null
@@ -320,6 +331,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     SlowOperations.knownIssue("EDU-XXXX").use {
       YamlFormatSynchronizer.saveItem(lesson)
     }
+    logTiming("saveLesson")
 
     val currentRef = currentTask.storageRef()
     val targetRef = targetTask.storageRef()
@@ -333,6 +345,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val templateFiles = originalTemplateFilesCache[currentTask.id] ?: currentTask.allFiles
     val currentDiskState = getTaskStateFromFiles(templateFiles.keys, taskDir)
     val (currentPropagatableFiles, _) = currentDiskState.split(currentTask)
+    logTiming("readCurrentDiskState")
 
     // 2. Save current state to storage ONLY when navigating FORWARD.
     // When navigating backward, the disk content belongs to the stage we're leaving,
@@ -340,6 +353,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     if (taskIndexDelta > 0) {
       // Build full snapshot: user files from disk + non-propagatable files from cache
       val fullSnapshot = buildFullSnapshotState(currentTask, currentPropagatableFiles)
+      logTiming("buildFullSnapshotState(current)")
       val navMessage = "Save changes before navigating from '${currentTask.name}' to '${targetTask.name}'"
       try {
         storage.saveSnapshot(currentRef, fullSnapshot, getParentRef(currentTask), navMessage)
@@ -348,6 +362,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       catch (e: IOException) {
         LOG.error("Failed to save snapshot for task `${currentTask.name}`", e)
       }
+      logTiming("saveSnapshot(current)")
     } else {
       LOG.info("Navigation: Moving backward, not saving current task '${currentTask.name}' (would corrupt snapshot)")
     }
@@ -379,6 +394,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // No storage data for target - use template files
       targetTask.allFiles
     }
+    logTiming("getTargetState")
     LOG.warn("Navigation: targetState=${targetState.mapValues { "${it.key}:${it.value.length}chars" }}, fromStorage=$targetHasStorage")
 
     // 6. Calculate difference between latest states of current and target tasks
@@ -406,9 +422,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         val (targetPropagatableFilesState, _) = targetState.split(targetTask)
         val mergeMessage = "Merge from '${currentTask.name}': Auto-keep (only test files changed)"
         try {
-          val targetFileEntries = targetPropagatableFilesState.toFileEntries(targetTask, originalNonPropagatableFilesCache[targetTask.id])
-          storage.saveMergeSnapshot(targetRef, targetFileEntries, listOf(targetRef, currentRef), mergeMessage)
-          LOG.info("Created auto-Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
+          // Use buildFullSnapshotState to include both user files and test files from target task
+          val fullSnapshot = buildFullSnapshotState(targetTask, targetPropagatableFilesState)
+          storage.saveMergeSnapshot(targetRef, fullSnapshot, listOf(targetRef, currentRef), mergeMessage)
+          LOG.info("Created auto-Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]: ${fullSnapshot.size} files")
         } catch (e: IOException) {
           LOG.error("Failed to create auto-Keep merge commit for '$targetRef'", e)
         }
@@ -429,13 +446,16 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         calculateChanges(currentState, targetState)
       }
     }
+    logTiming("calculateChanges")
 
     // 7. Apply difference between latest states of current and target tasks on local FS
     changes.apply(project, taskDir, targetTask)
+    logTiming("applyChanges")
 
     // 8. Recreate non-propagatable files (test files, hidden files) from target task definition
     // These files are stage-specific, so we need to recreate them explicitly during navigation
     recreateNonPropagatableFiles(project, taskDir, currentTask, targetTask)
+    logTiming("recreateNonPropagatableFiles")
 
     // 9. ALT-10961: Force save all documents and refresh VFS to ensure changes are visible in editor
     // Document changes may be in memory but not persisted or reflected in the editor
@@ -444,6 +464,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       VfsUtil.markDirtyAndRefresh(false, true, true, taskDir)
       LOG.info("Navigation: Saved documents and refreshed VFS for taskDir=${taskDir.path}")
     }
+    logTiming("saveDocumentsAndRefreshVFS")
 
     // Clear legacy record for target task if present
     if (targetTask.record != -1) {
@@ -464,6 +485,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       val finalDiskState = getTaskStateFromFiles(userFileKeys, taskDir)
       val (finalPropagatableFiles, _) = finalDiskState.split(targetTask)
       val fullSnapshot = buildFullSnapshotState(targetTask, finalPropagatableFiles)
+      logTiming("buildFullSnapshotState(target)")
       val message = "Navigate to '${targetTask.name}'"
       try {
         storage.saveSnapshot(targetRef, fullSnapshot, getParentRef(targetTask), message)
@@ -472,12 +494,16 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       catch (e: IOException) {
         LOG.error("Failed to save snapshot for target task '${targetTask.name}'", e)
       }
+      logTiming("saveSnapshot(target)")
     }
 
     // Update HEAD to point to the current (target) task
     storage.head = targetRef
     LOG.info("HEAD updated to ref $targetRef (task '${targetTask.name}')")
     project.messageBus.syncPublisher(FrameworkStorageListener.TOPIC).headUpdated(targetRef)
+
+    val totalTime = System.currentTimeMillis() - navigationStartTime
+    LOG.info("Navigation timing: TOTAL ${totalTime}ms for '${currentTask.name}' -> '${targetTask.name}'")
   }
 
   /**
@@ -759,9 +785,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       LOG.info("Auto-Keep for '$targetRef' (user chose Keep in previous step)")
       val mergeMessage = "Merge from '${currentTask.name}': Keep target changes (auto)"
       try {
-        val targetFileEntries = targetPropagatableFilesState.toFileEntries(targetTask, originalNonPropagatableFilesCache[targetTask.id])
-        storage.saveMergeSnapshot(targetRef, targetFileEntries, listOf(targetRef, currentRef), mergeMessage)
-        LOG.info("Created auto-Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
+        // Use buildFullSnapshotState to include both user files and test files from target task
+        val fullSnapshot = buildFullSnapshotState(targetTask, targetPropagatableFilesState)
+        storage.saveMergeSnapshot(targetRef, fullSnapshot, listOf(targetRef, currentRef), mergeMessage)
+        LOG.info("Created auto-Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]: ${fullSnapshot.size} files")
       } catch (e: IOException) {
         LOG.error("Failed to create auto-Keep merge commit for '$targetRef'", e)
       }
@@ -887,10 +914,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       propagationActive = false
       val mergeMessage = "Merge from '${currentTask.name}': Keep target changes"
       try {
-        // Parents: [targetRef, currentRef] - we're merging currentRef into targetRef
-        val targetFileEntries = targetPropagatableFilesState.toFileEntries(targetTask, originalNonPropagatableFilesCache[targetTask.id])
-        storage.saveMergeSnapshot(targetRef, targetFileEntries, listOf(targetRef, currentRef), mergeMessage)
-        LOG.info("Created Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
+        // Use buildFullSnapshotState to include both user files and test files from target task
+        val fullSnapshot = buildFullSnapshotState(targetTask, targetPropagatableFilesState)
+        storage.saveMergeSnapshot(targetRef, fullSnapshot, listOf(targetRef, currentRef), mergeMessage)
+        LOG.info("Created Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]: ${fullSnapshot.size} files")
       } catch (e: IOException) {
         LOG.error("Failed to create Keep merge commit for '$targetRef'", e)
       }
@@ -902,10 +929,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       propagationActive = true
       val mergeMessage = "Merge from '${currentTask.name}': Replace with propagated changes"
       try {
-        // Parents: [targetRef, currentRef] - we're merging currentRef into targetRef
-        val currentFileEntries = currentPropagatableFilesState.toFileEntries(currentTask, originalNonPropagatableFilesCache[currentTask.id])
-        storage.saveMergeSnapshot(targetRef, currentFileEntries, listOf(targetRef, currentRef), mergeMessage)
-        LOG.info("Created Replace merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
+        // Use buildFullSnapshotState with targetTask to get target's test files,
+        // but with currentPropagatableFilesState to propagate user's code changes
+        val fullSnapshot = buildFullSnapshotState(targetTask, currentPropagatableFilesState)
+        storage.saveMergeSnapshot(targetRef, fullSnapshot, listOf(targetRef, currentRef), mergeMessage)
+        LOG.info("Created Replace merge commit for '$targetRef' with parents [$targetRef, $currentRef]: ${fullSnapshot.size} files")
       } catch (e: IOException) {
         LOG.error("Failed to create Replace merge commit for '$targetRef'", e)
       }
@@ -1357,26 +1385,16 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val result = HashMap<String, FileEntry>()
     val testDirs = task.testDirs
 
-    // Try to get existing snapshot for metadata preservation
-    val existingSnapshot = try {
-      val ref = task.storageRef()
-      if (storage.hasRef(ref)) storage.getSnapshot(ref) else null
-    } catch (e: Exception) {
-      LOG.warn("buildFullSnapshotState: failed to get existing snapshot", e)
-      null
-    }
-
-    // Add user files with metadata from: 1) existing snapshot, 2) task.taskFiles, 3) path patterns
+    // Add user files with metadata from task.taskFiles or path patterns
     for ((path, content) in userFilesFromDisk) {
-      result[path] = resolveFileEntryMetadata(path, content, existingSnapshot, task, testDirs)
+      result[path] = resolveFileEntryMetadata(path, content, task, testDirs)
     }
 
-    // Add non-propagatable files from task.taskFiles (content from API, metadata resolved)
-    for ((path, taskFile) in task.taskFiles) {
-      if (!taskFile.shouldBePropagated() && path !in result) {
-        val content = taskFile.contents.textualRepresentation
-        result[path] = resolveFileEntryMetadata(path, content, existingSnapshot, task, testDirs)
-      }
+    // Add non-propagatable files from cache, API, or task.taskFiles (in that priority order)
+    val nonPropagatableFiles = getNonPropagatableFilesWithMetadata(task)
+    for ((path, taskFile) in nonPropagatableFiles) {
+      val content = taskFile.contents.textualRepresentation
+      result[path] = resolveFileEntryMetadata(path, content, task, testDirs)
     }
 
     return result
@@ -1386,13 +1404,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    * Resolves metadata for a file entry using the following priority:
    * 1. Path patterns (test files are ALWAYS non-visible, non-propagatable)
    * 2. task.taskFiles (from API)
-   * 3. Existing snapshot (preserves user's storage state for non-test files)
-   * 4. Default metadata (visible, editable, propagatable)
+   * 3. Default metadata (visible, editable, propagatable)
    */
   private fun resolveFileEntryMetadata(
     path: String,
     content: String,
-    existingSnapshot: Map<String, FileEntry>?,
     task: Task,
     testDirs: List<String>
   ): FileEntry {
@@ -1412,13 +1428,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       )
     }
 
-    // 3. Check existing snapshot - preserves metadata for user files
-    val existingEntry = existingSnapshot?.get(path)
-    if (existingEntry != null) {
-      return FileEntry(content, existingEntry.metadata)
-    }
-
-    // 4. Default: user file (visible, editable, propagatable)
+    // 3. Default: user file (visible, editable, propagatable)
     return FileEntry(content)
   }
 
