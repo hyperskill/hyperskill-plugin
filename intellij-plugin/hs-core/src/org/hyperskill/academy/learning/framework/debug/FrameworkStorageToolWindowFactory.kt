@@ -45,7 +45,10 @@ import java.awt.Component
 import java.awt.datatransfer.StringSelection
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.swing.*
@@ -321,7 +324,12 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     val headRef = storage.head
     val headCommitHash = storage.getHeadCommit()
 
-    storageInfoLabel.text = "Storage v$version"
+    // Calculate storage size on disk
+    val storageV3Path = storagePath.resolveSibling("storage_v3")
+    val storageSizeBytes = calculateDirectorySize(storageV3Path)
+    val storageSizeFormatted = formatSize(storageSizeBytes)
+
+    storageInfoLabel.text = "Storage v$version ($storageSizeFormatted)"
     headInfoLabel.text = if (headRef != null) "HEAD → $headRef" else "HEAD: not set"
 
     val taskNamesByRef = getTaskNamesByRef()
@@ -503,7 +511,9 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
   }
 
   private fun refreshFileTree() {
-    clearFileTree()
+    // Clear only UI, not the snapshot data
+    fileTreeRoot.removeAllChildren()
+    fileTreeModel.reload()
     clearDiff()
 
     if (currentCommitSnapshot.isEmpty()) return
@@ -725,6 +735,35 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
       }
     }
     return result
+  }
+
+  /**
+   * Calculates total size of a directory recursively.
+   */
+  private fun calculateDirectorySize(path: java.nio.file.Path): Long {
+    if (!path.exists() || !path.isDirectory()) return 0L
+    return try {
+      Files.walk(path).use { stream ->
+        stream.filter { Files.isRegularFile(it) }
+          .mapToLong { Files.size(it) }
+          .sum()
+      }
+    } catch (e: Exception) {
+      LOG.warn("Failed to calculate directory size for $path", e)
+      0L
+    }
+  }
+
+  /**
+   * Formats byte size to human-readable string.
+   */
+  private fun formatSize(bytes: Long): String {
+    return when {
+      bytes < 1024 -> "$bytes B"
+      bytes < 1024 * 1024 -> "%.1f KB".format(bytes / 1024.0)
+      bytes < 1024 * 1024 * 1024 -> "%.1f MB".format(bytes / (1024.0 * 1024))
+      else -> "%.2f GB".format(bytes / (1024.0 * 1024 * 1024))
+    }
   }
 
   override fun dispose() {
