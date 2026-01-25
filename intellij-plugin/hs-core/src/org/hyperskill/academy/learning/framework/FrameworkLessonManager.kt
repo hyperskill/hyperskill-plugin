@@ -12,7 +12,7 @@ interface FrameworkLessonManager : EduTestAware {
   fun prepareNextTask(lesson: FrameworkLesson, taskDir: VirtualFile, showDialogIfConflict: Boolean)
   fun preparePrevTask(lesson: FrameworkLesson, taskDir: VirtualFile, showDialogIfConflict: Boolean)
 
-  fun saveExternalChanges(task: Task, externalState: Map<String, String>)
+  fun saveExternalChanges(task: Task, externalState: Map<String, String>, submissionId: Long? = null)
   fun updateUserChanges(task: Task, newInitialState: Map<String, String>)
 
   fun getChangesTimestamp(task: Task): Long

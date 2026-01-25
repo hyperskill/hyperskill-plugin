@@ -535,6 +535,28 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
     fileTreeModel.reload()
     expandAllTreeNodes()
+    selectFirstFileInTree()
+  }
+
+  private fun selectFirstFileInTree() {
+    // Find and select the first FileChange node
+    val root = fileTreeRoot
+    for (i in 0 until root.childCount) {
+      val child = root.getChildAt(i) as? DefaultMutableTreeNode ?: continue
+      val userObject = child.userObject
+      if (userObject is FileChange) {
+        // Direct file in root - select it
+        fileTree.selectionPath = javax.swing.tree.TreePath(arrayOf(root, child))
+        return
+      } else if (userObject is String && child.childCount > 0) {
+        // Directory node - select first file inside
+        val firstFile = child.getChildAt(0) as? DefaultMutableTreeNode
+        if (firstFile?.userObject is FileChange) {
+          fileTree.selectionPath = javax.swing.tree.TreePath(arrayOf(root, child, firstFile))
+          return
+        }
+      }
+    }
   }
 
   private fun expandAllTreeNodes() {
@@ -712,7 +734,7 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     ) {
       if (value == null) return
 
-      icon = AllIcons.Vcs.CommitNode
+      icon = if (value.parentHashes.size > 1) AllIcons.Vcs.Merge else AllIcons.Vcs.CommitNode
 
       // Refs
       for (ref in value.refs) {

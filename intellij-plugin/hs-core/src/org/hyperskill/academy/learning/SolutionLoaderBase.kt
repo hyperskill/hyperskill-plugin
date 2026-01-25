@@ -304,7 +304,7 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       frameworkLessonManager.ensureTemplateFilesCached(task)
 
       val solutionMap = taskSolutions.solutions.mapValues { it.value.text }
-      frameworkLessonManager.saveExternalChanges(task, solutionMap)
+      frameworkLessonManager.saveExternalChanges(task, solutionMap, taskSolutions.submissionId)
       for (taskFile in task.taskFiles.values) {
         val solution = taskSolutions.solutions[taskFile.name] ?: continue
 
@@ -357,7 +357,7 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       if (lesson is FrameworkLesson) {
         val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
         val solutionMap = taskSolutions.solutions.mapValues { it.value.text }
-        frameworkLessonManager.saveExternalChanges(task, solutionMap)
+        frameworkLessonManager.saveExternalChanges(task, solutionMap, taskSolutions.submissionId)
       }
     }
   }
@@ -368,7 +368,8 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
     val date: Date?,
     val checkStatus: CheckStatus,
     val solutions: Map<String, Solution> = emptyMap(),
-    val hasIncompatibleSolutions: Boolean = false
+    val hasIncompatibleSolutions: Boolean = false,
+    val submissionId: Long? = null
   ) {
     companion object {
       val EMPTY = TaskSolutions(null, CheckStatus.Unchecked)

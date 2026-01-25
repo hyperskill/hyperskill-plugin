@@ -122,21 +122,22 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     return storage.hasRef(task.storageRef())
   }
 
-  override fun saveExternalChanges(task: Task, externalState: Map<String, String>) {
+  override fun saveExternalChanges(task: Task, externalState: Map<String, String>, submissionId: Long?) {
     require(task.lesson is FrameworkLesson) {
       "Only solutions of framework tasks can be saved"
     }
 
     val ref = task.storageRef()
     val parentRef = getParentRef(task)
-    LOG.warn("saveExternalChanges: task='${task.name}', ref=$ref, externalState.keys=${externalState.keys}")
+    LOG.warn("saveExternalChanges: task='${task.name}', ref=$ref, submissionId=$submissionId, externalState.keys=${externalState.keys}")
 
     // Filter external state to only include propagatable files (exclude test files, etc.)
     val externalPropagatableFiles = externalState.split(task).first
     LOG.warn("saveExternalChanges: externalPropagatableFiles.keys=${externalPropagatableFiles.keys}")
 
     // Save the API state as a snapshot
-    val message = "Load submission from server for '${task.name}'"
+    val submissionInfo = if (submissionId != null) " (submission #$submissionId)" else ""
+    val message = "Load submission from server for '${task.name}'$submissionInfo"
     try {
       storage.saveSnapshot(ref, externalPropagatableFiles, parentRef, message)
     }

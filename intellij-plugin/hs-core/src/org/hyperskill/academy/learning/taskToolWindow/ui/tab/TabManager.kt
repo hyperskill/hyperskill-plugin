@@ -6,9 +6,11 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.components.JBTabbedPane
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
+import org.hyperskill.academy.learning.framework.ui.HistoryTab
 import org.hyperskill.academy.learning.stepik.hyperskill.TheoryTab
 import org.hyperskill.academy.learning.stepik.hyperskill.TopicsTab
 import org.hyperskill.academy.learning.stepik.hyperskill.getRelatedTheoryTask
@@ -50,6 +52,7 @@ class TabManager(private val project: Project) : Disposable {
       THEORY_TAB -> TheoryTab(project)
       TOPICS_TAB -> TopicsTab(project)
       SUBMISSIONS_TAB -> SubmissionsTab(project)
+      HISTORY_TAB -> HistoryTab(project)
     }
     Disposer.register(this, taskToolWindowTab)
     tabbedPane.addTab(tabType.tabName, taskToolWindowTab)
@@ -90,6 +93,9 @@ class TabManager(private val project: Project) : Disposable {
     }
     if (course is HyperskillCourse && course.isTaskInTopicsSection(this) && this !is TheoryTask) {
       result.add(THEORY_TAB)
+    }
+    if (lesson is FrameworkLesson) {
+      result.add(HISTORY_TAB)
     }
 
     return result

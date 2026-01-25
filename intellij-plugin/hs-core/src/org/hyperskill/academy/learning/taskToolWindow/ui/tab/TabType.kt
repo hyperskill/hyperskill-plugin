@@ -8,7 +8,8 @@ enum class TabType(@param:PropertyKey(resourceBundle = BUNDLE) private val nameI
   DESCRIPTION_TAB("description.tab.name"),
   THEORY_TAB("hyperskill.theory.tab.name"),
   TOPICS_TAB("hyperskill.topics.tab.name"),
-  SUBMISSIONS_TAB("submissions.tab.name");
+  SUBMISSIONS_TAB("submissions.tab.name"),
+  HISTORY_TAB("history.tab.name");
 
   val tabName: String get() = EduCoreBundle.message(nameId)
 }

@@ -58,7 +58,7 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
       LOG.warn("loadSolution: task='${task.name}' - filtered out ${allFiles.size - files.size} invisible files!")
     }
 
-    return TaskSolutions(lastSubmission.time, lastSubmission.status?.toCheckStatus() ?: CheckStatus.Unchecked, files)
+    return TaskSolutions(lastSubmission.time, lastSubmission.status?.toCheckStatus() ?: CheckStatus.Unchecked, files, submissionId = lastSubmission.id?.toLong())
   }
 
   private val StepikBasedSubmission.eduTaskFiles: Map<String, Solution>

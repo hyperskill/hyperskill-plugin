@@ -170,7 +170,7 @@ private fun saveCurrentTaskSnapshot() {
 | Merge - Replace | `Merge from 'Stage 1': Replace with propagated changes` |
 | Normal navigation | `Navigate to 'Stage 2'` |
 | Auto-save | `Auto-save changes for 'Stage 1'` |
-| Load from server | `Load submission from server for 'Stage 1'` |
+| Load from server | `Load submission from server for 'Stage 1' (submission #12345)` |
 
 ## File Categories
 
