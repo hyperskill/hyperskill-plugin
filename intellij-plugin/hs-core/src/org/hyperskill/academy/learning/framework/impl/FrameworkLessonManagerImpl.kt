@@ -20,6 +20,7 @@ import org.hyperskill.academy.learning.Err
 import org.hyperskill.academy.learning.Ok
 import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseDir
+import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
@@ -32,6 +33,7 @@ import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.propagateFilesOnNavigation
 import org.hyperskill.academy.learning.framework.storage.Change
+import org.hyperskill.academy.learning.framework.storage.FileEntry
 import org.hyperskill.academy.learning.framework.ui.PropagationConflictDialog
 import org.hyperskill.academy.learning.framework.storage.UserChanges
 import org.hyperskill.academy.learning.messages.EduCoreBundle
@@ -157,7 +159,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     if (legacyRefId != -1 && storage.hasLegacyChanges(legacyRefId)) {
       LOG.info("Migrating legacy changes for task '${task.name}' (legacyRefId=$legacyRefId)")
       try {
-        storage.applyLegacyChangesAndSave(ref, legacyRefId, fullSnapshot, parentRef)
+        // Convert to content-only map for legacy migration (metadata will use defaults)
+        storage.applyLegacyChangesAndSave(ref, legacyRefId, fullSnapshot.toContentMap(), parentRef)
       }
       catch (e: IOException) {
         LOG.error("Failed to apply legacy changes for task `${task.name}`", e)
@@ -194,7 +197,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     try {
-      // Get current snapshot
+      // Get current snapshot (Map<String, FileEntry>)
       val currentSnapshot = storage.getSnapshot(ref)
 
       // Add only files that don't exist in the snapshot
@@ -204,8 +207,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         return
       }
 
+      // Convert new files to FileEntry with metadata from task
+      val filesToAddWithMetadata = filesToAdd.toFileEntries(task, originalNonPropagatableFilesCache[task.id])
+
       // Merge: existing snapshot + new files
-      val mergedSnapshot = currentSnapshot + filesToAdd
+      val mergedSnapshot = currentSnapshot + filesToAddWithMetadata
 
       // Save updated snapshot
       val message = "Add ${filesToAdd.size} new template files from server"
@@ -249,7 +255,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val ref = task.storageRef()
     return if (storage.hasRef(ref)) {
       try {
-        storage.getSnapshot(ref)
+        storage.getSnapshot(ref).toContentMap()
       } catch (e: IOException) {
         LOG.warn("Failed to get snapshot for task '${task.name}' (ref=$ref), falling back to templates", e)
         task.allFiles
@@ -364,7 +370,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // This is simpler and more reliable than calculating diffs from templates.
     val targetState: FLTaskState = if (targetHasStorage) {
       try {
-        storage.getSnapshot(targetRef)
+        storage.getSnapshot(targetRef).toContentMap()
       } catch (e: IOException) {
         LOG.error("Failed to get snapshot for target task '${targetTask.name}' (ref=$targetRef), falling back to templates", e)
         targetTask.allFiles
@@ -735,7 +741,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       LOG.info("Auto-Keep for '$targetRef' (user chose Keep in previous step)")
       val mergeMessage = "Merge from '${currentTask.name}': Keep target changes (auto)"
       try {
-        storage.saveMergeSnapshot(targetRef, targetPropagatableFilesState, listOf(targetRef, currentRef), mergeMessage)
+        val targetFileEntries = targetPropagatableFilesState.toFileEntries(targetTask, originalNonPropagatableFilesCache[targetTask.id])
+        storage.saveMergeSnapshot(targetRef, targetFileEntries, listOf(targetRef, currentRef), mergeMessage)
         LOG.info("Created auto-Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
       } catch (e: IOException) {
         LOG.error("Failed to create auto-Keep merge commit for '$targetRef'", e)
@@ -848,7 +855,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       val mergeMessage = "Merge from '${currentTask.name}': Keep target changes"
       try {
         // Parents: [targetRef, currentRef] - we're merging currentRef into targetRef
-        storage.saveMergeSnapshot(targetRef, targetPropagatableFilesState, listOf(targetRef, currentRef), mergeMessage)
+        val targetFileEntries = targetPropagatableFilesState.toFileEntries(targetTask, originalNonPropagatableFilesCache[targetTask.id])
+        storage.saveMergeSnapshot(targetRef, targetFileEntries, listOf(targetRef, currentRef), mergeMessage)
         LOG.info("Created Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
       } catch (e: IOException) {
         LOG.error("Failed to create Keep merge commit for '$targetRef'", e)
@@ -862,7 +870,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       val mergeMessage = "Merge from '${currentTask.name}': Replace with propagated changes"
       try {
         // Parents: [targetRef, currentRef] - we're merging currentRef into targetRef
-        storage.saveMergeSnapshot(targetRef, currentPropagatableFilesState, listOf(targetRef, currentRef), mergeMessage)
+        val currentFileEntries = currentPropagatableFilesState.toFileEntries(currentTask, originalNonPropagatableFilesCache[currentTask.id])
+        storage.saveMergeSnapshot(targetRef, currentFileEntries, listOf(targetRef, currentRef), mergeMessage)
         LOG.info("Created Replace merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
       } catch (e: IOException) {
         LOG.error("Failed to create Replace merge commit for '$targetRef'", e)
@@ -978,7 +987,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     try {
-      // Get current snapshot
+      // Get current snapshot (Map<String, FileEntry>)
       val currentSnapshot = storage.getSnapshot(ref)
 
       // Get propagatable file names from task model to identify user files
@@ -991,7 +1000,12 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // If cache is empty, this effectively removes all non-propagatable files from snapshot
       val updatedSnapshot = HashMap(userFiles)
       for ((path, taskFile) in cachedNonPropagatableFiles) {
-        updatedSnapshot[path] = taskFile.contents.textualRepresentation
+        updatedSnapshot[path] = FileEntry.create(
+          content = taskFile.contents.textualRepresentation,
+          visible = taskFile.isVisible,
+          editable = taskFile.isEditable,
+          propagatable = taskFile.shouldBePropagated()
+        )
       }
 
       // Save updated snapshot
@@ -1247,7 +1261,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // Check if there are actual changes compared to saved snapshot (compare only user files)
     val ref = currentTask.storageRef()
     val existingSnapshot = try {
-      if (storage.hasRef(ref)) storage.getSnapshot(ref) else emptyMap()
+      if (storage.hasRef(ref)) storage.getSnapshot(ref).toContentMap() else emptyMap()
     } catch (e: IOException) {
       emptyMap()
     }
@@ -1297,27 +1311,55 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    * Non-propagatable files (test files, hidden files) are taken from cache (not disk)
    * because disk may have files from another stage.
    *
+   * Returns FileEntry objects with metadata (visible, editable, propagatable) extracted from TaskFile objects.
+   *
    * @param task The task to build state for
    * @param userFilesFromDisk User files read from disk (propagatable files)
-   * @return Complete state with user files and non-propagatable files
+   * @return Complete state with user files and non-propagatable files as FileEntry objects
    */
   private fun buildFullSnapshotState(
     task: Task,
     userFilesFromDisk: FLTaskState
-  ): FLTaskState {
-    val result = HashMap(userFilesFromDisk)
+  ): Map<String, FileEntry> {
+    val result = HashMap<String, FileEntry>()
+    val cachedNonPropagatableFiles = originalNonPropagatableFilesCache[task.id]
+
+    // Add user files with metadata from task.taskFiles
+    for ((path, content) in userFilesFromDisk) {
+      val taskFile = task.taskFiles[path]
+      result[path] = if (taskFile != null) {
+        FileEntry.create(
+          content = content,
+          visible = taskFile.isVisible,
+          editable = taskFile.isEditable,
+          propagatable = taskFile.shouldBePropagated()
+        )
+      } else {
+        // Learner-created file, use defaults
+        FileEntry(content)
+      }
+    }
 
     // Add non-propagatable files from cache (not from disk - disk may have wrong stage's files)
-    val cachedNonPropagatableFiles = originalNonPropagatableFilesCache[task.id]
     if (cachedNonPropagatableFiles != null) {
       for ((path, taskFile) in cachedNonPropagatableFiles) {
-        result[path] = taskFile.contents.textualRepresentation
+        result[path] = FileEntry.create(
+          content = taskFile.contents.textualRepresentation,
+          visible = taskFile.isVisible,
+          editable = taskFile.isEditable,
+          propagatable = taskFile.shouldBePropagated()
+        )
       }
     } else {
       // Fallback: use non-propagatable files from task model (may be stale but better than nothing)
       for ((path, taskFile) in task.taskFiles) {
         if (!taskFile.shouldBePropagated() && path !in result) {
-          result[path] = taskFile.contents.textualRepresentation
+          result[path] = FileEntry.create(
+            content = taskFile.contents.textualRepresentation,
+            visible = taskFile.isVisible,
+            editable = taskFile.isEditable,
+            propagatable = taskFile.shouldBePropagated()
+          )
         }
       }
     }
@@ -1374,31 +1416,55 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   override fun syncCurrentTaskIndexFromStorage(lesson: FrameworkLesson): Boolean {
-    val head = storage.head ?: run {
-      // No HEAD means fresh storage - mark as synced since currentTaskIndex=0 is correct
-      isStorageSynced = true
-      return false
-    }
+    val head = storage.head
 
-    // Find the task whose storageRef matches HEAD
-    val taskIndex = lesson.taskList.indexOfFirst { it.storageRef() == head }
-    if (taskIndex == -1) {
-      LOG.warn("syncCurrentTaskIndexFromStorage: HEAD=$head but no task found with matching storageRef")
-      // Still mark as synced to allow auto-save to work
-      isStorageSynced = true
-      return false
-    }
-
-    if (lesson.currentTaskIndex != taskIndex) {
-      LOG.info("syncCurrentTaskIndexFromStorage: syncing currentTaskIndex from ${lesson.currentTaskIndex} to $taskIndex (HEAD=$head)")
-      lesson.currentTaskIndex = taskIndex
-      SlowOperations.knownIssue("EDU-XXXX").use {
-        YamlFormatSynchronizer.saveItem(lesson)
+    if (head != null) {
+      // HEAD exists - find the task whose storageRef matches HEAD
+      val taskIndex = lesson.taskList.indexOfFirst { it.storageRef() == head }
+      if (taskIndex == -1) {
+        LOG.warn("syncCurrentTaskIndexFromStorage: HEAD=$head but no task found with matching storageRef")
+        // Still mark as synced to allow auto-save to work
+        isStorageSynced = true
+        return false
       }
+
+      if (lesson.currentTaskIndex != taskIndex) {
+        LOG.info("syncCurrentTaskIndexFromStorage: syncing currentTaskIndex from ${lesson.currentTaskIndex} to $taskIndex (HEAD=$head)")
+        lesson.currentTaskIndex = taskIndex
+      }
+
+      isStorageSynced = true
+      return true
+    }
+
+    // No HEAD means fresh storage - calculate current task from task statuses
+    // (first unsolved task, or last task if all are solved)
+    val firstUnsolvedIndex = lesson.taskList.indexOfFirst { it.status != CheckStatus.Solved }
+    val calculatedIndex = if (firstUnsolvedIndex != -1) {
+      firstUnsolvedIndex
+    } else if (lesson.taskList.isNotEmpty()) {
+      lesson.taskList.size - 1  // All solved, use last task
+    } else {
+      0  // Empty lesson, use 0
+    }
+
+    LOG.info("syncCurrentTaskIndexFromStorage: no HEAD, calculated currentTaskIndex=$calculatedIndex from task statuses")
+
+    if (lesson.currentTaskIndex != calculatedIndex) {
+      LOG.info("syncCurrentTaskIndexFromStorage: updating currentTaskIndex from ${lesson.currentTaskIndex} to $calculatedIndex")
+      lesson.currentTaskIndex = calculatedIndex
+    }
+
+    // Set HEAD to the calculated task's ref so future syncs use storage
+    val calculatedTask = lesson.taskList.getOrNull(calculatedIndex)
+    if (calculatedTask != null) {
+      val ref = calculatedTask.storageRef()
+      storage.head = ref
+      LOG.info("syncCurrentTaskIndexFromStorage: initialized HEAD to $ref")
     }
 
     isStorageSynced = true
-    return true
+    return false
   }
 
   companion object {

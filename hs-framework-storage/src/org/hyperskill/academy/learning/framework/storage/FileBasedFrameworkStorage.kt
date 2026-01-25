@@ -99,7 +99,7 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
    * Returns null if HEAD is not set.
    */
   @Throws(IOException::class)
-  fun getHeadSnapshot(): Map<String, String>? {
+  fun getHeadSnapshot(): Map<String, FileEntry>? {
     val headRef = getHead() ?: return null
     return getSnapshot(headRef)
   }
@@ -111,7 +111,7 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
    * Returns empty map if ref is null.
    */
   @Throws(IOException::class)
-  fun getSnapshot(ref: String?): Map<String, String> {
+  fun getSnapshot(ref: String?): Map<String, FileEntry> {
     if (ref == null) return emptyMap()
     val commitHash = resolveRef(ref) ?: throw IOException("Ref $ref not found")
     return readSnapshotState(commitHash)
@@ -130,7 +130,7 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
   /**
    * Read snapshot state from a commit or snapshot object.
    */
-  private fun readSnapshotState(hash: String): Map<String, String> {
+  private fun readSnapshotState(hash: String): Map<String, FileEntry> {
     return readObject(hash) { type, input ->
       when (type) {
         SNAPSHOT_TYPE -> {
@@ -150,15 +150,15 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
    * Save a snapshot (full state) for a ref.
    *
    * @param ref The ref name (e.g., "stage_543" or "step_12345"). Must not be null.
-   * @param state The file state to save (path -> content)
+   * @param state The file state to save (path -> FileEntry with content and metadata)
    * @param parentRef Optional parent ref for creating commit chain
    * @param message Optional commit message
    * @return true if a new commit was created, false if snapshot was identical to parent
    */
   @Throws(IOException::class)
-  fun saveSnapshot(ref: String, state: Map<String, String>, parentRef: String? = null, message: String = ""): Boolean {
-    val snapshotMap = state.mapValues { (_, text) ->
-      saveBlob(text)
+  fun saveSnapshot(ref: String, state: Map<String, FileEntry>, parentRef: String? = null, message: String = ""): Boolean {
+    val snapshotMap = state.mapValues { (_, entry) ->
+      saveBlob(entry)
     }
 
     val snapshotHash = saveObject(SNAPSHOT_TYPE) { out ->
@@ -321,14 +321,14 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
    * Used when merging changes from one stage to another (Keep/Replace dialog).
    *
    * @param ref The ref name to update
-   * @param state The file state to save
+   * @param state The file state to save (path -> FileEntry with content and metadata)
    * @param parentRefs List of parent refs (typically [sourceRef, targetRef] for merge)
    * @param message Commit message describing the merge
    * @return true if a new commit was created
    */
   @Throws(IOException::class)
-  fun saveMergeSnapshot(ref: String, state: Map<String, String>, parentRefs: List<String>, message: String): Boolean {
-    val snapshotMap = state.mapValues { (_, text) -> saveBlob(text) }
+  fun saveMergeSnapshot(ref: String, state: Map<String, FileEntry>, parentRefs: List<String>, message: String): Boolean {
+    val snapshotMap = state.mapValues { (_, entry) -> saveBlob(entry) }
 
     val snapshotHash = saveObject(SNAPSHOT_TYPE) { out ->
       FrameworkStorageUtils.writeINT(out, snapshotMap.size)
@@ -348,10 +348,10 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
 
   /**
    * Get snapshot state directly by snapshot hash (for debugging).
-   * Reads the snapshot object and resolves all blob hashes to their content.
+   * Reads the snapshot object and resolves all blob hashes to their FileEntry.
    */
   @Throws(IOException::class)
-  fun getSnapshotByHash(snapshotHash: String): Map<String, String> {
+  fun getSnapshotByHash(snapshotHash: String): Map<String, FileEntry> {
     return readObject(snapshotHash) { type, input ->
       if (type != SNAPSHOT_TYPE) throw IOException("Object $snapshotHash is not a snapshot (type=$type)")
       val snapshotMap = readSnapshotMap(input)
@@ -359,9 +359,22 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
     }
   }
 
+  /**
+   * Save a FileEntry as a blob.
+   * Format:
+   * - content bytes length (INT)
+   * - content bytes
+   * - metadata count (INT)
+   * - for each metadata entry:
+   *   - key (UTF)
+   *   - type (BYTE): 0=false, 1=true, 2=string
+   *   - if type==2: string value (UTF)
+   */
   @Throws(IOException::class)
-  private fun saveBlob(text: String): String {
-    val hash = hashContent(text)
+  private fun saveBlob(entry: FileEntry): String {
+    // Hash is based on content + metadata for deduplication
+    val hashInput = entry.content + entry.metadata.entries.sortedBy { it.key }.joinToString { "${it.key}=${it.value}" }
+    val hash = hashContent(hashInput)
     if (contentHashIndex.containsKey(hash)) return hash
     if (objectExists(hash)) {
       contentHashIndex[hash] = hash
@@ -370,24 +383,64 @@ class FileBasedFrameworkStorage(private val baseDir: Path) : Closeable {
 
     return saveObject(BLOB_TYPE, hash) { out ->
       out.writeUTF(hash)
-      val bytes = text.toByteArray(StandardCharsets.UTF_8)
-      FrameworkStorageUtils.writeINT(out, bytes.size)
-      out.write(bytes)
+      // Write content
+      val contentBytes = entry.content.toByteArray(StandardCharsets.UTF_8)
+      FrameworkStorageUtils.writeINT(out, contentBytes.size)
+      out.write(contentBytes)
+      // Write metadata
+      FrameworkStorageUtils.writeINT(out, entry.metadata.size)
+      for ((key, value) in entry.metadata) {
+        out.writeUTF(key)
+        when (value) {
+          false -> out.writeByte(0)
+          true -> out.writeByte(1)
+          is String -> {
+            out.writeByte(2)
+            out.writeUTF(value)
+          }
+          is Number -> {
+            out.writeByte(3)
+            out.writeUTF(value.toString())
+          }
+          else -> {
+            // Fallback: serialize as string
+            out.writeByte(2)
+            out.writeUTF(value.toString())
+          }
+        }
+      }
     }
   }
 
   @Throws(IOException::class)
-  private fun readBlob(hash: String): String {
+  private fun readBlob(hash: String): FileEntry {
     return readObject(hash) { type, input ->
       if (type != BLOB_TYPE) throw IOException("Object $hash is not a blob (type=$type)")
       val storedHash = input.readUTF()
-      val length = FrameworkStorageUtils.readINT(input)
-      if (length < 0 || length > MAX_BLOB_SIZE) {
-        throw IOException("Invalid blob size $length")
+      // Read content
+      val contentLength = FrameworkStorageUtils.readINT(input)
+      if (contentLength !in 0..MAX_BLOB_SIZE) {
+        throw IOException("Invalid blob size $contentLength")
       }
-      val contentBytes = ByteArray(length)
+      val contentBytes = ByteArray(contentLength)
       input.readFully(contentBytes)
-      String(contentBytes, StandardCharsets.UTF_8)
+      val content = String(contentBytes, StandardCharsets.UTF_8)
+      // Read metadata
+      val metadata = mutableMapOf<String, Any>()
+      val metadataCount = FrameworkStorageUtils.readINT(input)
+      for (i in 0 until metadataCount) {
+        val key = input.readUTF()
+        val valueType = input.readByte().toInt()
+        val value: Any = when (valueType) {
+          0 -> false
+          1 -> true
+          2 -> input.readUTF()
+          3 -> input.readUTF().toLongOrNull() ?: input.readUTF()
+          else -> input.readUTF() // fallback
+        }
+        metadata[key] = value
+      }
+      FileEntry(content, metadata)
     }
   }
 

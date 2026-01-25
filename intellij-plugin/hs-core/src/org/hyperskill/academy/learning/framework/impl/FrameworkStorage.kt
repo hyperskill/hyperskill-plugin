@@ -7,6 +7,7 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.io.storage.AbstractStorage
 import org.hyperskill.academy.learning.framework.storage.Change
 import org.hyperskill.academy.learning.framework.storage.FileBasedFrameworkStorage
+import org.hyperskill.academy.learning.framework.storage.FileEntry
 import org.hyperskill.academy.learning.framework.storage.UserChanges
 import java.io.IOException
 import java.nio.file.Files
@@ -76,7 +77,7 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
    * Returns null if HEAD is not set.
    */
   @Throws(IOException::class)
-  fun getHeadSnapshot(): Map<String, String>? {
+  fun getHeadSnapshot(): Map<String, FileEntry>? {
     return if (hasFileBasedStorage()) getFileBasedStorage().getHeadSnapshot() else null
   }
 
@@ -125,7 +126,7 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
   /**
    * Get snapshot by its hash directly (for debugging).
    */
-  fun getSnapshotByHash(snapshotHash: String): Map<String, String>? {
+  fun getSnapshotByHash(snapshotHash: String): Map<String, FileEntry>? {
     return if (hasFileBasedStorage()) {
       try {
         getFileBasedStorage().getSnapshotByHash(snapshotHash)
@@ -147,7 +148,7 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
    * Get the snapshot (full state) for a ref.
    */
   @Throws(IOException::class)
-  fun getSnapshot(ref: String?): Map<String, String> {
+  fun getSnapshot(ref: String?): Map<String, FileEntry> {
     return getFileBasedStorage().getSnapshot(ref)
   }
 
@@ -162,13 +163,13 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
   /**
    * Save a snapshot (full state).
    * @param ref The ref name (e.g., "stage_543")
-   * @param state The file state to save
+   * @param state The file state to save (path -> FileEntry with content and metadata)
    * @param parentRef Optional parent ref for commit chain
    * @param message Commit message describing the reason for this snapshot
    * @return true if a new commit was created, false if snapshot was identical
    */
   @Throws(IOException::class)
-  fun saveSnapshot(ref: String, state: Map<String, String>, parentRef: String? = null, message: String = ""): Boolean {
+  fun saveSnapshot(ref: String, state: Map<String, FileEntry>, parentRef: String? = null, message: String = ""): Boolean {
     return getFileBasedStorage().saveSnapshot(ref, state, parentRef, message)
   }
 
@@ -177,13 +178,13 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
    * Used when merging changes from one stage to another (Keep/Replace dialog).
    *
    * @param ref The ref name to update
-   * @param state The file state to save
+   * @param state The file state to save (path -> FileEntry with content and metadata)
    * @param parentRefs List of parent refs (typically [sourceRef, targetRef] for merge)
    * @param message Commit message describing the merge
    * @return true if a new commit was created
    */
   @Throws(IOException::class)
-  fun saveMergeSnapshot(ref: String, state: Map<String, String>, parentRefs: List<String>, message: String): Boolean {
+  fun saveMergeSnapshot(ref: String, state: Map<String, FileEntry>, parentRefs: List<String>, message: String): Boolean {
     return getFileBasedStorage().saveMergeSnapshot(ref, state, parentRefs, message)
   }
 
@@ -297,8 +298,8 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
       }
     }
 
-    // Save merged state as new snapshot
-    saveSnapshot(ref, mergedState, parentRef)
+    // Save merged state as new snapshot (convert to FileEntry with default metadata)
+    saveSnapshot(ref, mergedState.toFileEntries(), parentRef)
   }
 
   /**

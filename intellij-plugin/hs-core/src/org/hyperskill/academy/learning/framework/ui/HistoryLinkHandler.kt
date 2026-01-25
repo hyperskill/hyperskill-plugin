@@ -44,10 +44,10 @@ class HistoryLinkHandler(
       val virtualFile = taskFile.getVirtualFile(project) ?: return@mapNotNull null
       val currentText = FileDocumentManager.getInstance().getDocument(virtualFile)?.text ?: return@mapNotNull null
 
-      val snapshotText = snapshot[taskFile.name] ?: return@mapNotNull null
+      val snapshotEntry = snapshot[taskFile.name] ?: return@mapNotNull null
 
       val currentContent = DiffContentFactory.getInstance().create(currentText, virtualFile.fileType)
-      val snapshotContent = DiffContentFactory.getInstance().create(snapshotText, virtualFile.fileType)
+      val snapshotContent = DiffContentFactory.getInstance().create(snapshotEntry.content, virtualFile.fileType)
 
       SimpleDiffRequest(
         EduCoreBundle.message("history.compare"),

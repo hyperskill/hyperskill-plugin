@@ -37,6 +37,7 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.impl.FrameworkStorage
+import org.hyperskill.academy.learning.framework.storage.FileEntry
 import org.hyperskill.academy.learning.framework.impl.getStorageRef
 import org.hyperskill.academy.learning.framework.storage.FileBasedFrameworkStorage
 import java.awt.BorderLayout
@@ -94,8 +95,8 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
 
   private var autoRefresh = true
   private var currentStorage: FrameworkStorage? = null
-  private var currentCommitSnapshot: Map<String, String> = emptyMap()
-  private var parentCommitSnapshot: Map<String, String> = emptyMap()
+  private var currentCommitSnapshot: Map<String, FileEntry> = emptyMap()
+  private var parentCommitSnapshot: Map<String, FileEntry> = emptyMap()
 
   // Stage selector
   private val stageComboBox = JComboBox<StageItem>()
@@ -476,32 +477,32 @@ class FrameworkStoragePanel(private val project: Project) : JPanel(BorderLayout(
     }
   }
 
-  private fun loadSnapshot(storage: FrameworkStorage, snapshotHash: String): Map<String, String> {
+  private fun loadSnapshot(storage: FrameworkStorage, snapshotHash: String): Map<String, FileEntry> {
     return storage.getSnapshotByHash(snapshotHash) ?: emptyMap()
   }
 
-  private fun calculateChanges(oldState: Map<String, String>, newState: Map<String, String>): List<FileChange> {
+  private fun calculateChanges(oldState: Map<String, FileEntry>, newState: Map<String, FileEntry>): List<FileChange> {
     val changes = mutableListOf<FileChange>()
 
     // Added files
-    for ((path, content) in newState) {
+    for ((path, entry) in newState) {
       if (path !in oldState) {
-        changes.add(FileChange(path, ChangeType.ADDED, null, content))
+        changes.add(FileChange(path, ChangeType.ADDED, null, entry.content))
       }
     }
 
     // Modified files
-    for ((path, newContent) in newState) {
-      val oldContent = oldState[path]
-      if (oldContent != null && oldContent != newContent) {
-        changes.add(FileChange(path, ChangeType.MODIFIED, oldContent, newContent))
+    for ((path, newEntry) in newState) {
+      val oldEntry = oldState[path]
+      if (oldEntry != null && oldEntry.content != newEntry.content) {
+        changes.add(FileChange(path, ChangeType.MODIFIED, oldEntry.content, newEntry.content))
       }
     }
 
     // Deleted files
-    for ((path, oldContent) in oldState) {
+    for ((path, oldEntry) in oldState) {
       if (path !in newState) {
-        changes.add(FileChange(path, ChangeType.DELETED, oldContent, null))
+        changes.add(FileChange(path, ChangeType.DELETED, oldEntry.content, null))
       }
     }
 

@@ -22,7 +22,7 @@ class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
     // Apply status and feedback from deserialized item
     existingItem.status = deserializedItem.status
     existingItem.feedback = deserializedItem.feedback
-    existingItem.record = deserializedItem.record
+    // Note: record is no longer serialized (legacy field), don't overwrite existing value
 
     when (existingItem) {
       is EduTask -> {

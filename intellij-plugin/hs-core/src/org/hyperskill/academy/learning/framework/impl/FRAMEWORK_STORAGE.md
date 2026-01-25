@@ -172,42 +172,166 @@ private fun saveCurrentTaskSnapshot() {
 | Auto-save | `Auto-save changes for 'Stage 1'` |
 | Load from server | `Load submission from server for 'Stage 1' (submission #12345)` |
 
-## File Categories
+## File Categories and Propagation Rules
+
+### Overview
+
+File propagation determines what happens when a user navigates between stages in a non-template-based framework lesson. The rules are aligned with the server-side logic.
+
+### Propagation Mode
+
+Controlled by `FrameworkLesson.isTemplateBased`:
+
+| Mode | `isTemplateBased` | Behavior |
+|------|-------------------|----------|
+| **Template-based** | `true` | No propagation. Each stage uses author's original files. |
+| **Non-template-based** | `false` | User's visible files propagate to subsequent stages. |
+
+On the server, this is checked via `Step.block_is_inherited`:
+```python
+@property
+def block_is_inherited(self) -> bool:
+    if self.block_name != BlockName.PYCHARM:
+        return False
+    project = self.get_project()
+    return bool(project and not project.is_template_based)
+```
 
 ### Propagatable Files
-- Visible files (`isVisible = true`)
-- Non-test files
-- Editable by learner
 
-These files are tracked in storage and can be propagated between stages.
+**Definition**: `TaskFile.shouldBePropagated() = isVisible && isEditable`
+
+These are user-editable files that transfer between stages:
+- Visible to user (`isVisible = true`)
+- Editable by user (`isEditable = true`)
+- NOT learner-created (`isLearnerCreated = false` for storage purposes)
+
+These files are:
+- Tracked in storage snapshots
+- Propagated forward when user navigates (in non-template-based mode)
+- Merged using Keep/Replace dialog when conflicts exist
+
+**Server-side equivalent**:
+```python
+# In build_block():
+for solution_file in solution:
+    if not solution_file['is_visible']:
+        continue  # Only visible files propagate
+    # ... copy file to next stage
+```
 
 ### Non-Propagatable Files
-- Test files (in test directories or matching test patterns)
-- Invisible files (`isVisible = false`)
-- Files in test directories
 
-These files are NOT stored. Test files are recreated from API cache when navigating.
+**Definition**: `!TaskFile.shouldBePropagated()` = `!isVisible || !isEditable`
 
-### Test File Handling
+Two categories:
 
-Test files are handled separately:
-1. Cached from API when task data is loaded (`originalTestFilesCache`)
-2. Recreated on each navigation from the cache
-3. Never stored in framework storage (prevents corruption across stages)
+1. **Test files** (typically `!isVisible`):
+   - Files in test directories (e.g., `test/`, `tests/`)
+   - Hidden from user but executed during check
+   - Each stage has its own test files from author
+
+2. **Hidden/Read-only files** (`!isEditable` or `!isVisible`):
+   - Configuration files user shouldn't modify
+   - Reference implementations
+   - Any file author marked as non-editable
+
+These files are:
+- NOT stored in snapshots (would corrupt stage-specific content)
+- Cached separately in `originalNonPropagatableFilesCache`
+- Recreated from API/cache on each navigation
+- Each stage gets fresh files from author, not from previous stage
+
+**Server-side equivalent**:
+```python
+# In build_block():
+files.extend(
+    block_file
+    for block_file in block['options']['files']
+    if block_file.get('name') not in user_files  # Add author's new files
+)
+```
+Server adds author's files that weren't in user's solution (test, hidden, new files).
+
+### File Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        Navigation: Stage N → Stage N+1                   │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  PROPAGATABLE FILES (isVisible && isEditable):                          │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │ Stage N disk → Storage snapshot → Apply to Stage N+1 disk        │   │
+│  │ (User's Main.kt, utils.py, etc.)                                 │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  NON-PROPAGATABLE FILES (!isVisible || !isEditable):                    │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │ API/Cache for Stage N+1 → Recreate on disk                       │   │
+│  │ (Test files, hidden configs - fresh for each stage)              │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Storage Snapshot Contents
+
+A full snapshot for a stage contains:
+1. **User files** (from disk): All propagatable files user has on disk
+2. **Non-propagatable files** (from cache): Test and hidden files from API
+
+```kotlin
+fun buildFullSnapshotState(task: Task): Map<String, String> {
+    val result = mutableMapOf<String, String>()
+
+    // 1. Read propagatable files from disk
+    for ((path, taskFile) in task.taskFiles) {
+        if (taskFile.shouldBePropagated()) {
+            result[path] = readFromDisk(path)
+        }
+    }
+
+    // 2. Add non-propagatable files from cache (NOT from disk!)
+    val cached = originalNonPropagatableFilesCache[task.id]
+    for ((path, taskFile) in cached) {
+        result[path] = taskFile.contents
+    }
+
+    return result
+}
+```
+
+### Why Non-Propagatable Files Are Cached Separately
+
+1. **Stage isolation**: Each stage has its own test files; propagating them would break subsequent stages
+2. **Offline support**: After IDE restart, API may not be available; cache preserves test files
+3. **Author updates**: When author updates test files, we update cache and storage snapshot
+4. **Corruption prevention**: TaskFile.contents may get overwritten with wrong stage's content during navigation
+
+### Cache Priority for Non-Propagatable Files
+
+When loading non-propagatable files:
+1. **Cache** (`originalNonPropagatableFilesCache`) - preferred, contains API data
+2. **API** (if cache miss) - fetch fresh from server
+3. **task.taskFiles** (last resort) - may be stale/corrupted
 
 ## Caches
 
 ### `originalTemplateFilesCache`
 - Maps `stepId` → `Map<String, String>` (path → content)
-- Contains original template files from API
-- Used to calculate user changes correctly
+- Contains original template files (propagatable files) from API
+- Used to calculate user changes correctly in `saveExternalChanges()`
 - Populated when task files are loaded from API
+- Used for: calculating diff between user's code and original template
 
-### `originalTestFilesCache`
-- Maps `stepId` → `Map<String, TaskFile>`
-- Contains original test files from API
-- Used to recreate test files on navigation
+### `originalNonPropagatableFilesCache`
+- Maps `stepId` → `Map<String, TaskFile>` (path → TaskFile with metadata)
+- Contains all non-propagatable files: test files AND hidden/read-only files
+- Filter: `!isVisible || !isEditable` (opposite of `shouldBePropagated()`)
+- Used to recreate non-propagatable files on navigation
 - Populated from API (anonymous request to get original files, not user submissions)
+- Preserves `isEditable` property per file (some hidden files may be editable, some not)
 
 ## Migration from Legacy Storage
 
