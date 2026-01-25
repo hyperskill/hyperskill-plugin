@@ -988,8 +988,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   override fun updateOriginalTestFiles(task: Task) {
     // Force update the cache, used when task files are updated from remote server
     // (e.g., during course update). Unlike storeOriginalTestFiles, this WILL overwrite.
+    // Pass forceUpdate=true to handle the case when author removes all test files.
     LOG.info("Force updating test files cache for task '${task.name}' (step ${task.id})")
-    storeTestFilesInternal(task)
+    storeTestFilesInternal(task, forceUpdate = true)
   }
 
   override fun updateSnapshotTestFiles(task: Task) {
@@ -1006,6 +1007,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     // Get cached test files (should be updated via updateOriginalTestFiles before calling this)
+    // Note: null means cache wasn't updated (can't proceed), empty map means author removed all tests
     val cachedTestFiles = originalTestFilesCache[task.id]
     if (cachedTestFiles == null) {
       LOG.warn("updateSnapshotTestFiles: No cached test files for task '${task.name}', cannot update snapshot")
@@ -1028,13 +1030,18 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       }
 
       // Combine user files with new test files from cache
+      // If cachedTestFiles is empty, this effectively removes all test files from snapshot
       val updatedSnapshot = HashMap(userFiles)
       for ((path, taskFile) in cachedTestFiles) {
         updatedSnapshot[path] = taskFile.contents.textualRepresentation
       }
 
       // Save updated snapshot
-      val message = "Update test files from server for '${task.name}'"
+      val message = if (cachedTestFiles.isEmpty()) {
+        "Remove all test files from server for '${task.name}'"
+      } else {
+        "Update test files from server for '${task.name}'"
+      }
       val created = storage.saveSnapshot(ref, updatedSnapshot, null, message)
       if (created) {
         LOG.info("updateSnapshotTestFiles: Updated snapshot for task '${task.name}' with ${cachedTestFiles.size} test files")
@@ -1047,7 +1054,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
   }
 
-  private fun storeTestFilesInternal(task: Task) {
+  private fun storeTestFilesInternal(task: Task, forceUpdate: Boolean = false) {
     val testFiles = task.taskFiles.filterValues { taskFile ->
       !taskFile.isLearnerCreated && taskFile.isTestFile
     }
@@ -1068,6 +1075,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         "$name:size=${file.contents.textualRepresentation.length}"
       }
       LOG.info("Stored ${copiedTestFiles.size} original test files for task '${task.name}' (step ${task.id}): [$filesInfo]")
+    } else if (forceUpdate) {
+      // Author removed all test files - store empty map to reflect this
+      originalTestFilesCache[task.id] = emptyMap()
+      LOG.info("Stored empty test files cache for task '${task.name}' (step ${task.id}) - author removed all tests")
     }
   }
 
