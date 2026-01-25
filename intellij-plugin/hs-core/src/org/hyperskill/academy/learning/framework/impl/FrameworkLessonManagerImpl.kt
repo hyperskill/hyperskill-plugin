@@ -387,15 +387,33 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     //
     // Check if merge is needed using git-like ancestor check:
     // - If current commit is ancestor of target commit → no merge needed (changes already propagated)
-    // - If current commit is NOT ancestor of target commit → need merge, show Keep/Replace dialog
+    // - If current commit is NOT ancestor of target commit → check if propagatable files changed
+    // - If only test/hidden files changed (not user code) → auto-Keep merge (record ancestry, keep target's code)
     val currentCommitIsAncestorOfTarget = targetHasStorage && storage.isAncestor(currentRef, targetRef)
+    val hasPropagatableChanges = !currentCommitIsAncestorOfTarget && hasPropagatableChangesFromParent(currentRef, currentTask)
     val needsMerge = !currentCommitIsAncestorOfTarget && targetHasStorage && taskIndexDelta == 1 && lesson.propagateFilesOnNavigation
-    LOG.info("Merge check: currentRef=$currentRef, targetRef=$targetRef, isAncestor=$currentCommitIsAncestorOfTarget, needsMerge=$needsMerge")
+    val isTestOnlyUpdate = needsMerge && !hasPropagatableChanges
+    LOG.info("Merge check: currentRef=$currentRef, targetRef=$targetRef, isAncestor=$currentCommitIsAncestorOfTarget, hasPropagatableChanges=$hasPropagatableChanges, needsMerge=$needsMerge, isTestOnlyUpdate=$isTestOnlyUpdate")
 
     // Track if merge commit was created (to skip redundant snapshot save in step 10)
     var mergeCommitCreated = false
 
     val changes = when {
+      // Test-only update: only non-propagatable files changed, create auto-Keep merge to record ancestry
+      isTestOnlyUpdate -> {
+        mergeCommitCreated = true
+        LOG.info("Test-only update detected, creating auto-Keep merge commit")
+        val (targetPropagatableFilesState, _) = targetState.split(targetTask)
+        val mergeMessage = "Merge from '${currentTask.name}': Auto-keep (only test files changed)"
+        try {
+          val targetFileEntries = targetPropagatableFilesState.toFileEntries(targetTask, originalNonPropagatableFilesCache[targetTask.id])
+          storage.saveMergeSnapshot(targetRef, targetFileEntries, listOf(targetRef, currentRef), mergeMessage)
+          LOG.info("Created auto-Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
+        } catch (e: IOException) {
+          LOG.error("Failed to create auto-Keep merge commit for '$targetRef'", e)
+        }
+        calculateChanges(currentState, targetState)
+      }
       needsMerge -> {
         mergeCommitCreated = true // Merge commit will be created in calculatePropagationChanges
         calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict, targetHasStorage, currentRef, targetRef)
@@ -818,6 +836,21 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return calculateCurrentTaskChanges()
     }
 
+    // If target snapshot has no propagatable files (empty or only test/hidden files) - auto-Replace without dialog
+    // Such commits don't represent user changes, so there's nothing meaningful to keep - propagate current state
+    if (newTargetPropagatableFilesState.isEmpty()) {
+      LOG.info("Target snapshot has no propagatable files, auto-Replace: propagating current state without dialog")
+      val mergeMessage = "Merge from '${currentTask.name}': Auto-replace (target had no user files)"
+      try {
+        val currentFileEntries = currentPropagatableFilesState.toFileEntries(currentTask, originalNonPropagatableFilesCache[currentTask.id])
+        storage.saveMergeSnapshot(targetRef, currentFileEntries, listOf(targetRef, currentRef), mergeMessage)
+        LOG.info("Created auto-Replace merge commit for '$targetRef' with parents [$targetRef, $currentRef]")
+      } catch (e: IOException) {
+        LOG.error("Failed to create auto-Replace merge commit for '$targetRef'", e)
+      }
+      return calculateCurrentTaskChanges()
+    }
+
     // If current and target propagatable files are identical - no need for dialog
     // Just calculate diff for non-propagatable files
     if (newCurrentPropagatableFilesState == newTargetPropagatableFilesState) {
@@ -827,7 +860,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       )
     }
 
-    // Target has saved state AND content differs - ask user before overwriting
+    // Target has saved state with propagatable files AND content differs - ask user before overwriting
     val keepChanges = if (showDialogIfConflict) {
       val currentTaskName = "${currentTask.getUIName()} ${currentTask.index}"
       val targetTaskName = "${targetTask.getUIName()} ${targetTask.index}"
@@ -1377,6 +1410,64 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     return positive to negative
+  }
+
+  /**
+   * Checks if the current ref has propagatable file changes compared to its parent commit.
+   * Returns true if:
+   * - There's no parent (first commit) - considered as having changes
+   * - Propagatable files differ from parent - user made code changes
+   * Returns false if:
+   * - Only non-propagatable files (tests, hidden) changed - no user code changes
+   *
+   * This is used to skip Keep/Replace dialog when only test files were updated
+   * (e.g., author updated tests via Update Course).
+   */
+  private fun hasPropagatableChangesFromParent(ref: String, task: Task): Boolean {
+    val commitHash = storage.resolveRef(ref)
+    if (commitHash == null) {
+      LOG.info("hasPropagatableChangesFromParent: ref=$ref has no commit, assuming has changes")
+      return true
+    }
+
+    val commit = storage.getCommit(commitHash)
+    if (commit == null) {
+      LOG.info("hasPropagatableChangesFromParent: commit=$commitHash not found, assuming has changes")
+      return true
+    }
+
+    val parentHash = commit.parentHashes.firstOrNull()
+    if (parentHash == null) {
+      // First commit in the chain - considered as having changes
+      LOG.info("hasPropagatableChangesFromParent: ref=$ref is first commit, assuming has changes")
+      return true
+    }
+
+    val parentCommit = storage.getCommit(parentHash)
+    if (parentCommit == null) {
+      LOG.info("hasPropagatableChangesFromParent: parent commit=$parentHash not found, assuming has changes")
+      return true
+    }
+
+    try {
+      val currentSnapshot = storage.getSnapshot(ref).toContentMap()
+      val parentSnapshot = storage.getSnapshotByHash(parentCommit.snapshotHash)?.toContentMap()
+      if (parentSnapshot == null) {
+        LOG.info("hasPropagatableChangesFromParent: parent snapshot not found, assuming has changes")
+        return true
+      }
+
+      // Compare only propagatable files
+      val (currentPropagatable, _) = currentSnapshot.split(task)
+      val (parentPropagatable, _) = parentSnapshot.split(task)
+
+      val hasChanges = currentPropagatable != parentPropagatable
+      LOG.info("hasPropagatableChangesFromParent: ref=$ref, hasChanges=$hasChanges (current=${currentPropagatable.size} files, parent=${parentPropagatable.size} files)")
+      return hasChanges
+    } catch (e: Exception) {
+      LOG.warn("hasPropagatableChangesFromParent: error comparing snapshots, assuming has changes", e)
+      return true
+    }
   }
 
   private fun FLTaskState.split(task: Task) = splitByKey { path ->
