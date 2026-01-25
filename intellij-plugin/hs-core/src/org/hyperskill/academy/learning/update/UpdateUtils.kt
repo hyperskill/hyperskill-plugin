@@ -138,6 +138,10 @@ object UpdateUtils {
     // Use update* methods to force-update the cache (store* methods won't overwrite).
     flm.updateOriginalTestFiles(task)
     flm.updateOriginalTemplateFiles(task)
+
+    // Update storage snapshot with new test files from server.
+    // This ensures navigation uses the updated test files.
+    flm.updateSnapshotTestFiles(task)
   }
 
   private val Task.nonPropagatableFiles: Map<String, TaskFile>

@@ -57,6 +57,15 @@ interface FrameworkLessonManager : EduTestAware {
   fun updateOriginalTestFiles(task: Task)
 
   /**
+   * Updates test files in an existing storage snapshot for a task.
+   * Used when server updates test files - we need to update the persisted snapshot
+   * so that navigation uses the new test files.
+   *
+   * @param task the task whose snapshot should be updated with new test files
+   */
+  fun updateSnapshotTestFiles(task: Task)
+
+  /**
    * Updates original template files cache for a task, overwriting any existing cached data.
    * Use this method when updating template files from remote server (e.g., during course update).
    * Unlike [storeOriginalTemplateFiles], this method WILL overwrite existing cache entries.

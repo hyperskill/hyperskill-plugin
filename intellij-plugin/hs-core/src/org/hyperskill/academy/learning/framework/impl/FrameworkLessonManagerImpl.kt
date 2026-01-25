@@ -992,6 +992,61 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     storeTestFilesInternal(task)
   }
 
+  override fun updateSnapshotTestFiles(task: Task) {
+    require(task.lesson is FrameworkLesson) {
+      "Only framework task snapshots can be updated"
+    }
+
+    val ref = task.storageRef()
+
+    // Only update if snapshot exists (user visited this task before)
+    if (!storage.hasRef(ref)) {
+      LOG.info("updateSnapshotTestFiles: No snapshot exists for task '${task.name}' (ref=$ref), skipping")
+      return
+    }
+
+    // Get cached test files (should be updated via updateOriginalTestFiles before calling this)
+    val cachedTestFiles = originalTestFilesCache[task.id]
+    if (cachedTestFiles == null) {
+      LOG.warn("updateSnapshotTestFiles: No cached test files for task '${task.name}', cannot update snapshot")
+      return
+    }
+
+    try {
+      // Get current snapshot
+      val currentSnapshot = storage.getSnapshot(ref)
+
+      // Separate user files from test files in existing snapshot
+      val testDirs = task.testDirs
+      val userFiles = currentSnapshot.filterKeys { path ->
+        // Keep files that are NOT test files
+        val isInTestDir = testDirs.any { testDir -> path.startsWith("$testDir/") || path == testDir }
+        val fileName = path.substringAfterLast('/')
+        val isTestFileName = fileName == "tests.py" || fileName.startsWith("test_") || fileName.endsWith("_test.py") ||
+                             path.contains("test", ignoreCase = true)
+        !isInTestDir && !isTestFileName
+      }
+
+      // Combine user files with new test files from cache
+      val updatedSnapshot = HashMap(userFiles)
+      for ((path, taskFile) in cachedTestFiles) {
+        updatedSnapshot[path] = taskFile.contents.textualRepresentation
+      }
+
+      // Save updated snapshot
+      val message = "Update test files from server for '${task.name}'"
+      val created = storage.saveSnapshot(ref, updatedSnapshot, null, message)
+      if (created) {
+        LOG.info("updateSnapshotTestFiles: Updated snapshot for task '${task.name}' with ${cachedTestFiles.size} test files")
+      } else {
+        LOG.info("updateSnapshotTestFiles: Snapshot unchanged for task '${task.name}' (test files identical)")
+      }
+    }
+    catch (e: IOException) {
+      LOG.error("Failed to update snapshot test files for task '${task.name}'", e)
+    }
+  }
+
   private fun storeTestFilesInternal(task: Task) {
     val testFiles = task.taskFiles.filterValues { taskFile ->
       !taskFile.isLearnerCreated && taskFile.isTestFile
