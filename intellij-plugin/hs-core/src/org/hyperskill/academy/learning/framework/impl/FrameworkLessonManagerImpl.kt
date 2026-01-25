@@ -62,9 +62,10 @@ private fun Task.storageRef(): String = getStorageRef()
 class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLessonManager, Disposable {
   private var storage: FrameworkStorage = createStorage(project)
 
-  // Cache of original test files from API for each task (by step ID)
-  // These are used to recreate test files with correct content when navigating between stages
-  private val originalTestFilesCache = java.util.concurrent.ConcurrentHashMap<Int, Map<String, TaskFile>>()
+  // Cache of original non-propagatable files (test files + hidden files) from API for each task (by step ID)
+  // These are used to recreate files with correct content when navigating between stages
+  // Non-propagatable files: isVisible=false OR isEditable=false (i.e., !shouldBePropagated())
+  private val originalNonPropagatableFilesCache = java.util.concurrent.ConcurrentHashMap<Int, Map<String, TaskFile>>()
 
   // Cache of original template files (visible non-test files) for each task (by step ID)
   // These are used to calculate user changes correctly, since TaskFile.contents may be modified
@@ -136,7 +137,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val externalPropagatableFiles = externalState.split(task).first
     LOG.warn("saveExternalChanges: externalPropagatableFiles.keys=${externalPropagatableFiles.keys}")
 
-    // Build full snapshot: user files from submission + test files from cache
+    // Build full snapshot: user files from submission + non-propagatable files from cache
     val fullSnapshot = buildFullSnapshotState(task, externalPropagatableFiles)
 
     // Save the full snapshot
@@ -331,7 +332,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // When navigating backward, the disk content belongs to the stage we're leaving,
     // not the stage we're going from. Saving it would corrupt the current stage's snapshot.
     if (taskIndexDelta > 0) {
-      // Build full snapshot: user files from disk + test files from cache
+      // Build full snapshot: user files from disk + non-propagatable files from cache
       val fullSnapshot = buildFullSnapshotState(currentTask, currentPropagatableFiles)
       val navMessage = "Save changes before navigating from '${currentTask.name}' to '${targetTask.name}'"
       try {
@@ -408,9 +409,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // 7. Apply difference between latest states of current and target tasks on local FS
     changes.apply(project, taskDir, targetTask)
 
-    // 8. Recreate test files (files with isLearnerCreated = false) from target task definition
-    // These files are not tracked in framework storage, so we need to recreate them explicitly
-    recreateTestFiles(project, taskDir, currentTask, targetTask)
+    // 8. Recreate non-propagatable files (test files, hidden files) from target task definition
+    // These files are stage-specific, so we need to recreate them explicitly during navigation
+    recreateNonPropagatableFiles(project, taskDir, currentTask, targetTask)
 
     // 9. ALT-10961: Force save all documents and refresh VFS to ensure changes are visible in editor
     // Document changes may be in memory but not persisted or reflected in the editor
@@ -434,7 +435,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // - Target without storage (first visit to this stage)
     // - Navigation without merge (ancestor check passed, no Keep/Replace dialog)
     if (taskIndexDelta > 0 && !mergeCommitCreated) {
-      // Read user files from disk, then build full snapshot with test files
+      // Read user files from disk, then build full snapshot with non-propagatable files
       val userFileKeys = targetTask.allFiles.keys
       val finalDiskState = getTaskStateFromFiles(userFileKeys, taskDir)
       val (finalPropagatableFiles, _) = finalDiskState.split(targetTask)
@@ -456,44 +457,44 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   }
 
   /**
-   * Loads test files from API for a task and caches them.
+   * Loads non-propagatable files (test files + hidden files) from API for a task and caches them.
    * This is used as a fallback when the cache is empty (e.g., after IDE restart).
    *
    * IMPORTANT: This method must NOT block EDT. If called from EDT, it starts async loading
    * and returns null immediately. The caller should use task.taskFiles as fallback.
    *
-   * @param task the task whose test files should be loaded
-   * @return map of test files (filename -> TaskFile), or null if loading failed or is in progress
+   * @param task the task whose non-propagatable files should be loaded
+   * @return map of non-propagatable files (filename -> TaskFile), or null if loading failed or is in progress
    */
-  private fun loadTestFilesFromApi(task: Task): Map<String, TaskFile>? {
+  private fun loadNonPropagatableFilesFromApi(task: Task): Map<String, TaskFile>? {
     val stepId = task.id
     if (stepId <= 0) {
-      LOG.warn("Cannot load test files from API: task '${task.name}' has invalid step ID: $stepId")
+      LOG.warn("Cannot load non-propagatable files from API: task '${task.name}' has invalid step ID: $stepId")
       return null
     }
 
     // Don't block EDT - start async loading and return null
     // The caller will use task.taskFiles as fallback
     if (ApplicationManager.getApplication().isDispatchThread) {
-      LOG.info("On EDT, starting async load for test files of task '${task.name}' (step $stepId)")
+      LOG.info("On EDT, starting async load for non-propagatable files of task '${task.name}' (step $stepId)")
       ApplicationManager.getApplication().executeOnPooledThread {
-        loadTestFilesFromApiSync(task)
+        loadNonPropagatableFilesFromApiSync(task)
       }
       return null
     }
 
-    return loadTestFilesFromApiSync(task)
+    return loadNonPropagatableFilesFromApiSync(task)
   }
 
   /**
-   * Synchronously loads test files from API. Must NOT be called from EDT.
+   * Synchronously loads non-propagatable files from API. Must NOT be called from EDT.
    */
-  private fun loadTestFilesFromApiSync(task: Task): Map<String, TaskFile>? {
+  private fun loadNonPropagatableFilesFromApiSync(task: Task): Map<String, TaskFile>? {
     val stepId = task.id
-    LOG.info("Loading test files from API for task '${task.name}' (step $stepId)")
+    LOG.info("Loading non-propagatable files from API for task '${task.name}' (step $stepId)")
 
     return try {
-      // ALT-10961: Use anonymous request to get original test files from API.
+      // ALT-10961: Use anonymous request to get original files from API.
       // Authenticated requests return files from user's last submission instead of original stage files.
       val stepSourceResult = HyperskillConnector.getInstance().getStepSourceAnonymous(stepId)
       if (stepSourceResult is Err) {
@@ -514,75 +515,74 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         return null
       }
 
-      // Filter test files (not learner-created and likely a test file by name)
-      // Note: Cannot use taskFile.isTestFile here because TaskFile objects from API
-      // are not attached to a Task, and isTestFile requires task context.
-      val testFiles = allFiles.filter { taskFile ->
-        !taskFile.isLearnerCreated && "test" in taskFile.name.lowercase()
+      // Filter non-propagatable files: author-created AND (invisible OR non-editable)
+      // This includes test files and hidden configuration files
+      val nonPropagatableFiles = allFiles.filter { taskFile ->
+        !taskFile.isLearnerCreated && (!taskFile.isVisible || !taskFile.isEditable)
       }
 
-      if (testFiles.isEmpty()) {
-        LOG.warn("Step $stepId has no test files")
-        return null
+      if (nonPropagatableFiles.isEmpty()) {
+        LOG.info("Step $stepId has no non-propagatable files")
+        // Store empty map so we don't keep trying to load
+        originalNonPropagatableFilesCache[stepId] = emptyMap()
+        return emptyMap()
       }
 
       // Create copies of TaskFile objects and cache them
-      // Force isVisible = false for test files so they don't appear in Project View
-      val copiedTestFiles = testFiles.associateBy(
+      val copiedFiles = nonPropagatableFiles.associateBy(
         { it.name },
         { taskFile ->
           TaskFile(taskFile.name, taskFile.contents).also {
-            it.isVisible = false
+            it.isVisible = taskFile.isVisible
             it.isEditable = taskFile.isEditable
             it.isLearnerCreated = taskFile.isLearnerCreated
           }
         }
       )
 
-      originalTestFilesCache[stepId] = copiedTestFiles
-      val filesInfo = copiedTestFiles.entries.joinToString { (name, file) ->
+      originalNonPropagatableFilesCache[stepId] = copiedFiles
+      val filesInfo = copiedFiles.entries.joinToString { (name, file) ->
         "$name:size=${file.contents.textualRepresentation.length}"
       }
-      LOG.info("Loaded and cached ${copiedTestFiles.size} test files from API for task '${task.name}' (step $stepId): [$filesInfo]")
+      LOG.info("Loaded and cached ${copiedFiles.size} non-propagatable files from API for task '${task.name}' (step $stepId): [$filesInfo]")
 
-      copiedTestFiles
+      copiedFiles
     }
     catch (e: Exception) {
-      LOG.warn("Exception while loading test files from API for step $stepId", e)
+      LOG.warn("Exception while loading non-propagatable files from API for step $stepId", e)
       null
     }
   }
 
   /**
-   * Recreates test files from storage snapshot, cache, or API.
-   * Test files are provided by the course author and should not be modified by students.
+   * Recreates non-propagatable files (test files, hidden files) from storage snapshot, cache, or API.
+   * Non-propagatable files are provided by the course author and should not be modified by students.
    *
-   * Priority for getting test files:
-   * 1. Storage snapshot (if exists) - most reliable, persisted
-   * 2. In-memory cache - populated from API
-   * 3. API request - fresh data from server
-   * 4. task.taskFiles - last resort fallback
+   * Priority for getting files:
+   * 1. In-memory cache - most reliable for current session
+   * 2. API request - fresh data from server
+   * 3. task.taskFiles - last resort fallback
    *
-   * @param currentTask The task we're navigating FROM (used to identify old test files to delete)
-   * @param targetTask The task we're navigating TO (used to identify new test files to create)
+   * @param currentTask The task we're navigating FROM (used to identify old files to delete)
+   * @param targetTask The task we're navigating TO (used to identify new files to create)
    */
-  private fun recreateTestFiles(project: Project, taskDir: VirtualFile, currentTask: Task, targetTask: Task) {
-    // Get test files for current task (to know what to delete)
-    val currentTestFileNames = getTestFileNames(currentTask)
+  private fun recreateNonPropagatableFiles(project: Project, taskDir: VirtualFile, currentTask: Task, targetTask: Task) {
+    // Get non-propagatable files for current task (to know what to delete)
+    val currentNonPropagatableFileNames = getNonPropagatableFileNames(currentTask)
 
-    // Get test files for target task from storage, cache, or API
-    val targetTestFilesContent = getTestFilesContent(targetTask)
-    val targetTestFileNames = targetTestFilesContent.keys
+    // Get non-propagatable files for target task from cache or API
+    val targetNonPropagatableFiles = getNonPropagatableFilesWithMetadata(targetTask)
+    val targetNonPropagatableFileNames = targetNonPropagatableFiles.keys
 
-    // Delete test files from current task that are not in target task
-    val testFilesToDelete = currentTestFileNames - targetTestFileNames
-    if (testFilesToDelete.isNotEmpty()) {
-      LOG.info("Deleting ${testFilesToDelete.size} old test files: $testFilesToDelete")
+    // Delete files from current task that are not in target task
+    val filesToDelete = currentNonPropagatableFileNames - targetNonPropagatableFileNames
+    if (filesToDelete.isNotEmpty()) {
+      LOG.info("Deleting ${filesToDelete.size} old non-propagatable files: $filesToDelete")
       invokeAndWaitIfNeeded {
         runWriteAction {
           // Collect parent directories that may become empty after file deletion
           val potentiallyEmptyDirs = mutableSetOf<VirtualFile>()
-          for (fileName in testFilesToDelete) {
+          for (fileName in filesToDelete) {
             try {
               val file = taskDir.findFileByRelativePath(fileName)
               if (file != null) {
@@ -595,7 +595,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
               }
             }
             catch (e: Exception) {
-              LOG.warn("Failed to delete old test file $fileName", e)
+              LOG.warn("Failed to delete old non-propagatable file $fileName", e)
             }
           }
           // Delete empty parent directories (in reverse depth order to handle nested dirs)
@@ -615,129 +615,92 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       }
     }
 
-    // Create new test files if target task has any
-    if (targetTestFilesContent.isNotEmpty()) {
-      val filesInfo = targetTestFilesContent.entries.joinToString { "${it.key}:${it.value.hashCode()}" }
-      LOG.info("Recreating ${targetTestFilesContent.size} test files for task '${targetTask.name}' (step ${targetTask.id}): [$filesInfo]")
+    // Create non-propagatable files for target task
+    if (targetNonPropagatableFiles.isNotEmpty()) {
+      val filesInfo = targetNonPropagatableFiles.entries.joinToString { "${it.key}:${it.value.contents.textualRepresentation.hashCode()}" }
+      LOG.info("Recreating ${targetNonPropagatableFiles.size} non-propagatable files for task '${targetTask.name}' (step ${targetTask.id}): [$filesInfo]")
 
-      for ((filePath, content) in targetTestFilesContent) {
+      for ((filePath, taskFile) in targetNonPropagatableFiles) {
         try {
           // createChildFile handles write action internally via runInWriteActionAndWait
-          // Test files are always non-editable (read-only)
+          // Use the file's isEditable property (test files are non-editable, some hidden files may be editable)
           val createdFile = GeneratorUtils.createChildFile(
             project,
             taskDir,
             filePath,
-            content,
-            false // isEditable = false for test files
+            taskFile.contents.textualRepresentation,
+            taskFile.isEditable
           )
           if (createdFile == null) {
-            LOG.error("Failed to create test file $filePath - createChildFile returned null")
+            LOG.error("Failed to create non-propagatable file $filePath - createChildFile returned null")
           }
           else {
-            LOG.info("Successfully created test file: ${createdFile.path}")
+            LOG.info("Successfully created non-propagatable file: ${createdFile.path}")
           }
         }
         catch (e: Exception) {
-          LOG.error("Exception while recreating test file $filePath for task ${targetTask.name}", e)
+          LOG.error("Exception while recreating non-propagatable file $filePath for task ${targetTask.name}", e)
         }
       }
     }
   }
 
   /**
-   * Gets test file names for a task (for deletion during navigation).
+   * Gets non-propagatable file names for a task (for deletion during navigation).
    */
-  private fun getTestFileNames(task: Task): Set<String> {
-    // Try storage snapshot first
-    val ref = task.storageRef()
-    if (storage.hasRef(ref)) {
-      try {
-        val snapshot = storage.getSnapshot(ref)
-        val testDirs = task.testDirs
-        return snapshot.keys.filter { path ->
-          testDirs.any { testDir -> path.startsWith("$testDir/") || path == testDir } ||
-          path.contains("test", ignoreCase = true)
-        }.toSet()
-      } catch (e: IOException) {
-        LOG.warn("Failed to get snapshot for test file names", e)
-      }
-    }
-
-    // Fallback to cache
-    val cached = originalTestFilesCache[task.id]
+  private fun getNonPropagatableFileNames(task: Task): Set<String> {
+    // Try cache first
+    val cached = originalNonPropagatableFilesCache[task.id]
     if (cached != null) {
       return cached.keys
     }
 
     // Fallback to task model
-    val testDirs = task.testDirs
     return task.taskFiles.filterValues { taskFile ->
-      !taskFile.isLearnerCreated && !taskFile.isVisible &&
-      testDirs.any { testDir -> taskFile.name.startsWith("$testDir/") || taskFile.name == testDir }
+      !taskFile.isLearnerCreated && !taskFile.shouldBePropagated()
     }.keys
   }
 
   /**
-   * Gets test file content for a task from storage, cache, or API.
-   * Returns map of path -> content.
+   * Gets non-propagatable files with metadata (TaskFile objects) for a task.
+   * Used when creating files to preserve isEditable property.
+   * Returns map of path -> TaskFile.
    */
-  private fun getTestFilesContent(task: Task): Map<String, String> {
-    val testDirs = task.testDirs
-
-    // 1. Try storage snapshot first (most reliable)
-    val ref = task.storageRef()
-    if (storage.hasRef(ref)) {
-      try {
-        val snapshot = storage.getSnapshot(ref)
-        val testFiles = snapshot.filterKeys { path ->
-          testDirs.any { testDir -> path.startsWith("$testDir/") || path == testDir } ||
-          path.contains("test", ignoreCase = true)
-        }
-        if (testFiles.isNotEmpty()) {
-          LOG.info("Got ${testFiles.size} test files from storage snapshot for task '${task.name}'")
-          return testFiles
-        }
-      } catch (e: IOException) {
-        LOG.warn("Failed to get test files from snapshot", e)
-      }
-    }
-
-    // 2. Try in-memory cache
-    val cached = originalTestFilesCache[task.id]
+  private fun getNonPropagatableFilesWithMetadata(task: Task): Map<String, TaskFile> {
+    // 1. Try in-memory cache
+    val cached = originalNonPropagatableFilesCache[task.id]
     if (cached != null) {
-      LOG.info("Got ${cached.size} test files from cache for task '${task.name}'")
-      return cached.mapValues { it.value.contents.textualRepresentation }
+      LOG.info("Got ${cached.size} non-propagatable files from cache for task '${task.name}'")
+      return cached
     }
 
-    // 3. Try loading from API
-    LOG.info("No cached test files for task '${task.name}', loading from API...")
+    // 2. Try loading from API
+    LOG.info("No cached non-propagatable files for task '${task.name}', loading from API...")
     if (ApplicationManager.getApplication().isDispatchThread) {
       try {
         ApplicationManager.getApplication().executeOnPooledThread<Unit> {
-          loadTestFilesFromApiSync(task)
+          loadNonPropagatableFilesFromApiSync(task)
         }.get()
-        val loaded = originalTestFilesCache[task.id]
+        val loaded = originalNonPropagatableFilesCache[task.id]
         if (loaded != null) {
-          return loaded.mapValues { it.value.contents.textualRepresentation }
+          return loaded
         }
       } catch (e: Exception) {
-        LOG.warn("Failed to load test files from API for task '${task.name}'", e)
+        LOG.warn("Failed to load non-propagatable files from API for task '${task.name}'", e)
       }
     } else {
-      loadTestFilesFromApi(task)
-      val loaded = originalTestFilesCache[task.id]
+      loadNonPropagatableFilesFromApi(task)
+      val loaded = originalNonPropagatableFilesCache[task.id]
       if (loaded != null) {
-        return loaded.mapValues { it.value.contents.textualRepresentation }
+        return loaded
       }
     }
 
-    // 4. Fallback to task.taskFiles
+    // 3. Fallback to task.taskFiles
     LOG.warn("All sources failed, falling back to task.taskFiles for task '${task.name}'")
     return task.taskFiles.filterValues { taskFile ->
-      !taskFile.isLearnerCreated && !taskFile.isVisible &&
-      testDirs.any { testDir -> taskFile.name.startsWith("$testDir/") || taskFile.name == testDir }
-    }.mapValues { it.value.contents.textualRepresentation }
+      !taskFile.isLearnerCreated && !taskFile.shouldBePropagated()
+    }
   }
 
   /**
@@ -791,7 +754,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // Calculate files that change propagation flag
     // Note: We also check currentTask.taskFiles directly because invisible files are not included
     // in currentNonPropagatableFilesState (since allFiles only returns visible files)
-    // We check if file is invisible AND not in a test directory (test files are handled by recreateTestFiles)
+    // We check if file is invisible AND not in a test directory (test files are handled by recreateNonPropagatableFiles)
     val taskTestDirs = currentTask.testDirs
     val fromNonPropagatableToPropagatableFilesState = targetPropagatableFilesState.filter { (path, _) ->
       path in currentNonPropagatableFilesState ||
@@ -977,20 +940,20 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // ALT-10961: Don't overwrite cache if it already contains data loaded from API.
     // This is important because task.taskFiles may contain stale data from disk
     // (in framework lessons, all stages share the same task directory).
-    // Data loaded from API via loadTestFilesFromApi() is always correct.
-    if (originalTestFilesCache.containsKey(task.id)) {
-      LOG.info("Cache already contains test files for task '${task.name}' (step ${task.id}), not overwriting")
+    // Data loaded from API via loadNonPropagatableFilesFromApi() is always correct.
+    if (originalNonPropagatableFilesCache.containsKey(task.id)) {
+      LOG.info("Cache already contains non-propagatable files for task '${task.name}' (step ${task.id}), not overwriting")
       return
     }
-    storeTestFilesInternal(task)
+    storeNonPropagatableFilesInternal(task)
   }
 
   override fun updateOriginalTestFiles(task: Task) {
     // Force update the cache, used when task files are updated from remote server
     // (e.g., during course update). Unlike storeOriginalTestFiles, this WILL overwrite.
-    // Pass forceUpdate=true to handle the case when author removes all test files.
-    LOG.info("Force updating test files cache for task '${task.name}' (step ${task.id})")
-    storeTestFilesInternal(task, forceUpdate = true)
+    // Pass forceUpdate=true to handle the case when author removes all non-propagatable files.
+    LOG.info("Force updating non-propagatable files cache for task '${task.name}' (step ${task.id})")
+    storeNonPropagatableFilesInternal(task, forceUpdate = true)
   }
 
   override fun updateSnapshotTestFiles(task: Task) {
@@ -1006,11 +969,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return
     }
 
-    // Get cached test files (should be updated via updateOriginalTestFiles before calling this)
-    // Note: null means cache wasn't updated (can't proceed), empty map means author removed all tests
-    val cachedTestFiles = originalTestFilesCache[task.id]
-    if (cachedTestFiles == null) {
-      LOG.warn("updateSnapshotTestFiles: No cached test files for task '${task.name}', cannot update snapshot")
+    // Get cached non-propagatable files (should be updated via updateOriginalTestFiles before calling this)
+    // Note: null means cache wasn't updated (can't proceed), empty map means author removed all non-propagatable files
+    val cachedNonPropagatableFiles = originalNonPropagatableFilesCache[task.id]
+    if (cachedNonPropagatableFiles == null) {
+      LOG.warn("updateSnapshotTestFiles: No cached non-propagatable files for task '${task.name}', cannot update snapshot")
       return
     }
 
@@ -1018,80 +981,75 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // Get current snapshot
       val currentSnapshot = storage.getSnapshot(ref)
 
-      // Separate user files from test files in existing snapshot
-      val testDirs = task.testDirs
-      val userFiles = currentSnapshot.filterKeys { path ->
-        // Keep files that are NOT test files
-        val isInTestDir = testDirs.any { testDir -> path.startsWith("$testDir/") || path == testDir }
-        val fileName = path.substringAfterLast('/')
-        val isTestFileName = fileName == "tests.py" || fileName.startsWith("test_") || fileName.endsWith("_test.py") ||
-                             path.contains("test", ignoreCase = true)
-        !isInTestDir && !isTestFileName
-      }
+      // Get propagatable file names from task model to identify user files
+      val propagatableFileNames = task.taskFiles.filterValues { it.shouldBePropagated() }.keys
 
-      // Combine user files with new test files from cache
-      // If cachedTestFiles is empty, this effectively removes all test files from snapshot
+      // Keep only propagatable files (user files) from existing snapshot
+      val userFiles = currentSnapshot.filterKeys { path -> path in propagatableFileNames }
+
+      // Combine user files with new non-propagatable files from cache
+      // If cache is empty, this effectively removes all non-propagatable files from snapshot
       val updatedSnapshot = HashMap(userFiles)
-      for ((path, taskFile) in cachedTestFiles) {
+      for ((path, taskFile) in cachedNonPropagatableFiles) {
         updatedSnapshot[path] = taskFile.contents.textualRepresentation
       }
 
       // Save updated snapshot
-      val message = if (cachedTestFiles.isEmpty()) {
-        "Remove all test files from server for '${task.name}'"
+      val message = if (cachedNonPropagatableFiles.isEmpty()) {
+        "Remove all non-propagatable files from server for '${task.name}'"
       } else {
-        "Update test files from server for '${task.name}'"
+        "Update non-propagatable files from server for '${task.name}'"
       }
       val created = storage.saveSnapshot(ref, updatedSnapshot, null, message)
       if (created) {
-        LOG.info("updateSnapshotTestFiles: Updated snapshot for task '${task.name}' with ${cachedTestFiles.size} test files")
+        LOG.info("updateSnapshotTestFiles: Updated snapshot for task '${task.name}' with ${cachedNonPropagatableFiles.size} non-propagatable files")
       } else {
-        LOG.info("updateSnapshotTestFiles: Snapshot unchanged for task '${task.name}' (test files identical)")
+        LOG.info("updateSnapshotTestFiles: Snapshot unchanged for task '${task.name}' (files identical)")
       }
     }
     catch (e: IOException) {
-      LOG.error("Failed to update snapshot test files for task '${task.name}'", e)
+      LOG.error("Failed to update snapshot non-propagatable files for task '${task.name}'", e)
     }
   }
 
-  private fun storeTestFilesInternal(task: Task, forceUpdate: Boolean = false) {
-    val testFiles = task.taskFiles.filterValues { taskFile ->
-      !taskFile.isLearnerCreated && taskFile.isTestFile
+  private fun storeNonPropagatableFilesInternal(task: Task, forceUpdate: Boolean = false) {
+    // Non-propagatable files: test files + hidden files (invisible or non-editable)
+    val nonPropagatableFiles = task.taskFiles.filterValues { taskFile ->
+      !taskFile.isLearnerCreated && !taskFile.shouldBePropagated()
     }
-    if (testFiles.isNotEmpty()) {
+    if (nonPropagatableFiles.isNotEmpty()) {
       // Create copies of TaskFile objects to prevent modification when original task.taskFiles changes
       // This is important because task.taskFiles contents can be updated (e.g., during Update Course)
-      // and we want to preserve the original test file contents
-      // Force isVisible = false for test files so they don't appear in Project View
-      val copiedTestFiles = testFiles.mapValues { (_, taskFile) ->
+      // and we want to preserve the original file contents
+      val copiedFiles = nonPropagatableFiles.mapValues { (_, taskFile) ->
         TaskFile(taskFile.name, taskFile.contents).also {
-          it.isVisible = false
+          it.isVisible = taskFile.isVisible
           it.isEditable = taskFile.isEditable
           it.isLearnerCreated = taskFile.isLearnerCreated
         }
       }
-      originalTestFilesCache[task.id] = copiedTestFiles
-      val filesInfo = copiedTestFiles.entries.joinToString { (name, file) ->
+      originalNonPropagatableFilesCache[task.id] = copiedFiles
+      val filesInfo = copiedFiles.entries.joinToString { (name, file) ->
         "$name:size=${file.contents.textualRepresentation.length}"
       }
-      LOG.info("Stored ${copiedTestFiles.size} original test files for task '${task.name}' (step ${task.id}): [$filesInfo]")
+      LOG.info("Stored ${copiedFiles.size} original non-propagatable files for task '${task.name}' (step ${task.id}): [$filesInfo]")
     } else if (forceUpdate) {
-      // Author removed all test files - store empty map to reflect this
-      originalTestFilesCache[task.id] = emptyMap()
-      LOG.info("Stored empty test files cache for task '${task.name}' (step ${task.id}) - author removed all tests")
+      // Author removed all non-propagatable files - store empty map to reflect this
+      originalNonPropagatableFilesCache[task.id] = emptyMap()
+      LOG.info("Stored empty non-propagatable files cache for task '${task.name}' (step ${task.id})")
     }
   }
 
   override fun getOriginalTestFiles(task: Task): Collection<TaskFile>? {
-    return originalTestFilesCache[task.id]?.values
+    return originalNonPropagatableFilesCache[task.id]?.values
   }
 
   override fun ensureTestFilesCached(task: Task): Boolean {
-    if (originalTestFilesCache.containsKey(task.id)) {
+    if (originalNonPropagatableFilesCache.containsKey(task.id)) {
       return true
     }
     // Cache is empty, try to load from API
-    return loadTestFilesFromApi(task) != null
+    return loadNonPropagatableFilesFromApi(task) != null
   }
 
   /**
@@ -1253,7 +1211,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
   override fun dispose() {
     Disposer.dispose(storage)
-    originalTestFilesCache.clear()
+    originalNonPropagatableFilesCache.clear()
     originalTemplateFilesCache.clear()
   }
 
@@ -1278,7 +1236,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val currentTask = lesson.currentTask() ?: return
     val taskDir = currentTask.getDir(project.courseDir) ?: return
 
-    // Get user file keys (non-test files)
+    // Get user file keys (propagatable files)
     val userFileKeys = originalTemplateFilesCache[currentTask.id]?.keys ?: currentTask.allFiles.keys
     if (userFileKeys.isEmpty()) return
 
@@ -1301,7 +1259,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return
     }
 
-    // Build full snapshot: user files from disk + test files from cache
+    // Build full snapshot: user files from disk + non-propagatable files from cache
     val fullSnapshot = buildFullSnapshotState(currentTask, propagatableFiles)
 
     // Save full snapshot
@@ -1335,13 +1293,13 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     get() = taskFiles.mapValues { it.value.contents.textualRepresentation }
 
   /**
-   * Builds complete task state for snapshot: user files from disk + test files from cache.
-   * Test files are taken from cache (not disk) because disk may have tests from another stage.
+   * Builds complete task state for snapshot: user files from disk + non-propagatable files from cache.
+   * Non-propagatable files (test files, hidden files) are taken from cache (not disk)
+   * because disk may have files from another stage.
    *
    * @param task The task to build state for
-   * @param taskDir The task directory on disk
-   * @param userFilesFromDisk User files read from disk
-   * @return Complete state with user files and test files
+   * @param userFilesFromDisk User files read from disk (propagatable files)
+   * @return Complete state with user files and non-propagatable files
    */
   private fun buildFullSnapshotState(
     task: Task,
@@ -1349,16 +1307,16 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   ): FLTaskState {
     val result = HashMap(userFilesFromDisk)
 
-    // Add test files from cache (not from disk - disk may have wrong stage's tests)
-    val cachedTestFiles = originalTestFilesCache[task.id]
-    if (cachedTestFiles != null) {
-      for ((path, taskFile) in cachedTestFiles) {
+    // Add non-propagatable files from cache (not from disk - disk may have wrong stage's files)
+    val cachedNonPropagatableFiles = originalNonPropagatableFilesCache[task.id]
+    if (cachedNonPropagatableFiles != null) {
+      for ((path, taskFile) in cachedNonPropagatableFiles) {
         result[path] = taskFile.contents.textualRepresentation
       }
     } else {
-      // Fallback: use test files from task model (may be stale but better than nothing)
+      // Fallback: use non-propagatable files from task model (may be stale but better than nothing)
       for ((path, taskFile) in task.taskFiles) {
-        if (taskFile.isTestFile && path !in result) {
+        if (!taskFile.shouldBePropagated() && path !in result) {
           result[path] = taskFile.contents.textualRepresentation
         }
       }
@@ -1411,7 +1369,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   @TestOnly
   override fun cleanUpState() {
     storage.closeAndClean()
-    originalTestFilesCache.clear()
+    originalNonPropagatableFilesCache.clear()
     originalTemplateFilesCache.clear()
   }
 
