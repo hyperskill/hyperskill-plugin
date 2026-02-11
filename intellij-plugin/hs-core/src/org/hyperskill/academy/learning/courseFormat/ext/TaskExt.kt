@@ -15,12 +15,14 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.PsiUtilCore
+import com.intellij.util.SlowOperations
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import org.hyperskill.academy.learning.EduUtilsKt.convertToHtml
 import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.TASK
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
@@ -46,9 +48,13 @@ val Task.dirName: String
     return TASK
   }
 
-fun Task.findDir(lessonDir: VirtualFile?): VirtualFile? {
-  return lessonDir?.findChild(dirName)
-}
+val Task.targetDirName: String
+  get() = when (this) {
+    is TheoryTask,
+    is CodeTask -> name
+
+    else -> dirName
+  }
 
 fun Task.findSourceDir(taskDir: VirtualFile): VirtualFile? {
   val sourceDir = sourceDir ?: return null
@@ -109,7 +115,7 @@ fun Task.getDescriptionFile(
 ): VirtualFile? {
   val taskDirectory = getTaskDirectory(project) ?: return null
 
-  val file = com.intellij.util.SlowOperations.knownIssue("EDU-8086").use {
+  val file = SlowOperations.knownIssue("EDU-8086").use {
     if (guessFormat) {
       taskDirectory.run { findChild(DescriptionFormat.HTML.fileName) ?: findChild(DescriptionFormat.MD.fileName) }
     }
