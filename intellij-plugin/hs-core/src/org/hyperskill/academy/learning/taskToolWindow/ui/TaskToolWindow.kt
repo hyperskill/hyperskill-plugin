@@ -16,7 +16,6 @@
 package org.hyperskill.academy.learning.taskToolWindow.ui
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.ui.update.MergingUpdateQueue
@@ -65,10 +64,8 @@ abstract class TaskToolWindow(protected val project: Project) : Disposable {
     const val TASK_DESCRIPTION_UPDATE_DELAY_REGISTRY_KEY: String = "hyperskill.task.description.update.delay"
 
     fun getTaskDescription(project: Project, task: Task?, uiMode: JavaUILibrary): String {
-      val openedTask = task ?: return EduCoreBundle.message("label.open.task")
-      val taskText = runReadAction {
-        openedTask.getFormattedTaskText(project)
-      } ?: return EduCoreBundle.message("label.open.task")
+      val taskText = task?.getFormattedTaskText(project)
+                     ?: return EduCoreBundle.message("label.open.task")
       val transformerContext = HtmlTransformerContext(project, task, uiMode)
       return TaskDescriptionTransformer.transform(taskText, transformerContext)
     }

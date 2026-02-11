@@ -186,9 +186,11 @@ private fun VirtualFile.toDescriptionFormat(): DescriptionFormat =
   DescriptionFormat.values().firstOrNull { it.extension == extension }
   ?: loadingError(EduCoreBundle.message("yaml.editor.invalid.description"))
 
-@RequiresReadLock
 fun Task.getFormattedTaskText(project: Project): String? {
-  var text = getTaskText(project) ?: return null
+  var text = runReadAction {
+    getTaskText(project)
+  } ?: return null
+
   text = StringUtil.replace(text, "%IDE_NAME%", ApplicationNamesInfo.getInstance().fullProductName)
   val textBuffer = StringBuffer(text)
   replaceActionIDsWithShortcuts(textBuffer)
