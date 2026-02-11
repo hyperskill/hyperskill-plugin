@@ -95,7 +95,8 @@ class CourseValidationHelper(
   }
 
   private suspend fun TestSuiteBuilder.validateTaskDescriptionLinks(project: Project, task: Task) {
-    val text = readAction { task.getFormattedTaskText(project) } ?: return
+    val text = task.getFormattedTaskText(project)
+               ?: return
     val links = extractLinks(project, task, text)
     // Don't create empty node if no links in the task description
     if (links.isEmpty()) return
