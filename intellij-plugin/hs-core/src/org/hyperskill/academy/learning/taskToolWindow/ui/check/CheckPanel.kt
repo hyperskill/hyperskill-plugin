@@ -173,7 +173,12 @@ class CheckPanel(private val project: Project, parentDisposable: Disposable) : J
       val hasRunButton = getCustomRunConfigurationForRunner(project, task) != null
       val isDefault = (task is TheoryTask || task.isSolved) && !hasRunButton
       val action = ActionManager.getInstance().getAction(NextTaskAction.ACTION_ID)
-      val nextButtonText = nextTask?.let { EduCoreBundle.message("button.next.task.text", nextTask.presentableName) }
+      val nextButtonText = if (nextTask != null) {
+        EduCoreBundle.message("button.next.task.with.label.text", nextTask.presentableName)
+      }
+      else {
+        EduCoreBundle.message("button.next.task.text")
+      }
       val nextButton = CheckPanelButtonComponent(action = action, isDefault = isDefault, customButtonText = nextButtonText)
       add(nextButton, BorderLayout.WEST)
     }
