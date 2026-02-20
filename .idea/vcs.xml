@@ -25,6 +25,10 @@
           <option name="issueRegexp" value="ML4SE-A-(\d+)" />
           <option name="linkRegexp" value="https://youtrack.jetbrains.com/articles/ML4SE-A-$1" />
         </IssueNavigationLink>
+        <IssueNavigationLink>
+          <option name="issueRegexp" value="[A-Z]+\-\d+" />
+          <option name="linkRegexp" value="https://vyahhi.myjetbrains.com/youtrack/issue/$0" />
+        </IssueNavigationLink>
       </list>
     </option>
   </component>

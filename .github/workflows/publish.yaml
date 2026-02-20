@@ -16,8 +16,8 @@ jobs:
     strategy:
       matrix:
         environmentName:
-          - 251
           - 252
+          - 253
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -46,8 +46,8 @@ jobs:
     strategy:
       matrix:
         environmentName:
-          - 251
           - 252
+          - 253
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
