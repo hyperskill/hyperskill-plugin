@@ -30,7 +30,9 @@ fun StudyItem.getDir(courseDir: VirtualFile): VirtualFile? {
       lessonParent.getDir(courseDir)?.findFileByRelativePath(lessonParent.getPathToChildren())?.findChild(name)
     }
 
-    is Task -> (parentOrNull as? Lesson)?.getDir(courseDir)?.let { findDir(it) }
+    is Task -> (parentOrNull as? Lesson)
+        ?.getDir(courseDir)
+        ?.findChild(targetDirName)
     else -> error("Can't find directory for the item $itemType")
   }
 }
