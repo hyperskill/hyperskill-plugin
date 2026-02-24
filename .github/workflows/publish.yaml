@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup Coretto JDK
+      - name: Setup Corretto JDK
         uses: actions/setup-java@v4
         with:
           java-version-file: '.java-version'
@@ -48,17 +48,14 @@ jobs:
           retention-days: 3
 
       - name: Run tests
-        continue-on-error: true
         run: ./gradlew test -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
 
       - name: Verify plugin
         run: ./gradlew verifyPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
-
-      - name: Upload plugin to Marketplace
-        if: github.ref == 'refs/heads/main' &&
-          github.event_name == 'push' &&
-          steps.run-tests.outcome == 'success'
-        continue-on-error: true
-        run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
-        env:
-          JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
+#
+#      - name: Upload plugin to Marketplace
+#        if: github.ref == 'refs/heads/main' &&
+#          github.event_name == 'push' &&
+#        run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+#        env:
+#          JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
