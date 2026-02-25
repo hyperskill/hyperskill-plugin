@@ -1,16 +1,15 @@
-name: Publish to JetBrains Marketplace
+name: Plugin deployment
 
 on:
-  push:
+  pull_request:
 
 concurrency:
   group: publish-plugin-${{ github.ref_name }}
   cancel-in-progress: true
 
-
 jobs:
-  test:
-    name: Run Tests for ${{ matrix.environmentName }}
+  deploy:
+    name: Deploy the plugin for ${{ matrix.environmentName }}
     runs-on: arc-runners-large
     timeout-minutes: 60
     strategy:
@@ -20,73 +19,43 @@ jobs:
           - 253
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-java@v4
+      - name: Setup Corretto JDK
+        uses: actions/setup-java@v4
         with:
           java-version-file: '.java-version'
           distribution: 'corretto'
           cache: 'gradle'
 
-      - name: Run Tests
-        env:
-          GRADLE_OPTS: "-Xmx2g -XX:MaxMetaspaceSize=512m -Dkotlin.daemon.jvm.options=-Xmx1g"
-        run: |
-          echo "environmentName=${{ matrix.environmentName }}"
-          ./gradlew test \
-            --parallel -Dorg.gradle.workers.max=2 -Dorg.gradle.test.worker.max=2 \
-            --no-daemon -PenvironmentName=${{ matrix.environmentName }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-  verify:
-    name: Verify Plugin for ${{ matrix.environmentName }}
-    runs-on: arc-runners-large
-    timeout-minutes: 60
-    strategy:
-      matrix:
-        environmentName:
-          - 252
-          - 253
-      fail-fast: false
-    steps:
-      - uses: actions/checkout@v4
+      - name: Generate timestamp
+        run: echo "VERSION=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_ENV
+
+      - name: Build plugin
+        run: ./gradlew buildPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+
+      - name: Upload plugin to PR
+        uses: actions/upload-artifact@v4
         with:
-          fetch-depth: 1
+          name: HyperskillAcademy-${{ env.VERSION }}-${{ matrix.environmentName }}
+          path: intellij-plugin/build/distributions
+          retention-days: 3
 
-      - uses: actions/setup-java@v4
-        with:
-          java-version-file: '.java-version'
-          distribution: 'corretto'
-          cache: 'gradle'
+      - name: Run tests
+        run: ./gradlew test -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
 
-      - name: Verify Plugin
-        env:
-          GRADLE_OPTS: "-Xmx2g -XX:MaxMetaspaceSize=512m -Dkotlin.daemon.jvm.options=-Xmx1g"
-        run: |
-          echo "environmentName=${{ matrix.environmentName }}"
-          ./gradlew verifyPlugin \
-            --parallel -Dorg.gradle.workers.max=2 -Dorg.gradle.test.worker.max=2 \
-            --no-daemon -PenvironmentName=${{ matrix.environmentName }}
-
-#  publish:
-#    name: Publish Plugin
-#    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-#    runs-on: arc-runners-large
-#    needs:
-#      - test
-#      - verify
-#    timeout-minutes: 30
-#    steps:
-#      - uses: actions/checkout@v4
+      - name: Verify plugin
+        run: ./gradlew verifyPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
 #
-#      - uses: actions/setup-java@v4
-#        with:
-#          java-version-file: '.java-version'
-#          distribution: 'corretto'
-#
-#      - name: Publish Plugin
-#        run: |
-#          ./gradlew publishPlugin --no-daemon
+#      - name: Upload plugin to Marketplace
+#        if: github.ref == 'refs/heads/main' &&
+#          github.event_name == 'push' &&
+#        run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
 #        env:
 #          JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
