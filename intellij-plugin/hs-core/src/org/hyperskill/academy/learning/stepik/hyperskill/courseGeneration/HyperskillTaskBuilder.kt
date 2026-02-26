@@ -6,8 +6,6 @@ import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.EduFileErrorHighlightLevel
 import org.hyperskill.academy.learning.courseFormat.tasks.*
-import org.hyperskill.academy.learning.courseFormat.tasks.EduTask.Companion.PYCHARM_TASK_TYPE
-import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask.Companion.REMOTE_EDU_TASK_TYPE
 import org.hyperskill.academy.learning.stepik.PyCharmStepOptions
 import org.hyperskill.academy.learning.stepik.StepikTaskBuilder
 import org.hyperskill.academy.learning.stepik.hasHeaderOrFooter
@@ -25,17 +23,13 @@ class HyperskillTaskBuilder(
     return HyperskillLanguages.getLanguageName(language.id)
   }
 
-  fun build(): Task? {
-    val blockName = stepSource.block?.name ?: return null
+  fun build(): Task? = when (val blockName = stepSource.block?.name) {
+    EduTask.PYCHARM_TASK_TYPE if stepSource.isRemoteTested -> createTask(RemoteEduTask.REMOTE_EDU_TASK_TYPE)
+    EduTask.PYCHARM_TASK_TYPE,
+    "text",
+    CodeTask.CODE_TASK_TYPE -> createTask(blockName)
 
-    val type = if (blockName == PYCHARM_TASK_TYPE && stepSource.isRemoteTested) {
-      REMOTE_EDU_TASK_TYPE
-    }
-    else {
-      blockName
-    }
-
-    return createTask(type)
+    else -> null
   }
 
   override fun createTask(type: String): Task {
