@@ -7,8 +7,6 @@ import org.hyperskill.academy.cpp.CMakeConstants.CMAKE_DIRECTORY
 import org.hyperskill.academy.cpp.CMakeConstants.CMAKE_GOOGLE_TEST
 import org.hyperskill.academy.cpp.CMakeConstants.CMAKE_GOOGLE_TEST_DOWNLOAD
 import org.hyperskill.academy.cpp.CMakeConstants.CMAKE_UTILS
-import org.hyperskill.academy.cpp.checker.CppCatchTaskCheckerProvider
-import org.hyperskill.academy.cpp.checker.CppGTaskCheckerProvider
 import org.hyperskill.academy.cpp.checker.CppTaskCheckerProvider
 import org.hyperskill.academy.learning.EduCourseBuilder
 import org.hyperskill.academy.learning.EduNames
@@ -19,22 +17,6 @@ import org.hyperskill.academy.learning.configuration.attributesEvaluator.Attribu
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.getInternalTemplateText
 import javax.swing.Icon
-
-class CppGTestConfigurator : CppConfigurator() {
-  override val courseBuilder: EduCourseBuilder<CppProjectSettings>
-    get() = CppGTestCourseBuilder()
-
-  override val taskCheckerProvider: TaskCheckerProvider
-    get() = CppGTaskCheckerProvider()
-}
-
-class CppCatchConfigurator : CppConfigurator() {
-  override val courseBuilder: EduCourseBuilder<CppProjectSettings>
-    get() = CppCatchCourseBuilder()
-
-  override val taskCheckerProvider: TaskCheckerProvider
-    get() = CppCatchTaskCheckerProvider()
-}
 
 open class CppConfigurator : EduConfigurator<CppProjectSettings> {
   override val courseBuilder: EduCourseBuilder<CppProjectSettings>

@@ -8,6 +8,8 @@ import com.jetbrains.rider.projectView.SolutionDescriptionFactory
 internal fun createExistingSolutionDescription(solutionPath: String) =
   SolutionDescriptionFactory.existing(solutionPath, displayName = null)
 
+internal fun String.asRdPath(): String = this
+
 /**
  * Helper class to hold test result data across platform versions.
  * In 252, this data comes from RdUnitTestResultData.

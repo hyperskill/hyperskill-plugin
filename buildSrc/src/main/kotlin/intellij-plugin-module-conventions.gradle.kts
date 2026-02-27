@@ -1,5 +1,4 @@
 import org.gradle.jvm.tasks.Jar
-import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
 
 plugins {
@@ -66,6 +65,6 @@ dependencies {
 
   intellijPlatform {
     testIntellijPlugins(commonTestPlugins)
-    testFramework(TestFrameworkType.Bundled)
+    testIntellijPlatformFramework(project)
   }
 }

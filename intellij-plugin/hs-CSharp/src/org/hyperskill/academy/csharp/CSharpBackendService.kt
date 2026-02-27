@@ -118,10 +118,14 @@ class CSharpBackendService(private val project: Project, private val scope: Coro
 
     when (request) {
       is CsprojRequest.Add -> {
-        val taskPaths = request.tasks.map { it.csProjPathByTask(project) }
         val parentId = project.getSolutionEntity()?.getId(project) ?: return
+        val projectFiles = request.tasks
+          .asSequence()
+          .map { it.csProjPathByTask(project) }
+          .map { it.asRdPath() }
+          .toList()
         val parameters = RdPostProcessParameters(false, listOf())
-        val addCommand = AddProjectCommand(parentId, taskPaths, listOf(), true, parameters)
+        val addCommand = AddProjectCommand(parentId, projectFiles, listOf(), true, parameters)
 
         try {
           project.solution.projectModelTasks.addProject.runCommandUnderProgress(

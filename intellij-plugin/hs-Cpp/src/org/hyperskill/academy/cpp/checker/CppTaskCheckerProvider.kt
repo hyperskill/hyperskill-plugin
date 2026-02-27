@@ -13,11 +13,3 @@ open class CppTaskCheckerProvider : TaskCheckerProvider {
   // TODO implement envChecker validation
   override fun getEduTaskChecker(task: EduTask, project: Project): TaskChecker<EduTask> = CppEduTaskChecker(task, envChecker, project)
 }
-
-class CppGTaskCheckerProvider : CppTaskCheckerProvider() {
-  override fun getEduTaskChecker(task: EduTask, project: Project): TaskChecker<EduTask> = CppGEduTaskChecker(task, envChecker, project)
-}
-
-class CppCatchTaskCheckerProvider : CppTaskCheckerProvider() {
-  override fun getEduTaskChecker(task: EduTask, project: Project): TaskChecker<EduTask> = CppCatchEduTaskChecker(task, envChecker, project)
-}

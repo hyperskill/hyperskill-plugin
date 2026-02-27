@@ -1,7 +1,7 @@
 [versions]
 educational-ml-library = "1.0.65"
 jackson = "2.17.2"
-kotlin = "2.2.0"
+kotlin = "2.3.0"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
 
@@ -29,6 +29,7 @@ kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit"
 mockk = { group = "io.mockk", name = "mockk", version = "1.13.13" }
 mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okhttp" }
 openTest4J = { group = "org.opentest4j", name = "opentest4j", version = "1.3.0" }
+hamcrest = { group = "org.hamcrest", name = "hamcrest", version="2.2" }
 
 [plugins]
 intelliJPlatformPlugin = { id = "org.jetbrains.intellij.platform", version = "2.10.5" }

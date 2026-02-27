@@ -17,6 +17,7 @@ jobs:
         environmentName:
           - 252
           - 253
+          - 261
       fail-fast: false
     steps:
       - name: Checkout code

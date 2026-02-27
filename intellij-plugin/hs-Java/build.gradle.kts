@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+
 plugins {
   id("intellij-plugin-module-conventions")
 }
@@ -7,6 +9,7 @@ dependencies {
     intellijIde(ideaVersion)
 
     intellijPlugins(jvmPlugins)
+    testIntellijPlatformFramework(project, TestFrameworkType.Plugin.Java)
   }
 
   implementation(project(":intellij-plugin:hs-core"))

@@ -1,4 +1,3 @@
-import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import java.net.URI
 
 plugins {
@@ -23,7 +22,7 @@ dependencies {
     intellijIde(baseVersion)
     bundledModules("intellij.platform.vcs.impl")
     testIntellijPlugins(commonTestPlugins)
-    testFramework(TestFrameworkType.Bundled)
+    testIntellijPlatformFramework(project)
   }
 
   api(project(":hs-edu-format"))
@@ -46,6 +45,7 @@ dependencies {
   implementationWithoutKotlin(libs.converter.jackson)
   implementationWithoutKotlin(libs.kotlin.css.jvm)
 
+  testImplementationWithoutKotlin(libs.junit)
   testImplementationWithoutKotlin(libs.mockwebserver)
   testImplementationWithoutKotlin(libs.mockk)
 }
