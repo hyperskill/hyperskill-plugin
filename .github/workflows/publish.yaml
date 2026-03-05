@@ -1,7 +1,7 @@
 name: Plugin deployment
 
 on:
-  pull_request:
+  push:
 
 concurrency:
   group: publish-plugin-${{ github.ref_name }}
