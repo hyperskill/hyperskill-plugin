@@ -56,7 +56,7 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
     get() {
       return URIBuilder(HYPERSKILL_URL)
         .setPath("/oauth2/authorize/")
-        .addParameter("client_id", CLIENT_ID)
+        .addParameter("client_id", clientId)
         .addParameter("grant_type", CODE_ARGUMENT)
         .addParameter("redirect_uri", getRedirectUri())
         .addParameter("response_type", CODE_ARGUMENT)
@@ -67,7 +67,8 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
         .addParameter("utm_content", "login")
     }
 
-  override val clientId: String = CLIENT_ID
+  override val clientId: String
+    get() = HyperskillOAuthBundle.value("hyperskillClientId")
 
   override val objectMapper: ObjectMapper by lazy {
     val module = SimpleModule()
@@ -478,8 +479,6 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
 
   companion object {
     private val LOG: Logger = logger<HyperskillConnector>()
-
-    private val CLIENT_ID: String = HyperskillOAuthBundle.value("hyperskillClientId")
 
     fun getInstance(): HyperskillConnector = service()
 
