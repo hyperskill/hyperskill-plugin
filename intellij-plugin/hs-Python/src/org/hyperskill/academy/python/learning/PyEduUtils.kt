@@ -155,16 +155,12 @@ fun installRequiredPackages(project: Project, sdk: Sdk) {
         ApplicationManager.getApplication().invokeLater({
           // Clear file-level warning that might linger while skeletons are updating
           val editorManager = FileEditorManager.getInstance(project)
-          for (module in ModuleManager.getInstance(project).modules) {
-            val analyzer = DaemonCodeAnalyzerEx.getInstanceEx(module.project)
-            if (editorManager.hasOpenFiles()) {
-              editorManager.openFiles.forEach { file ->
-                file.findPsiFile(project)?.let { psiFile ->
-                  analyzer.cleanFileLevelHighlights(Pass.LOCAL_INSPECTIONS, psiFile)
-                }
-              }
-            }
-          }
+
+          val analyzer = DaemonCodeAnalyzerEx.getInstanceEx(project)
+          editorManager.openFiles
+            .asSequence()
+            .mapNotNull { it.findPsiFile(project) }
+            .forEach { analyzer.cleanFileLevelHighlights(Pass.LOCAL_INSPECTIONS, it) }
         }, project.disposed)
 
         // Installation completed successfully
