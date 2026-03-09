@@ -157,10 +157,10 @@ fun installRequiredPackages(project: Project, sdk: Sdk) {
           val editorManager = FileEditorManager.getInstance(project)
 
           val analyzer = DaemonCodeAnalyzerEx.getInstanceEx(project)
-          editorManager.openFiles
-            .asSequence()
-            .mapNotNull { it.findPsiFile(project) }
-            .forEach { analyzer.cleanFileLevelHighlights(Pass.LOCAL_INSPECTIONS, it) }
+          for (file in editorManager.openFiles) {
+            val psiFile = file.findPsiFile(project) ?: continue
+            analyzer.cleanFileLevelHighlights(Pass.LOCAL_INSPECTIONS, psiFile)
+          }
         }, project.disposed)
 
         // Installation completed successfully
