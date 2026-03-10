@@ -6,6 +6,7 @@ import com.intellij.codeHighlighting.Pass
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.util.ExecUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -151,18 +152,16 @@ fun installRequiredPackages(project: Project, sdk: Sdk) {
         indicator.fraction = 1.0
         indicator.text = "Installation completed"
 
-        // Clear file-level warning that might linger while skeletons are updating
-        val editorManager = FileEditorManager.getInstance(project)
-        for (module in ModuleManager.getInstance(project).modules) {
-          val analyzer = DaemonCodeAnalyzerEx.getInstanceEx(module.project)
-          if (editorManager.hasOpenFiles()) {
-            editorManager.openFiles.forEach { file ->
-              file.findPsiFile(project)?.let { psiFile ->
-                analyzer.cleanFileLevelHighlights(Pass.LOCAL_INSPECTIONS, psiFile)
-              }
-            }
+        ApplicationManager.getApplication().invokeLater({
+          // Clear file-level warning that might linger while skeletons are updating
+          val editorManager = FileEditorManager.getInstance(project)
+
+          val analyzer = DaemonCodeAnalyzerEx.getInstanceEx(project)
+          for (file in editorManager.openFiles) {
+            val psiFile = file.findPsiFile(project) ?: continue
+            analyzer.cleanFileLevelHighlights(Pass.LOCAL_INSPECTIONS, psiFile)
           }
-        }
+        }, project.disposed)
 
         // Installation completed successfully
         LOG.warn("PyEduUtils: Installation finished successfully")
