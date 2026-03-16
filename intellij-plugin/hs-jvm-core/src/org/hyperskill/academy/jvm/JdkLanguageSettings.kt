@@ -145,9 +145,6 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     jdkComboBox.isEnabled = false
 
     runInBackground(course.project, EduJVMBundle.message("progress.setting.suitable.jdk"), false) {
-      var errorOccurred = false
-      var errorMessage: String? = null
-
       // Reset SDK model off-EDT to avoid IllegalStateException from synchronous progress on EDT
       try {
         val project = course.project
@@ -156,8 +153,9 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
         }
       }
       catch (e: Throwable) {
+        loadingState = JdkLoadingState.FAILED
         // best-effort; if reset fails we'll try with whatever the model currently has
-        errorMessage = e.message
+        loadingError = e.message
       }
 
       // Add bundled JDK if needed (must be done off-EDT as addSdk requires write action)
@@ -177,26 +175,23 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
         || ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance()).isNotEmpty()
 
       if (!anyJdkAvailable) {
-        errorOccurred = true
-        errorMessage = EduJVMBundle.message("error.no.jdk.available")
+        loadingState = JdkLoadingState.FAILED
+        loadingError = EduJVMBundle.message("error.no.jdk.available")
       }
 
-      // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
-      prewarmSdkValidation(suitableJdk)
+      runInBackground(course.project, EduJVMBundle.message("progress.warming.suitable.jdk"), false) {
+        // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
+        prewarmSdkValidation(suitableJdk)
+      }
+
+      loadingState = JdkLoadingState.LOADED
+      loadingError = null
 
       invokeLater(ModalityState.any()) {
         jdkComboBox.isEnabled = true
         jdkComboBox.selectedJdk = suitableJdk
         jdk = suitableJdk
 
-        if (errorOccurred) {
-          loadingState = JdkLoadingState.FAILED
-          loadingError = errorMessage
-        }
-        else {
-          loadingState = JdkLoadingState.LOADED
-          loadingError = null
-        }
         notifyListeners()
       }
     }
