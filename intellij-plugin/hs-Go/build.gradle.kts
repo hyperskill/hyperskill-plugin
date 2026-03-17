@@ -9,6 +9,7 @@ dependencies {
     intellijPlugins(goPlugin, intelliLangPlugin)
     // Workaround to make tests work - the module is not loaded automatically
     bundledModule("com.intellij.modules.ultimate")
+    testIntellijPlatformFramework(project)
   }
 
   implementation(project(":intellij-plugin:hs-core"))

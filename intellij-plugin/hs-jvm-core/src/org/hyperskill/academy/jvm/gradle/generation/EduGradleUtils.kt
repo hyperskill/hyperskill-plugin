@@ -101,7 +101,7 @@ object EduGradleUtils {
     // Fallback to original logic
     val projectSdkVersion = sdk.javaSdkVersion
     val internalSdkVersion = computeUnderProgress(project, EduJVMBundle.message("progress.resolving.suitable.jdk"), false) {
-      ExternalSystemJdkUtil.resolveJdkName(null, USE_INTERNAL_JAVA)
+      ExternalSystemJdkUtil.resolveJdkName(null as Sdk?, USE_INTERNAL_JAVA)
     }?.javaSdkVersion
 
     // Try to avoid incompatibility between Gradle and JDK versions

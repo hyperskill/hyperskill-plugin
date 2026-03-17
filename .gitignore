@@ -43,20 +43,7 @@ classes/
 dependencies/
 /helpers/venv/
 
-
-# oauth properties files
 secret.properties
-# old location of twitter properties
-intellij-plugin/hs-Kotlin/resources/twitter/kotlin_koans/oauth_twitter.properties
-intellij-plugin/hs-core/resources/twitter/oauth_twitter.properties
-intellij-plugin/hs-core/resources/stepik/stepik.properties
-intellij-plugin/hs-core/resources/hyperskill/hyperskill-oauth.properties
-intellij-plugin/hs-core/resources/linkedin/linkedin-oauth.properties
-intellij-plugin/hs-core/resources/marketplace/marketplace-oauth.properties
-intellij-plugin/hs-core/resources/lti/lti-auth.properties
-#AES key
-hs-edu-format/resources/aes/aes.properties
-intellij-plugin/hs-core/resources/aes/aes.properties
 # don't commit changes in hyperskill css
 intellij-plugin/hs-core/resources/style/hyperskill_task.css
 

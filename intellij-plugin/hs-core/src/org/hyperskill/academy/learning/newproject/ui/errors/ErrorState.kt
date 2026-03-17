@@ -28,7 +28,11 @@ sealed class ErrorState(
 
   object NothingSelected : ErrorState(OK, null, false)
   object None : ErrorState(OK, null, true)
-  object Pending : ErrorState(LANGUAGE_SETTINGS_PENDING, null, false)
+  object SDKPending : ErrorState(
+    severity = LANGUAGE_SETTINGS_PENDING,
+    message = ValidationMessage(EduCoreBundle.message("validation.no.SDK")),
+    courseCanBeStarted = false,
+  )
 
   object NotLoggedIn : ErrorState(
     LOGIN_RECOMMENDED,

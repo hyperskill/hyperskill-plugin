@@ -1,6 +1,7 @@
 import org.gradle.api.Project
 import org.gradle.process.JavaForkOptions
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformDependenciesExtension
 import kotlin.reflect.KProperty
 
@@ -14,7 +15,7 @@ private const val IDE_RIDER = "rider"
 val Project.environmentName: String by Properties
 
 val Project.pluginVersion: String by Properties
-val Project.platformVersion: String get() = "20${StringBuilder(environmentName).insert(environmentName.length - 1, '.')}"
+val Project.platformVersion: String get() = "20${StringBuilder(environmentName).insert(2, '.')}"
 val Project.baseIDE: String by Properties
 
 val Project.ideaVersion: String by Properties
@@ -78,7 +79,7 @@ val Project.jvmPlugins: List<String>
   get() = listOf(
     javaPlugin,
     "JUnit",
-    "org.jetbrains.plugins.gradle"
+    "com.intellij.gradle",
   )
 
 val Project.javaScriptPlugins: List<String>
@@ -94,7 +95,11 @@ val Project.rustPlugins: List<String>
   )
 
 val Project.cppPlugins: List<String>
-  get() = listOf(
+  get() = listOfNotNull(
+    baseVersion.toTypeWithVersion()
+      .version
+      .takeUnless { /* TODO remove with 252 */ it.startsWith("2025.2") }
+      ?.let { "com.intellij.cmake" },
     "com.intellij.cidr.lang",
     "com.intellij.clion",
     "com.intellij.nativeDebug",
@@ -134,7 +139,10 @@ fun IntelliJPlatformDependenciesExtension.intellijIde(versionWithCode: String) {
   // Starting from 2025.3, IntelliJ IDEA Community and Ultimate are unified into a single distribution.
   // Use the new intellijIdea() helper which resolves the unified artifact.
   // See: https://blog.jetbrains.com/platform/2025/11/intellij-platform-2025-3-what-plugin-developers-should-know/
-  if (type == IntelliJPlatformType.IntellijIdeaUltimate && version.startsWith("2025.3")) {
+  if (type == IntelliJPlatformType.IntellijIdeaUltimate
+      && !version.startsWith("2025.2") /* TODO remove with 252 */
+      && !version.startsWith("252")
+  ) {
     intellijIdea(version) {
       useInstaller.set(false)
       useCache.set(true)
@@ -175,6 +183,13 @@ fun IntelliJPlatformDependenciesExtension.testIntellijPlugins(vararg notations: 
 
 fun IntelliJPlatformDependenciesExtension.testIntellijPlugins(notations: List<String>) {
   testIntellijPlugins(*notations.toTypedArray())
+}
+
+fun IntelliJPlatformDependenciesExtension.testIntellijPlatformFramework(
+  project: Project,
+  frameworkType: TestFrameworkType = TestFrameworkType.Platform,
+) {
+  testFramework(frameworkType, project.baseVersion.toTypeWithVersion().version)
 }
 
 // Since 2024.1 CLion has two sets of incompatible plugins: based on classic language engine and new one (AKA Radler).

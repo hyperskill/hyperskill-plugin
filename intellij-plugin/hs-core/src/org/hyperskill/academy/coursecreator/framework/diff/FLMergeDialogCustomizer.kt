@@ -1,14 +1,14 @@
 package org.hyperskill.academy.coursecreator.framework.diff
 
 import com.intellij.openapi.vcs.history.VcsRevisionNumber
-import com.intellij.openapi.vcs.merge.MergeDialogCustomizer
 import com.intellij.openapi.vfs.VirtualFile
 import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.platform.MergeDialogCustomizerCompat
 
 class FLMergeDialogCustomizer(
   private val currentTaskName: String,
   private val targetTaskName: String,
-) : MergeDialogCustomizer() {
+) : MergeDialogCustomizerCompat() {
   override fun getColumnNames(): List<String> {
     return listOf(currentTaskName, targetTaskName)
   }
@@ -19,10 +19,6 @@ class FLMergeDialogCustomizer(
 
   override fun getMultipleFileDialogTitle(): String {
     return EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.MergeDialog.MultipleFileDialog.title")
-  }
-
-  override fun getMultipleFileMergeDescription(files: MutableCollection<VirtualFile>): String {
-    return EduCoreBundle.message("action.HyperskillEducational.Educator.SyncChangesWithNextTasks.MergeDialog.MultipleFileDialog.description")
   }
 
   override fun getLeftPanelTitle(file: VirtualFile): String {

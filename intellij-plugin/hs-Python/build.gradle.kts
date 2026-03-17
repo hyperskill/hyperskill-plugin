@@ -10,6 +10,7 @@ dependencies {
 
     intellijPlugins(pythonPlugin)
     testIntellijPlugins(tomlPlugin)
+    testIntellijPlatformFramework(project)
   }
 
   implementation(project(":intellij-plugin:hs-core"))

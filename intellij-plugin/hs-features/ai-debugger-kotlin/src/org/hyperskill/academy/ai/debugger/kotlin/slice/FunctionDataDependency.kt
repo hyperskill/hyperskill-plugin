@@ -2,7 +2,7 @@ package org.hyperskill.academy.ai.debugger.kotlin.slice
 
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.idea.completion.reference
-import org.jetbrains.kotlin.idea.intentions.branches
+import org.jetbrains.kotlin.idea.codeinsight.utils.branches
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.blockExpressionsOrSingle
 

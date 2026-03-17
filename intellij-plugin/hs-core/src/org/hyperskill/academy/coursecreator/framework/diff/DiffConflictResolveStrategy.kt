@@ -22,6 +22,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.LineTokenizer
 import org.hyperskill.academy.learning.computeUnderProgress
 import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.platform.MergeModelBaseCompat
 
 class DiffConflictResolveStrategy(private val project: Project) : FLConflictResolveStrategyBase(), Disposable {
   private val diffSettings = TextDiffSettingsHolder.TextDiffSettings().apply {
@@ -183,12 +184,10 @@ class DiffConflictResolveStrategy(private val project: Project) : FLConflictReso
     project: Project,
     document: Document,
     private val initialRanges: List<LineRange>,
-  ) : MergeModelBase<MergeModelBase.State>(project, document) {
+  ) : MergeModelBaseCompat(project, document) {
     init {
       setChanges(initialRanges)
     }
-
-    override fun reinstallHighlighters(index: Int) {}
 
     override fun storeChangeState(index: Int): State {
       return State(index, initialRanges[index].start, initialRanges[index].end)

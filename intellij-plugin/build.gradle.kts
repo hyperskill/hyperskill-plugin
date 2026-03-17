@@ -1,6 +1,5 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.*
-import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformTestingExtension
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 import org.jetbrains.intellij.platform.gradle.tasks.RunIdeTask
@@ -94,7 +93,7 @@ dependencies {
     // hs-remote-env is excluded - doesn't compile with 2025.2+
     pluginModule(implementation(project("hs-localization")))
 
-    testFramework(TestFrameworkType.Bundled)
+    testIntellijPlatformFramework(project)
     testIntellijPlugins(commonTestPlugins)
   }
 

@@ -1,5 +1,3 @@
-import java.util.Properties
-
 rootProject.name = "hyperskill-plugin"
 include(
   "hs-edu-format",
@@ -31,59 +29,6 @@ include(
 )
 
 // Note: hs-remote-env is excluded - doesn't compile with 2025.2+
-
-val secretPropertiesFilename: String = "secret.properties"
-
-configureSecretProperties()
-
-fun configureSecretProperties() {
-  val secretProperties = file(secretPropertiesFilename)
-  if (!secretProperties.exists()) {
-    secretProperties.createNewFile()
-  }
-
-  val properties = loadProperties(secretPropertiesFilename)
-
-  properties.extractAndStore(
-    "intellij-plugin/hs-core/resources/stepik/stepik.properties",
-    "stepikClientId",
-    "cogniterraClientId",
-  )
-  properties.extractAndStore(
-    "intellij-plugin/hs-core/resources/hyperskill/hyperskill-oauth.properties",
-    "hyperskillClientId",
-  )
-  properties.extractAndStore(
-    "intellij-plugin/hs-core/resources/twitter/oauth_twitter.properties",
-    "xClientId"
-  )
-  properties.extractAndStore(
-    "intellij-plugin/hs-core/resources/linkedin/linkedin-oauth.properties",
-    "linkedInClientId",
-    "linkedInClientSecret"
-  )
-  properties.extractAndStore(
-    "hs-edu-format/resources/aes/aes.properties",
-    "aesKey"
-  )
-}
-
-fun loadProperties(path: String): Properties {
-  val properties = Properties()
-  file(path).bufferedReader().use { properties.load(it) }
-  return properties
-}
-
-fun Properties.extractAndStore(path: String, vararg keys: String) {
-  val properties = Properties()
-  for (key in keys) {
-    properties[key] = getProperty(key) ?: ""
-  }
-  val file = file(path)
-  file.parentFile?.mkdirs()
-  file.bufferedWriter().use { properties.store(it, "") }
-}
-
 // Note: downloadHyperskillCss() was removed from settings.gradle.kts
 // CSS download is now done lazily in hs-core/build.gradle.kts processResources task
 
