@@ -172,20 +172,18 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
       // Check if we found any JDK at all (either suitable or any)
       val anyJdkAvailable = sdksModel.sdks.any { it.sdkType == JavaSdk.getInstance() }
-        || ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance()).isNotEmpty()
+                            || ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance()).isNotEmpty()
 
-      if (!anyJdkAvailable) {
-        loadingState = JdkLoadingState.FAILED
-        loadingError = EduJVMBundle.message("error.no.jdk.available")
-      }
+      loadingState = if (anyJdkAvailable) JdkLoadingState.LOADED
+      else JdkLoadingState.FAILED
+
+      loadingError = if (anyJdkAvailable) null
+      else EduJVMBundle.message("error.no.jdk.available")
 
       runInBackground(course.project, EduJVMBundle.message("progress.warming.suitable.jdk"), false) {
         // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
         prewarmSdkValidation(suitableJdk)
       }
-
-      loadingState = JdkLoadingState.LOADED
-      loadingError = null
 
       invokeLater(ModalityState.any()) {
         jdkComboBox.isEnabled = true
