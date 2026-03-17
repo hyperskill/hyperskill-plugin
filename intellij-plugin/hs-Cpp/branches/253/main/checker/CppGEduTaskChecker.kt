@@ -7,7 +7,6 @@ import org.hyperskill.academy.cpp.CppConfigurator
 import org.hyperskill.academy.cpp.CppGTestCourseBuilder
 import org.hyperskill.academy.cpp.CppProjectSettings
 import org.hyperskill.academy.learning.EduCourseBuilder
-import org.hyperskill.academy.learning.checker.EnvironmentChecker
 import org.hyperskill.academy.learning.checker.TaskChecker
 import org.hyperskill.academy.learning.checker.TaskCheckerProvider
 import org.hyperskill.academy.learning.courseFormat.tasks.EduTask

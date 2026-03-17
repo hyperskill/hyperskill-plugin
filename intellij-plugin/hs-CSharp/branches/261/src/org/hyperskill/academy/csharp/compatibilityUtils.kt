@@ -29,7 +29,7 @@ internal fun adviseResultData(
   @Suppress("UNUSED_PARAMETER") nodeId: Int,
   @Suppress("UNUSED_PARAMETER") callback: (TestResultData) -> Unit
 ) {
-  // TODO: BACKCOMPAT 261 - The resultData API was removed in 253.
+  // TODO: BACKCOMPAT 253 - The resultData API was removed in 253.
   // Need to find the replacement API for getting detailed test failure output.
   // For now, the callback is not invoked, which means detailed error messages
   // won't be available, but test pass/fail status will still work.
