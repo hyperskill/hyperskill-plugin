@@ -18,7 +18,7 @@ private fun isRefactoringForbidden(project: Project?, element: PsiElement?): Boo
     is PsiFile -> {
       // TODO: allow changing user created non-task files EDU-2556
       val taskFile = element.originalFile.virtualFile.getTaskFile(project)
-      taskFile == null
+      taskFile != null
     }
 
     is PsiDirectory -> {
