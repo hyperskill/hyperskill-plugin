@@ -15,7 +15,6 @@ class HandlersUtilsTest : EduTestCase() {
         }
       }
     }
-    // Используем прямой доступ через findFile вместо findFileInTask
     val taskFile = findFile("lesson1/task1/Task.kt")
     val psiFile = PsiManager.getInstance(project).findFile(taskFile)!!
 
@@ -39,7 +38,6 @@ class HandlersUtilsTest : EduTestCase() {
 
   @Test
   fun `test rename is not forbidden outside of course project`() {
-    // No course set in project
     val file = myFixture.addFileToProject("some/file.kt", "").virtualFile
     val psiFile = PsiManager.getInstance(project).findFile(file)!!
 
