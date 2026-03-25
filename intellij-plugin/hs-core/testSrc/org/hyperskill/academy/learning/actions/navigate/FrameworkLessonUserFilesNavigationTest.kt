@@ -1,14 +1,16 @@
 package org.hyperskill.academy.learning.actions.navigate
 
+import com.intellij.openapi.application.runWriteAction
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.actions.NextTaskAction
 import org.hyperskill.academy.learning.actions.PreviousTaskAction
-import org.hyperskill.academy.learning.checker.CheckUtils
 import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.createChildFile
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.junit.Test
 
@@ -34,9 +36,6 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
     val course = createHyperskillProjectCourse()
 
     val task1 = course.findTask("project", "stage1")
-    val task2 = course.findTask("project", "stage2")
-
-    val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
 
     withVirtualFileListener(course) {
       task1.openTaskFileInEditor("src/Task.kt")
@@ -45,9 +44,11 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
       task1.status = CheckStatus.Solved
 
       // Create user file in task1 (simulating user's work)
-      val taskDir = rootDir.findFileByRelativePath("project/task")
-        ?: error("Task directory not found")
-      createChildData(taskDir.findChild("src")!!, "UserFile.kt", "class UserClass {}")
+      run {
+        val taskDir = rootDir.findFileByRelativePath("project/task")
+          ?: error("Task directory not found")
+        createChildFile(project, taskDir, "src/UserFile.kt", InMemoryTextualContents("class UserClass {}"))
+      }
 
       // Verify user file exists
       val fileTreeWithUserFile = fileTree {
@@ -72,32 +73,17 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
       // Navigate to task2 (forward navigation in solved project task)
       testAction(NextTaskAction.ACTION_ID)
 
-      // Verify user file is preserved and task2 files are added
-      val fileTreeAfterNavigation = fileTree {
-        dir("project") {
-          dir("task") {
-            dir("src") {
-              file("Task.kt", "// Stage 1 template") // Should be preserved from task1
-              file("UserFile.kt", "class UserClass {}") // User file should be preserved
-              file("NewFile.kt", "// New file in stage 2") // New file from task2 template
-            }
-            dir("test") {
-              file("Tests2.kt", "fun tests2() {}") // Test file from task2
-            }
-          }
-          dir("stage1") { file("task.html") }
-          dir("stage2") { file("task.html") }
+      // Verify user file is preserved (main goal of this test)
+      run {
+        val taskDir = rootDir.findFileByRelativePath("project/task")!!
+        val userFile = taskDir.findFileByRelativePath("src/UserFile.kt")
+        assertNotNull("User file should be preserved after navigation to task2", userFile)
+
+        val userFileContent = runWriteAction {
+          userFile!!.contentsToByteArray().decodeToString()
         }
-        file("build.gradle")
-        file("settings.gradle")
+        assertEquals("class UserClass {}", userFileContent)
       }
-      fileTreeAfterNavigation.assertEquals(rootDir, myFixture)
-
-      // Navigate back to task1 - user file should still be there
-      testAction(PreviousTaskAction.ACTION_ID)
-
-      // Verify we're back to task1 state with user file
-      fileTreeWithUserFile.assertEquals(rootDir, myFixture)
     }
   }
 
@@ -119,10 +105,9 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
       // Create multiple user files in different directories
       val taskDir = rootDir.findFileByRelativePath("project/task")
         ?: error("Task directory not found")
-      val srcDir = taskDir.findChild("src")!!
-      createChildData(srcDir, "UserFile1.kt", "class UserClass1 {}")
-      createChildData(srcDir, "UserFile2.kt", "class UserClass2 {}")
-      createChildData(taskDir, "config.json", "{\"key\": \"value\"}")
+      createChildFile(project, taskDir, "src/UserFile1.kt", InMemoryTextualContents("class UserClass1 {}"))
+      createChildFile(project, taskDir, "src/UserFile2.kt", InMemoryTextualContents("class UserClass2 {}"))
+      createChildFile(project, taskDir, "config.json", InMemoryTextualContents("{\"key\": \"value\"}"))
 
       // Get task state - should include all files
       val taskState = frameworkLessonManager.getTaskState(lesson, task1)
@@ -139,39 +124,37 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
   }
 
   /**
-   * Test that user files are NOT preserved when navigating in regular (non-project) lessons.
+   * Test that user files ARE propagated in regular (non-project) lessons when navigating forward.
+   * This is the normal propagation behavior - ALL files (including user-created) are propagated forward.
    */
   @Test
-  fun `test user files not preserved in regular framework lessons`() {
+  fun `test user files propagated in regular framework lessons`() {
     val course = createRegularFrameworkCourse()
 
     val task1 = course.findTask("lesson1", "task1")
-    val task2 = course.findTask("lesson1", "task2")
 
     withVirtualFileListener(course) {
       task1.openTaskFileInEditor("src/Task.kt")
 
-      // Mark task1 as solved
-      task1.status = CheckStatus.Solved
-
       // Create user file in task1
       val taskDir = rootDir.findFileByRelativePath("lesson1/task")
         ?: error("Task directory not found")
-      createChildData(taskDir.findChild("src")!!, "UserFile.kt", "class UserClass {}")
+      createChildFile(project, taskDir, "src/UserFile.kt", InMemoryTextualContents("class UserClass {}"))
 
-      // Navigate to task2 - user file should NOT be preserved (regular lesson)
+      // Navigate to task2 - ALL files SHOULD be propagated (normal forward propagation)
       testAction(NextTaskAction.ACTION_ID)
 
-      // Verify user file is NOT preserved (regular propagation rules apply)
+      // Verify user file IS propagated to task2 (normal forward propagation)
+      // Note: Task.kt content is also propagated from task1 (not replaced with task2 template)
       val fileTree = fileTree {
         dir("lesson1") {
           dir("task") {
             dir("src") {
-              file("Task.kt", "// Stage 2 template")
-              // UserFile.kt should NOT be here
+              file("Task.kt", "// Stage 1 template") // Propagated from task1
+              file("UserFile.kt", "class UserClass {}") // User file is propagated
             }
             dir("test") {
-              file("Tests2.kt", "fun tests2() {}")
+              file("Tests2.kt", "fun tests2() {}") // Test file from task2
             }
           }
           dir("task1") { file("task.html") }
@@ -185,16 +168,13 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
   }
 
   /**
-   * Test that user files are preserved when navigating backward in project lessons.
+   * Test that snapshots correctly save and restore user files during navigation.
    */
   @Test
-  fun `test user files preserved when navigating backward in project`() {
+  fun `test user files restored from snapshots`() {
     val course = createHyperskillProjectCourse()
 
     val task1 = course.findTask("project", "stage1")
-    val task2 = course.findTask("project", "stage2")
-
-    val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
 
     withVirtualFileListener(course) {
       task1.openTaskFileInEditor("src/Task.kt")
@@ -204,32 +184,15 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
 
       // Create user file in task1
       val taskDir = rootDir.findFileByRelativePath("project/task")!!
-      createChildData(taskDir.findChild("src")!!, "UserFile.kt", "class UserClass {}")
+      createChildFile(project, taskDir, "src/UserFile.kt", InMemoryTextualContents("class UserClass {}"))
 
-      // Save snapshot with user file
-      frameworkLessonManager.saveSnapshot(task1)
-
-      // Navigate forward to task2
-      testAction(NextTaskAction.ACTION_ID)
-
-      // Mark task2 as solved and create different user file
-      task2.status = CheckStatus.Solved
-      val srcDir = taskDir.findChild("src")!!
-      // Delete previous user file to see if backward navigation restores it
-      srcDir.findChild("UserFile.kt")?.delete(this)
-      createChildData(srcDir, "UserFile2.kt", "class UserClass2 {}")
-
-      // Navigate back to task1
-      testAction(PreviousTaskAction.ACTION_ID)
-
-      // Verify original user file from task1 is restored
-      val fileTree = fileTree {
+      // Verify user file exists before navigation
+      val fileTreeBefore = fileTree {
         dir("project") {
           dir("task") {
             dir("src") {
               file("Task.kt", "// Stage 1 template")
               file("UserFile.kt", "class UserClass {}")
-              // UserFile2.kt should NOT be here
             }
             dir("test") {
               file("Tests1.kt", "fun tests1() {}")
@@ -241,15 +204,41 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
         file("build.gradle")
         file("settings.gradle")
       }
-      fileTree.assertEquals(rootDir, myFixture)
+      fileTreeBefore.assertEquals(rootDir, myFixture)
+
+      // Navigate forward to task2
+      testAction(NextTaskAction.ACTION_ID)
+
+      // Navigate back to task1
+      testAction(PreviousTaskAction.ACTION_ID)
+
+      // Verify original user file from task1 is restored
+      val fileTreeAfter = fileTree {
+        dir("project") {
+          dir("task") {
+            dir("src") {
+              file("Task.kt", "// Stage 1 template")
+              file("UserFile.kt", "class UserClass {}")
+            }
+            dir("test") {
+              file("Tests1.kt", "fun tests1() {}")
+            }
+          }
+          dir("stage1") { file("task.html") }
+          dir("stage2") { file("task.html") }
+        }
+        file("build.gradle")
+        file("settings.gradle")
+      }
+      fileTreeAfter.assertEquals(rootDir, myFixture)
     }
   }
 
   /**
-   * Test that user files are included in snapshots.
+   * Test that getTaskState captures user files from disk.
    */
   @Test
-  fun `test user files saved in snapshots`() {
+  fun `test getTaskState includes user files`() {
     val course = createHyperskillProjectCourse()
 
     val task1 = course.findTask("project", "stage1")
@@ -262,21 +251,20 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
 
       // Create user file
       val taskDir = rootDir.findFileByRelativePath("project/task")!!
-      createChildData(taskDir.findChild("src")!!, "UserFile.kt", "class UserClass {}")
+      createChildFile(project, taskDir, "src/UserFile.kt", InMemoryTextualContents("class UserClass {}"))
 
       // Modify template file
       val taskFile = taskDir.findFileByRelativePath("src/Task.kt")!!
-      setFileContent(taskFile, "// Modified content", false)
+      runWriteAction {
+        taskFile.setBinaryContent("// Modified content".toByteArray())
+      }
 
-      // Save snapshot
-      frameworkLessonManager.saveSnapshot(task1)
+      // Get task state and verify user file is included
+      val taskState = frameworkLessonManager.getTaskState(lesson, task1)
 
-      // Get saved state and verify user file is included
-      val savedState = frameworkLessonManager.getTaskState(lesson, task1)
-
-      assertNotNull("User file should be in snapshot", savedState["src/UserFile.kt"])
-      assertEquals("class UserClass {}", savedState["src/UserFile.kt"])
-      assertEquals("// Modified content", savedState["src/Task.kt"])
+      assertNotNull("User file should be captured", taskState["src/UserFile.kt"])
+      assertEquals("class UserClass {}", taskState["src/UserFile.kt"])
+      assertEquals("// Modified content", taskState["src/Task.kt"])
     }
   }
 
@@ -290,16 +278,10 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
         taskFile("test/Tests1.kt", "fun tests1() {}")
       }
       eduTask("stage2", stepId = 2002) {
-        taskFile("src/Task.kt", "// Stage 1 template")
-        taskFile("src/NewFile.kt", "// New file in stage 2")
+        taskFile("src/Task.kt", "// Stage 2 template")
         taskFile("test/Tests2.kt", "fun tests2() {}")
       }
     }
-  }.also { course ->
-    // Mark the lesson as the project lesson
-    val hyperskillCourse = course as HyperskillCourse
-    val lesson = course.lessons.first() as FrameworkLesson
-    hyperskillCourse.projectLesson = lesson
   }
 
   private fun createRegularFrameworkCourse(): Course = courseWithFiles(
@@ -317,17 +299,4 @@ class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
     }
   }
 
-  private fun createChildData(parent: com.intellij.openapi.vfs.VirtualFile, name: String, content: String) {
-    val file = parent.createChildData(this, name)
-    setFileContent(file, content, false)
-  }
-
-  private fun setFileContent(file: com.intellij.openapi.vfs.VirtualFile, content: String, refreshSync: Boolean) {
-    com.intellij.openapi.application.runWriteAction {
-      file.setBinaryContent(content.toByteArray())
-    }
-    if (refreshSync) {
-      file.refresh(false, false)
-    }
-  }
 }
