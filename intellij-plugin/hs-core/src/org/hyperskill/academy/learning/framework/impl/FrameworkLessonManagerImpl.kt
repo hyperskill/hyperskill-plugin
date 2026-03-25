@@ -3,6 +3,7 @@ package org.hyperskill.academy.learning.framework.impl
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
@@ -36,6 +37,8 @@ import org.hyperskill.academy.learning.framework.storage.Change
 import org.hyperskill.academy.learning.framework.storage.FileEntry
 import org.hyperskill.academy.learning.framework.ui.PropagationConflictDialog
 import org.hyperskill.academy.learning.framework.storage.UserChanges
+import org.hyperskill.academy.learning.isToEncodeContent
+import org.hyperskill.academy.learning.loadEncodedContent
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.stepik.PyCharmStepOptions
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
@@ -341,9 +344,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     LOG.info("Navigation refs: current=$currentRef (hasStorage=$currentHasStorage), target=$targetRef (hasStorage=$targetHasStorage)")
 
     // 1. Get current disk state (what's currently on disk)
-    // Use template file keys to know which files to read
-    val templateFiles = originalTemplateFilesCache[currentTask.id] ?: currentTask.allFiles
-    val currentDiskState = getTaskStateFromFiles(templateFiles.keys, taskDir)
+    // Read ALL files from disk, including user-created files
+    val currentDiskState = getAllFilesFromTaskDir(taskDir, currentTask)
     val (currentPropagatableFiles, _) = currentDiskState.split(currentTask)
     logTiming("readCurrentDiskState")
 
@@ -414,6 +416,15 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // Track if merge commit was created (to skip redundant snapshot save in step 10)
     var mergeCommitCreated = false
 
+    // Check if we should preserve user files (solved task in same project)
+    val course = currentTask.course as? org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+    val projectLesson = course?.getProjectLesson()
+    val currentTaskIsSolved = currentTask.status == CheckStatus.Solved
+    val sameProject = projectLesson != null &&
+                      currentTask.lesson == projectLesson &&
+                      targetTask.lesson == projectLesson
+    val shouldPreserveUserFiles = currentTaskIsSolved && sameProject && taskIndexDelta > 0
+
     val changes = when {
       // Test-only update: only non-propagatable files changed, create auto-Keep merge to record ancestry
       isTestOnlyUpdate -> {
@@ -441,6 +452,12 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         LOG.info("First visit to '${targetTask.name}': propagating current state + adding new template files")
         calculateFirstVisitChanges(currentState, targetState, targetTask)
       }
+      // Solved task in same project: preserve user files, only add new template files
+      shouldPreserveUserFiles -> {
+        LOG.info("Solved task in same project: preserving user files from '${currentTask.name}', adding new files from '${targetTask.name}'")
+        calculateFirstVisitChanges(currentState, targetState, targetTask)
+      }
+
       else -> {
         propagationActive = null // No propagation happening, reset for next navigation
         calculateChanges(currentState, targetState)
@@ -1366,6 +1383,53 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    */
   private val Task.allFilesIncludingTests: FLTaskState
     get() = taskFiles.mapValues { it.value.contents.textualRepresentation }
+
+  /**
+   * Reads ALL files from task directory, including user-created files.
+   * This is needed to capture user-created files that are not in the template.
+   *
+   * @param taskDir The task directory to read files from
+   * @param task The task (used to filter out test directories)
+   * @return Map of file paths to content
+   */
+  private fun getAllFilesFromTaskDir(taskDir: VirtualFile, task: Task): FLTaskState {
+    val result = HashMap<String, String>()
+    val documentManager = FileDocumentManager.getInstance()
+    val testDirs = task.testDirs
+
+    // Recursively collect all files from task directory
+    fun collectFiles(dir: VirtualFile, pathPrefix: String = "") {
+      for (child in dir.children) {
+        val relativePath = if (pathPrefix.isEmpty()) child.name else "$pathPrefix/${child.name}"
+
+        if (child.isDirectory) {
+          // Skip test directories - they will be handled separately
+          val isTestDir = testDirs.any { testDir ->
+            relativePath == testDir || relativePath.startsWith("$testDir/")
+          }
+          if (!isTestDir) {
+            collectFiles(child, relativePath)
+          }
+        }
+        else {
+          // Read file content
+          val text = if (child.isToEncodeContent) {
+            child.loadEncodedContent(isToEncodeContent = true)
+          }
+          else {
+            runReadAction { documentManager.getDocument(child)?.text }
+          }
+
+          if (text != null) {
+            result[relativePath] = text
+          }
+        }
+      }
+    }
+
+    collectFiles(taskDir)
+    return result
+  }
 
   /**
    * Builds complete task state for snapshot: user files from disk + non-propagatable files from cache.
