@@ -47,13 +47,6 @@ val CMAKE_MINIMUM_REQUIRED_LINE_VALUE: String by lazy {
   }
 }
 
-private fun makeCmakeExecutable() {
-  val cmakeFile = CMakeExecutableTool.getBundledCMakeToolBinary(CMakeExecutableTool.ToolKind.CMAKE)
-  if (cmakeFile.exists() && !cmakeFile.canExecute()) {
-    cmakeFile.setExecutable(true)
-  }
-}
-
 const val CMAKE_PROJECT_NAME_KEY: String = "PROJECT_NAME"
 
 const val CMAKE_CPP_STANDARD_KEY: String = "CPP_STANDARD"

@@ -186,10 +186,10 @@ fun IntelliJPlatformDependenciesExtension.testIntellijPlugins(notations: List<St
 }
 
 fun IntelliJPlatformDependenciesExtension.testIntellijPlatformFramework(
-  project: Project,
+  @Suppress("unused") project: Project,
   frameworkType: TestFrameworkType = TestFrameworkType.Platform,
 ) {
-  testFramework(frameworkType, project.baseVersion.toTypeWithVersion().version)
+  testFramework(frameworkType)
 }
 
 // Since 2024.1 CLion has two sets of incompatible plugins: based on classic language engine and new one (AKA Radler).
