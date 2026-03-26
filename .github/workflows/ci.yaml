@@ -42,7 +42,7 @@ jobs:
           echo "VERSION=${BASE_VERSION}.${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Run tests
-        run: ./gradlew test -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+        run: ./gradlew :intellij-plugin:test :hs-edu-format:test :hs-framework-storage:test -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
 
       - name: Verify plugin
         run: ./gradlew verifyPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
