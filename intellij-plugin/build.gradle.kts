@@ -47,6 +47,12 @@ intellijPlatform {
     }
   }
 
+  publishing {
+    token = providers.environmentVariable("JB_MARKETPLACE_TOKEN")
+    channels = listOf(providers.environmentVariable("JB_MARKETPLACE_CHANNEL").getOrElse("dev"))
+    hidden = false
+  }
+
   // Enable IDE caching for plugin verification
   // Cache path is configured via org.jetbrains.intellij.platform.intellijPlatformCache in gradle.properties
   caching {

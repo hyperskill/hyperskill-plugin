@@ -1,7 +1,11 @@
 name: Plugin deployment
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
+  release:
+    types: [ published ]
 
 concurrency:
   group: publish-plugin-${{ github.ref_name }}
@@ -30,18 +34,19 @@ jobs:
         with:
           java-version-file: '.java-version'
           distribution: 'corretto'
-          cache: 'gradle'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Generate timestamp
-        run: echo "VERSION=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_ENV
+      - name: Resolve plugin version
+        run: |
+          BASE_VERSION=$(grep '^pluginVersion=' gradle.properties | cut -d'=' -f2)
+          echo "VERSION=${BASE_VERSION}.${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Build plugin
         run: ./gradlew buildPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
 
-      - name: Upload plugin to PR
+      - name: Upload plugin artifact
         uses: actions/upload-artifact@v4
         with:
           name: HyperskillAcademy-${{ env.VERSION }}-${{ matrix.environmentName }}
@@ -53,10 +58,17 @@ jobs:
 
       - name: Verify plugin
         run: ./gradlew verifyPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
-#
-#      - name: Upload plugin to Marketplace
-#        if: github.ref == 'refs/heads/main' &&
-#          github.event_name == 'push' &&
-#        run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
-#        env:
-#          JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
+
+      - name: Publish plugin to Marketplace (dev channel)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+        env:
+          JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
+          JB_MARKETPLACE_CHANNEL: dev
+
+      - name: Publish plugin to Marketplace (stable channel)
+        if: github.event_name == 'release'
+        run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+        env:
+          JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
+          JB_MARKETPLACE_CHANNEL: ""
