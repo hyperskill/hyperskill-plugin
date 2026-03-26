@@ -4,6 +4,8 @@ on:
   push:
     branches: [ main ]
   pull_request:
+  release:
+    types: [ published ]
 
 concurrency:
   group: publish-plugin-${{ github.ref_name }}
@@ -64,3 +66,10 @@ jobs:
         env:
           JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
           JB_MARKETPLACE_CHANNEL: dev
+
+      - name: Publish plugin to Marketplace (stable channel)
+        if: github.event_name == 'release'
+        run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+        env:
+          JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
+          JB_MARKETPLACE_CHANNEL: stable
