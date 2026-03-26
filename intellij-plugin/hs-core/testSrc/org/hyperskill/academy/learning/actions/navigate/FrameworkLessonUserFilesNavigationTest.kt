@@ -21,9 +21,8 @@ import org.junit.Test
  * (files not in the template) were being lost because the navigation logic only read
  * template files from disk, not all files.
  *
- * The fix: Use getAllFilesFromTaskDir() to read ALL files from disk, including user-created ones.
- * Additionally, when navigating forward from a solved task in the same project lesson,
- * preserve user files by treating it like a first visit (add only new template files).
+ * The fix: Use getAllFilesFromTaskDir() to read ALL files from disk, including user-created ones,
+ * in all places that read task state (navigation, snapshots, getTaskState API).
  */
 class FrameworkLessonUserFilesNavigationTest : NavigationTestBase() {
 
