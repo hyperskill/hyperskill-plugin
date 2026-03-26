@@ -24,6 +24,7 @@ import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.ext.shouldBePropagated
@@ -246,12 +247,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       "The task is not a part of this lesson"
     }
 
-    // For current task, read from disk
+    // For current task, read from disk including user-created files
     if (lesson.currentTaskIndex + 1 == task.index) {
       val taskDir = task.getDir(project.courseDir) ?: return emptyMap()
-      val initialFiles = task.allFiles
-      val changes = getUserChangesFromFiles(initialFiles, taskDir)
-      return HashMap(initialFiles).apply { changes.apply(this) }
+      return getAllFilesFromTaskDir(taskDir, task)
     }
 
     // For other tasks, read snapshot directly from storage
@@ -417,7 +416,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     var mergeCommitCreated = false
 
     // Check if we should preserve user files (solved task in same project)
-    val course = currentTask.course as? org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+    val course = currentTask.course as? HyperskillCourse
     val projectLesson = course?.getProjectLesson()
     val currentTaskIsSolved = currentTask.status == CheckStatus.Solved
     val sameProject = projectLesson != null &&
@@ -497,9 +496,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // - Target without storage (first visit to this stage)
     // - Navigation without merge (ancestor check passed, no Keep/Replace dialog)
     if (taskIndexDelta > 0 && !mergeCommitCreated) {
-      // Read user files from disk, then build full snapshot with non-propagatable files
-      val userFileKeys = targetTask.allFiles.keys
-      val finalDiskState = getTaskStateFromFiles(userFileKeys, taskDir)
+      // Read ALL files from disk, including user-created files
+      val finalDiskState = getAllFilesFromTaskDir(taskDir, targetTask)
       val (finalPropagatableFiles, _) = finalDiskState.split(targetTask)
       val fullSnapshot = buildFullSnapshotState(targetTask, finalPropagatableFiles)
       logTiming("buildFullSnapshotState(target)")
