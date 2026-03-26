@@ -71,4 +71,4 @@ jobs:
         run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
         env:
           JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
-          JB_MARKETPLACE_CHANNEL: stable
+          JB_MARKETPLACE_CHANNEL: ""
