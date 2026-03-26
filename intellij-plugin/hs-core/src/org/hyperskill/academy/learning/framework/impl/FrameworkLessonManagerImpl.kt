@@ -415,15 +415,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // Track if merge commit was created (to skip redundant snapshot save in step 10)
     var mergeCommitCreated = false
 
-    // Check if we should preserve user files (solved task in same project)
-    val course = currentTask.course as? HyperskillCourse
-    val projectLesson = course?.getProjectLesson()
-    val currentTaskIsSolved = currentTask.status == CheckStatus.Solved
-    val sameProject = projectLesson != null &&
-                      currentTask.lesson == projectLesson &&
-                      targetTask.lesson == projectLesson
-    val shouldPreserveUserFiles = currentTaskIsSolved && sameProject && taskIndexDelta > 0
-
     val changes = when {
       // Test-only update: only non-propagatable files changed, create auto-Keep merge to record ancestry
       isTestOnlyUpdate -> {
@@ -451,12 +442,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         LOG.info("First visit to '${targetTask.name}': propagating current state + adding new template files")
         calculateFirstVisitChanges(currentState, targetState, targetTask)
       }
-      // Solved task in same project: preserve user files, only add new template files
-      shouldPreserveUserFiles -> {
-        LOG.info("Solved task in same project: preserving user files from '${currentTask.name}', adding new files from '${targetTask.name}'")
-        calculateFirstVisitChanges(currentState, targetState, targetTask)
-      }
-
       else -> {
         propagationActive = null // No propagation happening, reset for next navigation
         calculateChanges(currentState, targetState)
