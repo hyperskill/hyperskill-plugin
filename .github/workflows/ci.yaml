@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check the plugin for ${{ matrix.environmentName }}
+    runs-on: arc-runners-large
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        environmentName:
+          - 252
+          - 253
+          - 261
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Corretto JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version-file: '.java-version'
+          distribution: 'corretto'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Resolve plugin version
+        run: |
+          BASE_VERSION=$(grep '^pluginVersion=' gradle.properties | cut -d'=' -f2)
+          echo "VERSION=${BASE_VERSION}.${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Run tests
+        run: ./gradlew test -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+
+      - name: Verify plugin
+        run: ./gradlew verifyPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
