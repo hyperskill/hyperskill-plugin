@@ -43,6 +43,12 @@ jobs:
           BASE_VERSION=$(grep '^pluginVersion=' gradle.properties | cut -d'=' -f2)
           echo "VERSION=${BASE_VERSION}.${{ github.run_number }}" >> $GITHUB_ENV
 
+      - name: Run tests
+        run: ./gradlew test -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+
+      - name: Verify plugin
+        run: ./gradlew verifyPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+
       - name: Build plugin
         run: ./gradlew buildPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
 
@@ -52,12 +58,6 @@ jobs:
           name: HyperskillAcademy-${{ env.VERSION }}-${{ matrix.environmentName }}
           path: intellij-plugin/build/distributions
           retention-days: 3
-
-      - name: Run tests
-        run: ./gradlew test -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
-
-      - name: Verify plugin
-        run: ./gradlew verifyPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
 
       - name: Publish plugin to Marketplace (dev channel)
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
