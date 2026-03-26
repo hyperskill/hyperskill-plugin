@@ -1,7 +1,9 @@
 name: Publish
 
 on:
-  push:
+  workflow_run:
+    workflows: [ CI ]
+    types: [ completed ]
     branches: [ main ]
   release:
     types: [ published ]
@@ -15,6 +17,9 @@ jobs:
     name: Publish the plugin for ${{ matrix.environmentName }}
     runs-on: arc-runners-large
     timeout-minutes: 60
+    if: >
+      (github.event_name == 'release') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     strategy:
       matrix:
         environmentName:
@@ -53,7 +58,7 @@ jobs:
           retention-days: 3
 
       - name: Publish plugin to Marketplace (dev channel)
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.event_name == 'workflow_run'
         run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
         env:
           JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
