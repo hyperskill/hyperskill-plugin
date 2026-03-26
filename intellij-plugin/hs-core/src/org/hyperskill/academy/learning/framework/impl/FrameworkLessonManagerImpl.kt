@@ -3,23 +3,18 @@ package org.hyperskill.academy.learning.framework.impl
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileDocumentManagerListener
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.SlowOperations
-import com.intellij.util.io.storage.AbstractStorage
-import org.hyperskill.academy.learning.Err
-import org.hyperskill.academy.learning.Ok
-import org.hyperskill.academy.learning.StudyTaskManager
-import org.hyperskill.academy.learning.courseDir
+import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
@@ -34,12 +29,10 @@ import org.hyperskill.academy.learning.framework.FrameworkStorageListener
 import org.hyperskill.academy.learning.framework.propagateFilesOnNavigation
 import org.hyperskill.academy.learning.framework.storage.Change
 import org.hyperskill.academy.learning.framework.storage.FileEntry
-import org.hyperskill.academy.learning.framework.ui.PropagationConflictDialog
 import org.hyperskill.academy.learning.framework.storage.UserChanges
-import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.framework.ui.PropagationConflictDialog
 import org.hyperskill.academy.learning.stepik.PyCharmStepOptions
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
-import org.hyperskill.academy.learning.toCourseInfoHolder
 import org.hyperskill.academy.learning.ui.getUIName
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 import org.jetbrains.annotations.TestOnly
@@ -243,12 +236,10 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       "The task is not a part of this lesson"
     }
 
-    // For current task, read from disk
+    // For current task, read from disk including user-created files
     if (lesson.currentTaskIndex + 1 == task.index) {
       val taskDir = task.getDir(project.courseDir) ?: return emptyMap()
-      val initialFiles = task.allFiles
-      val changes = getUserChangesFromFiles(initialFiles, taskDir)
-      return HashMap(initialFiles).apply { changes.apply(this) }
+      return getAllFilesFromTaskDir(taskDir, task)
     }
 
     // For other tasks, read snapshot directly from storage
@@ -341,9 +332,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     LOG.info("Navigation refs: current=$currentRef (hasStorage=$currentHasStorage), target=$targetRef (hasStorage=$targetHasStorage)")
 
     // 1. Get current disk state (what's currently on disk)
-    // Use template file keys to know which files to read
-    val templateFiles = originalTemplateFilesCache[currentTask.id] ?: currentTask.allFiles
-    val currentDiskState = getTaskStateFromFiles(templateFiles.keys, taskDir)
+    // Read ALL files from disk, including user-created files
+    val currentDiskState = getAllFilesFromTaskDir(taskDir, currentTask)
     val (currentPropagatableFiles, _) = currentDiskState.split(currentTask)
     logTiming("readCurrentDiskState")
 
@@ -480,9 +470,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // - Target without storage (first visit to this stage)
     // - Navigation without merge (ancestor check passed, no Keep/Replace dialog)
     if (taskIndexDelta > 0 && !mergeCommitCreated) {
-      // Read user files from disk, then build full snapshot with non-propagatable files
-      val userFileKeys = targetTask.allFiles.keys
-      val finalDiskState = getTaskStateFromFiles(userFileKeys, taskDir)
+      // Read ALL files from disk, including user-created files
+      val finalDiskState = getAllFilesFromTaskDir(taskDir, targetTask)
       val (finalPropagatableFiles, _) = finalDiskState.split(targetTask)
       val fullSnapshot = buildFullSnapshotState(targetTask, finalPropagatableFiles)
       logTiming("buildFullSnapshotState(target)")
@@ -1366,6 +1355,53 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    */
   private val Task.allFilesIncludingTests: FLTaskState
     get() = taskFiles.mapValues { it.value.contents.textualRepresentation }
+
+  /**
+   * Reads ALL files from task directory, including user-created files.
+   * This is needed to capture user-created files that are not in the template.
+   *
+   * @param taskDir The task directory to read files from
+   * @param task The task (used to filter out test directories)
+   * @return Map of file paths to content
+   */
+  private fun getAllFilesFromTaskDir(taskDir: VirtualFile, task: Task): FLTaskState {
+    val result = HashMap<String, String>()
+    val documentManager = FileDocumentManager.getInstance()
+    val testDirs = task.testDirs
+
+    // Recursively collect all files from task directory
+    fun collectFiles(dir: VirtualFile, pathPrefix: String = "") {
+      for (child in dir.children) {
+        val relativePath = if (pathPrefix.isEmpty()) child.name else "$pathPrefix/${child.name}"
+
+        if (child.isDirectory) {
+          // Skip test directories - they will be handled separately
+          val isTestDir = testDirs.any { testDir ->
+            relativePath == testDir || relativePath.startsWith("$testDir/")
+          }
+          if (!isTestDir) {
+            collectFiles(child, relativePath)
+          }
+        }
+        else {
+          // Read file content
+          val text = if (child.isToEncodeContent) {
+            child.loadEncodedContent(isToEncodeContent = true)
+          }
+          else {
+            runReadAction { documentManager.getDocument(child)?.text }
+          }
+
+          if (text != null) {
+            result[relativePath] = text
+          }
+        }
+      }
+    }
+
+    collectFiles(taskDir)
+    return result
+  }
 
   /**
    * Builds complete task state for snapshot: user files from disk + non-propagatable files from cache.
