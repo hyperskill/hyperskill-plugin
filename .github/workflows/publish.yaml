@@ -1,21 +1,25 @@
-name: Plugin deployment
+name: Publish
 
 on:
-  push:
+  workflow_run:
+    workflows: [ CI ]
+    types: [ completed ]
     branches: [ main ]
-  pull_request:
   release:
     types: [ published ]
 
 concurrency:
-  group: publish-plugin-${{ github.ref_name }}
+  group: publish-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    name: Deploy the plugin for ${{ matrix.environmentName }}
+  publish:
+    name: Publish the plugin for ${{ matrix.environmentName }}
     runs-on: arc-runners-large
     timeout-minutes: 60
+    if: >
+      (github.event_name == 'release') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     strategy:
       matrix:
         environmentName:
@@ -53,14 +57,8 @@ jobs:
           path: intellij-plugin/build/distributions
           retention-days: 3
 
-      - name: Run tests
-        run: ./gradlew test -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
-
-      - name: Verify plugin
-        run: ./gradlew verifyPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
-
       - name: Publish plugin to Marketplace (dev channel)
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.event_name == 'workflow_run'
         run: ./gradlew publishPlugin -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
         env:
           JB_MARKETPLACE_TOKEN: ${{ secrets.JB_MARKETPLACE_TOKEN }}
