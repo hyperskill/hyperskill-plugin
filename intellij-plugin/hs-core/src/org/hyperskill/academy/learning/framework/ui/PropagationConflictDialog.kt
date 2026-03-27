@@ -1,7 +1,9 @@
 package org.hyperskill.academy.learning.framework.ui
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.Messages
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
@@ -193,6 +195,20 @@ class PropagationConflictDialog(
       currentState: Map<String, String>,
       targetState: Map<String, String>
     ): Result {
+      // In unit test mode, DialogWrapper.show() crashes with TouchbarSupport NPE in headless environment.
+      // Fall back to Messages.showYesNoDialog which is intercepted by TestDialogManager.
+      if (ApplicationManager.getApplication().isUnitTestMode) {
+        val message = EduCoreBundle.message("propagation.dialog.header", currentTaskName, targetTaskName)
+        val answer = Messages.showYesNoDialog(
+          project,
+          message,
+          EduCoreBundle.message("propagation.dialog.title"),
+          EduCoreBundle.message("propagation.dialog.keep"),
+          EduCoreBundle.message("propagation.dialog.replace"),
+          null
+        )
+        return if (answer == Messages.YES) Result.KEEP else Result.REPLACE
+      }
       val dialog = PropagationConflictDialog(project, currentTaskName, targetTaskName, currentState, targetState)
       dialog.show()
       return dialog.result

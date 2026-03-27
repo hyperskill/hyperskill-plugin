@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.navigation
 
 import com.intellij.ide.projectView.ProjectView
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteIntentReadAction
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.application.runWriteAction
@@ -194,13 +195,23 @@ object NavigationUtils {
     closeOpenedFiles: Boolean = true,
     fileToActivate: VirtualFile? = null
   ) {
-    runInEdt {
+    // Use invokeAndWait to ensure navigation completes synchronously when called from EDT.
+    // The previous runInEdt (which uses invokeLater) deferred execution, causing race conditions
+    // when callers expected navigation to be complete after this method returns.
+    val runnable = Runnable {
       WriteIntentReadAction.run {
         navigateToTaskInternal(project, task, fromTask, showDialogIfConflict, closeOpenedFiles, fileToActivate)
       }
       TaskNavigationExtension.EP.forEachExtensionSafe {
         it.onTaskNavigation(project, task, fromTask)
       }
+    }
+    val app = ApplicationManager.getApplication()
+    if (app.isDispatchThread) {
+      runnable.run()
+    }
+    else {
+      app.invokeAndWait(runnable)
     }
   }
 
@@ -265,6 +276,7 @@ object NavigationUtils {
     if (fileToActivate != null) {
       updateProjectView(project, fileToActivate)
     }
+
 
     ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.RUN)?.hide(null)
 
