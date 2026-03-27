@@ -34,12 +34,14 @@ class StudentChangeApplierTest : YamlTestCase() {
         eduTask("task1")
       }
     }.lessons.first().taskList.first()
+    val originalRecord = existingItem.record
     val deserializedItem = EduTask("task1")
     deserializedItem.record = 1
 
     getChangeApplierForItem(project, existingItem).applyChanges(existingItem, deserializedItem)
 
-    assertEquals(deserializedItem.record, existingItem.record)
+    // record is a legacy field that is no longer serialized, so it should not be overwritten
+    assertEquals(originalRecord, existingItem.record)
   }
 
   @Test
