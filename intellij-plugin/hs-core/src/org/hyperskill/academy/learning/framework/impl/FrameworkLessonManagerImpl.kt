@@ -435,7 +435,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // Keep all current files and add only NEW files from target templates
       !targetHasStorage && taskIndexDelta > 0 && lesson.propagateFilesOnNavigation -> {
         LOG.info("First visit to '${targetTask.name}': propagating current state + adding new template files")
-        calculateFirstVisitChanges(currentState, targetState, currentTask, targetTask)
+        calculateFirstVisitChanges(currentState, targetState, currentDiskState, targetTask)
       }
       else -> {
         propagationActive = null // No propagation happening, reset for next navigation
@@ -619,8 +619,14 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val targetNonPropagatableFiles = getNonPropagatableFilesWithMetadata(targetTask)
     val targetNonPropagatableFileNames = targetNonPropagatableFiles.keys
 
-    // Delete files from current task that are not in target task
-    val filesToDelete = currentNonPropagatableFileNames - targetNonPropagatableFileNames
+    // Delete files from current task that are not in target task.
+    // However, don't delete files that changed from non-propagatable to propagatable
+    // (e.g., invisible -> visible). Those files should remain on disk.
+    val targetPropagatableFileNames = targetTask.taskFiles.values
+      .filter { it.shouldBePropagated() }
+      .map { it.name }
+      .toSet()
+    val filesToDelete = (currentNonPropagatableFileNames - targetNonPropagatableFileNames) - targetPropagatableFileNames
     if (filesToDelete.isNotEmpty()) {
       LOG.info("Deleting ${filesToDelete.size} old non-propagatable files: $filesToDelete")
       invokeAndWaitIfNeeded {
@@ -952,23 +958,31 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   private fun calculateFirstVisitChanges(
     currentState: FLTaskState,
     targetState: FLTaskState,
-    currentTask: Task,
+    currentDiskState: FLTaskState,
     targetTask: Task
   ): UserChanges {
     val changes = mutableListOf<Change>()
 
-    // Files that existed in currentTask template but were deleted by user from disk
-    val userDeletedFiles = currentTask.taskFiles.keys.filter { it !in currentState }
+    // Files in targetState that are NOT on disk at all (not even as non-propagatable)
+    // indicate the user deleted them. We detect this by checking the full disk state
+    // (which includes all files, not just propagatable ones).
+    val allDiskFiles = currentDiskState.keys
 
     for ((path, text) in targetState) {
       val taskFile = targetTask.taskFiles[path]
       val isPropagatable = taskFile?.shouldBePropagated() ?: true
 
       if (isPropagatable) {
-        if (path in userDeletedFiles) {
-          // User deleted this file from disk — propagate the deletion to target
+        if (path !in currentState && path !in allDiskFiles) {
+          // File is in target template but not on disk at all — user deleted it
           LOG.info("First visit: removing user-deleted file '$path' from target task")
           changes += Change.RemoveTaskFile(path)
+        }
+        else if (path !in currentState && path in allDiskFiles) {
+          // File is on disk but was non-propagatable in current task (e.g., invisible).
+          // Now it's propagatable in target task (visibility changed). Update content and add to taskFiles.
+          LOG.info("First visit: visibility changed for '$path', updating content to target version")
+          changes += Change.AddFile(path, text)
         }
         else if (path !in currentState) {
           // Genuinely new file in target template — add it
