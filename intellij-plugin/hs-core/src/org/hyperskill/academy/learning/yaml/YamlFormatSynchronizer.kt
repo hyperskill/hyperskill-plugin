@@ -173,7 +173,7 @@ object YamlFormatSynchronizer {
 
     project.invokeLater {
       runWriteAction {
-        val file = dir.findOrCreateChildData(javaClass, configName)
+        val file = dir.findChild(configName) ?: dir.createChildData(javaClass, configName)
         try {
           file.putUserData(LOAD_FROM_CONFIG, false)
           if (FileTypeManager.getInstance().getFileTypeByFile(file) == UnknownFileType.INSTANCE) {
