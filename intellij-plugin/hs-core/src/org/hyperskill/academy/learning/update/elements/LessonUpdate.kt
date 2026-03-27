@@ -91,7 +91,8 @@ data class LessonUpdateInfo(
 data class LessonDeletionInfo(override val localItem: Lesson) : LessonUpdate(localItem, null) {
   override suspend fun update(project: Project) {
     val parentContainer = localItem.parent
-    parentContainer.removeItem(localItem)
+    // Delete files before removing from model, because deleteFilesOnDisc needs parent to resolve directory path
     localItem.deleteFilesOnDisc(project)
+    parentContainer.removeItem(localItem)
   }
 }

@@ -66,7 +66,8 @@ data class SectionUpdateInfo(
 data class SectionDeletionInfo(override val localItem: Section) : SectionUpdate(localItem, null) {
   override suspend fun update(project: Project) {
     val course = localItem.parent
-    course.removeItem(localItem)
+    // Delete files before removing from model, because deleteFilesOnDisc needs parent to resolve directory path
     localItem.deleteFilesOnDisc(project)
+    course.removeItem(localItem)
   }
 }

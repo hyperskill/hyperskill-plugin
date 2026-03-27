@@ -33,8 +33,9 @@ data class TaskUpdateInfo(override val localItem: Task, override val remoteItem:
   override suspend fun update(project: Project) {
     val lesson = localItem.parent
 
-    lesson.removeItem(localItem)
+    // Delete files before removing from model, because deleteFilesOnDisc needs parent to resolve directory path
     localItem.deleteFilesOnDisc(project)
+    lesson.removeItem(localItem)
 
     remoteItem.apply {
       // we keep CheckStatus.Solved for task even if it was updated
@@ -57,7 +58,8 @@ data class TaskUpdateInfo(override val localItem: Task, override val remoteItem:
 data class TaskDeletionInfo(override val localItem: Task) : TaskUpdate(localItem, null) {
   override suspend fun update(project: Project) {
     val lesson = localItem.parent
-    lesson.removeItem(localItem)
+    // Delete files before removing from model, because deleteFilesOnDisc needs parent to resolve directory path
     localItem.deleteFilesOnDisc(project)
+    lesson.removeItem(localItem)
   }
 }
