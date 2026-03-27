@@ -1,5 +1,6 @@
 package org.hyperskill.academy.learning.actions.navigate
 
+import com.intellij.openapi.ui.Messages
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.actions.NextTaskAction
 import org.hyperskill.academy.learning.actions.PreviousTaskAction
@@ -53,9 +54,12 @@ class FrameworkLessonSubmissionNavigationTest : NavigationTestBase() {
     frameworkLessonManager.saveExternalChanges(task3, submission3)
 
     // Navigate from task1 to task3
+    // Use KEEP (Messages.YES) to accept stored submission content at each step
     withVirtualFileListener(course) {
       task1.openTaskFileInEditor("src/Task.kt")
-      testAction(NextTaskAction.ACTION_ID)
+      withEduTestDialog(EduTestDialog(Messages.YES)) {
+        testAction(NextTaskAction.ACTION_ID)
+      }
 
       // Verify task2 content
       val fileTree2 = fileTree {
@@ -77,7 +81,9 @@ class FrameworkLessonSubmissionNavigationTest : NavigationTestBase() {
       }
       fileTree2.assertEquals(rootDir, myFixture)
 
-      testAction(NextTaskAction.ACTION_ID)
+      withEduTestDialog(EduTestDialog(Messages.YES)) {
+        testAction(NextTaskAction.ACTION_ID)
+      }
 
       // Verify task3 content
       val fileTree3 = fileTree {
@@ -157,6 +163,7 @@ class FrameworkLessonSubmissionNavigationTest : NavigationTestBase() {
     frameworkLessonManager.saveExternalChanges(task2, submission2)
     frameworkLessonManager.saveExternalChanges(task3, submission3)
 
+    // Use KEEP (Messages.YES) to accept stored submission content at each step
     withVirtualFileListener(course) {
       task1.openTaskFileInEditor("src/Task.kt")
 
@@ -164,7 +171,9 @@ class FrameworkLessonSubmissionNavigationTest : NavigationTestBase() {
       val initialContent = findFileInTaskDir("src/Task.kt").contentsToByteArray().decodeToString()
 
       // Navigate to task2 - disk content MUST change
-      testAction(NextTaskAction.ACTION_ID)
+      withEduTestDialog(EduTestDialog(Messages.YES)) {
+        testAction(NextTaskAction.ACTION_ID)
+      }
       val task2Content = findFileInTaskDir("src/Task.kt").contentsToByteArray().decodeToString()
 
       // ALT-10961: THIS IS THE KEY ASSERTION - content must change after navigation!
@@ -176,7 +185,9 @@ class FrameworkLessonSubmissionNavigationTest : NavigationTestBase() {
       assertEquals("STAGE_2_CONTENT_LONGER", task2Content)
 
       // Navigate to task3 - disk content MUST change again
-      testAction(NextTaskAction.ACTION_ID)
+      withEduTestDialog(EduTestDialog(Messages.YES)) {
+        testAction(NextTaskAction.ACTION_ID)
+      }
       val task3Content = findFileInTaskDir("src/Task.kt").contentsToByteArray().decodeToString()
       assertNotEquals(
         "Disk content should change after navigation from Stage 2 to Stage 3",
@@ -195,6 +206,8 @@ class FrameworkLessonSubmissionNavigationTest : NavigationTestBase() {
 
   /**
    * Test that getTaskState returns the correct content after saveExternalChanges.
+   * Note: getTaskState for the CURRENT task reads from disk, not storage.
+   * For non-current tasks, it reads from storage snapshots.
    */
   @Test
   fun `test getTaskState returns saved external changes`() {
@@ -211,20 +224,17 @@ class FrameworkLessonSubmissionNavigationTest : NavigationTestBase() {
     frameworkLessonManager.cleanUpState()
     frameworkLessonManager.restoreState()
 
-    val submission1 = mapOf("src/Task.kt" to "CONTENT_1")
     val submission2 = mapOf("src/Task.kt" to "CONTENT_2_LONGER")
     val submission3 = mapOf("src/Task.kt" to "CONTENT_3_EVEN_LONGER_TEXT")
 
-    frameworkLessonManager.saveExternalChanges(task1, submission1)
     frameworkLessonManager.saveExternalChanges(task2, submission2)
     frameworkLessonManager.saveExternalChanges(task3, submission3)
 
-    // Verify getTaskState returns the saved content
-    val state1 = frameworkLessonManager.getTaskState(lesson, task1)
+    // getTaskState for non-current tasks reads from storage
+    // Task1 is current (lesson.currentTaskIndex == 0), so we only check task2 and task3
     val state2 = frameworkLessonManager.getTaskState(lesson, task2)
     val state3 = frameworkLessonManager.getTaskState(lesson, task3)
 
-    assertEquals("CONTENT_1", state1["src/Task.kt"])
     assertEquals("CONTENT_2_LONGER", state2["src/Task.kt"])
     assertEquals("CONTENT_3_EVEN_LONGER_TEXT", state3["src/Task.kt"])
   }

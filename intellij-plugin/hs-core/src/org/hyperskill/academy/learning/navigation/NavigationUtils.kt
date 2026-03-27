@@ -195,23 +195,13 @@ object NavigationUtils {
     closeOpenedFiles: Boolean = true,
     fileToActivate: VirtualFile? = null
   ) {
-    // Use invokeAndWait to ensure navigation completes synchronously when called from EDT.
-    // The previous runInEdt (which uses invokeLater) deferred execution, causing race conditions
-    // when callers expected navigation to be complete after this method returns.
-    val runnable = Runnable {
+    runInEdt {
       WriteIntentReadAction.run {
         navigateToTaskInternal(project, task, fromTask, showDialogIfConflict, closeOpenedFiles, fileToActivate)
       }
       TaskNavigationExtension.EP.forEachExtensionSafe {
         it.onTaskNavigation(project, task, fromTask)
       }
-    }
-    val app = ApplicationManager.getApplication()
-    if (app.isDispatchThread) {
-      runnable.run()
-    }
-    else {
-      app.invokeAndWait(runnable)
     }
   }
 

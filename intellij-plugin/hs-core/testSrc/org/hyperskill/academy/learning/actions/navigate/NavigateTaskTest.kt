@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.actions.navigate
 
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
+import com.intellij.util.ui.UIUtil
 import org.hyperskill.academy.learning.EduTestCase
 import org.hyperskill.academy.learning.actions.NextTaskAction
 import org.hyperskill.academy.learning.actions.PreviousTaskAction
@@ -63,6 +64,8 @@ class NavigateTaskTest : EduTestCase() {
     val (lesson, task, taskFileName) = initialTaskFile
     configureByTaskFile(lesson, task, taskFileName)
     testAction(actionId, shouldBeEnabled = initialTaskFile != expectedTaskFile, shouldBeVisible = true)
+    // Navigation is deferred via runInEdt/invokeLater, dispatch pending events to complete it
+    UIUtil.dispatchAllInvocationEvents()
     val currentFile = FileEditorManagerEx.getInstanceEx(myFixture.project).currentFile ?: error("Can't find current file")
     val taskFile = currentFile.getTaskFile(myFixture.project) ?: error("Can't find current task file")
     val actualTaskFileInfo = TaskFileInfo(lesson = taskFile.task.lesson.index, task = taskFile.task.index, name = taskFile.name)

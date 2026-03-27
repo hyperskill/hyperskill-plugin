@@ -132,8 +132,14 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val externalPropagatableFiles = externalState.split(task).first
     LOG.warn("saveExternalChanges: externalPropagatableFiles.keys=${externalPropagatableFiles.keys}")
 
-    // Build full snapshot: user files from submission + non-propagatable files from cache
-    val fullSnapshot = buildFullSnapshotState(task, externalPropagatableFiles)
+    // Merge submission with template: submission files override template, but template files
+    // not in the submission are preserved. This prevents author-created files from being
+    // lost when a submission doesn't include them (e.g., removed by the solving platform).
+    val templatePropagatableFiles = task.allFiles.split(task).first
+    val mergedPropagatableFiles = templatePropagatableFiles + externalPropagatableFiles
+
+    // Build full snapshot: merged propagatable files + non-propagatable files from cache
+    val fullSnapshot = buildFullSnapshotState(task, mergedPropagatableFiles)
 
     // Save the full snapshot
     val submissionInfo = if (submissionId != null) " (submission #$submissionId)" else ""
@@ -429,7 +435,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // Keep all current files and add only NEW files from target templates
       !targetHasStorage && taskIndexDelta > 0 && lesson.propagateFilesOnNavigation -> {
         LOG.info("First visit to '${targetTask.name}': propagating current state + adding new template files")
-        calculateFirstVisitChanges(currentState, targetState, targetTask)
+        calculateFirstVisitChanges(currentState, targetState, currentTask, targetTask)
       }
       else -> {
         propagationActive = null // No propagation happening, reset for next navigation
@@ -946,28 +952,45 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   private fun calculateFirstVisitChanges(
     currentState: FLTaskState,
     targetState: FLTaskState,
+    currentTask: Task,
     targetTask: Task
   ): UserChanges {
     val changes = mutableListOf<Change>()
+
+    // Files that existed in currentTask template but were deleted by user from disk
+    val userDeletedFiles = currentTask.taskFiles.keys.filter { it !in currentState }
 
     for ((path, text) in targetState) {
       val taskFile = targetTask.taskFiles[path]
       val isPropagatable = taskFile?.shouldBePropagated() ?: true
 
       if (isPropagatable) {
-        // Propagatable files: only add if NEW (not in current state)
-        // Files in both: keep current (no change)
-        // Files in current but not target: keep (no removal)
-        if (path !in currentState) {
+        if (path in userDeletedFiles) {
+          // User deleted this file from disk — propagate the deletion to target
+          LOG.info("First visit: removing user-deleted file '$path' from target task")
+          changes += Change.RemoveTaskFile(path)
+        }
+        else if (path !in currentState) {
+          // Genuinely new file in target template — add it
           LOG.info("First visit: adding new propagatable file '$path'")
           changes += Change.PropagateLearnerCreatedTaskFile(path, text)
         }
+        // else: file in both — keep current (no change)
       }
       else {
         // Non-propagatable files (e.g., read-only reference files):
         // Always use target version since user couldn't modify them
         LOG.info("First visit: adding non-propagatable file '$path'")
         changes += Change.AddFile(path, text)
+      }
+    }
+
+    // Propagate user-created files from current state to target task.
+    // These files exist on disk from the previous stage but are not in the target template.
+    for ((path, text) in currentState) {
+      if (path !in targetState && targetTask.getTaskFile(path) == null) {
+        LOG.info("First visit: propagating user-created file '$path' to target task")
+        changes += Change.PropagateLearnerCreatedTaskFile(path, text)
       }
     }
 
