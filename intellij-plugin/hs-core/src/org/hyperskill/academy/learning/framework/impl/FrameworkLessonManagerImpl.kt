@@ -706,37 +706,44 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
    * Returns map of path -> TaskFile.
    */
   private fun getNonPropagatableFilesWithMetadata(task: Task): Map<String, TaskFile> {
-    // 1. Try in-memory cache
-    val cached = originalNonPropagatableFilesCache[task.id]
-    if (cached != null) {
-      LOG.info("Got ${cached.size} non-propagatable files from cache for task '${task.name}'")
-      return cached
-    }
+    // Skip cache/API lookup for tasks without a real step ID (e.g., in tests where all tasks
+    // default to id=0). The cache is keyed by task.id, so multiple tasks with id=0 would
+    // incorrectly share the same cache entry.
+    if (task.id != 0) {
+      // 1. Try in-memory cache
+      val cached = originalNonPropagatableFilesCache[task.id]
+      if (cached != null) {
+        LOG.info("Got ${cached.size} non-propagatable files from cache for task '${task.name}'")
+        return cached
+      }
 
-    // 2. Try loading from API
-    LOG.info("No cached non-propagatable files for task '${task.name}', loading from API...")
-    if (ApplicationManager.getApplication().isDispatchThread) {
-      try {
-        ApplicationManager.getApplication().executeOnPooledThread<Unit> {
-          loadNonPropagatableFilesFromApiSync(task)
-        }.get()
+      // 2. Try loading from API
+      LOG.info("No cached non-propagatable files for task '${task.name}', loading from API...")
+      if (ApplicationManager.getApplication().isDispatchThread) {
+        try {
+          ApplicationManager.getApplication().executeOnPooledThread<Unit> {
+            loadNonPropagatableFilesFromApiSync(task)
+          }.get()
+          val loaded = originalNonPropagatableFilesCache[task.id]
+          if (loaded != null) {
+            return loaded
+          }
+        }
+        catch (e: Exception) {
+          LOG.warn("Failed to load non-propagatable files from API for task '${task.name}'", e)
+        }
+      }
+      else {
+        loadNonPropagatableFilesFromApi(task)
         val loaded = originalNonPropagatableFilesCache[task.id]
         if (loaded != null) {
           return loaded
         }
-      } catch (e: Exception) {
-        LOG.warn("Failed to load non-propagatable files from API for task '${task.name}'", e)
-      }
-    } else {
-      loadNonPropagatableFilesFromApi(task)
-      val loaded = originalNonPropagatableFilesCache[task.id]
-      if (loaded != null) {
-        return loaded
       }
     }
 
     // 3. Fallback to task.taskFiles
-    LOG.warn("All sources failed, falling back to task.taskFiles for task '${task.name}'")
+    LOG.info("Using task.taskFiles for non-propagatable files of task '${task.name}' (step ${task.id})")
     return task.taskFiles.filterValues { taskFile ->
       !taskFile.isLearnerCreated && !taskFile.shouldBePropagated()
     }
