@@ -68,7 +68,6 @@ tasks {
   withType<Test> {
     withProp("excludeTests") { exclude(it) }
 
-    ignoreFailures = true
     filter {
       isFailOnNoMatchingTests = false
     }
