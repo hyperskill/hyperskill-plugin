@@ -32,6 +32,7 @@ private val LOG = logger<JdkLanguageSettings>()
 
 open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
+  @Volatile
   protected var jdk: Sdk? = null
   protected val sdkModel: ProjectSdksModel = createSdkModel()
 
@@ -145,52 +146,58 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     jdkComboBox.isEnabled = false
 
     runInBackground(course.project, EduJVMBundle.message("progress.setting.suitable.jdk"), false) {
-      // Reset SDK model off-EDT to avoid IllegalStateException from synchronous progress on EDT
       try {
-        val project = course.project
-        if (project != null) {
-          sdksModel.reset(project)
+        // Reset SDK model off-EDT to avoid IllegalStateException from synchronous progress on EDT
+        try {
+          val project = course.project
+          if (project != null) {
+            sdksModel.reset(project)
+          }
+        }
+        catch (e: Throwable) {
+          loadingState = JdkLoadingState.FAILED
+          // best-effort; if reset fails we'll try with whatever the model currently has
+          loadingError = e.message
+        }
+
+        // Add bundled JDK if needed (must be done off-EDT as addSdk requires write action)
+        try {
+          addBundledJdkIfNeeded(sdksModel)
+        }
+        catch (_: Throwable) {
+          // best-effort; ignore failures
+        }
+
+        // If sdkModel is empty, try to get JDKs directly from ProjectJdkTable
+        jdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
+              ?: findSuitableJdkFromTable(minJvmSdkVersion(course))
+
+        // Check if we found any JDK at all (either suitable or any)
+        if (sdksModel.sdks.all { it.sdkType != JavaSdk.getInstance() }
+            && ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance()).isEmpty()) {
+          throw RuntimeException(EduJVMBundle.message("error.no.jdk.available"))
+        }
+
+        loadingState = JdkLoadingState.LOADED
+        loadingError = null
+
+        runInBackground(course.project, EduJVMBundle.message("progress.warming.suitable.jdk"), false) {
+          // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
+          prewarmSdkValidation(jdk)
         }
       }
       catch (e: Throwable) {
+        LOG.warn("Failed to preselect JDK", e)
         loadingState = JdkLoadingState.FAILED
-        // best-effort; if reset fails we'll try with whatever the model currently has
         loadingError = e.message
       }
+      finally {
+        invokeLater(ModalityState.any()) {
+          jdkComboBox.isEnabled = true
+          jdkComboBox.selectedJdk = jdk
 
-      // Add bundled JDK if needed (must be done off-EDT as addSdk requires write action)
-      try {
-        addBundledJdkIfNeeded(sdksModel)
-      }
-      catch (_: Throwable) {
-        // best-effort; ignore failures
-      }
-
-      // If sdkModel is empty, try to get JDKs directly from ProjectJdkTable
-      val suitableJdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
-        ?: findSuitableJdkFromTable(minJvmSdkVersion(course))
-
-      // Check if we found any JDK at all (either suitable or any)
-      val anyJdkAvailable = sdksModel.sdks.any { it.sdkType == JavaSdk.getInstance() }
-                            || ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance()).isNotEmpty()
-
-      loadingState = if (anyJdkAvailable) JdkLoadingState.LOADED
-      else JdkLoadingState.FAILED
-
-      loadingError = if (anyJdkAvailable) null
-      else EduJVMBundle.message("error.no.jdk.available")
-
-      runInBackground(course.project, EduJVMBundle.message("progress.warming.suitable.jdk"), false) {
-        // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
-        prewarmSdkValidation(suitableJdk)
-      }
-
-      invokeLater(ModalityState.any()) {
-        jdkComboBox.isEnabled = true
-        jdkComboBox.selectedJdk = suitableJdk
-        jdk = suitableJdk
-
-        notifyListeners()
+          notifyListeners()
+        }
       }
     }
   }
