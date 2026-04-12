@@ -142,9 +142,6 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     loadingState = JdkLoadingState.LOADING
     loadingError = null
 
-    // Disable combo box while loading to indicate loading state
-    jdkComboBox.isEnabled = false
-
     runInBackground(course.project, EduJVMBundle.message("progress.setting.suitable.jdk"), false) {
       try {
         // Reset SDK model off-EDT to avoid IllegalStateException from synchronous progress on EDT
@@ -193,7 +190,6 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
       }
       finally {
         invokeLater(ModalityState.any()) {
-          jdkComboBox.isEnabled = true
           jdkComboBox.selectedJdk = jdk
 
           notifyListeners()
