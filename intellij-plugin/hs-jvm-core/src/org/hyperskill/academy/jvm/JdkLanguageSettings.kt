@@ -98,7 +98,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     val sdkTypeFilter = Condition<SdkTypeId> { sdkTypeId -> sdkTypeId is JavaSdkType && !(sdkTypeId as JavaSdkType).isDependent }
     val sdkFilter = Condition<Sdk> { sdk -> sdkTypeFilter.value(sdk.sdkType) }
     val jdkComboBox = JdkComboBox(course.project, sdkModel, sdkTypeFilter, sdkFilter, sdkTypeFilter, null)
-    val uiScope = context?.getUserData(LanguageSettings.UI_COROUTINE_SCOPE_KEY) ?: createFallbackUiScope(disposable)
+    val uiScope = context?.getUserData(COROUTINE_SCOPE_KEY) ?: createFallbackUiScope(disposable)
     preselectJdk(course, jdkComboBox, sdkModel, uiScope)
     jdk = jdkComboBox.selectedItem?.jdk
     jdkComboBox.addItemListener {

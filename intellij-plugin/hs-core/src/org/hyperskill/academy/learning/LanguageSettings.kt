@@ -61,7 +61,8 @@ abstract class LanguageSettings<Settings : EduProjectSettings> {
   }
 
   companion object {
-    val UI_COROUTINE_SCOPE_KEY: Key<CoroutineScope> = Key.create("edu.language.settings.uiCoroutineScope")
+    val COROUTINE_SCOPE_KEY: Key<CoroutineScope> =
+      Key.create("edu.language.settings.languageSettingsCoroutineScope")
   }
 
   fun interface SettingsChangeListener {

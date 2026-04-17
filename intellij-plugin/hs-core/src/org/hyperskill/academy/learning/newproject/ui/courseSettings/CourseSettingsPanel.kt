@@ -68,7 +68,7 @@ class CourseSettingsPanel(
   private lateinit var collapsibleGroup: CollapsibleRow
 
   init {
-    context.putUserData(LanguageSettings.UI_COROUTINE_SCOPE_KEY, uiCoroutineScope)
+    context.putUserData(LanguageSettings.COROUTINE_SCOPE_KEY, uiCoroutineScope)
     Disposer.register(parentDisposable) {
       uiCoroutineScope.cancel()
     }
