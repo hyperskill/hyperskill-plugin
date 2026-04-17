@@ -2,6 +2,9 @@ package org.hyperskill.academy.learning.newproject.ui.courseSettings
 
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
@@ -19,6 +22,10 @@ import com.intellij.util.PathUtil
 import com.intellij.util.io.IOUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.LanguageSettings
 import org.hyperskill.academy.learning.capitalize
@@ -54,12 +61,17 @@ class CourseSettingsPanel(
   var locationField: LabeledComponent<TextFieldWithBrowseButton>? = null
   private val context: UserDataHolder = UserDataHolderBase()
   val settingsPanel = JPanel()
+  private val uiCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.EDT + ModalityState.any().asContextElement())
 
   private var languageSettingsDisposable: CheckedDisposable? = null
 
   private lateinit var collapsibleGroup: CollapsibleRow
 
   init {
+    context.putUserData(LanguageSettings.UI_COROUTINE_SCOPE_KEY, uiCoroutineScope)
+    Disposer.register(parentDisposable) {
+      uiCoroutineScope.cancel()
+    }
     border = JBUI.Borders.empty(DESCRIPTION_AND_SETTINGS_TOP_OFFSET, HORIZONTAL_MARGIN, 0, 0)
     settingsPanel.layout = BoxLayout(settingsPanel, BoxLayout.Y_AXIS)
     settingsPanel.border = JBUI.Borders.empty(0, IdeBorderFactory.TITLED_BORDER_INDENT, 5, 0)

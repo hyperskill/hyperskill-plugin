@@ -2,7 +2,9 @@ package org.hyperskill.academy.learning
 
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.util.CheckedDisposable
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolder
+import kotlinx.coroutines.CoroutineScope
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.newproject.EduProjectSettings
 import org.hyperskill.academy.learning.newproject.ui.errors.SettingsValidationResult
@@ -56,6 +58,10 @@ abstract class LanguageSettings<Settings : EduProjectSettings> {
     for (listener in listeners) {
       listener.settingsChanged()
     }
+  }
+
+  companion object {
+    val UI_COROUTINE_SCOPE_KEY: Key<CoroutineScope> = Key.create("edu.language.settings.uiCoroutineScope")
   }
 
   fun interface SettingsChangeListener {

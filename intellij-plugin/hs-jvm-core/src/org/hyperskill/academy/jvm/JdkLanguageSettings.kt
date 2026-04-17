@@ -1,13 +1,12 @@
 package org.hyperskill.academy.jvm
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl
@@ -17,8 +16,15 @@ import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.util.CheckedDisposable
 import com.intellij.openapi.util.Condition
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.vfs.LocalFileSystem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.hyperskill.academy.jvm.messages.EduJVMBundle
 import org.hyperskill.academy.learning.EduNames.ENVIRONMENT_CONFIGURATION_LINK_JAVA
 import org.hyperskill.academy.learning.LanguageSettings
@@ -26,7 +32,6 @@ import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.ext.project
 import org.hyperskill.academy.learning.newproject.ui.errors.SettingsValidationResult
 import org.hyperskill.academy.learning.newproject.ui.errors.ValidationMessage
-import org.hyperskill.academy.learning.runInBackground
 import java.awt.BorderLayout
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
@@ -93,7 +98,8 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     val sdkTypeFilter = Condition<SdkTypeId> { sdkTypeId -> sdkTypeId is JavaSdkType && !(sdkTypeId as JavaSdkType).isDependent }
     val sdkFilter = Condition<Sdk> { sdk -> sdkTypeFilter.value(sdk.sdkType) }
     val jdkComboBox = JdkComboBox(course.project, sdkModel, sdkTypeFilter, sdkFilter, sdkTypeFilter, null)
-    preselectJdk(course, jdkComboBox, sdkModel, disposable)
+    val uiScope = context?.getUserData(LanguageSettings.UI_COROUTINE_SCOPE_KEY) ?: createFallbackUiScope(disposable)
+    preselectJdk(course, jdkComboBox, sdkModel, uiScope)
     jdk = jdkComboBox.selectedItem?.jdk
     jdkComboBox.addItemListener {
       updateSelectedJdk(jdkComboBox.selectedItem?.jdk)
@@ -107,7 +113,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
         if (addedJdk.sdkType is JavaSdkType) {
           invalidatePreselectRequests()
           invokeLater(ModalityState.any()) {
-            if (!canUpdateJdkUi(jdkComboBox, course.project, disposable)) return@invokeLater
+            if (!canUpdateJdkUi(jdkComboBox, course.project)) return@invokeLater
             LOG.info("Processing JDK added on EDT, current jdk=$jdk, loadingState=$loadingState")
             jdkComboBox.reloadModel()
             jdkComboBox.isEnabled = true
@@ -126,7 +132,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
         if (removedJdk.sdkType is JavaSdkType) {
           invalidatePreselectRequests()
           invokeLater(ModalityState.any()) {
-            if (!canUpdateJdkUi(jdkComboBox, course.project, disposable)) return@invokeLater
+            if (!canUpdateJdkUi(jdkComboBox, course.project)) return@invokeLater
             jdkComboBox.reloadModel()
             jdkComboBox.isEnabled = true
             val selectedJdk = if (jdk == removedJdk) jdkComboBox.selectedJdk else jdk
@@ -150,7 +156,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     course: Course,
     jdkComboBox: JdkComboBox,
     sdksModel: ProjectSdksModel,
-    disposable: CheckedDisposable
+    uiScope: CoroutineScope
   ) {
     if (jdkComboBox.selectedJdk != null) {
       loadingState = JdkLoadingState.LOADED
@@ -164,67 +170,55 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     LOG.info("Starting JDK preselection request #$requestId")
     jdkComboBox.isEnabled = false
 
-    @Suppress("UsagesOfObsoleteApi") // `Task.Backgroundable` is used on purpose for guaranteed completion hooks
-    ProgressManager.getInstance().run(object : Task.Backgroundable(
-      course.project,
-      EduJVMBundle.message("progress.setting.suitable.jdk"),
-      false
-    ) {
-      private var result = PreselectJdkResult.failed(EduJVMBundle.message("error.jdk.loading.failed"))
-
-      override fun run(indicator: ProgressIndicator) {
-        LOG.info("Running JDK preselection request #$requestId in background")
-        result = try {
-          val project = course.project
-          LOG.info("Resetting SDK model for request #$requestId")
-          if (project != null) {
-            sdksModel.reset(project)
-          }
-          LOG.info("SDK model reset finished for request #$requestId")
-
-          addBundledJdkIfNeeded(sdksModel)
-          syncSdksModelWithJdkTable(sdksModel)
-
-          val suitableJdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
-                            ?: findSuitableJdkFromTable(minJvmSdkVersion(course))
-          val hasAnyJdks = hasAnyJdks(sdksModel)
-          PreselectJdkResult(
-            suitableJdk = suitableJdk,
-            loadingState = if (hasAnyJdks) JdkLoadingState.LOADED else JdkLoadingState.FAILED,
-            loadingError = if (hasAnyJdks) null else EduJVMBundle.message("error.no.jdk.available")
-          )
+    uiScope.launch(Dispatchers.EDT) {
+      LOG.info("Running JDK preselection request #$requestId in background")
+      val result = try {
+        val project = course.project
+        LOG.info("Resetting SDK model for request #$requestId")
+        if (project != null) {
+          sdksModel.reset(project)
         }
-        catch (e: Throwable) {
-          LOG.warn("Failed to preselect JDK for request #$requestId", e)
-          PreselectJdkResult.failed(e.message ?: EduJVMBundle.message("error.jdk.loading.failed"))
-        }
+        LOG.info("SDK model reset finished for request #$requestId")
 
-        result.suitableJdk?.let { suitableJdk ->
-          runInBackground(course.project, EduJVMBundle.message("progress.warming.suitable.jdk"), false) {
-            // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
-            prewarmSdkValidation(suitableJdk)
-          }
-        }
+        addBundledJdkIfNeeded(sdksModel)
+        syncSdksModelWithJdkTable(sdksModel)
 
-        LOG.info(
-          "Background JDK preselection request #$requestId finished: state=${result.loadingState}, " +
-          "suitableJdk=${result.suitableJdk?.name}, error=${result.loadingError}"
+        val suitableJdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
+                          ?: findSuitableJdkFromTable(minJvmSdkVersion(course))
+        val hasAnyJdks = hasAnyJdks(sdksModel)
+        PreselectJdkResult(
+          suitableJdk = suitableJdk,
+          loadingState = if (hasAnyJdks) JdkLoadingState.LOADED else JdkLoadingState.FAILED,
+          loadingError = if (hasAnyJdks) null else EduJVMBundle.message("error.no.jdk.available")
         )
       }
+      catch (e: Throwable) {
+        LOG.warn("Failed to preselect JDK for request #$requestId", e)
+        PreselectJdkResult.failed(e.message ?: EduJVMBundle.message("error.jdk.loading.failed"))
+      }
 
-      override fun onFinished() {
+      result.suitableJdk?.let { suitableJdk ->
+        // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
+        prewarmSdkValidation(suitableJdk)
+      }
+
+      LOG.info(
+        "Background JDK preselection request #$requestId finished: state=${result.loadingState}, " +
+        "suitableJdk=${result.suitableJdk?.name}, error=${result.loadingError}"
+      )
+
+      withContext(Dispatchers.Main) {
         LOG.info("Finishing JDK preselection request #$requestId on EDT")
-        if (!canApplyPreselectResult(requestId, jdkComboBox, disposable, course.project)) {
+        if (!canApplyPreselectResult(requestId, jdkComboBox, course.project)) {
           LOG.info(
-            "Skipping JDK preselection request #$requestId: disposableDisposed=${disposable.isDisposed}, " +
             "comboDisplayable=${jdkComboBox.isDisplayable}, comboShowing=${jdkComboBox.isShowing}, " +
             "projectDisposed=${course.project?.isDisposed == true}, latestRequest=${preselectRequestId.get()}"
           )
-          return
+          return@withContext
         }
         finishPreselectJdk(jdkComboBox, result)
       }
-    })
+    }
   }
 
   private fun updateSelectedJdk(selectedJdk: Sdk?) {
@@ -241,6 +235,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
   }
 
   private fun finishPreselectJdk(jdkComboBox: JdkComboBox, result: PreselectJdkResult) {
+    LOG.info("JDK preselection finished: state=${result.loadingState}, suitableJdk=${result.suitableJdk?.name}, error=${result.loadingError}")
     loadingState = result.loadingState
     loadingError = result.loadingError
     jdkComboBox.reloadModel()
@@ -255,28 +250,32 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
   private fun canApplyPreselectResult(
     requestId: Int,
     jdkComboBox: JdkComboBox,
-    disposable: CheckedDisposable,
     project: com.intellij.openapi.project.Project?
   ): Boolean {
     return requestId == preselectRequestId.get()
-           && canUpdateJdkUi(jdkComboBox, project, disposable)
+           && canUpdateJdkUi(jdkComboBox, project)
   }
 
   private fun canUpdateJdkUi(
     jdkComboBox: JdkComboBox,
     project: com.intellij.openapi.project.Project?,
-    disposable: CheckedDisposable,
   ): Boolean {
     if (project?.isDisposed == true) {
       return false
     }
-    // `CheckedDisposable` can be disposed before the visible combo is replaced, so prefer the actual component liveness.
-    // Keep the disposable only as a fallback when the component was never attached.
-    return jdkComboBox.isDisplayable || jdkComboBox.parent != null || !disposable.isDisposed
+    return jdkComboBox.isDisplayable || jdkComboBox.parent != null
   }
 
   private fun invalidatePreselectRequests() {
     preselectRequestId.incrementAndGet()
+  }
+
+  private fun createFallbackUiScope(disposable: CheckedDisposable): CoroutineScope {
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.EDT + ModalityState.any().asContextElement())
+    Disposer.register(disposable) {
+      scope.cancel()
+    }
+    return scope
   }
 
   private fun hasAnyJdks(sdksModel: ProjectSdksModel): Boolean {
@@ -319,6 +318,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
     // If UI components haven't been initialized yet or JDK is still loading, return Pending to avoid false errors
     if (!componentsInitialized || loadingState == JdkLoadingState.LOADING) {
+      LOG.info("componentsInitialized is false or loadingState is LOADING, returning Pending: $loadingState, $jdk")
       return SettingsValidationResult.Pending
     }
 
