@@ -1,11 +1,6 @@
 package org.hyperskill.academy.jvm
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.application.PathManager
-import com.intellij.openapi.application.asContextElement
-import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.*
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.projectRoots.*
@@ -19,12 +14,7 @@ import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.vfs.LocalFileSystem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.hyperskill.academy.jvm.messages.EduJVMBundle
 import org.hyperskill.academy.learning.EduNames.ENVIRONMENT_CONFIGURATION_LINK_JAVA
 import org.hyperskill.academy.learning.LanguageSettings
@@ -141,7 +131,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
             }
             else if (!hasAnyJdks(sdkModel)) {
               loadingState = JdkLoadingState.FAILED
-              loadingError = EduJVMBundle.message("error.no.jdk.available")
+              loadingError = EduJVMBundle.message("error.no.jdk.available", ENVIRONMENT_CONFIGURATION_LINK_JAVA)
               notifyListeners()
             }
           }
@@ -170,44 +160,56 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     LOG.info("Starting JDK preselection request #$requestId")
     jdkComboBox.isEnabled = false
 
-    uiScope.launch(Dispatchers.EDT) {
+    uiScope.launch {
       LOG.info("Running JDK preselection request #$requestId in background")
-      val result = try {
-        val project = course.project
-        LOG.info("Resetting SDK model for request #$requestId")
-        if (project != null) {
-          sdksModel.reset(project)
+
+      val result =
+        withContext(Dispatchers.IO) {
+          try {
+            val project = readAction { course.project }
+            LOG.info("Resetting SDK model for request #$requestId")
+            if (project != null) {
+              sdksModel.reset(project)
+            }
+            LOG.info("SDK model reset finished for request #$requestId")
+
+            LOG.info("add bundled jdk if needed for request #$requestId")
+            addBundledJdkIfNeeded(sdksModel)
+
+            LOG.info("Sync sdks model with jdk table for request #$requestId")
+            syncSdksModelWithJdkTable(sdksModel)
+
+            LOG.info("Find sdks for request #$requestId")
+            val suitableJdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
+                              ?: findSuitableJdkFromTable(minJvmSdkVersion(course))
+            val hasAnyJdks = hasAnyJdks(sdksModel)
+
+            suitableJdk?.let {
+              prewarmSdkValidation(it)
+            }
+
+            PreselectJdkResult(
+              suitableJdk = suitableJdk,
+              loadingState = if (hasAnyJdks) JdkLoadingState.LOADED else JdkLoadingState.FAILED,
+              loadingError = if (hasAnyJdks) null else EduJVMBundle.message("error.no.jdk.available", ENVIRONMENT_CONFIGURATION_LINK_JAVA)
+            )
+          }
+          catch (e: CancellationException) {
+            LOG.error("Failed to preselect JDK for request #$requestId", e)
+            throw e
+          }
+          catch (e: Throwable) {
+            LOG.warn("Failed to preselect JDK for request #$requestId", e)
+            PreselectJdkResult.failed(e.message ?: EduJVMBundle.message("error.jdk.loading.failed", ENVIRONMENT_CONFIGURATION_LINK_JAVA))
+          }
         }
-        LOG.info("SDK model reset finished for request #$requestId")
-
-        addBundledJdkIfNeeded(sdksModel)
-        syncSdksModelWithJdkTable(sdksModel)
-
-        val suitableJdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
-                          ?: findSuitableJdkFromTable(minJvmSdkVersion(course))
-        val hasAnyJdks = hasAnyJdks(sdksModel)
-        PreselectJdkResult(
-          suitableJdk = suitableJdk,
-          loadingState = if (hasAnyJdks) JdkLoadingState.LOADED else JdkLoadingState.FAILED,
-          loadingError = if (hasAnyJdks) null else EduJVMBundle.message("error.no.jdk.available")
-        )
-      }
-      catch (e: Throwable) {
-        LOG.warn("Failed to preselect JDK for request #$requestId", e)
-        PreselectJdkResult.failed(e.message ?: EduJVMBundle.message("error.jdk.loading.failed"))
-      }
-
-      result.suitableJdk?.let { suitableJdk ->
-        // Pre-warm SDK validation and VFS lookups off the EDT to avoid slow operations during UI rendering
-        prewarmSdkValidation(suitableJdk)
-      }
 
       LOG.info(
-        "Background JDK preselection request #$requestId finished: state=${result.loadingState}, " +
+        "JDK preselection request #$requestId finished: state=${result.loadingState}, " +
         "suitableJdk=${result.suitableJdk?.name}, error=${result.loadingError}"
       )
 
-      withContext(Dispatchers.Main) {
+      withContext(Dispatchers.EDT) {
         LOG.info("Finishing JDK preselection request #$requestId on EDT")
         if (!canApplyPreselectResult(requestId, jdkComboBox, course.project)) {
           LOG.info(
@@ -231,7 +233,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
 
   private fun updateLoadingState(hasAnyJdks: Boolean, errorMessage: String? = null) {
     loadingState = if (hasAnyJdks) JdkLoadingState.LOADED else JdkLoadingState.FAILED
-    loadingError = if (hasAnyJdks) null else errorMessage ?: EduJVMBundle.message("error.jdk.loading.failed")
+    loadingError = if (hasAnyJdks) null else errorMessage ?: EduJVMBundle.message("error.jdk.loading.failed", ENVIRONMENT_CONFIGURATION_LINK_JAVA)
   }
 
   private fun finishPreselectJdk(jdkComboBox: JdkComboBox, result: PreselectJdkResult) {
@@ -342,7 +344,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
           LOG.info("Auto-selected JDK from table: $jdk")
         }
         else {
-          val errorMsg = loadingError ?: EduJVMBundle.message("error.jdk.loading.failed")
+          val errorMsg = loadingError ?: EduJVMBundle.message("error.jdk.loading.failed", ENVIRONMENT_CONFIGURATION_LINK_JAVA)
           LOG.info("Returning FAILED state with error: $errorMsg")
           return SettingsValidationResult.Ready(ValidationMessage(errorMsg, ENVIRONMENT_CONFIGURATION_LINK_JAVA))
         }
