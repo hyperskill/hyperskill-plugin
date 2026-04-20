@@ -161,7 +161,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
     jdkComboBox.isEnabled = false
 
     uiScope.launch {
-      LOG.info("Running JDK preselection request #$requestId in background")
+      LOG.info("Running JDK preselection request #$requestId")
 
       val result =
         withContext(Dispatchers.IO) {
