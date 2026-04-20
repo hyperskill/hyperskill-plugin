@@ -173,9 +173,6 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
             }
             LOG.info("SDK model reset finished for request #$requestId")
 
-            LOG.info("add bundled jdk if needed for request #$requestId")
-            addBundledJdkIfNeeded(sdksModel)
-
             LOG.info("Sync sdks model with jdk table for request #$requestId")
             syncSdksModelWithJdkTable(sdksModel)
 
@@ -183,10 +180,6 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
             val suitableJdk = findSuitableJdk(minJvmSdkVersion(course), sdksModel)
                               ?: findSuitableJdkFromTable(minJvmSdkVersion(course))
             val hasAnyJdks = hasAnyJdks(sdksModel)
-
-            suitableJdk?.let {
-              prewarmSdkValidation(it)
-            }
 
             PreselectJdkResult(
               suitableJdk = suitableJdk,
@@ -204,22 +197,29 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
           }
         }
 
+      LOG.info("Add bundled jdk if needed for request #$requestId")
+      addBundledJdkIfNeeded(sdksModel)
+
+      withContext(Dispatchers.IO) {
+        result.suitableJdk?.let {
+          prewarmSdkValidation(it)
+        }
+      }
+
       LOG.info(
         "JDK preselection request #$requestId finished: state=${result.loadingState}, " +
         "suitableJdk=${result.suitableJdk?.name}, error=${result.loadingError}"
       )
 
-      withContext(Dispatchers.EDT) {
-        LOG.info("Finishing JDK preselection request #$requestId on EDT")
-        if (!canApplyPreselectResult(requestId, jdkComboBox, course.project)) {
-          LOG.info(
-            "comboDisplayable=${jdkComboBox.isDisplayable}, comboShowing=${jdkComboBox.isShowing}, " +
-            "projectDisposed=${course.project?.isDisposed == true}, latestRequest=${preselectRequestId.get()}"
-          )
-          return@withContext
-        }
-        finishPreselectJdk(jdkComboBox, result)
+      LOG.info("Finishing JDK preselection request #$requestId on EDT")
+      if (!canApplyPreselectResult(requestId, jdkComboBox, course.project)) {
+        LOG.info(
+          "comboDisplayable=${jdkComboBox.isDisplayable}, comboShowing=${jdkComboBox.isShowing}, " +
+          "projectDisposed=${course.project?.isDisposed == true}, latestRequest=${preselectRequestId.get()}"
+        )
       }
+      finishPreselectJdk(jdkComboBox, result)
+
     }
   }
 
