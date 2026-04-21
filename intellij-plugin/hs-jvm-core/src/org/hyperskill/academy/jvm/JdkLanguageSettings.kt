@@ -188,7 +188,6 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
             )
           }
           catch (e: CancellationException) {
-            LOG.error("Failed to preselect JDK for request #$requestId", e)
             throw e
           }
           catch (e: Throwable) {
@@ -217,6 +216,7 @@ open class JdkLanguageSettings : LanguageSettings<JdkProjectSettings>() {
           "comboDisplayable=${jdkComboBox.isDisplayable}, comboShowing=${jdkComboBox.isShowing}, " +
           "projectDisposed=${course.project?.isDisposed == true}, latestRequest=${preselectRequestId.get()}"
         )
+        return@launch
       }
       finishPreselectJdk(jdkComboBox, result)
 
