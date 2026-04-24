@@ -21,33 +21,21 @@ object OpenProjectTaskCompat {
     beforeInit: ((Project) -> Unit)? = null,
     preparedToOpen: ((Project, Module) -> Unit)? = null
   ): OpenProjectTask {
-    return OpenProjectTask(
-      forceOpenInNewFrame = forceOpenInNewFrame,
-      forceReuseFrame = false,
-      projectToClose = projectToClose,
-      isNewProject = isNewProject,
-      useDefaultProjectAsTemplate = true,
-      project = null,
-      projectName = projectName,
-      showWelcomeScreen = true,
-      callback = null,
-      line = -1,
-      column = -1,
-      isRefreshVfsNeeded = false,
-      runConfigurators = runConfigurators,
-      runConversionBeforeOpen = true,
-      projectWorkspaceId = null,
-      projectFrameTypeId = null,
-      isProjectCreatedWithWizard = isProjectCreatedWithWizard,
-      preloadServices = false,
-      beforeInit = if (beforeInit != null) { { beforeInit(it) } } else null,
-      beforeOpen = null,
-      preparedToOpen = if (preparedToOpen != null) { { preparedToOpen(it.project, it) } } else null,
-      preventIprLookup = false,
-      processorChooser = null,
-      implOptions = null,
-      projectRootDir = null,
-      createModule = true
-    )
+    return OpenProjectTask {
+      this.forceOpenInNewFrame = forceOpenInNewFrame
+      this.forceReuseFrame = false
+      this.isNewProject = isNewProject
+      this.isProjectCreatedWithWizard = isProjectCreatedWithWizard
+      this.runConfigurators = runConfigurators
+      this.projectName = projectName
+      this.projectToClose = projectToClose
+      this.createModule = true
+      this.useDefaultProjectAsTemplate = true
+      this.runConversionBeforeOpen = true
+      this.showWelcomeScreen = true
+      this.preloadServices = false
+      if (beforeInit != null) this.beforeInit = { beforeInit(it) }
+      if (preparedToOpen != null) this.preparedToOpen = { preparedToOpen(it.project, it) }
+    }
   }
 }
