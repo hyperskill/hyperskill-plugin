@@ -15,14 +15,15 @@ with [Hyperskill](https://hi.hyperskill.org/how-we-teach).
 ./gradlew buildPlugin
 
 # Run tests for a specific module
-./gradlew :intellij-plugin:hs-core:test
+# Note: hs-core tests must run via :intellij-plugin:test (hs-core uses base plugin without test runtime)
+./gradlew :intellij-plugin:test
 ./gradlew :intellij-plugin:hs-Java:test
 
 # Run a single test class
-./gradlew :intellij-plugin:hs-core:test --tests "org.hyperskill.academy.learning.format.CourseFormatTest"
+./gradlew :intellij-plugin:test --tests "org.hyperskill.academy.learning.format.CourseFormatTest"
 
 # Run a single test method
-./gradlew :intellij-plugin:hs-core:test --tests "org.hyperskill.academy.learning.format.CourseFormatTest.testSomething"
+./gradlew :intellij-plugin:test --tests "org.hyperskill.academy.learning.format.CourseFormatTest.testSomething"
 
 # Run IDE with the plugin (various IDEs supported)
 ./gradlew runIde          # Default IDE based on baseIDE property
