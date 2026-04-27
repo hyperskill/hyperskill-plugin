@@ -20,17 +20,33 @@ object OpenProjectTaskCompat {
     beforeInit: ((Project) -> Unit)? = null,
     preparedToOpen: ((Project, Module) -> Unit)? = null
   ): OpenProjectTask {
-    return OpenProjectTask {
-      this.forceOpenInNewFrame = forceOpenInNewFrame
-      this.isNewProject = isNewProject
-      this.isProjectCreatedWithWizard = isProjectCreatedWithWizard
-      this.runConfigurators = runConfigurators
-      this.projectName = projectName
-      this.projectToClose = projectToClose
-      this.beforeInit = beforeInit
-      this.preparedToOpen = { module ->
-        preparedToOpen?.invoke(module.project, module)
-      }
-    }
+    return OpenProjectTask(
+      forceOpenInNewFrame = forceOpenInNewFrame,
+      forceReuseFrame = false,
+      projectToClose = projectToClose,
+      isNewProject = isNewProject,
+      useDefaultProjectAsTemplate = false,
+      project = null,
+      projectName = projectName,
+      showWelcomeScreen = true,
+      callback = null,
+      line = -1,
+      column = -1,
+      isRefreshVfsNeeded = false,
+      runConfigurators = runConfigurators,
+      runConversionBeforeOpen = false,
+      projectWorkspaceId = null,
+      projectFrameTypeId = null,
+      isProjectCreatedWithWizard = isProjectCreatedWithWizard,
+      preloadServices = false,
+      beforeInit = beforeInit,
+      beforeOpen = null,
+      preparedToOpen = if (preparedToOpen == null) null else { module -> preparedToOpen.invoke(module.project, module) },
+      preventIprLookup = false,
+      processorChooser = null,
+      implOptions = null,
+      projectRootDir = null,
+      createModule = true
+    )
   }
 }
