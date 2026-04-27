@@ -20,24 +20,17 @@ object OpenProjectTaskCompat {
     beforeInit: ((Project) -> Unit)? = null,
     preparedToOpen: ((Project, Module) -> Unit)? = null
   ): OpenProjectTask {
-
-    val task = OpenProjectTask(
-      forceOpenInNewFrame = forceOpenInNewFrame,
-      projectToClose = projectToClose,
-      isNewProject = isNewProject
-    )
-    return task.copy(
-      projectName = projectName,
-      runConfigurators = runConfigurators,
-      isProjectCreatedWithWizard = isProjectCreatedWithWizard,
-      beforeInit = beforeInit?.let { { beforeInit(it) } },
-      preparedToOpen = preparedToOpen?.let { { preparedToOpen(it.project, it) } },
-      forceReuseFrame = false,
-      createModule = true,
-      useDefaultProjectAsTemplate = true,
-      runConversionBeforeOpen = true,
-      showWelcomeScreen = true,
-      preloadServices = false
-    )
+    return OpenProjectTask {
+      this.forceOpenInNewFrame = forceOpenInNewFrame
+      this.isNewProject = isNewProject
+      this.isProjectCreatedWithWizard = isProjectCreatedWithWizard
+      this.runConfigurators = runConfigurators
+      this.projectName = projectName
+      this.projectToClose = projectToClose
+      this.beforeInit = beforeInit
+      this.preparedToOpen = { module ->
+        preparedToOpen?.invoke(module.project, module)
+      }
+    }
   }
 }
