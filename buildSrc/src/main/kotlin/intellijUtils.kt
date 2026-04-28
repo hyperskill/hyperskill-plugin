@@ -3,6 +3,7 @@ import org.gradle.process.JavaForkOptions
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformDependenciesExtension
+import org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformExtension
 import kotlin.reflect.KProperty
 
 const val VERIFY_CLASSES_TASK_NAME = "verifyClasses"
@@ -155,6 +156,14 @@ fun IntelliJPlatformDependenciesExtension.intellijIde(versionWithCode: String) {
   }
   // JetBrains runtime is necessary not only for running IDE but for tests as well
   jetbrainsRuntime()
+}
+
+fun IntelliJPlatformExtension.PluginVerification.Ides.intellijIde(versionWithCode: String) {
+  val (type, version) = versionWithCode.toTypeWithVersion()
+  create(type, version) {
+    useInstaller.set(false)
+    useCache.set(true)
+  }
 }
 
 fun IntelliJPlatformDependenciesExtension.intellijPlugins(vararg notations: String) {
