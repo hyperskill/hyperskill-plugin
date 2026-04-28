@@ -15,9 +15,11 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.SlowOperations
 import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.configuration.excludeFromArchive
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.TaskFile
+import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.ext.shouldBePropagated
@@ -950,18 +952,26 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   ): UserChanges {
     val changes = mutableListOf<Change>()
 
+    // 1. Propagate user-created files from current state that are NOT in target template
+    for ((path, text) in currentState) {
+      if (path !in targetState) {
+        LOG.info("First visit: propagating user-created file '$path'")
+        changes += Change.PropagateLearnerCreatedTaskFile(path, text)
+      }
+    }
+
+    // 2. Handle files from target template
     for ((path, text) in targetState) {
       val taskFile = targetTask.taskFiles[path]
       val isPropagatable = taskFile?.shouldBePropagated() ?: true
 
       if (isPropagatable) {
-        // Propagatable files: only add if NEW (not in current state)
-        // Files in both: keep current (no change)
-        // Files in current but not target: keep (no removal)
+        // If it's a new template file in target stage, we must add it as a regular file
         if (path !in currentState) {
-          LOG.info("First visit: adding new propagatable file '$path'")
-          changes += Change.PropagateLearnerCreatedTaskFile(path, text)
+          LOG.info("First visit: adding new template file '$path'")
+          changes += Change.AddFile(path, text)
         }
+        // If it's in both, we keep the user's version from currentState (it's already on disk)
       }
       else {
         // Non-propagatable files (e.g., read-only reference files):
@@ -971,7 +981,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       }
     }
 
-    LOG.info("First visit changes: ${changes.size} changes (new files)")
+    LOG.info("First visit changes: ${changes.size} changes")
     return UserChanges(changes)
   }
 
@@ -1300,12 +1310,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val currentTask = lesson.currentTask() ?: return
     val taskDir = currentTask.getDir(project.courseDir) ?: return
 
-    // Get user file keys (propagatable files)
-    val userFileKeys = originalTemplateFilesCache[currentTask.id]?.keys ?: currentTask.allFiles.keys
-    if (userFileKeys.isEmpty()) return
-
-    // Read current disk state (only user files)
-    val currentDiskState = getTaskStateFromFiles(userFileKeys, taskDir)
+    // Read current disk state (all files including user-created).
+    // Note: do NOT early-return when propagatableFiles is empty — the user may have legitimately
+    // deleted every editable file, and the snapshot must be updated to reflect that. The equality
+    // check below will short-circuit cases where there is genuinely nothing to save.
+    val currentDiskState = getAllFilesFromTaskDir(taskDir, currentTask)
     val (propagatableFiles, _) = currentDiskState.split(currentTask)
 
     // Check if there are actual changes compared to saved snapshot (compare only user files)
@@ -1317,7 +1326,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     // Extract only user files from existing snapshot for comparison
-    val existingUserFiles = existingSnapshot.filterKeys { it in userFileKeys }
+    val existingUserFiles = existingSnapshot.filterKeys { path ->
+      currentTask.getTaskFile(path)?.shouldBePropagated() ?: true
+    }
     if (propagatableFiles == existingUserFiles) {
       // No changes to save
       return
@@ -1368,10 +1379,12 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val result = HashMap<String, String>()
     val documentManager = FileDocumentManager.getInstance()
     val testDirs = task.testDirs
+    val configurator = task.course.configurator
 
     // Recursively collect all files from task directory
     fun collectFiles(dir: VirtualFile, pathPrefix: String = "") {
       for (child in dir.children) {
+        if (configurator?.excludeFromArchive(project, child) == true) continue
         val relativePath = if (pathPrefix.isEmpty()) child.name else "$pathPrefix/${child.name}"
 
         if (child.isDirectory) {
