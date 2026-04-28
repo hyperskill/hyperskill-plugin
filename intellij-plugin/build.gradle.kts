@@ -43,7 +43,7 @@ intellijPlatform {
 
   pluginVerification {
     ides {
-      ide(IntellijIdeaUltimate, ideaVersion.toTypeWithVersion().version)
+      intellijIde(ideaVersion)
     }
   }
 

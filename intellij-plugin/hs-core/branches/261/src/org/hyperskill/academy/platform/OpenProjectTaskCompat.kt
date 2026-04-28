@@ -3,7 +3,6 @@ package org.hyperskill.academy.platform
 import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
-import java.nio.file.Path
 
 /**
  * Compatibility helper to construct OpenProjectTask for 253+.
