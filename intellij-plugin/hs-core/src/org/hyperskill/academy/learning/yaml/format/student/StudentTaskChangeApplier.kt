@@ -27,7 +27,10 @@ class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
     when (existingItem) {
       is EduTask -> {
         if (existingItem is RemoteEduTask) {
-          existingItem.checkProfile = (deserializedItem as RemoteEduTask).checkProfile
+          val newCheckProfile = (deserializedItem as RemoteEduTask).checkProfile
+          if (newCheckProfile.isNotEmpty()) {
+            existingItem.checkProfile = newCheckProfile
+          }
         }
       }
     }

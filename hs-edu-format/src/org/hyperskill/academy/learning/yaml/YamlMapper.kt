@@ -21,6 +21,7 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTopic
 import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
+import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
 import org.hyperskill.academy.learning.yaml.format.*
@@ -31,6 +32,7 @@ import org.hyperskill.academy.learning.yaml.format.hyperskill.HyperskillStageMix
 import org.hyperskill.academy.learning.yaml.format.hyperskill.HyperskillTopicMixin
 import org.hyperskill.academy.learning.yaml.format.remote.DataTaskAttemptYamlMixin
 import org.hyperskill.academy.learning.yaml.format.remote.RemoteCourseYamlMixin
+import org.hyperskill.academy.learning.yaml.format.remote.RemoteEduTaskYamlMixin
 import org.hyperskill.academy.learning.yaml.format.remote.RemoteStudyItemYamlMixin
 import org.hyperskill.academy.learning.yaml.format.student.FeedbackYamlMixin
 import org.hyperskill.academy.learning.yaml.format.student.StudentTaskFileYamlMixin
@@ -87,6 +89,7 @@ object YamlMapper {
     addMixIn(Lesson::class.java, LessonYamlMixin::class.java)
     addMixIn(FrameworkLesson::class.java, FrameworkLessonYamlMixin::class.java)
     addMixIn(Task::class.java, StudentTaskYamlMixin::class.java)
+    addMixIn(RemoteEduTask::class.java, RemoteEduTaskYamlMixin::class.java)
     addMixIn(CodeTask::class.java, CodeTaskYamlMixin::class.java)
     addMixIn(TheoryTask::class.java, TheoryTaskYamlUtil::class.java)
     addMixIn(CheckFeedback::class.java, FeedbackYamlMixin::class.java)
