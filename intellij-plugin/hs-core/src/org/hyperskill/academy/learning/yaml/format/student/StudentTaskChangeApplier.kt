@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.yaml.format.student
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.courseFormat.StudyItem
 import org.hyperskill.academy.learning.courseFormat.TaskFile
@@ -11,9 +12,10 @@ import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.yaml.errorHandling.YamlLoadingException
 import org.hyperskill.academy.learning.yaml.format.TaskChangeApplier
 
-
 class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
+  private val LOG = logger<StudentTaskChangeApplier>()
   override fun applyChanges(existingItem: Task, deserializedItem: Task) {
+    LOG.info("Applying changes for task: ${existingItem} - ${deserializedItem}")
     if (existingItem.solutionHidden != deserializedItem.solutionHidden && !ApplicationManager.getApplication().isInternal) {
       throw YamlLoadingException(EduCoreBundle.message("yaml.editor.invalid.visibility.cannot.be.changed"))
     }
