@@ -17,6 +17,12 @@ class RemoteEduTask : EduTask {
    * MUST NOT BE HARDCODED
    */
   var checkProfile: String = ""
+    set(value) {
+      if (field != value) {
+        println("[DEBUG_LOG] RemoteEduTask.checkProfile set to '$value' (was '$field')")
+      }
+      field = value
+    }
 
   override val itemType: String = REMOTE_EDU_TASK_TYPE
 

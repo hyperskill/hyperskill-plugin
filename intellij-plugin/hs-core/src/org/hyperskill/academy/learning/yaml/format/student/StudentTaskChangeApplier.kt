@@ -15,7 +15,9 @@ import org.hyperskill.academy.learning.yaml.format.TaskChangeApplier
 class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
   private val LOG = logger<StudentTaskChangeApplier>()
   override fun applyChanges(existingItem: Task, deserializedItem: Task) {
-    LOG.info("Applying changes for task: ${existingItem} - ${deserializedItem}")
+    LOG.info("Applying changes for task: ${existingItem.name} (id=${existingItem.id})")
+    LOG.info("Existing item checkProfile: ${(existingItem as? RemoteEduTask)?.checkProfile}")
+    LOG.info("Deserialized item checkProfile: ${(deserializedItem as? RemoteEduTask)?.checkProfile}")
     if (existingItem.solutionHidden != deserializedItem.solutionHidden && !ApplicationManager.getApplication().isInternal) {
       throw YamlLoadingException(EduCoreBundle.message("yaml.editor.invalid.visibility.cannot.be.changed"))
     }
@@ -26,14 +28,14 @@ class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
     existingItem.feedback = deserializedItem.feedback
     // Note: record is no longer serialized (legacy field), don't overwrite existing value
 
-    when (existingItem) {
-      is EduTask -> {
-        if (existingItem is RemoteEduTask) {
-          val newCheckProfile = (deserializedItem as RemoteEduTask).checkProfile
-          if (newCheckProfile.isNotEmpty()) {
-            existingItem.checkProfile = newCheckProfile
-          }
-        }
+    if (existingItem is RemoteEduTask && deserializedItem is RemoteEduTask) {
+      val newCheckProfile = deserializedItem.checkProfile
+      if (newCheckProfile != existingItem.checkProfile) {
+        LOG.info("Updating checkProfile for task ${existingItem.name}: '${existingItem.checkProfile}' -> '$newCheckProfile'")
+        existingItem.checkProfile = newCheckProfile
+      }
+      if (existingItem.checkProfile.isEmpty()) {
+        LOG.warn("checkProfile is empty for RemoteEduTask ${existingItem.name} after applying changes")
       }
     }
   }

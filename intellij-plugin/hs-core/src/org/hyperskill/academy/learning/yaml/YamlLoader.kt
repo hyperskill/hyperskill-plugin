@@ -11,6 +11,7 @@ import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.ext.customContentPath
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getPathToChildren
+import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.storage.persistEduFiles
@@ -55,6 +56,9 @@ object YamlLoader {
 
     val existingItem = getStudyItemForConfig(project, configFile)
     val deserializedItem = deserializeItemProcessingErrors(configFile, project, loadFromVFile, mapper) ?: return
+    if (deserializedItem is Task) {
+      com.intellij.openapi.diagnostic.logger<YamlLoader>().info("Deserialized task ${deserializedItem.name} (type=${deserializedItem.itemType}), checkProfile='${(deserializedItem as? RemoteEduTask)?.checkProfile}'")
+    }
     val customContentPath = existingItem?.course.customContentPath
     deserializedItem.ensureChildrenExist(configFile.parent, customContentPath)
 
@@ -108,7 +112,7 @@ object YamlLoader {
 
   fun StudyItem.getConfigFileForChild(project: Project, childName: String): VirtualFile? {
     val courseDir = project.courseDir
-    val dir = getDir(courseDir) ?: error(noDirForItemMessage(name))
+    val dir = getDir(courseDir) ?: return null
     val itemDir = dir.findFileByRelativePath(getPathToChildren())?.findChild(childName)
 
     val configFile = childrenConfigFileNames.map { itemDir?.findChild(it) }.firstOrNull { it != null }

@@ -81,7 +81,7 @@ abstract class TaskYamlMixin {
   protected open fun getAdditionalPropertiesForSerialization(): Map<String, Any?> {
     // Filter out known field names that are already serialized by the mixin
     val knownFields = setOf("type", "custom_name", "files", "feedback_link",
-      "solution_hidden", "status", "feedback", "record", "tags")
+      "solution_hidden", "status", "feedback", "record", "tags", "check_profile")
     return additionalProperties.filterKeys { it !in knownFields }
   }
 

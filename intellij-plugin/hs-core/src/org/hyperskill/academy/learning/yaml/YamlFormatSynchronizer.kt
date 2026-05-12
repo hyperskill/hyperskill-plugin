@@ -51,6 +51,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 
 object YamlFormatSynchronizer {
+  private val LOG = com.intellij.openapi.diagnostic.logger<YamlFormatSynchronizer>()
   val LOAD_FROM_CONFIG = Key<Boolean>("Hyperskill.loadItem")
   val SAVE_TO_CONFIG = Key<Boolean>("Hyperskill.saveItem")
 
@@ -146,13 +147,7 @@ object YamlFormatSynchronizer {
   }
 
   private fun StudyItem.saveConfig(project: Project, configName: String, mapper: ObjectMapper) {
-    val dir = try {
-      getConfigDir(project)
-    }
-    catch (e: IllegalStateException) {
-      // Config dir not found - item was probably deleted from filesystem
-      return
-    }
+    val dir = getConfigDir(project) ?: return
 
     val configFile = runReadAction { dir.findChild(configName) }
     if (configFile?.getUserData(SAVE_TO_CONFIG) == false) return
@@ -185,6 +180,7 @@ object YamlFormatSynchronizer {
             )
           }
           val yamlText = mapper.writeValueAsString(this)
+          LOG.info("Saving item ${this.name} to ${file.name}. YAML content snippet: ${yamlText.take(200)}")
           val formattedYamlText = reformatYaml(project, file.name, yamlText)
 
           VfsUtil.saveText(file, formattedYamlText)
