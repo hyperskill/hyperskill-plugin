@@ -20,16 +20,18 @@ object HyperskillSubmissionFactory {
 
   fun createEduTaskSubmission(task: Task, attempt: Attempt, files: List<SolutionFile>, feedback: String): StepikBasedSubmission {
     val reply = EduTaskReply()
-    reply.feedback = Feedback(feedback)
     reply.score = if (task.status == CheckStatus.Solved) "1" else "0"
     reply.solution = files
+    reply.feedback = Feedback(feedback)
+    reply.checkProfile = ""
     return StepikBasedSubmission(attempt, reply)
   }
 
   fun createRemoteEduTaskSubmission(task: RemoteEduTask, attempt: Attempt, files: List<SolutionFile>): StepikBasedSubmission {
     val reply = EduTaskReply()
-    reply.checkProfile = task.checkProfile
+    reply.score = if (task.status == CheckStatus.Solved) "1" else "0"
     reply.solution = files
+    reply.checkProfile = task.checkProfile
     return StepikBasedSubmission(attempt, reply)
   }
 }
