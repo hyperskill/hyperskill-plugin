@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.courseFormat.tasks
 
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.logger
 import org.jetbrains.annotations.NonNls
 import java.util.*
 
@@ -8,6 +9,10 @@ import java.util.*
  * By default, EduTask is checked with local tests, but if `is_remote_tested` flag is true, then we should send code to remote check
  */
 // see EDU-4504 Support Go edu problems
+
+
+private val LOG = logger<RemoteEduTask>()
+
 class RemoteEduTask : EduTask {
   constructor()
   constructor(name: String, id: Int, position: Int, updateDate: Date, status: CheckStatus) : super(name, id, position, updateDate, status)
@@ -19,7 +24,7 @@ class RemoteEduTask : EduTask {
   var checkProfile: String = ""
     set(value) {
       if (field != value) {
-        println("[DEBUG_LOG] RemoteEduTask.checkProfile set to '$value' (was '$field')")
+        LOG.info("[DEBUG_LOG] RemoteEduTask.checkProfile set to '$value' (was '$field')")
       }
       field = value
     }

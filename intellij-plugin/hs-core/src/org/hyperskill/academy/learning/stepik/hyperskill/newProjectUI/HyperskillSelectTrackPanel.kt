@@ -42,7 +42,7 @@ class HyperskillSelectTrackPanel : JPanel(BorderLayout()) {
       }
       row {
         button(EduCoreBundle.message("course.dialog.hyperskill.jba.on.hyperskill.select.course")) {
-          BrowserUtil.open("https://hyperskill.org/courses")
+          BrowserUtil.open("https://hyperskill.org/courses?utm_source=plugin_ha&utm_medium=plugin&utm_campaign=ha")
           val dialog = UIUtil.getParentOfType(DialogWrapperDialog::class.java, this@HyperskillSelectTrackPanel)
           dialog?.dialogWrapper?.close(DialogWrapper.OK_EXIT_CODE)
         }.applyToComponent {

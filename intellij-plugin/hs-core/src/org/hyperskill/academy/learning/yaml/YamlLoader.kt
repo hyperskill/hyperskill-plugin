@@ -2,17 +2,21 @@ package org.hyperskill.academy.learning.yaml
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.annotations.VisibleForTesting
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.messages.Topic
 import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.api.EduOAuthCodeFlowConnector
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.ext.customContentPath
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getPathToChildren
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.storage.persistEduFiles
 import org.hyperskill.academy.learning.yaml.YamlConfigSettings.configFileName
@@ -25,14 +29,21 @@ import org.hyperskill.academy.learning.yaml.errorHandling.*
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.TASK
 import org.hyperskill.academy.learning.yaml.format.getChangeApplierForItem
 import org.jetbrains.annotations.NonNls
+import java.net.HttpURLConnection.HTTP_BAD_REQUEST
+import java.net.HttpURLConnection.HTTP_FORBIDDEN
+import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
 
 /**
  *  Get fully-initialized [StudyItem] object from yaml config file.
  *  Uses [deserializeItemProcessingErrors] to deserialize object, than applies changes to existing object, see [loadItem].
  */
 object YamlLoader {
+  @PublishedApi
+  internal val LOG = Logger.getInstance(YamlLoader::class.java)
+
   @NonNls
   private const val TOPIC = "Loaded YAML"
+
   val YAML_LOAD_TOPIC: Topic<YamlListener> = Topic.create(TOPIC, YamlListener::class.java)
 
   fun loadItem(project: Project, configFile: VirtualFile, loadFromVFile: Boolean) {
@@ -93,7 +104,7 @@ object YamlLoader {
     }
   }
 
-  inline fun <reified T : StudyItem> StudyItem.deserializeContent(
+  internal inline fun <reified T : StudyItem> StudyItem.deserializeContent(
     project: Project,
     contentList: List<T>,
     mapper: ObjectMapper = basicMapper(),
@@ -102,6 +113,12 @@ object YamlLoader {
     for (titledItem in contentList) {
       val configFile: VirtualFile = getConfigFileForChild(project, titledItem.name) ?: continue
       val deserializeItem = deserializeItemProcessingErrors(configFile, project, mapper = mapper, parentItem = this) as? T ?: continue
+      if (this is Lesson && isHyperskillTopicsLesson() && deserializeItem is UnsupportedTask) {
+        LOG.warn(
+          "Skipping unsupported task `${titledItem.name}` while loading Hyperskill topic lesson `${name}` from ${configFile.path}"
+        )
+        continue
+      }
       deserializeItem.name = titledItem.name
       deserializeItem.index = titledItem.index
       content.add(deserializeItem)
@@ -219,6 +236,12 @@ object YamlLoader {
   @VisibleForTesting
   class ProcessedException(message: String, originalException: Exception?) : Exception(message, originalException)
 
+}
+
+@PublishedApi
+internal fun Lesson.isHyperskillTopicsLesson(): Boolean {
+  val section = parentOrNull as? Section ?: return false
+  return course is HyperskillCourse && section.presentableName == EduFormatNames.HYPERSKILL_TOPICS
 }
 
 private fun StudyItem.ensureChildrenExist(itemDir: VirtualFile, customContentPath: String) {

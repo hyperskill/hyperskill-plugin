@@ -1,10 +1,14 @@
 // Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.hyperskill.academy.learning.courseView
 
+import com.intellij.psi.PsiManager
+import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.CourseMode
+import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.projectView.CourseViewUtils
 import org.junit.Test
 
 class NodesTest : CourseViewTestBase() {
@@ -39,6 +43,27 @@ class NodesTest : CourseViewTestBase() {
     |    file1.txt
     """.trimMargin("|")
     )
+  }
+
+  @Test
+  fun `test task directory lookup does not require task getDir`() {
+    courseWithFiles(language = FakeGradleBasedLanguage) {
+      lesson {
+        eduTask {
+          taskFile("src/file.txt")
+        }
+      }
+    }
+
+    val task = findTask(0, 0)
+    val taskDir = task.getDir(project.courseDir)!!
+    val taskPsiDir = PsiManager.getInstance(project).findDirectory(taskDir)!!
+
+    task.name = "missingTask"
+    assertNull(task.getDir(project.courseDir))
+
+    val directory = CourseViewUtils.findTaskDirectory(project, taskPsiDir, task)
+    assertEquals("src", directory?.name)
   }
 
   @Test
