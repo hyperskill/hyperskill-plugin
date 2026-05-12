@@ -8,13 +8,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.messages.Topic
 import org.hyperskill.academy.learning.*
-import org.hyperskill.academy.learning.api.EduOAuthCodeFlowConnector
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.ext.customContentPath
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getPathToChildren
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
-import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
 import org.hyperskill.academy.learning.messages.EduCoreBundle
@@ -29,9 +27,6 @@ import org.hyperskill.academy.learning.yaml.errorHandling.*
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.TASK
 import org.hyperskill.academy.learning.yaml.format.getChangeApplierForItem
 import org.jetbrains.annotations.NonNls
-import java.net.HttpURLConnection.HTTP_BAD_REQUEST
-import java.net.HttpURLConnection.HTTP_FORBIDDEN
-import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
 
 /**
  *  Get fully-initialized [StudyItem] object from yaml config file.
@@ -67,9 +62,6 @@ object YamlLoader {
 
     val existingItem = getStudyItemForConfig(project, configFile)
     val deserializedItem = deserializeItemProcessingErrors(configFile, project, loadFromVFile, mapper) ?: return
-    if (deserializedItem is Task) {
-      com.intellij.openapi.diagnostic.logger<YamlLoader>().info("Deserialized task ${deserializedItem.name} (type=${deserializedItem.itemType}), checkProfile='${(deserializedItem as? RemoteEduTask)?.checkProfile}'")
-    }
     val customContentPath = existingItem?.course.customContentPath
     deserializedItem.ensureChildrenExist(configFile.parent, customContentPath)
 
@@ -240,8 +232,8 @@ object YamlLoader {
 
 @PublishedApi
 internal fun Lesson.isHyperskillTopicsLesson(): Boolean {
-  val section = parentOrNull as? Section ?: return false
-  return course is HyperskillCourse && section.presentableName == EduFormatNames.HYPERSKILL_TOPICS
+  val course = course as? HyperskillCourse ?: return false
+  return (parentOrNull as? Section) === course.getTopicsSection()
 }
 
 private fun StudyItem.ensureChildrenExist(itemDir: VirtualFile, customContentPath: String) {

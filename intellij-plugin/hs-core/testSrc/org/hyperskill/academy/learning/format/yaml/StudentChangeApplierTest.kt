@@ -2,6 +2,7 @@ package org.hyperskill.academy.learning.format.yaml
 
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
+import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask
 import org.hyperskill.academy.learning.yaml.YamlTestCase
 import org.hyperskill.academy.learning.yaml.format.getChangeApplierForItem
 import org.junit.Test
@@ -59,5 +60,39 @@ class StudentChangeApplierTest : YamlTestCase() {
     getChangeApplierForItem(project, existingItem).applyChanges(existingItem, deserializedItem)
 
     assertEquals(deserializedItem.taskFiles.values.first().text, existingItem.taskFiles.values.first().text)
+  }
+
+  @Test
+  fun `test remote edu task keeps existing check profile when deserialized value is empty`() {
+    val existingItem = courseWithFiles {
+      lesson {
+        remoteEduTask("task1", checkProfile = "hyperskill_go")
+      }
+    }.lessons.first().taskList.first() as RemoteEduTask
+    val deserializedItem = RemoteEduTask().apply {
+      name = "task1"
+      checkProfile = ""
+    }
+
+    getChangeApplierForItem(project, existingItem).applyChanges(existingItem, deserializedItem)
+
+    assertEquals("hyperskill_go", existingItem.checkProfile)
+  }
+
+  @Test
+  fun `test remote edu task updates check profile when deserialized value is non empty`() {
+    val existingItem = courseWithFiles {
+      lesson {
+        remoteEduTask("task1", checkProfile = "hyperskill_go")
+      }
+    }.lessons.first().taskList.first() as RemoteEduTask
+    val deserializedItem = RemoteEduTask().apply {
+      name = "task1"
+      checkProfile = "hyperskill_kotlin"
+    }
+
+    getChangeApplierForItem(project, existingItem).applyChanges(existingItem, deserializedItem)
+
+    assertEquals("hyperskill_kotlin", existingItem.checkProfile)
   }
 }

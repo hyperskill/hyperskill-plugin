@@ -9,7 +9,6 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import okhttp3.*
-import okio.Buffer
 import org.apache.http.client.utils.URIBuilder
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.api.EduOAuthCodeFlowConnector
@@ -82,14 +81,6 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
     val request = chain.request()
     val newUrl = request.url.newBuilder().addQueryParameter("ide_rpc_port", BuiltInServerManager.getInstance().port.toString()).build()
     val newRequest = request.newBuilder().url(newUrl).build()
-
-    if (newRequest.body != null) {
-      val buffer = Buffer()
-      runCatching { newRequest.body!!.writeTo(buffer) }
-        .onSuccess { LOG.info("Retrofit request body for ${newRequest.method} ${newRequest.url}: ${buffer.readUtf8()}") }
-        .onFailure { LOG.warn("Failed to log Retrofit request body for ${newRequest.method} ${newRequest.url}: ${it.message}") }
-    }
-
     chain.proceed(newRequest)
   }
 

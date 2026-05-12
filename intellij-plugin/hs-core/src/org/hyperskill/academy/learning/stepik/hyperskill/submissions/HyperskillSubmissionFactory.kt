@@ -23,7 +23,6 @@ object HyperskillSubmissionFactory {
     reply.score = if (task.status == CheckStatus.Solved) "1" else "0"
     reply.solution = files
     reply.feedback = Feedback(feedback)
-    reply.checkProfile = ""
     return StepikBasedSubmission(attempt, reply)
   }
 
