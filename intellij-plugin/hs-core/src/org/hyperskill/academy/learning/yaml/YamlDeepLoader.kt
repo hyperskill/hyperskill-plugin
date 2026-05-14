@@ -157,15 +157,23 @@ object YamlDeepLoader {
     }
   }
 
-  @Throws(RemoteYamlLoadingException::class)
   fun Course.loadRemoteInfoRecursively(project: Project) {
-    loadRemoteInfo(project)
-    sections.forEach { section -> section.loadRemoteInfo(project) }
+    fun StudyItem.loadRemoteInfoSafe(project: Project) {
+      try {
+        loadRemoteInfo(project)
+      }
+      catch (e: RemoteYamlLoadingException) {
+        LOG.warn(e)
+      }
+    }
+
+    loadRemoteInfoSafe(project)
+    sections.forEach { section -> section.loadRemoteInfoSafe(project) }
 
     // top-level and from sections
     visitLessons { lesson ->
-      lesson.loadRemoteInfo(project)
-      lesson.taskList.forEach { task -> task.loadRemoteInfo(project) }
+      lesson.loadRemoteInfoSafe(project)
+      lesson.taskList.forEach { task -> task.loadRemoteInfoSafe(project) }
     }
   }
 

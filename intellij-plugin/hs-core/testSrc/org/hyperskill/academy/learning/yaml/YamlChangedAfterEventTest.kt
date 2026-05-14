@@ -52,7 +52,7 @@ class YamlChangedAfterEventTest : YamlTestCase() {
   private fun checkConfig(item: StudyItem, expectedConfig: String) {
     UIUtil.dispatchAllInvocationEvents()
 
-    val configFile = item.getConfigDir(project).findChild(item.configFileName)
+    val configFile = item.getConfigDir(project)?.findChild(item.configFileName)
                      ?: error("No config file for item: ${item::class.simpleName} ${item.name}")
 
     val document = FileDocumentManager.getInstance().getDocument(configFile)!!

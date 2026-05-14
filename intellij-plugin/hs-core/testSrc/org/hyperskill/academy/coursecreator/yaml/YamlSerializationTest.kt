@@ -50,6 +50,7 @@ class YamlSerializationTest : YamlTestCase() {
     |- name: Main.go
     |  visible: true
     |  learner_created: false
+    |check_profile: $checkProfile
     |status: Unchecked
     |record: -1
     |""".trimMargin()

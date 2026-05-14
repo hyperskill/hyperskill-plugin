@@ -79,6 +79,16 @@ object HyperskillSubmitConnector {
   }
 
   fun submitRemoteEduTask(task: RemoteEduTask, files: List<SolutionFile>): Result<StepikBasedSubmission, String> {
+    LOG.debug("Submitting RemoteEduTask `${task.name}` (id=${task.id})")
+    if (task.checkProfile.isEmpty()) {
+      val message = EduCoreBundle.message(
+        "hyperskill.error.empty.check.profile",
+        task.name,
+        EduCoreBundle.message("hyperskill.action.synchronize.project")
+      )
+      LOG.error(message)
+      return Err(message)
+    }
     val connector = HyperskillConnector.getInstance()
     val attempt = connector.postAttempt(task).onError {
       return Err(it)

@@ -146,13 +146,7 @@ object YamlFormatSynchronizer {
   }
 
   private fun StudyItem.saveConfig(project: Project, configName: String, mapper: ObjectMapper) {
-    val dir = try {
-      getConfigDir(project)
-    }
-    catch (e: IllegalStateException) {
-      // Config dir not found - item was probably deleted from filesystem
-      return
-    }
+    val dir = getConfigDir(project) ?: return
 
     val configFile = runReadAction { dir.findChild(configName) }
     if (configFile?.getUserData(SAVE_TO_CONFIG) == false) return

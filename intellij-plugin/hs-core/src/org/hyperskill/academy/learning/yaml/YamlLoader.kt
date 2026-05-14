@@ -2,6 +2,7 @@ package org.hyperskill.academy.learning.yaml
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.annotations.VisibleForTesting
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -11,7 +12,9 @@ import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.ext.customContentPath
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getPathToChildren
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.storage.persistEduFiles
 import org.hyperskill.academy.learning.yaml.YamlConfigSettings.configFileName
@@ -30,8 +33,12 @@ import org.jetbrains.annotations.NonNls
  *  Uses [deserializeItemProcessingErrors] to deserialize object, than applies changes to existing object, see [loadItem].
  */
 object YamlLoader {
+  @PublishedApi
+  internal val LOG = Logger.getInstance(YamlLoader::class.java)
+
   @NonNls
   private const val TOPIC = "Loaded YAML"
+
   val YAML_LOAD_TOPIC: Topic<YamlListener> = Topic.create(TOPIC, YamlListener::class.java)
 
   fun loadItem(project: Project, configFile: VirtualFile, loadFromVFile: Boolean) {
@@ -89,7 +96,7 @@ object YamlLoader {
     }
   }
 
-  inline fun <reified T : StudyItem> StudyItem.deserializeContent(
+  internal inline fun <reified T : StudyItem> StudyItem.deserializeContent(
     project: Project,
     contentList: List<T>,
     mapper: ObjectMapper = basicMapper(),
@@ -98,6 +105,12 @@ object YamlLoader {
     for (titledItem in contentList) {
       val configFile: VirtualFile = getConfigFileForChild(project, titledItem.name) ?: continue
       val deserializeItem = deserializeItemProcessingErrors(configFile, project, mapper = mapper, parentItem = this) as? T ?: continue
+      if (this is Lesson && isHyperskillTopicsLesson() && deserializeItem is UnsupportedTask) {
+        LOG.warn(
+          "Skipping unsupported task `${titledItem.name}` while loading Hyperskill topic lesson `${name}` from ${configFile.path}"
+        )
+        continue
+      }
       deserializeItem.name = titledItem.name
       deserializeItem.index = titledItem.index
       content.add(deserializeItem)
@@ -108,7 +121,7 @@ object YamlLoader {
 
   fun StudyItem.getConfigFileForChild(project: Project, childName: String): VirtualFile? {
     val courseDir = project.courseDir
-    val dir = getDir(courseDir) ?: error(noDirForItemMessage(name))
+    val dir = getDir(courseDir) ?: return null
     val itemDir = dir.findFileByRelativePath(getPathToChildren())?.findChild(childName)
 
     val configFile = childrenConfigFileNames.map { itemDir?.findChild(it) }.firstOrNull { it != null }
@@ -215,6 +228,12 @@ object YamlLoader {
   @VisibleForTesting
   class ProcessedException(message: String, originalException: Exception?) : Exception(message, originalException)
 
+}
+
+@PublishedApi
+internal fun Lesson.isHyperskillTopicsLesson(): Boolean {
+  val course = course as? HyperskillCourse ?: return false
+  return (parentOrNull as? Section) === course.getTopicsSection()
 }
 
 private fun StudyItem.ensureChildrenExist(itemDir: VirtualFile, customContentPath: String) {

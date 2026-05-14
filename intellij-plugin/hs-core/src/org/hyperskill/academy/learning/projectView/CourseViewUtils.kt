@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VfsUtilCore.getRelativePath
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.ui.LayeredIcon
 import org.hyperskill.academy.EducationalCoreIcons.CourseView
@@ -57,8 +58,10 @@ object CourseViewUtils {
   private fun isShowDirInView(project: Project, task: Task, dir: PsiDirectory): Boolean {
     if (dir.children.isEmpty()) return true
     val dirName = dir.name
-    val hasTaskFileNotInsideSourceDir = task.hasVisibleTaskFilesNotInsideSourceDir(project)
-    if (dirName == task.sourceDir) return hasTaskFileNotInsideSourceDir
+    if (dirName == task.sourceDir) {
+      val taskDir = dir.virtualFile.parent ?: return false
+      return task.hasVisibleTaskFilesNotInsideSourceDir(taskDir)
+    }
     return task.taskFiles.values.any {
       if (!it.isVisible || isTestFile(task, it.name)) return@any false
       val virtualFile = it.getVirtualFile(project) ?: return@any false
@@ -66,12 +69,11 @@ object CourseViewUtils {
     }
   }
 
-  private fun Task.hasVisibleTaskFilesNotInsideSourceDir(project: Project): Boolean {
-    val taskDir = getDir(project.courseDir) ?: error("Directory for task $name not found")
+  private fun Task.hasVisibleTaskFilesNotInsideSourceDir(taskDir: VirtualFile): Boolean {
     val sourceDir = findSourceDir(taskDir) ?: return false
     return taskFiles.values.any {
       if (!it.isVisible || isTestFile(this, it.name)) return@any false
-      val virtualFile = it.getVirtualFile(project)
+      val virtualFile = it.findTaskFileInDir(taskDir)
       if (virtualFile == null) {
         Logger.getInstance(Task::class.java).warn("VirtualFile for ${it.name} not found")
         return@any false
@@ -98,7 +100,7 @@ object CourseViewUtils {
     val vFile = baseDir.virtualFile
     val sourceVFile = vFile.findFileByRelativePath(sourceDirName) ?: return baseDir
 
-    if (task.hasVisibleTaskFilesNotInsideSourceDir(project)) {
+    if (task.hasVisibleTaskFilesNotInsideSourceDir(vFile)) {
       return baseDir
     }
     return PsiManager.getInstance(project).findDirectory(sourceVFile)

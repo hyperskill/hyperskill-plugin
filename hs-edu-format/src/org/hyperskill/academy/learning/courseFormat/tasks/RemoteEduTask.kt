@@ -8,6 +8,7 @@ import java.util.*
  * By default, EduTask is checked with local tests, but if `is_remote_tested` flag is true, then we should send code to remote check
  */
 // see EDU-4504 Support Go edu problems
+
 class RemoteEduTask : EduTask {
   constructor()
   constructor(name: String, id: Int, position: Int, updateDate: Date, status: CheckStatus) : super(name, id, position, updateDate, status)

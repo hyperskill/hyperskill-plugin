@@ -4,13 +4,11 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.courseFormat.StudyItem
 import org.hyperskill.academy.learning.courseFormat.TaskFile
-import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.yaml.errorHandling.YamlLoadingException
 import org.hyperskill.academy.learning.yaml.format.TaskChangeApplier
-
 
 class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
   override fun applyChanges(existingItem: Task, deserializedItem: Task) {
@@ -24,11 +22,10 @@ class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
     existingItem.feedback = deserializedItem.feedback
     // Note: record is no longer serialized (legacy field), don't overwrite existing value
 
-    when (existingItem) {
-      is EduTask -> {
-        if (existingItem is RemoteEduTask) {
-          existingItem.checkProfile = (deserializedItem as RemoteEduTask).checkProfile
-        }
+    if (existingItem is RemoteEduTask && deserializedItem is RemoteEduTask) {
+      val newCheckProfile = deserializedItem.checkProfile
+      if (newCheckProfile.isNotEmpty() && newCheckProfile != existingItem.checkProfile) {
+        existingItem.checkProfile = newCheckProfile
       }
     }
   }
