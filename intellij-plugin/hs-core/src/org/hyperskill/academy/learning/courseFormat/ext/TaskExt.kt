@@ -49,11 +49,10 @@ val Task.dirName: String
   }
 
 val Task.targetDirName: String
-  get() = when (this) {
-    is TheoryTask,
-    is CodeTask -> name
-
-    else -> dirName
+  get() = when {
+    this is TheoryTask || this is CodeTask -> name
+    isFrameworkTask -> dirName
+    else -> name
   }
 
 fun Task.findSourceDir(taskDir: VirtualFile): VirtualFile? {

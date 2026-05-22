@@ -238,24 +238,22 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       "The task is not a part of this lesson"
     }
 
-    // For current task, read from disk including user-created files
+    val ref = task.storageRef()
+    if (storage.hasRef(ref)) {
+      try {
+        return storage.getSnapshot(ref).toContentMap()
+      } catch (e: IOException) {
+        LOG.warn("Failed to get snapshot for task '${task.name}' (ref=$ref), falling back to templates", e)
+      }
+    }
+
+    // For current task without saved storage, read from disk including user-created files
     if (lesson.currentTaskIndex + 1 == task.index) {
       val taskDir = task.getDir(project.courseDir) ?: return emptyMap()
       return getAllFilesFromTaskDir(taskDir, task)
     }
 
-    // For other tasks, read snapshot directly from storage
-    val ref = task.storageRef()
-    return if (storage.hasRef(ref)) {
-      try {
-        storage.getSnapshot(ref).toContentMap()
-      } catch (e: IOException) {
-        LOG.warn("Failed to get snapshot for task '${task.name}' (ref=$ref), falling back to templates", e)
-        task.allFiles
-      }
-    } else {
-      task.allFiles
-    }
+    return task.allFiles
   }
 
   /**
@@ -337,14 +335,38 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // Read ALL files from disk, including user-created files
     val currentDiskState = getAllFilesFromTaskDir(taskDir, currentTask)
     val (currentPropagatableFiles, _) = currentDiskState.split(currentTask)
+    val currentSnapshotState = if (currentHasStorage) {
+      try {
+        storage.getSnapshot(currentRef).toContentMap()
+      }
+      catch (e: IOException) {
+        LOG.warn("Failed to get snapshot for current task '${currentTask.name}' (ref=$currentRef), using disk state", e)
+        null
+      }
+    }
+    else {
+      null
+    }
+    val currentSnapshotPropagatableFiles = currentSnapshotState?.split(currentTask)?.first
+    val (currentTemplatePropagatableFiles, _) = currentTask.allFiles.split(currentTask)
+    val useStoredCurrentState = currentSnapshotPropagatableFiles != null &&
+      currentPropagatableFiles == currentTemplatePropagatableFiles &&
+      currentSnapshotPropagatableFiles != currentPropagatableFiles
+    val effectiveCurrentPropagatableFiles = if (useStoredCurrentState) {
+      LOG.info("Navigation: using saved snapshot for current task '${currentTask.name}' instead of unchanged template on disk")
+      currentSnapshotPropagatableFiles
+    }
+    else {
+      currentPropagatableFiles
+    }
     logTiming("readCurrentDiskState")
 
     // 2. Save current state to storage ONLY when navigating FORWARD.
     // When navigating backward, the disk content belongs to the stage we're leaving,
     // not the stage we're going from. Saving it would corrupt the current stage's snapshot.
-    if (taskIndexDelta > 0) {
+    if (taskIndexDelta > 0 && !useStoredCurrentState) {
       // Build full snapshot: user files from disk + non-propagatable files from cache
-      val fullSnapshot = buildFullSnapshotState(currentTask, currentPropagatableFiles)
+      val fullSnapshot = buildFullSnapshotState(currentTask, effectiveCurrentPropagatableFiles)
       logTiming("buildFullSnapshotState(current)")
       val navMessage = "Save changes before navigating from '${currentTask.name}' to '${targetTask.name}'"
       try {
@@ -356,7 +378,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       }
       logTiming("saveSnapshot(current)")
     } else {
-      LOG.info("Navigation: Moving backward, not saving current task '${currentTask.name}' (would corrupt snapshot)")
+      val reason = if (useStoredCurrentState) "saved snapshot is newer than unchanged template on disk" else "moving backward would corrupt the snapshot"
+      LOG.info("Navigation: not saving current task '${currentTask.name}': $reason")
     }
 
     // 3. Clear legacy record if present (we now use computed refs)
@@ -370,7 +393,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // 4. Get current state for diff calculation
     // For forward navigation: use disk state (we just saved it)
     // For backward navigation: use disk state (what's currently there)
-    val currentState: FLTaskState = currentPropagatableFiles
+    val currentState: FLTaskState = effectiveCurrentPropagatableFiles
     LOG.warn("Navigation: currentState=${currentState.mapValues { "${it.key}:${it.value.length}chars" }}")
 
     // 5. Get target state directly from storage snapshot (no template-based diff calculation needed)
@@ -431,7 +454,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // Keep all current files and add only NEW files from target templates
       !targetHasStorage && taskIndexDelta > 0 && lesson.propagateFilesOnNavigation -> {
         LOG.info("First visit to '${targetTask.name}': propagating current state + adding new template files")
-        calculateFirstVisitChanges(currentState, targetState, targetTask)
+        calculateFirstVisitChanges(currentState, targetState, currentTask, targetTask)
       }
       else -> {
         propagationActive = null // No propagation happening, reset for next navigation
@@ -441,7 +464,13 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     logTiming("calculateChanges")
 
     // 7. Apply difference between latest states of current and target tasks on local FS
+    val taskFilesChanged = changes.changes.any { it is Change.PropagateLearnerCreatedTaskFile || it is Change.RemoveTaskFile }
     changes.apply(project, taskDir, targetTask)
+    if (taskFilesChanged) {
+      SlowOperations.knownIssue("EDU-XXXX").use {
+        YamlFormatSynchronizer.saveItem(targetTask)
+      }
+    }
     logTiming("applyChanges")
 
     // 8. Recreate non-propagatable files (test files, hidden files) from target task definition
@@ -948,6 +977,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
   private fun calculateFirstVisitChanges(
     currentState: FLTaskState,
     targetState: FLTaskState,
+    currentTask: Task,
     targetTask: Task
   ): UserChanges {
     val changes = mutableListOf<Change>()
@@ -968,8 +998,14 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       if (isPropagatable) {
         // If it's a new template file in target stage, we must add it as a regular file
         if (path !in currentState) {
-          LOG.info("First visit: adding new template file '$path'")
-          changes += Change.AddFile(path, text)
+          if (currentTask.taskFiles[path]?.shouldBePropagated() == true) {
+            LOG.info("First visit: propagating deletion of '$path'")
+            changes += Change.RemoveTaskFile(path)
+          }
+          else {
+            LOG.info("First visit: adding new template file '$path'")
+            changes += Change.AddFile(path, text)
+          }
         }
         // If it's in both, we keep the user's version from currentState (it's already on disk)
       }

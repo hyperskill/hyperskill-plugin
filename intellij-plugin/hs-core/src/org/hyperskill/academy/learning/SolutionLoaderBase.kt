@@ -23,6 +23,7 @@ import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
+import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.*
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
@@ -303,12 +304,31 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       // storeOriginalTemplateFiles uses task.taskFiles which may have stale disk content.
       frameworkLessonManager.ensureTemplateFilesCached(task)
 
-      val solutionMap = taskSolutions.solutions.mapValues { it.value.text }
+      val solutionMap = taskSolutions.visibleNonTestSolutions(task)
       frameworkLessonManager.saveExternalChanges(task, solutionMap, taskSolutions.submissionId)
-      for (taskFile in task.taskFiles.values) {
-        val solution = taskSolutions.solutions[taskFile.name] ?: continue
 
-        taskFile.isVisible = solution.isVisible
+      var taskFilesChanged = false
+      for ((path, solution) in taskSolutions.solutions) {
+        if (EduUtilsKt.isTestsFile(task, path)) continue
+
+        val taskFile = task.getTaskFile(path)
+        if (taskFile == null) {
+          if (!solution.isVisible) continue
+
+          task.addTaskFile(TaskFile(path, solution.text).apply {
+            isVisible = solution.isVisible
+            isLearnerCreated = true
+          })
+          taskFilesChanged = true
+        }
+        else if (taskFile.isVisible != solution.isVisible) {
+          taskFile.isVisible = solution.isVisible
+          taskFilesChanged = true
+        }
+      }
+
+      if (taskFilesChanged) {
+        YamlFormatSynchronizer.saveItem(task)
       }
     }
 
@@ -317,15 +337,14 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       for ((path, solution) in taskSolutions.solutions) {
         val taskFile = task.getTaskFile(path)
 
-        // Skip test files from submissions to prevent corrupted tests from being applied
-        // Test files should always come from step source (API), not from user submissions
-        // See ALT-10961: user submissions may contain stale test files from previous stages
-        if (taskFile != null && !taskFile.isLearnerCreated && taskFile.isTestFile) {
+        if (EduUtilsKt.isTestsFile(task, path)) {
           LOG.warn("Skipping test file '$path' from submission for task '${task.name}' - test files should come from API, not submissions")
           continue
         }
 
         if (taskFile == null) {
+          if (!solution.isVisible) continue
+
           GeneratorUtils.createChildFile(project, taskDir, path, InMemoryTextualContents(solution.text))
           val createdFile = task.getTaskFile(path)
           if (createdFile == null) {
@@ -356,10 +375,15 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       val lesson = task.lesson
       if (lesson is FrameworkLesson) {
         val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
-        val solutionMap = taskSolutions.solutions.mapValues { it.value.text }
+        val solutionMap = taskSolutions.visibleNonTestSolutions(task)
         frameworkLessonManager.saveExternalChanges(task, solutionMap, taskSolutions.submissionId)
       }
     }
+
+    private fun TaskSolutions.visibleNonTestSolutions(task: Task): Map<String, String> =
+      solutions
+        .filter { (path, solution) -> solution.isVisible && !EduUtilsKt.isTestsFile(task, path) }
+        .mapValues { (_, solution) -> solution.text }
   }
 
   protected data class Solution(val text: String, val isVisible: Boolean)

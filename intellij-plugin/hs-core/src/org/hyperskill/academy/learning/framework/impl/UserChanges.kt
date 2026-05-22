@@ -105,10 +105,26 @@ private fun Change.ChangeFile.apply(project: Project, taskDir: VirtualFile, task
 }
 
 private fun Change.PropagateLearnerCreatedTaskFile.apply(project: Project, taskDir: VirtualFile, task: Task) {
-  val taskFile = TaskFile(path, text).apply { isLearnerCreated = true }
-  task.addTaskFile(taskFile)
+  val taskFile = task.getTaskFile(path) ?: TaskFile(path, text).also { task.addTaskFile(it) }
+  taskFile.isLearnerCreated = true
+
+  val file = taskDir.findFileByRelativePath(path)
+  if (file == null) {
+    try {
+      EduDocumentListener.modifyWithoutListener(task, path) {
+        GeneratorUtils.createChildFile(project.toCourseInfoHolder(), taskDir, path, InMemoryTextualContents(text))
+      }
+    }
+    catch (e: IOException) {
+      LOG.error("Failed to create learner-created file `${taskDir.path}/$path`", e)
+    }
+  }
+  else {
+    Change.ChangeFile(path, text).apply(project, taskDir, task)
+  }
 }
 
 private fun Change.RemoveTaskFile.apply(project: Project, taskDir: VirtualFile, task: Task) {
   task.removeTaskFile(path)
+  Change.RemoveFile(path).apply(project, taskDir, task)
 }

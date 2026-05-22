@@ -6,37 +6,54 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import org.hyperskill.academy.learning.*
 
-private fun isRefactoringForbidden(project: Project?, element: PsiElement?): Boolean {
+private fun isStudyItemDirectory(project: Project, element: PsiElement): Boolean {
+  val dir = (element as? PsiDirectory)?.virtualFile ?: return false
+  return dir.getStudyItem(project) != null
+}
+
+private fun isTaskDescriptionFile(project: Project, element: PsiElement): Boolean {
+  val file = (element as? PsiFile)?.originalFile?.virtualFile ?: return false
+  return EduUtilsKt.isTaskDescriptionFile(file.name) && file.parent == file.getTaskDir(project)
+}
+
+private fun isTaskFile(project: Project, element: PsiElement): Boolean {
+  val file = (element as? PsiFile)?.originalFile?.virtualFile ?: return false
+  return file.getTaskFile(project) != null
+}
+
+private fun isCourseAdditionalFile(project: Project, element: PsiElement): Boolean {
+  val file = (element as? PsiFile)?.originalFile?.virtualFile ?: return false
+  val course = project.course ?: return false
+  val path = FileUtil.getRelativePath(project.courseDir.path, file.path, '/') ?: return false
+  return course.additionalFiles.any { it.name == path }
+}
+
+private fun isRenameRefactoringForbidden(project: Project?, element: PsiElement?): Boolean {
   if (project == null || element == null) return false
 
   return when (element) {
-    is PsiFile -> {
-      // TODO: allow changing user created non-task files EDU-2556
-      val taskFile = element.originalFile.virtualFile.getTaskFile(project)
-      taskFile != null
-    }
-
-    is PsiDirectory -> {
-      val dir = element.virtualFile
-      dir.getStudyItem(project) != null
-    }
-
+    is PsiFile -> isTaskFile(project, element) || isTaskDescriptionFile(project, element) || isCourseAdditionalFile(project, element)
+    is PsiDirectory -> isStudyItemDirectory(project, element)
     else -> false
   }
 }
 
 fun isRenameForbidden(project: Project?, element: PsiElement?): Boolean {
-  return isRefactoringForbidden(project, element)
+  return isRenameRefactoringForbidden(project, element)
 }
 
 fun isMoveForbidden(project: Project?, element: PsiElement?, target: PsiElement?): Boolean {
   if (project?.course == null) return false
-  if (isRefactoringForbidden(project, element)) return true
+  if (element == null) return false
+  if (isStudyItemDirectory(project, element) || isTaskDescriptionFile(project, element) || isCourseAdditionalFile(project, element)) {
+    return true
+  }
   if (element is PsiFile) {
     try {
       val targetDir = (target as? PsiDirectory)?.virtualFile ?: return false

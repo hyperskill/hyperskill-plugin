@@ -19,6 +19,6 @@ import org.hyperskill.academy.learning.yaml.format.student.StudentTaskYamlMixin
 class RemoteEduTaskYamlMixin : StudentTaskYamlMixin() {
   @get:JsonProperty(CHECK_PROFILE)
   @set:JsonProperty(CHECK_PROFILE)
-  @get:JsonInclude(JsonInclude.Include.ALWAYS)
+  @get:JsonInclude(JsonInclude.Include.NON_EMPTY)
   var checkProfile: String = ""
 }
