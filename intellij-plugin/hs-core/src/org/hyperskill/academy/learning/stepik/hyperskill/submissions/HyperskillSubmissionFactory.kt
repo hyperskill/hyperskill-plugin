@@ -28,7 +28,6 @@ object HyperskillSubmissionFactory {
 
   fun createRemoteEduTaskSubmission(task: RemoteEduTask, attempt: Attempt, files: List<SolutionFile>): StepikBasedSubmission {
     val reply = EduTaskReply()
-    reply.score = if (task.status == CheckStatus.Solved) "1" else "0"
     reply.solution = files
     reply.checkProfile = task.checkProfile
     return StepikBasedSubmission(attempt, reply)

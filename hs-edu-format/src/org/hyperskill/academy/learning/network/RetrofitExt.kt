@@ -11,6 +11,7 @@ import okhttp3.Dispatcher
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
 import okhttp3.logging.HttpLoggingInterceptor.Level.BASIC
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.courseFormat.logger
@@ -19,6 +20,7 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.net.HttpURLConnection.*
+import java.util.logging.Level.FINE
 import java.util.concurrent.TimeUnit
 
 
@@ -50,7 +52,10 @@ private fun createOkHttpClient(
   dispatcher.maxRequests = 10
 
   val logger = HttpLoggingInterceptor { LOG.info(it) }
-  logger.level = BASIC
+  val debugLoggingInterceptor = Interceptor { chain ->
+    logger.level = if (LOG.isLoggable(FINE)) BODY else BASIC
+    logger.intercept(chain)
+  }
 
   val builder = OkHttpClient.Builder()
     .connectionPool(connectionPool)
@@ -65,7 +70,7 @@ private fun createOkHttpClient(
       val newRequest = builder.build()
       chain.proceed(newRequest)
     }
-    .addInterceptor(logger)
+    .addInterceptor(debugLoggingInterceptor)
     .dispatcher(dispatcher)
 
   if (customInterceptor != null) {
