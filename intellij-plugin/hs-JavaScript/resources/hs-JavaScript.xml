@@ -4,6 +4,7 @@
     <plugin id="JavaScript"/>
     <plugin id="NodeJS"/>
     <plugin id="com.intellij.css"/>
+    <module name="intellij.javascript.parser"/>
   </dependencies>
 
   <extensions defaultExtensionNs="HyperskillEducational">
