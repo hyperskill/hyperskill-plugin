@@ -91,6 +91,40 @@ object UpdateUtils {
       task.init(lesson, false)
     }
 
+    fun removeDeletedTaskFiles(
+      task: Task,
+      remoteTask: Task,
+      updateInLocalFS: Boolean
+    ) {
+      val deletedPaths = task.taskFiles
+        .filter { (path, taskFile) -> path !in remoteTask.taskFiles && !taskFile.isLearnerCreated }
+        .keys
+        .toList()
+
+      for (path in deletedPaths) {
+        val taskFile = task.taskFiles[path] ?: continue
+        val hasLocalChanges = updateInLocalFS &&
+          taskFile.shouldBePropagated() &&
+          taskFile.getDocument(project)?.text != taskFile.contents.textualRepresentation
+
+        if (hasLocalChanges) continue
+
+        task.removeTaskFile(path)
+        if (updateInLocalFS) {
+          val taskDir = task.getDir(project.courseDir)
+          if (taskDir != null) {
+            invokeAndWaitIfNeeded {
+              runWriteAction {
+                taskDir.findFileByRelativePath(path)?.delete(UpdateUtils::class.java)
+              }
+            }
+          }
+        }
+      }
+
+      task.init(lesson, false)
+    }
+
     val flm = FrameworkLessonManager.getInstance(project)
 
     // Find new propagatable files added by author (exist in remote but not in local)
@@ -104,6 +138,8 @@ object UpdateUtils {
     val isCurrentTask = lesson.currentTaskIndex == task.index - 1
 
     if (!isCurrentTask) {
+      flm.updateUserChanges(task, remoteTask.taskFiles.mapValues { (_, taskFile) -> taskFile.contents.textualRepresentation })
+      removeDeletedTaskFiles(task, remoteTask, false)
       updateTaskFiles(task, remoteTask.nonPropagatableFiles, false)
       // Add new propagatable files to model (not to disk - will be written when navigating)
       if (newPropagatableFiles.isNotEmpty()) {
@@ -111,13 +147,14 @@ object UpdateUtils {
         // Update storage snapshot with new files
         flm.addNewFilesToSnapshot(task, newPropagatableFiles.mapValues { it.value.contents.textualRepresentation })
       }
-      flm.updateUserChanges(task, task.taskFiles.mapValues { (_, taskFile) -> taskFile.contents.textualRepresentation })
     }
     else {
       if (updatePropagatableFiles && !task.hasChangedFiles(project)) {
+        removeDeletedTaskFiles(task, remoteTask, true)
         updateTaskFiles(task, remoteTask.taskFiles, true)
       }
       else {
+        removeDeletedTaskFiles(task, remoteTask, true)
         updateTaskFiles(task, remoteTask.nonPropagatableFiles, true)
         // Add new propagatable files to disk and model for current task
         if (newPropagatableFiles.isNotEmpty()) {

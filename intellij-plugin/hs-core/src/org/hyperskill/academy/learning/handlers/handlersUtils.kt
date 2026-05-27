@@ -48,6 +48,13 @@ fun isRenameForbidden(project: Project?, element: PsiElement?): Boolean {
   return isRenameRefactoringForbidden(project, element)
 }
 
+fun shouldEduTaskFileRenameProcessorHandle(project: Project?, element: PsiElement?): Boolean {
+  if (project == null || element == null) return false
+  if (element !is PsiFile) return false
+
+  return isTaskDescriptionFile(project, element) || isCourseAdditionalFile(project, element)
+}
+
 fun isMoveForbidden(project: Project?, element: PsiElement?, target: PsiElement?): Boolean {
   if (project?.course == null) return false
   if (element == null) return false

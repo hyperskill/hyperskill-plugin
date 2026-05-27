@@ -61,9 +61,13 @@ data class FrameworkTaskUpdateInfo(
       for ((fileName, fileHistory) in taskHistory.taskFileHistories) {
         val fileContents = fileHistory.evaluateContents(localLesson.currentTaskIndex)
         if (fileContents == null) {
+          localItem.removeTaskFile(fileName)
+          remoteItem.removeTaskFile(fileName)
           removeFile(taskDir, fileName)
         }
         else {
+          localItem.taskFiles[fileName]?.contents = fileContents
+          remoteItem.taskFiles[fileName]?.contents = fileContents
           val isEditable = remoteItem.taskFiles[fileName]?.isEditable != false
           updateFile(project, taskDir, fileName, fileContents, isEditable)
         }

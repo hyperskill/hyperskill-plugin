@@ -65,6 +65,13 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     hyperskillCourse: HyperskillCourse,
     timeoutMs: Long = STAGE_LOADING_TIMEOUT_MS
   ): Result<Unit, String> {
+    if (isUnitTestMode) {
+      computeUnderProgress(project, EduCoreBundle.message("hyperskill.loading.stages")) {
+        HyperskillConnector.getInstance().loadStages(hyperskillCourse)
+      }
+      return Ok(Unit)
+    }
+
     val future = CompletableFuture.supplyAsync {
       computeUnderProgress(project, EduCoreBundle.message("hyperskill.loading.stages")) {
         HyperskillConnector.getInstance().loadStages(hyperskillCourse)

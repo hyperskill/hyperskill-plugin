@@ -56,6 +56,11 @@ class LegacyFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePa
     return withReadLock<RecordInfo?, IOException> {
       val bytes = readBytes(recordId)
       if (bytes.isEmpty()) return@withReadLock null
+      when (version) {
+        0 -> return@withReadLock RecordInfo.Legacy(readVersion0UserChanges(DataInputStream(java.io.ByteArrayInputStream(bytes))))
+        1 -> return@withReadLock RecordInfo.Legacy(readLegacyUserChanges(DataInputStream(java.io.ByteArrayInputStream(bytes))))
+      }
+
       val input = DataInputStream(java.io.ByteArrayInputStream(bytes))
       val type = input.readByte().toInt()
       when (type) {
@@ -68,6 +73,19 @@ class LegacyFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePa
         else -> null
       }
     }
+  }
+
+  @Throws(IOException::class)
+  private fun readVersion0UserChanges(input: DataInput): UserChanges {
+    val size = DataInputOutputUtil.readINT(input)
+    if (size < 0 || size > 10000) {
+      throw IOException("Corrupted data: invalid number of changes $size")
+    }
+    val changes = ArrayList<Change>(size)
+    for (i in 0 until size) {
+      changes += Change.readChange(input)
+    }
+    return UserChanges(changes, -1)
   }
 
   /**
@@ -104,6 +122,11 @@ class LegacyFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePa
     else {
       withReadLock<UserChanges, IOException> {
         val bytes = readBytes(record)
+        when (version) {
+          0 -> return@withReadLock readVersion0UserChanges(DataInputStream(java.io.ByteArrayInputStream(bytes)))
+          1 -> return@withReadLock readLegacyUserChanges(DataInputStream(java.io.ByteArrayInputStream(bytes)))
+        }
+
         val input = DataInputStream(java.io.ByteArrayInputStream(bytes))
         val type = input.readByte().toInt()
         if (type == LEGACY_CHANGES_TYPE) {

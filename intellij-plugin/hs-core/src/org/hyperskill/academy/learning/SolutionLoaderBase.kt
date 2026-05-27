@@ -304,13 +304,11 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       // storeOriginalTemplateFiles uses task.taskFiles which may have stale disk content.
       frameworkLessonManager.ensureTemplateFilesCached(task)
 
-      val solutionMap = taskSolutions.visibleNonTestSolutions(task)
+      val solutionMap = taskSolutions.visibleSolutions()
       frameworkLessonManager.saveExternalChanges(task, solutionMap, taskSolutions.submissionId)
 
       var taskFilesChanged = false
       for ((path, solution) in taskSolutions.solutions) {
-        if (EduUtilsKt.isTestsFile(task, path)) continue
-
         val taskFile = task.getTaskFile(path)
         if (taskFile == null) {
           if (!solution.isVisible) continue
@@ -336,11 +334,6 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       val taskDir = task.getDir(project.courseDir) ?: error("Directory for task `${task.name}` not found")
       for ((path, solution) in taskSolutions.solutions) {
         val taskFile = task.getTaskFile(path)
-
-        if (EduUtilsKt.isTestsFile(task, path)) {
-          LOG.warn("Skipping test file '$path' from submission for task '${task.name}' - test files should come from API, not submissions")
-          continue
-        }
 
         if (taskFile == null) {
           if (!solution.isVisible) continue
@@ -375,14 +368,14 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       val lesson = task.lesson
       if (lesson is FrameworkLesson) {
         val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
-        val solutionMap = taskSolutions.visibleNonTestSolutions(task)
+        val solutionMap = taskSolutions.visibleSolutions()
         frameworkLessonManager.saveExternalChanges(task, solutionMap, taskSolutions.submissionId)
       }
     }
 
-    private fun TaskSolutions.visibleNonTestSolutions(task: Task): Map<String, String> =
+    private fun TaskSolutions.visibleSolutions(): Map<String, String> =
       solutions
-        .filter { (path, solution) -> solution.isVisible && !EduUtilsKt.isTestsFile(task, path) }
+        .filter { (_, solution) -> solution.isVisible }
         .mapValues { (_, solution) -> solution.text }
   }
 

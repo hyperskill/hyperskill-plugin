@@ -46,15 +46,24 @@ fun openSelectedStage(course: Course, project: Project) {
       val lesson = course.lessons[0]
       val taskList = lesson.taskList
       if (taskList.size > index) {
-        // Sync currentTaskIndex with storage HEAD before navigation
-        // to avoid creating incorrect merge commits when project opens
-        if (lesson is FrameworkLesson) {
-          FrameworkLessonManager.getInstance(project).syncCurrentTaskIndexFromStorage(lesson)
+        var showDialogIfConflict = true
+        val fromTask = if (lesson is FrameworkLesson) {
+          val taskOnDisk = lesson.currentTask()
+          val syncedFromHead = FrameworkLessonManager.getInstance(project).syncCurrentTaskIndexFromStorage(lesson)
+          showDialogIfConflict = syncedFromHead
+          if (syncedFromHead) {
+            lesson.currentTask()
+          }
+          else {
+            taskOnDisk?.also { lesson.currentTaskIndex = it.index - 1 }
+          }
         }
-        val fromTask = if (lesson is FrameworkLesson) lesson.currentTask() else taskList[0]
+        else {
+          taskList[0]
+        }
         // Show Keep/Replace dialog if there's a merge conflict when opening project.
         // This lets user decide whether to propagate their changes or keep target's content.
-        NavigationUtils.navigateToTask(project, taskList[index], fromTask, showDialogIfConflict = true)
+        NavigationUtils.navigateToTask(project, taskList[index], fromTask, showDialogIfConflict = showDialogIfConflict)
       }
     }
   }
