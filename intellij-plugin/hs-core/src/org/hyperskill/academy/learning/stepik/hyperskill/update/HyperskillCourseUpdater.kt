@@ -281,11 +281,9 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
                  "needsUpdate=${task.updateDate.before(remoteTask.updateDate)}, timestamp=${System.currentTimeMillis()}")
         if (!task.updateDate.before(remoteTask.updateDate)) continue
 
-        // Don't update files for current task - SolutionLoader will apply user's submissions
-        // This prevents race condition where update overwrites files before submissions are applied
-        // For non-current tasks, only update if status is Unchecked (no submissions yet)
+        // Only update unchecked tasks. updateFrameworkLessonFiles preserves locally changed learner files.
         val isCurrentTask = lesson.currentTaskIndex + 1 == task.index
-        val shouldUpdateFiles = !isCurrentTask && task.status == CheckStatus.Unchecked
+        val shouldUpdateFiles = task.status == CheckStatus.Unchecked
         LOG.warn("UPDATE_PROJECT_LESSON: task='${task.name}' needs update, status=${task.status}, " +
                  "isCurrentTask=$isCurrentTask, shouldUpdateFiles=$shouldUpdateFiles")
         if (shouldUpdateFiles) {

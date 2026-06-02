@@ -85,22 +85,33 @@ private fun Change.ChangeFile.apply(project: Project, taskDir: VirtualFile, task
   }
   else {
     LOG.warn("ChangeFile.apply: Using document mode")
-    EduDocumentListener.modifyWithoutListener(task, path) {
-      val document = runReadAction { FileDocumentManager.getInstance().getDocument(file) }
-      if (document != null) {
-        val expandedText = StringUtil.convertLineSeparators(EduMacroUtils.expandMacrosForFile(project.toCourseInfoHolder(), file, text))
-        LOG.warn("ChangeFile.apply: Setting document text, expandedTextLength=${expandedText.length}")
-        file.doWithoutReadOnlyAttribute {
-          runUndoTransparentWriteAction { document.setText(expandedText) }
-        }
-        // ALT-10961: Force save document to disk
-        FileDocumentManager.getInstance().saveDocument(document)
-        LOG.warn("ChangeFile.apply: Document text set and saved successfully")
-      }
-      else {
-        LOG.warn("ChangeFile.apply: Can't get document for `$file`")
-      }
+    val modification = {
+      updateTextFile(project, file, text)
     }
+
+    if (task.getTaskFile(path) == null) {
+      modification()
+    }
+    else {
+      EduDocumentListener.modifyWithoutListener(task, path, modification)
+    }
+  }
+}
+
+private fun updateTextFile(project: Project, file: VirtualFile, text: String) {
+  val document = runReadAction { FileDocumentManager.getInstance().getDocument(file) }
+  if (document != null) {
+    val expandedText = StringUtil.convertLineSeparators(EduMacroUtils.expandMacrosForFile(project.toCourseInfoHolder(), file, text))
+    LOG.warn("ChangeFile.apply: Setting document text, expandedTextLength=${expandedText.length}")
+    file.doWithoutReadOnlyAttribute {
+      runUndoTransparentWriteAction { document.setText(expandedText) }
+    }
+    // ALT-10961: Force save document to disk
+    FileDocumentManager.getInstance().saveDocument(document)
+    LOG.warn("ChangeFile.apply: Document text set and saved successfully")
+  }
+  else {
+    LOG.warn("ChangeFile.apply: Can't get document for `$file`")
   }
 }
 

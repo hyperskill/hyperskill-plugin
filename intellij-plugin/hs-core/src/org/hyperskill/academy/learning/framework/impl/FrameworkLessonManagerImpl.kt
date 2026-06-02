@@ -49,6 +49,9 @@ import java.nio.file.Paths
  */
 private fun Task.storageRef(): String = getStorageRef()
 
+// PERSISTED - do not rename; stored in framework storage snapshots.
+private const val LEARNER_MODIFIED_METADATA_KEY = "learnerModified"
+
 /**
  * Keeps list of [Change]s for each task. Change list is difference between initial task state and latest one.
  *
@@ -135,10 +138,9 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     LOG.warn("saveExternalChanges: externalPropagatableFiles.keys=${externalPropagatableFiles.keys}")
 
     // Build full snapshot: user files from submission + non-propagatable files from cache.
-    // Server-provided files win over cache entries so loaded submissions can update
-    // stage-specific files such as tests or newly visible additional files.
+    // Submission test files are intentionally ignored; API-provided tests stay authoritative.
     val (templatePropagatableFiles, _) = task.allFiles.split(task)
-    val fullSnapshot = buildFullSnapshotState(task, templatePropagatableFiles + externalPropagatableFiles) + externalState.toFileEntries(task)
+    val fullSnapshot = buildFullSnapshotState(task, templatePropagatableFiles + externalPropagatableFiles)
 
     // Save the full snapshot
     val submissionInfo = if (submissionId != null) " (submission #$submissionId)" else ""
@@ -173,7 +175,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     LOG.warn("saveExternalChanges: task='${task.name}', saved to ref=$ref, parentRef=$parentRef")
   }
 
-  override fun updateUserChanges(task: Task, newInitialState: Map<String, String>) {
+  override fun updateUserChanges(task: Task, newInitialState: Map<String, String>, newTaskFiles: Map<String, TaskFile>) {
     require(task.lesson is FrameworkLesson) {
       "Only framework task snapshots can be updated"
     }
@@ -194,6 +196,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       addAll(newInitialState.keys)
     }
 
+    val metadataTaskFiles = newTaskFiles.ifEmpty { task.taskFiles }
+
     for (path in paths) {
       val currentEntry = currentSnapshot[path]
       val oldText = oldInitialState[path]
@@ -201,21 +205,22 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
       if (newText == null) {
         if (currentEntry != null && (oldText == null || currentEntry.content != oldText)) {
-          updatedSnapshot[path] = currentEntry
+          updatedSnapshot[path] = currentEntry.withLearnerModification()
         }
         continue
       }
 
       updatedSnapshot[path] = when {
-        currentEntry == null -> resolveFileEntryMetadata(path, newText, task, task.testDirs)
-        oldText == null -> currentEntry
-        currentEntry.content == oldText -> resolveFileEntryMetadata(path, newText, task, task.testDirs)
-        else -> currentEntry
+        currentEntry == null -> resolveFileEntryMetadata(path, newText, task, task.testDirs, metadataTaskFiles)
+        oldText == null -> currentEntry.withLearnerModification()
+        currentEntry.content == oldText -> resolveFileEntryMetadata(path, newText, task, task.testDirs, metadataTaskFiles)
+        else -> currentEntry.withLearnerModification()
       }
     }
 
     try {
       storage.saveSnapshot(ref, updatedSnapshot, getParentRef(task), "Update initial files for '${task.name}'")
+      updateOriginalTemplateFilesCache(task, metadataTaskFiles)
     }
     catch (e: IOException) {
       LOG.error("Failed to update snapshot for task '${task.name}'", e)
@@ -287,13 +292,20 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val ref = task.storageRef()
     if (storage.hasRef(ref)) {
       try {
-        return storage.getSnapshot(ref).toContentMap()
+        val snapshotState = storage.getSnapshot(ref).toContentMap()
+        if (lesson.currentTaskIndex + 1 == task.index) {
+          val taskDir = task.getDir(project.courseDir) ?: return snapshotState
+          val diskState = getAllFilesFromTaskDir(taskDir, task)
+          val templateState = task.allFiles
+          return if (diskState == templateState && snapshotState != diskState) snapshotState else diskState
+        }
+        return snapshotState
       } catch (e: IOException) {
         LOG.warn("Failed to get snapshot for task '${task.name}' (ref=$ref), falling back to templates", e)
       }
     }
 
-    // For current task without saved storage, read from disk including user-created files.
+    // Current task may contain unsaved editor changes; read disk/documents before storage.
     if (lesson.currentTaskIndex + 1 == task.index) {
       val taskDir = task.getDir(project.courseDir) ?: return emptyMap()
       return getAllFilesFromTaskDir(taskDir, task)
@@ -440,7 +452,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // This is simpler and more reliable than calculating diffs from templates.
     val targetState: FLTaskState = if (targetHasStorage) {
       try {
-        storage.getSnapshot(targetRef).toContentMap()
+        storage.getSnapshot(targetRef).toContentMap().withoutDeletedTemplateFiles(targetTask)
       } catch (e: IOException) {
         LOG.error("Failed to get snapshot for target task '${targetTask.name}' (ref=$targetRef), falling back to templates", e)
         targetTask.allFiles
@@ -461,34 +473,17 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // - If current commit is NOT ancestor of target commit → check if propagatable files changed
     // - If only test/hidden files changed (not user code) → auto-Keep merge (record ancestry, keep target's code)
     val currentCommitIsAncestorOfTarget = targetHasStorage && storage.isAncestor(currentRef, targetRef)
-    val hasPropagatableChanges = !currentCommitIsAncestorOfTarget && hasPropagatableChangesFromParent(currentRef, currentTask)
     val needsMerge = !currentCommitIsAncestorOfTarget && targetHasStorage && taskIndexDelta == 1 && lesson.propagateFilesOnNavigation
-    val isTestOnlyUpdate = needsMerge && !hasPropagatableChanges
-    LOG.info("Merge check: currentRef=$currentRef, targetRef=$targetRef, isAncestor=$currentCommitIsAncestorOfTarget, hasPropagatableChanges=$hasPropagatableChanges, needsMerge=$needsMerge, isTestOnlyUpdate=$isTestOnlyUpdate")
+    LOG.info("Merge check: currentRef=$currentRef, targetRef=$targetRef, isAncestor=$currentCommitIsAncestorOfTarget, needsMerge=$needsMerge")
 
     // Track if merge commit was created (to skip redundant snapshot save in step 10)
     var mergeCommitCreated = false
 
     val changes = when {
-      // Test-only update: only non-propagatable files changed, create auto-Keep merge to record ancestry
-      isTestOnlyUpdate -> {
-        mergeCommitCreated = true
-        LOG.info("Test-only update detected, creating auto-Keep merge commit")
-        val (targetPropagatableFilesState, _) = targetState.split(targetTask)
-        val mergeMessage = "Merge from '${currentTask.name}': Auto-keep (only test files changed)"
-        try {
-          // Use buildFullSnapshotState to include both user files and test files from target task
-          val fullSnapshot = buildFullSnapshotState(targetTask, targetPropagatableFilesState)
-          storage.saveMergeSnapshot(targetRef, fullSnapshot, listOf(targetRef, currentRef), mergeMessage)
-          LOG.info("Created auto-Keep merge commit for '$targetRef' with parents [$targetRef, $currentRef]: ${fullSnapshot.size} files")
-        } catch (e: IOException) {
-          LOG.error("Failed to create auto-Keep merge commit for '$targetRef'", e)
-        }
-        calculateChanges(currentState, targetState)
-      }
       needsMerge -> {
         mergeCommitCreated = true // Merge commit will be created in calculatePropagationChanges
-        calculatePropagationChanges(targetTask, currentTask, currentState, targetState, showDialogIfConflict, targetHasStorage, currentRef, targetRef)
+        val fullCurrentState = buildFullSnapshotState(currentTask, effectiveCurrentPropagatableFiles).toContentMap()
+        calculatePropagationChanges(targetTask, currentTask, fullCurrentState, targetState, showDialogIfConflict, targetHasStorage, currentRef, targetRef)
       }
       // First visit to new stage (forward navigation with propagation enabled):
       // Keep all current files and add only NEW files from target templates
@@ -918,6 +913,49 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return calculateCurrentTaskChanges()
     }
 
+    val currentHasLearnerChanges = hasPropagatableChangesFromOriginalTemplate(currentTask, currentPropagatableFilesState)
+    val targetHasLearnerChanges = hasPropagatableChangesFromOriginalTemplate(targetTask, targetPropagatableFilesState)
+    LOG.info(
+      "Merge user-change check: currentRef=$currentRef, targetRef=$targetRef, " +
+      "currentHasLearnerChanges=$currentHasLearnerChanges, targetHasLearnerChanges=$targetHasLearnerChanges"
+    )
+
+    when {
+      currentHasLearnerChanges && !targetHasLearnerChanges -> {
+        LOG.info("Auto-Replace for '$targetRef': only current task has learner changes")
+        saveMergeSnapshot(
+          targetTask,
+          targetRef,
+          currentRef,
+          currentPropagatableFilesState,
+          "Merge from '${currentTask.name}': Auto-replace learner changes"
+        )
+        return calculateCurrentTaskChanges()
+      }
+      !currentHasLearnerChanges && targetHasLearnerChanges -> {
+        LOG.info("Auto-Keep for '$targetRef': only target task has learner changes")
+        saveMergeSnapshot(
+          targetTask,
+          targetRef,
+          currentRef,
+          targetPropagatableFilesState,
+          "Merge from '${currentTask.name}': Auto-keep target learner changes"
+        )
+        return calculateChanges(currentState, targetState)
+      }
+      !currentHasLearnerChanges && !targetHasLearnerChanges -> {
+        LOG.info("Auto-Replace for '$targetRef': neither task has learner changes")
+        saveMergeSnapshot(
+          targetTask,
+          targetRef,
+          currentRef,
+          currentPropagatableFilesState,
+          "Merge from '${currentTask.name}': Auto-replace author updates"
+        )
+        return calculateCurrentTaskChanges()
+      }
+    }
+
     // If target snapshot has no propagatable files (empty or only test/hidden files) - auto-Replace without dialog
     // Such commits don't represent user changes, so there's nothing meaningful to keep - propagate current state
     if (newTargetPropagatableFilesState.isEmpty()) {
@@ -1032,8 +1070,15 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
       if (isPropagatable) {
         if (path !in currentState) {
-          LOG.info("First visit: propagating deletion of '$path'")
-          changes += Change.RemoveTaskFile(path)
+          val currentTaskFile = currentTask.taskFiles[path]
+          if (currentTaskFile == null || !currentTaskFile.shouldBePropagated()) {
+            LOG.info("First visit: adding '$path' that became propagatable in target task")
+            changes += Change.AddFile(path, text)
+          }
+          else {
+            LOG.info("First visit: propagating deletion of '$path'")
+            changes += Change.RemoveTaskFile(path)
+          }
         }
         // If it's in both, we keep the user's version from currentState (it's already on disk)
       }
@@ -1117,8 +1162,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // Get propagatable file names from task model to identify user files
       val propagatableFileNames = task.taskFiles.filterValues { it.shouldBePropagated() }.keys
 
-      // Keep only propagatable files (user files) from existing snapshot
-      val userFiles = currentSnapshot.filterKeys { path -> path in propagatableFileNames }
+      // Keep user files from existing snapshot. A learner-modified file can disappear from
+      // task.taskFiles after a course update, but must stay in the snapshot for navigation.
+      val userFiles = currentSnapshot.filter { (path, entry) ->
+        path in propagatableFileNames || entry.isPropagatable && entry.hasLearnerModification
+      }
 
       // Combine user files with new non-propagatable files from cache
       // If cache is empty, this effectively removes all non-propagatable files from snapshot
@@ -1138,7 +1186,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       } else {
         "Update non-propagatable files from server for '${task.name}'"
       }
-      val created = storage.saveSnapshot(ref, updatedSnapshot, null, message)
+      val created = storage.saveSnapshot(ref, updatedSnapshot, getParentRef(task), message)
       if (created) {
         LOG.info("updateSnapshotTestFiles: Updated snapshot for task '${task.name}' with ${cachedNonPropagatableFiles.size} non-propagatable files")
       } else {
@@ -1210,7 +1258,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     val templateFiles = task.taskFiles.filterValues { taskFile ->
-      taskFile.isVisible && !taskFile.isTestFile
+      taskFile.isVisible && !taskFile.isTestFile && !taskFile.isLearnerCreated
     }
     LOG.warn("storeOriginalTemplateFiles: filtered templateFiles=${templateFiles.keys}")
 
@@ -1238,21 +1286,22 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // Force update the cache, used when task files are updated from remote server
     // (e.g., during course update). Unlike storeOriginalTemplateFiles, this WILL overwrite.
     LOG.info("Force updating template files cache for task '${task.name}' (step ${task.id})")
+    updateOriginalTemplateFilesCache(task, task.taskFiles)
+  }
 
-    val templateFiles = task.taskFiles.filterValues { taskFile ->
-      taskFile.isVisible && !taskFile.isTestFile
+  private fun updateOriginalTemplateFilesCache(task: Task, taskFiles: Map<String, TaskFile>) {
+    val templateFiles = taskFiles.filterValues { taskFile ->
+      taskFile.isVisible && !taskFile.isTestFile && !taskFile.isLearnerCreated
     }
 
-    if (templateFiles.isNotEmpty()) {
-      val cachedTemplates = templateFiles.mapValues { (_, taskFile) ->
-        taskFile.contents.textualRepresentation
-      }
-      originalTemplateFilesCache[task.id] = cachedTemplates
-      val filesInfo = cachedTemplates.entries.joinToString { (name, content) ->
-        "$name:size=${content.length}"
-      }
-      LOG.info("Updated ${cachedTemplates.size} original template files for task '${task.name}' (step ${task.id}): [$filesInfo]")
+    val cachedTemplates = templateFiles.mapValues { (_, taskFile) ->
+      taskFile.contents.textualRepresentation
     }
+    originalTemplateFilesCache[task.id] = cachedTemplates
+    val filesInfo = cachedTemplates.entries.joinToString { (name, content) ->
+      "$name:size=${content.length}"
+    }
+    LOG.info("Updated ${cachedTemplates.size} original template files for task '${task.name}' (step ${task.id}): [$filesInfo]")
   }
 
   /**
@@ -1426,10 +1475,13 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
   /**
    * Returns ALL files for this task including test files.
-   * Used for creating complete snapshots.
+   * Used for creating complete snapshots. Learner-created files are excluded because
+   * this task model state represents author-provided files; learner files are read from disk.
    */
   private val Task.allFilesIncludingTests: FLTaskState
-    get() = taskFiles.mapValues { it.value.contents.textualRepresentation }
+    get() = taskFiles
+      .filterValues { !it.isLearnerCreated }
+      .mapValues { it.value.contents.textualRepresentation }
 
   /**
    * Reads ALL files from task directory, including user-created files.
@@ -1477,7 +1529,40 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     collectFiles(taskDir)
-    return result
+    return result.withoutDeletedTemplateFiles(task)
+  }
+
+  private fun FLTaskState.withoutDeletedTemplateFiles(task: Task): FLTaskState {
+    val originalTemplateFiles = originalTemplateFilesCache[task.id]
+    val deletedTemplateFiles = keys - task.taskFiles.keys
+    if (deletedTemplateFiles.isEmpty()) return this
+
+    val storedSnapshot = try {
+      if (storage.hasRef(task.storageRef())) storage.getSnapshot(task.storageRef()) else emptyMap()
+    }
+    catch (e: IOException) {
+      LOG.warn("Failed to load snapshot while filtering deleted template files for '${task.name}'", e)
+      return this
+    }
+
+    val filtered = filter { (path, text) ->
+      if (path !in deletedTemplateFiles) return@filter true
+      if (storedSnapshot[path]?.hasLearnerModification == true) return@filter true
+
+      val originalText = originalTemplateFiles?.get(path)
+      when {
+        originalText != null -> text != originalText
+        storedSnapshot.containsKey(path) -> storedSnapshot[path]?.content != text
+        else -> true
+      }
+    }
+    if (filtered.size != size) {
+      LOG.info(
+        "Filtered deleted template files from disk state for '${task.name}': " +
+        (keys - filtered.keys).joinToString()
+      )
+    }
+    return filtered
   }
 
   /**
@@ -1523,7 +1608,8 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     path: String,
     content: String,
     task: Task,
-    testDirs: List<String>
+    testDirs: List<String>,
+    taskFiles: Map<String, TaskFile> = task.taskFiles
   ): FileEntry {
     // 1. Path patterns have highest priority - test files are ALWAYS hidden/non-propagatable
     if (FileEntry.isTestFilePath(path, testDirs)) {
@@ -1531,7 +1617,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     // 2. Check task.taskFiles - metadata from API (author's intent)
-    val taskFile = task.taskFiles[path]
+    val taskFile = taskFiles[path]
     if (taskFile != null) {
       return FileEntry.create(
         content = content,
@@ -1555,6 +1641,63 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     return positive to negative
+  }
+
+  private fun saveMergeSnapshot(
+    targetTask: Task,
+    targetRef: String,
+    currentRef: String,
+    propagatableFilesState: FLTaskState,
+    message: String
+  ) {
+    try {
+      val fullSnapshot = buildFullSnapshotState(targetTask, propagatableFilesState)
+      storage.saveMergeSnapshot(targetRef, fullSnapshot, listOf(targetRef, currentRef), message)
+      LOG.info("Created merge commit for '$targetRef' with parents [$targetRef, $currentRef]: ${fullSnapshot.size} files")
+    }
+    catch (e: IOException) {
+      LOG.error("Failed to create merge commit for '$targetRef'", e)
+    }
+  }
+
+  private fun FileEntry.withLearnerModification(): FileEntry {
+    return copy(metadata = metadata + (LEARNER_MODIFIED_METADATA_KEY to true))
+  }
+
+  private val FileEntry.hasLearnerModification: Boolean
+    get() = metadata[LEARNER_MODIFIED_METADATA_KEY] as? Boolean == true
+
+  private fun hasPropagatableChangesFromOriginalTemplate(task: Task, propagatableFilesState: FLTaskState): Boolean {
+    try {
+      if (storage.hasRef(task.storageRef())) {
+        val learnerModifiedFiles = storage.getSnapshot(task.storageRef())
+          .filter { (path, entry) -> path in propagatableFilesState && entry.hasLearnerModification }
+        if (learnerModifiedFiles.isNotEmpty()) {
+          LOG.info(
+            "hasPropagatableChangesFromOriginalTemplate: task='${task.name}' has learner-modified files: " +
+            learnerModifiedFiles.keys.joinToString()
+          )
+          return true
+        }
+      }
+    }
+    catch (e: IOException) {
+      LOG.warn("Failed to inspect learner modification metadata for '${task.name}'", e)
+    }
+
+    val originalTemplateFiles = originalTemplateFilesCache[task.id]
+    if (originalTemplateFiles == null) {
+      LOG.info("hasPropagatableChangesFromOriginalTemplate: no template cache for '${task.name}', falling back to parent comparison")
+      return hasPropagatableChangesFromParent(task.storageRef(), task)
+    }
+
+    val (originalPropagatableFiles, _) = originalTemplateFiles.split(task)
+    val hasChanges = propagatableFilesState != originalPropagatableFiles
+    LOG.info(
+      "hasPropagatableChangesFromOriginalTemplate: task='${task.name}', hasChanges=$hasChanges " +
+      "(current=${propagatableFilesState.size} files, original=${originalPropagatableFiles.size} files)"
+    )
+    return hasChanges
   }
 
   /**

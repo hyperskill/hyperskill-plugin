@@ -135,10 +135,22 @@ object UpdateUtils {
       LOG.info("Found ${newPropagatableFiles.size} new template files from server: ${newPropagatableFiles.keys}")
     }
 
+    val remoteTaskFilesState = remoteTask.taskFiles.mapValues { (_, taskFile) -> taskFile.contents.textualRepresentation }
+    val hasLocalChanges = task.hasChangedFiles(project)
+
+    fun refreshFrameworkLessonStorage() {
+      flm.updateOriginalTestFiles(task)
+      flm.updateSnapshotTestFiles(task)
+    }
+
     val isCurrentTask = lesson.currentTaskIndex == task.index - 1
 
     if (!isCurrentTask) {
-      flm.updateUserChanges(task, remoteTask.taskFiles.mapValues { (_, taskFile) -> taskFile.contents.textualRepresentation })
+      flm.updateUserChanges(
+        task,
+        remoteTaskFilesState,
+        remoteTask.taskFiles
+      )
       removeDeletedTaskFiles(task, remoteTask, false)
       updateTaskFiles(task, remoteTask.nonPropagatableFiles, false)
       // Add new propagatable files to model (not to disk - will be written when navigating)
@@ -147,13 +159,25 @@ object UpdateUtils {
         // Update storage snapshot with new files
         flm.addNewFilesToSnapshot(task, newPropagatableFiles.mapValues { it.value.contents.textualRepresentation })
       }
+      refreshFrameworkLessonStorage()
     }
     else {
-      if (updatePropagatableFiles && !task.hasChangedFiles(project)) {
+      if (updatePropagatableFiles && !hasLocalChanges) {
+        flm.updateUserChanges(task, remoteTaskFilesState, remoteTask.taskFiles)
         removeDeletedTaskFiles(task, remoteTask, true)
         updateTaskFiles(task, remoteTask.taskFiles, true)
       }
       else {
+        val preservedPropagatableFiles = task.taskFiles
+          .filterValues { it.shouldBePropagated() }
+          .mapValues { (_, taskFile) -> taskFile.contents.textualRepresentation }
+        val updatedNonPropagatableFiles = remoteTask.nonPropagatableFiles
+          .mapValues { (_, taskFile) -> taskFile.contents.textualRepresentation }
+        flm.updateUserChanges(
+          task,
+          preservedPropagatableFiles + updatedNonPropagatableFiles,
+          remoteTask.taskFiles
+        )
         removeDeletedTaskFiles(task, remoteTask, true)
         updateTaskFiles(task, remoteTask.nonPropagatableFiles, true)
         // Add new propagatable files to disk and model for current task
@@ -162,6 +186,7 @@ object UpdateUtils {
           // Storage will be updated on next auto-save
         }
       }
+      refreshFrameworkLessonStorage()
     }
 
     // Propagate new files to all subsequent stages (only in non-template-based mode)
@@ -169,16 +194,6 @@ object UpdateUtils {
     if (newPropagatableFiles.isNotEmpty() && lesson.propagateFilesOnNavigation) {
       propagateNewFilesToSubsequentStages(lesson, task, newPropagatableFiles, flm)
     }
-
-    // Update the test and template files caches after updating task files from remote.
-    // This ensures the caches reflect the updated content (ALT-10961).
-    // Use update* methods to force-update the cache (store* methods won't overwrite).
-    flm.updateOriginalTestFiles(task)
-    flm.updateOriginalTemplateFiles(task)
-
-    // Update storage snapshot with new test files from server.
-    // This ensures navigation uses the updated test files.
-    flm.updateSnapshotTestFiles(task)
   }
 
   private val Task.nonPropagatableFiles: Map<String, TaskFile>

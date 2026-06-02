@@ -37,11 +37,27 @@ class FrameworkLessonHistory private constructor(val taskFileHistories: Map<Stri
   }
 }
 
-class FrameworkLessonTaskFileHistory private constructor(private val remoteHistory: List<TaskFileStep>) {
+class FrameworkLessonTaskFileHistory private constructor(
+  private val localHistory: List<TaskFileStep>,
+  private val remoteHistory: List<TaskFileStep>
+) {
 
+  /**
+   * Returns the effective remote contents for a step: author contents with learner changes propagated
+   * from the matching local history step when propagation rules allow it.
+   */
   fun evaluateContents(index: Int): FileContents? {
     val step = remoteHistory.getOrNull(index) ?: return null
     return step.actualContents?.let { InMemoryTextualContents(it) }
+  }
+
+  /**
+   * Returns only the local unmodified baseline for a step. Use this for local-change detection,
+   * not for writing the effective file contents.
+   */
+  fun evaluateLocalUnmodifiedContents(index: Int): FileContents? {
+    val step = localHistory.getOrNull(index) ?: return null
+    return step.unmodifiedContents?.let { InMemoryTextualContents(it) }
   }
 
   companion object {
@@ -71,7 +87,7 @@ class FrameworkLessonTaskFileHistory private constructor(private val remoteHisto
         localHistory.getOrNull(index)?.userModification
       }
 
-      return FrameworkLessonTaskFileHistory(remoteHistory)
+      return FrameworkLessonTaskFileHistory(localHistory, remoteHistory)
     }
 
     private fun evaluateHistory(

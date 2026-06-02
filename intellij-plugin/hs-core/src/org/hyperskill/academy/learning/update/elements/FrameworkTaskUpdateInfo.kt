@@ -12,8 +12,11 @@ import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.FileContents
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.InMemoryTextualContents
+import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.ext.getTaskDirectory
+import org.hyperskill.academy.learning.courseFormat.ext.shouldBePropagated
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.framework.FrameworkLessonManager
@@ -51,7 +54,15 @@ data class FrameworkTaskUpdateInfo(
     }
 
     remoteItem.record = localItem.record
-    flManager.updateUserChanges(localItem, remoteItem.taskFiles.mapValues { it.value.contents.textualRepresentation })
+    flManager.updateUserChanges(
+      localItem,
+      remoteItem.taskFiles.mapValues { it.value.contents.textualRepresentation },
+      remoteItem.taskFiles
+    )
+    val initialTaskFileContents = localItem.taskFiles.mapValues { (_, taskFile) ->
+      taskFile.contents.textualRepresentation
+    }
+    val localTaskFiles = localItem.taskFiles.mapValues { (_, taskFile) -> taskFile.copy() }
     localLesson.replaceItem(localItem, remoteItem)
     remoteItem.init(localLesson, false)
 
@@ -60,19 +71,35 @@ data class FrameworkTaskUpdateInfo(
 
       for ((fileName, fileHistory) in taskHistory.taskFileHistories) {
         val fileContents = fileHistory.evaluateContents(localLesson.currentTaskIndex)
+        val localUnmodifiedContents = fileHistory.evaluateLocalUnmodifiedContents(localLesson.currentTaskIndex)
+        val localText = readLocalText(taskDir, fileName)
         if (fileContents == null) {
-          localItem.removeTaskFile(fileName)
+          if (hasLocalChanges(fileName, localText, localUnmodifiedContents, initialTaskFileContents)) {
+            thisLogger().info("Preserved local changes for '$fileName', skipping remote deletion")
+            preserveLocalTaskFile(fileName, localText, localTaskFiles)
+            continue
+          }
           remoteItem.removeTaskFile(fileName)
           removeFile(taskDir, fileName)
         }
         else {
-          localItem.taskFiles[fileName]?.contents = fileContents
-          remoteItem.taskFiles[fileName]?.contents = fileContents
-          val isEditable = remoteItem.taskFiles[fileName]?.isEditable != false
+          val taskFile = remoteItem.taskFiles[fileName]
+          if (taskFile?.shouldBePropagated() != false &&
+              hasLocalChanges(fileName, localText, localUnmodifiedContents, initialTaskFileContents)) {
+            thisLogger().info("Preserved local changes for '$fileName', skipping remote update")
+            preserveLocalTaskFile(fileName, localText, localTaskFiles)
+            continue
+          }
+          val isEditable = taskFile?.isEditable != false
           updateFile(project, taskDir, fileName, fileContents, isEditable)
+          remoteItem.taskFiles[fileName]?.contents = fileContents
         }
       }
     }
+
+    flManager.updateOriginalTestFiles(remoteItem)
+    flManager.updateOriginalTemplateFiles(remoteItem)
+    flManager.updateSnapshotTestFiles(remoteItem)
 
     YamlFormatSynchronizer.saveItemWithRemoteInfo(remoteItem)
   }
@@ -109,6 +136,52 @@ data class FrameworkTaskUpdateInfo(
   private suspend fun removeFile(taskDir: VirtualFile, fileName: String) = writeAction {
     val virtualChangedFile = taskDir.findFileByRelativePath(fileName)
     virtualChangedFile?.delete(this)
+  }
+
+  private suspend fun readLocalText(taskDir: VirtualFile, fileName: String): String? {
+    val virtualFile = readAction {
+      taskDir.findFileByRelativePath(fileName)
+    } ?: return null
+
+    return readAction {
+      FileDocumentManager.getInstance().getDocument(virtualFile)?.text
+    }
+  }
+
+  private fun hasLocalChanges(
+    fileName: String,
+    localText: String?,
+    localUnmodifiedContents: FileContents?,
+    initialTaskFileContents: Map<String, String>
+  ): Boolean {
+    if (localText == null) return false
+    val initialText = localUnmodifiedContents?.textualRepresentation
+      ?: initialTaskFileContents[fileName]
+    return initialText == null || localText != initialText
+  }
+
+  private fun preserveLocalTaskFile(fileName: String, localText: String?, localTaskFiles: Map<String, TaskFile>) {
+    val localTaskFile = localTaskFiles[fileName] ?: return
+    val preservedContents = localText?.let(::InMemoryTextualContents) ?: localTaskFile.contents
+    val remoteTaskFile = remoteItem.taskFiles[fileName]
+    if (remoteTaskFile == null) {
+      remoteItem.addTaskFile(localTaskFile.copy(preservedContents))
+    }
+    else {
+      remoteTaskFile.contents = preservedContents
+    }
+  }
+
+  private fun TaskFile.copy(contents: FileContents = this.contents): TaskFile {
+    return TaskFile(name, contents).also { copy ->
+      copy.isVisible = isVisible
+      copy.isEditable = isEditable
+      copy.isPropagatable = isPropagatable
+      copy.isLearnerCreated = isLearnerCreated
+      copy.isTrackChanges = isTrackChanges
+      copy.errorHighlightLevel = errorHighlightLevel
+      copy.additionalProperties = additionalProperties.toMutableMap()
+    }
   }
 
   private suspend fun updateFile(project: Project, taskDir: VirtualFile, fileName: String, contents: FileContents, isEditable: Boolean) {

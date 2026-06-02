@@ -304,11 +304,13 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       // storeOriginalTemplateFiles uses task.taskFiles which may have stale disk content.
       frameworkLessonManager.ensureTemplateFilesCached(task)
 
-      val solutionMap = taskSolutions.visibleSolutions()
+      val solutionMap = taskSolutions.visibleSolutions(task)
       frameworkLessonManager.saveExternalChanges(task, solutionMap, taskSolutions.submissionId)
 
       var taskFilesChanged = false
       for ((path, solution) in taskSolutions.solutions) {
+        if (task.isSubmissionTestFile(path)) continue
+
         val taskFile = task.getTaskFile(path)
         if (taskFile == null) {
           if (!solution.isVisible) continue
@@ -333,6 +335,8 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
     private fun applySolutionToCurrentTask(project: Project, task: Task, taskSolutions: TaskSolutions) {
       val taskDir = task.getDir(project.courseDir) ?: error("Directory for task `${task.name}` not found")
       for ((path, solution) in taskSolutions.solutions) {
+        if (task.isSubmissionTestFile(path)) continue
+
         val taskFile = task.getTaskFile(path)
 
         if (taskFile == null) {
@@ -368,15 +372,18 @@ abstract class SolutionLoaderBase(protected val project: Project) : Disposable {
       val lesson = task.lesson
       if (lesson is FrameworkLesson) {
         val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
-        val solutionMap = taskSolutions.visibleSolutions()
+        val solutionMap = taskSolutions.visibleSolutions(task)
         frameworkLessonManager.saveExternalChanges(task, solutionMap, taskSolutions.submissionId)
       }
     }
 
-    private fun TaskSolutions.visibleSolutions(): Map<String, String> =
+    private fun TaskSolutions.visibleSolutions(task: Task): Map<String, String> =
       solutions
-        .filter { (_, solution) -> solution.isVisible }
+        .filter { (path, solution) -> solution.isVisible && !task.isSubmissionTestFile(path) }
         .mapValues { (_, solution) -> solution.text }
+
+    private fun Task.isSubmissionTestFile(path: String): Boolean =
+      getTaskFile(path)?.isTestFile ?: EduUtilsKt.isTestsFile(this, path)
   }
 
   protected data class Solution(val text: String, val isVisible: Boolean)

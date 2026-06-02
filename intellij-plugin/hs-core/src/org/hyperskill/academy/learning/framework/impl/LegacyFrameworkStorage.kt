@@ -122,6 +122,7 @@ class LegacyFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePa
     else {
       withReadLock<UserChanges, IOException> {
         val bytes = readBytes(record)
+        if (bytes.isEmpty()) return@withReadLock UserChanges.empty()
         when (version) {
           0 -> return@withReadLock readVersion0UserChanges(DataInputStream(java.io.ByteArrayInputStream(bytes)))
           1 -> return@withReadLock readLegacyUserChanges(DataInputStream(java.io.ByteArrayInputStream(bytes)))

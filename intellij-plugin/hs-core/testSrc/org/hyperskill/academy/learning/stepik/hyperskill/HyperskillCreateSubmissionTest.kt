@@ -54,8 +54,6 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
       |  solution:
       |  - name: src/Task.kt
       |    is_visible: true
-      |  - name: src/Test.kt
-      |    is_visible: false
       |
     """.trimMargin()
     )
@@ -80,8 +78,6 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
       |  solution:
       |  - name: src/Task.kt
       |    is_visible: true
-      |  - name: src/Test.kt
-      |    is_visible: false
       |
     """.trimMargin()
     )
@@ -104,8 +100,6 @@ class HyperskillCreateSubmissionTest : EduTestCase() {
       |  solution:
       |  - name: src/Task.kt
       |    is_visible: true
-      |  - name: src/Test.kt
-      |    is_visible: false
       |  check_profile: $checkProfile
       |
     """.trimMargin()
