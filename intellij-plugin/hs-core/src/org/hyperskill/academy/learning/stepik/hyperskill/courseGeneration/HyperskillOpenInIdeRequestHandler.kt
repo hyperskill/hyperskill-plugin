@@ -11,7 +11,6 @@ import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.authUtils.requestFocus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
-import org.hyperskill.academy.learning.courseFormat.EduFormatNames.KOTLIN
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.Lesson
 import org.hyperskill.academy.learning.courseFormat.Section
@@ -213,19 +212,14 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
       is HyperskillOpenProjectStageRequest -> findProject { it.matchesById(request.projectId) }
       is HyperskillOpenStepWithProjectRequest -> {
         val hyperskillLanguage = request.language
-        val (languageId, languageVersion) = HyperskillLanguages.getLanguageIdAndVersion(hyperskillLanguage) ?: return null
-
-        findProject {
-          it.matchesById(request.projectId) && it.languageId == languageId && it.languageVersion == languageVersion && courseFilter(it)
-        }
-        ?: findProject { course -> course.isHyperskillProblemsCourse(hyperskillLanguage) }
+        HyperskillLanguages.getLanguageIdAndVersion(hyperskillLanguage) ?: return null
+        findProject { course -> course.isHyperskillProblemsCourse(hyperskillLanguage) && courseFilter(course) }
       }
 
       is HyperskillOpenStepRequest -> {
         val hyperskillLanguage = request.language
-        val (languageId, languageVersion) = HyperskillLanguages.getLanguageIdAndVersion(hyperskillLanguage) ?: return null
-        findProject { it is HyperskillCourse && it.languageId == languageId && it.languageVersion == languageVersion && courseFilter(it) }
-        ?: findProject { course -> course.isHyperskillProblemsCourse(hyperskillLanguage) && courseFilter(course) }
+        HyperskillLanguages.getLanguageIdAndVersion(hyperskillLanguage) ?: return null
+        findProject { course -> course.isHyperskillProblemsCourse(hyperskillLanguage) && courseFilter(course) }
       }
     }
   }
@@ -241,7 +235,8 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
   fun createHyperskillCourse(
     request: HyperskillOpenRequest,
     hyperskillLanguage: String,
-    hyperskillProject: HyperskillProject
+    hyperskillProject: HyperskillProject,
+    stepSource: HyperskillStepSource? = null
   ): Result<HyperskillCourse, CourseValidationResult> {
     val (languageId, languageVersion) = HyperskillLanguages.getLanguageIdAndVersion(hyperskillLanguage)
                                         ?: return Err(
@@ -253,41 +248,26 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
                                           )
                                         )
 
-    if (!hyperskillProject.useIde) {
-      return Err(ValidationErrorMessageWithHyperlinks(EduCoreBundle.message("hyperskill.project.not.supported", HYPERSKILL_PROJECTS_URL)))
-    }
-
-    val eduEnvironment = hyperskillProject.eduEnvironment
-                         ?: return Err(ValidationErrorMessage("Unsupported environment ${hyperskillProject.environment}"))
-
-    if (request is HyperskillOpenStepWithProjectRequest) {
-      // This condition is about opening e.g. Python problem with chosen Kotlin's project,
-      // otherwise - open Kotlin problem in current Kotlin project itself later below
-      if (hyperskillLanguage != hyperskillProject.language) {
-        return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion))
-      }
-
-      // This is about opening Kotlin problem with currently chosen Android's project
-      // But all Android projects are always Kotlin one's
-      // So it should be possible to open problem in IntelliJ IDEA too e.g. (EDU-4641)
-      if (eduEnvironment == EduNames.ANDROID && hyperskillLanguage == KOTLIN) {
-        return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion))
-      }
-
+    if (request is HyperskillOpenStepRequestBase) {
+      val loadedStepSource = stepSource ?: error("Step source must be loaded for step request")
       // EDU-5994: if Step has a field 'framework' == 'Android', it should be opened only in Android Studio
       // as an Android project.
-      val stepSource = getStepSource(request.stepId, request.isLanguageSelectedByUser)
-      // When the user has selected project on Hyperskill, the Plugin has to check if it is an Android project,
-      // if not: a new one should be created.
-      if (stepSource.framework == EduNames.ANDROID && eduEnvironment != EduNames.ANDROID) {
+      if (loadedStepSource.framework == EduNames.ANDROID) {
         if (!EduUtilsKt.isAndroidStudio()) {
           return Err(ValidationErrorMessageWithHyperlinks(EduCoreBundle.message("rest.service.android.not.supported")))
         }
         return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion, EduNames.ANDROID))
       }
 
+      return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion))
     }
-    if (request is HyperskillOpenStepRequest) return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion))
+
+    if (!hyperskillProject.useIde) {
+      return Err(ValidationErrorMessageWithHyperlinks(EduCoreBundle.message("hyperskill.project.not.supported", HYPERSKILL_PROJECTS_URL)))
+    }
+
+    val eduEnvironment = hyperskillProject.eduEnvironment
+                         ?: return Err(ValidationErrorMessage("Unsupported environment ${hyperskillProject.environment}"))
 
     // Android projects must be opened in Android Studio only
     if (eduEnvironment == EduNames.ANDROID && !EduUtilsKt.isAndroidStudio()) {
@@ -312,11 +292,12 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
 
       val newProject = HyperskillProject()
       val hyperskillLanguage = request.language
-      val hyperskillCourse = createHyperskillCourse(request, hyperskillLanguage, newProject).onError { return Err(it) }
+      val stepSource = getStepSource(request.stepId, request.isLanguageSelectedByUser)
+      val hyperskillCourse = createHyperskillCourse(request, hyperskillLanguage, newProject, stepSource).onError { return Err(it) }
 
       indicator.fraction = 0.5
       indicator.text2 = EduCoreBundle.message("hyperskill.loading.problems")
-      hyperskillCourse.addProblemsWithTopicWithFiles(null, getStepSource(request.stepId, request.isLanguageSelectedByUser))
+      hyperskillCourse.addProblemsWithTopicWithFiles(null, stepSource)
       hyperskillCourse.selectedProblem = request.stepId
 
       indicator.fraction = 1.0
@@ -344,7 +325,12 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     val hyperskillLanguage = if (request is HyperskillOpenStepWithProjectRequest) request.language else hyperskillProject.language
     LOG.info("Creating course for language: $hyperskillLanguage")
 
-    val hyperskillCourse = createHyperskillCourse(request, hyperskillLanguage, hyperskillProject).onError {
+    val stepSource = when (request) {
+      is HyperskillOpenStepWithProjectRequest -> getStepSource(request.stepId, request.isLanguageSelectedByUser)
+      is HyperskillOpenProjectStageRequest -> null
+    }
+
+    val hyperskillCourse = createHyperskillCourse(request, hyperskillLanguage, hyperskillProject, stepSource).onError {
       LOG.warn("Failed to create course: $it")
       return Err(it)
     }
@@ -361,7 +347,7 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
         LOG.info("Loading problems for stepId=${request.stepId}")
         indicator.text = EduCoreBundle.message("hyperskill.loading.problems")
         indicator.text2 = EduCoreBundle.message("hyperskill.loading.problems.details")
-        hyperskillCourse.addProblemsWithTopicWithFiles(null, getStepSource(request.stepId, request.isLanguageSelectedByUser))
+        hyperskillCourse.addProblemsWithTopicWithFiles(null, stepSource ?: error("Step source must be loaded for step request"))
         hyperskillCourse.selectedProblem = request.stepId
       }
 
