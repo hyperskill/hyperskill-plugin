@@ -15,7 +15,7 @@ class HyperskillUploadingTest : EduTestCase() {
     val course = createHyperskillCourse()
     val task = course.findTask("lesson1", "task1")
     val files = getSolutionFiles(project, task)
-    assertEquals(listOf("src/Task.kt"), files.map { it.name })
+    assertEquals(listOf("src/Task.kt", "test/VisibleTests.kt"), files.map { it.name })
     assertTrue(files.all { it.isVisible })
   }
 

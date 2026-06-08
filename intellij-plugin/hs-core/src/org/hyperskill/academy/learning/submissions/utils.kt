@@ -16,7 +16,6 @@ import org.hyperskill.academy.learning.courseFormat.EduFormatNames.CORRECT
 import org.hyperskill.academy.learning.courseFormat.TaskFile
 import org.hyperskill.academy.learning.courseFormat.ext.findTaskFileInDir
 import org.hyperskill.academy.learning.courseFormat.ext.getDir
-import org.hyperskill.academy.learning.courseFormat.ext.isTestFile
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.taskToolWindow.ui.styleManagers.StyleResourcesManager
 import org.hyperskill.academy.learning.taskToolWindow.ui.styleManagers.TaskToolWindowBundle
@@ -34,7 +33,7 @@ fun getSolutionFiles(project: Project, task: Task): List<SolutionFile> {
   val files = ArrayList<SolutionFile>()
   val taskDir = task.getDir(project.courseDir) ?: error("Failed to find task directory ${task.name}")
 
-  for (taskFile in task.taskFiles.values.filter { it.isVisible && !it.isTestFile }) {
+  for (taskFile in task.taskFiles.values.filter { it.isVisible }) {
     val virtualFile = findTaskFileInDirWithSizeCheck(taskFile, taskDir) ?: continue
 
     ApplicationManager.getApplication().runReadAction {
