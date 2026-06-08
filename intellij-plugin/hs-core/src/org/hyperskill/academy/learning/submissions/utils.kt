@@ -33,7 +33,8 @@ fun getSolutionFiles(project: Project, task: Task): List<SolutionFile> {
   val files = ArrayList<SolutionFile>()
   val taskDir = task.getDir(project.courseDir) ?: error("Failed to find task directory ${task.name}")
 
-  for (taskFile in task.taskFiles.values.filter { it.isVisible }) {
+  // Don't filter files by visibility and isTestFile flag. It will break server validations of some tasks
+  for (taskFile in task.taskFiles.values) {
     val virtualFile = findTaskFileInDirWithSizeCheck(taskFile, taskDir) ?: continue
 
     ApplicationManager.getApplication().runReadAction {
