@@ -181,6 +181,10 @@ abstract class EduTestCase : BasePlatformTestCase() {
     for (lesson in course.lessons.filterIsInstance<FrameworkLesson>()) {
       for (task in lesson.taskList) {
         frameworkLessonManager.storeOriginalTestFiles(task)
+        // Capture each task's original propagatable template (visible non-test files) before the
+        // learner can edit. Used during first-visit navigation to tell a learner-deleted template
+        // file apart from a genuinely new author template introduced in the target stage.
+        frameworkLessonManager.updateOriginalTemplateFiles(task)
       }
     }
   }

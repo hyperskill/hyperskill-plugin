@@ -1,5 +1,6 @@
 package org.hyperskill.academy.learning.update.elements
 
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.diagnostic.thisLogger
@@ -23,6 +24,8 @@ import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.toCourseInfoHolder
 import org.hyperskill.academy.learning.update.FrameworkLessonHistory
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 data class FrameworkTaskUpdateInfo(
@@ -37,6 +40,17 @@ data class FrameworkTaskUpdateInfo(
     val localLesson = localItem.parent as FrameworkLesson
 
     val taskIsCurrent = localLesson.currentTaskIndex == localItem.index - 1
+
+    if (taskIsCurrent) {
+      // The learner's most recent edits on the current stage may live only in in-memory editor
+      // documents and not yet be flushed to disk. Persist them before reading local text and
+      // overwriting files, so that preserved learner changes survive the later VFS refresh
+      // (e.g. in `updateFile`/`reloadFiles` or when the project is reopened). This mirrors the
+      // document flush performed during framework lesson navigation.
+      withContext(Dispatchers.EDT) {
+        FileDocumentManager.getInstance().saveAllDocuments()
+      }
+    }
 
     if (localItem.status != CheckStatus.Solved) {
       remoteItem.status = CheckStatus.Unchecked
@@ -86,8 +100,19 @@ data class FrameworkTaskUpdateInfo(
           val taskFile = remoteItem.taskFiles[fileName]
           if (taskFile?.shouldBePropagated() != false &&
               hasLocalChanges(fileName, localText, localUnmodifiedContents, initialTaskFileContents)) {
-            thisLogger().info("Preserved local changes for '$fileName', skipping remote update")
-            preserveLocalTaskFile(fileName, localText, localTaskFiles)
+            // Keep the learner's edits on disk (they are already flushed there) by skipping the
+            // remote overwrite.
+            if (taskFile != null) {
+              // The file still exists remotely: keep the author's updated contents in the task
+              // model (already set by the preceding replaceItem/remoteItem.init) so that a later
+              // revert restores the author version. Only the learner's file on disk is kept.
+              thisLogger().info("Preserved local changes for '$fileName' on disk, keeping author contents in model")
+            }
+            else {
+              // The file no longer exists remotely: preserve it in the model so it stays tracked.
+              thisLogger().info("Preserved local changes for '$fileName', skipping remote update")
+              preserveLocalTaskFile(fileName, localText, localTaskFiles)
+            }
             continue
           }
           val isEditable = taskFile?.isEditable != false

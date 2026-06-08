@@ -1071,13 +1071,41 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       if (isPropagatable) {
         if (path !in currentState) {
           val currentTaskFile = currentTask.taskFiles[path]
-          if (currentTaskFile == null || !currentTaskFile.shouldBePropagated()) {
-            LOG.info("First visit: adding '$path' that became propagatable in target task")
-            changes += Change.AddFile(path, text)
-          }
-          else {
-            LOG.info("First visit: propagating deletion of '$path'")
-            changes += Change.RemoveTaskFile(path)
+          val originalCurrentTemplate = originalTemplateFilesCache[currentTask.id]
+          val wasInCurrentTemplate = originalCurrentTemplate?.containsKey(path) ?: false
+          // The learner diverged from the current task's template if they added or removed
+          // propagatable files (compared with the captured original template). When diverged, their
+          // current state defines the propagatable files (see FrameworkLesson.propagateFilesOnNavigation),
+          // so an author template file absent from it is discarded rather than re-added.
+          val learnerDiverged = originalCurrentTemplate != null &&
+            currentState.keys != originalCurrentTemplate.keys
+          when {
+            currentTaskFile != null && !currentTaskFile.shouldBePropagated() -> {
+              // The file was non-propagatable (e.g. invisible) in the current task and becomes
+              // propagatable (visible) in the target task. Changes for such files are not propagated,
+              // so we add the author's version.
+              LOG.info("First visit: adding '$path' that became propagatable in target task")
+              changes += Change.AddFile(path, text)
+            }
+            wasInCurrentTemplate -> {
+              // The file existed in the current task's original propagatable template but is absent
+              // from the learner's current state, i.e. the learner deleted it. Respect that deletion.
+              LOG.info("First visit: discarding propagatable file '$path' the learner deleted")
+              changes += Change.RemoveTaskFile(path)
+            }
+            learnerDiverged -> {
+              // The learner replaced the propagatable files (added/removed files), so an author
+              // template file absent from their state is discarded rather than re-added.
+              LOG.info("First visit: discarding author propagatable file '$path' (learner replaced propagatable files)")
+              changes += Change.RemoveTaskFile(path)
+            }
+            else -> {
+              // Regular course: the file is a genuinely new template the author introduced in the
+              // target stage (it was never part of the current task's template, so it could not have
+              // been deleted by the learner). Add the author's version.
+              LOG.info("First visit: adding new author template file '$path' introduced in target task")
+              changes += Change.AddFile(path, text)
+            }
           }
         }
         // If it's in both, we keep the user's version from currentState (it's already on disk)
