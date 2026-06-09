@@ -41,7 +41,7 @@ fun getSolutionFiles(project: Project, task: Task): List<SolutionFile> {
       val document = FileDocumentManager.getInstance().getDocument(virtualFile) ?: return@runReadAction
       val text = document.text
       val builder = StringBuilder(text)
-      val isVisible = if (!taskFile.isLearnerCreated && taskFile.isTestFile) false else taskFile.isVisible
+      val isVisible = !taskFile.isTestFile && taskFile.isVisible
       files.add(SolutionFile(taskFile.name, builder.toString(), isVisible))
     }
   }
