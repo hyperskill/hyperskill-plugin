@@ -19,6 +19,29 @@ class HyperskillUploadingTest : EduTestCase() {
     assertEquals(listOf(true, false, false, true), files.map { it.isVisible })
   }
 
+  @Test
+  fun `test collect solution files - test file with wrong visible=true is sent as is_visible=false`() {
+    val course = courseWithFiles(
+      language = FakeGradleBasedLanguage,
+      courseProducer = ::HyperskillCourse
+    ) {
+      frameworkLesson("lesson1") {
+        eduTask("task1", stepId = 1) {
+          taskFile("src/Task.kt", "fun foo() {}", visible = true)
+          taskFile("test/Tests1.kt", "fun tests1() {}", visible = true) // wrong: visible=true for test file
+        }
+      }
+    } as HyperskillCourse
+    course.hyperskillProject = HyperskillProject()
+    course.stages = listOf(HyperskillStage(1, "", 1))
+
+    val task = course.findTask("lesson1", "task1")
+    val files = getSolutionFiles(project, task)
+    assertEquals(2, files.size)
+    assertEquals(true, files.find { it.name == "src/Task.kt" }?.isVisible)
+    assertEquals(false, files.find { it.name == "test/Tests1.kt" }?.isVisible)
+  }
+
   private fun createHyperskillCourse(): HyperskillCourse {
     val course = courseWithFiles(
       language = FakeGradleBasedLanguage,
