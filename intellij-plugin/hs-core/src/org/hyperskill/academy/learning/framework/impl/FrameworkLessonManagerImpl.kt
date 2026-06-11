@@ -296,8 +296,14 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
         if (lesson.currentTaskIndex + 1 == task.index) {
           val taskDir = task.getDir(project.courseDir) ?: return snapshotState
           val diskState = getAllFilesFromTaskDir(taskDir, task)
-          val templateState = task.allFiles
-          return if (diskState == templateState && snapshotState != diskState) snapshotState else diskState
+          // Compare only propagatable (user-editable) files: test/hidden files on disk are
+          // stage-specific and absent from the template (task.allFiles), so including them would
+          // make this "disk still holds the pristine template" check effectively never match.
+          val diskPropagatableFiles = diskState.split(task).first
+          val templatePropagatableFiles = task.allFiles.split(task).first
+          val snapshotPropagatableFiles = snapshotState.split(task).first
+          val diskIsPristineTemplate = diskPropagatableFiles == templatePropagatableFiles
+          return if (diskIsPristineTemplate && snapshotPropagatableFiles != diskPropagatableFiles) snapshotState else diskState
         }
         return snapshotState
       } catch (e: IOException) {
