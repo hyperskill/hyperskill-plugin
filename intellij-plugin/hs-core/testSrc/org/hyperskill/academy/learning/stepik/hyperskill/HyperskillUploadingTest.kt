@@ -16,7 +16,8 @@ class HyperskillUploadingTest : EduTestCase() {
     val task = course.findTask("lesson1", "task1")
     val files = getSolutionFiles(project, task)
     assertEquals(listOf("src/Task.kt", "src/Baz.kt", "test/Tests1.kt", "test/VisibleTests.kt"), files.map { it.name })
-    assertEquals(listOf(true, false, false, true), files.map { it.isVisible })
+    // test files are always sent with is_visible=false, even if marked visible (ALT-11013)
+    assertEquals(listOf(true, false, false, false), files.map { it.isVisible })
   }
 
   @Test
