@@ -12,7 +12,6 @@ import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler.addProblemsWithTopicWithFiles
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler.getStepSource
-import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepWithProjectRequest
 import org.hyperskill.academy.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.StepInfo
 import org.hyperskill.academy.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.TopicInfo
 import org.junit.Test
@@ -71,8 +70,7 @@ class HyperskillProblemLoadingTest : EduTestCase() {
     } as HyperskillCourse
     course.hyperskillProject = HyperskillProject()
     course.stages = listOf(HyperskillStage(1, "", 1))
-    val request = HyperskillOpenStepWithProjectRequest(1, 4894, "TEXT")
-    course.addProblemsWithTopicWithFiles(null, getStepSource(request.stepId, request.isLanguageSelectedByUser))
+    course.addProblemsWithTopicWithFiles(null, getStepSource(step4894.id, false))
     return course
   }
 

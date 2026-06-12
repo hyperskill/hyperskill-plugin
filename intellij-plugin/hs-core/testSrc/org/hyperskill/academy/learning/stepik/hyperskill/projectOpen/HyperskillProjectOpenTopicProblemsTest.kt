@@ -15,7 +15,6 @@ import org.hyperskill.academy.learning.pathWithoutPrams
 import org.hyperskill.academy.learning.stepik.hyperskill.getProblemsProjectName
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepRequest
-import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepWithProjectRequest
 import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourse
 import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourseWithFiles
 import org.hyperskill.academy.learning.stepik.hyperskill.projectOpen.HyperskillProjectOpenerTestBase.Companion.StepInfo
@@ -35,14 +34,14 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
 
   @Test
   fun `test open non dataset problem with language chosen by user`() {
-    val request = HyperskillOpenStepWithProjectRequest(1, step10960.id, "TEXT", true)
+    val request = HyperskillOpenStepRequest(step10960.id, "TEXT", true)
     assertThrows(IllegalStateException::class.java) {
       mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, request)
     }
   }
 
   @Test
-  fun `test open non dataset problem with language chosen by user without selected project`() {
+  fun `test open non dataset problem with supported language chosen by user`() {
     val request = HyperskillOpenStepRequest(step10960.id, FakeGradleBasedLanguage.id, true)
     assertThrows(IllegalStateException::class.java) {
       mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, request)
@@ -50,28 +49,8 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
   }
 
   @Test
-  fun `test open problem with selected project creates problems project`() {
-    val selectedProjectCourse = hyperskillCourseWithFiles {
-      frameworkLesson("lesson1") {
-        eduTask("task1", stepId = 1) {
-          taskFile("src/Task.kt", "stage 1")
-        }
-      }
-    }
-
-    val request = HyperskillOpenStepWithProjectRequest(1, step2640.id, FakeGradleBasedLanguage.id)
-    mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, request)
-
-    val openedCourse = project.course as HyperskillCourse
-    assertEquals(getProblemsProjectName(FakeGradleBasedLanguage.id), openedCourse.name)
-    assertNull(openedCourse.hyperskillProject)
-    assertNull(selectedProjectCourse.getTopicsSection())
-    assertProblemLoaded(openedCourse, TOPIC_85_NAME, step2640.title)
-  }
-
-  @Test
-  fun `test get course for selected project loads step source once`() {
-    val request = HyperskillOpenStepWithProjectRequest(1, step2640.id, FakeGradleBasedLanguage.id)
+  fun `test get course loads step source once`() {
+    val request = HyperskillOpenStepRequest(step2640.id, FakeGradleBasedLanguage.id)
 
     val course = HyperskillOpenInIdeRequestHandler.getCourse(request, EmptyProgressIndicator())
       .onError { error("Course should be created: $it") } as HyperskillCourse
@@ -81,13 +60,13 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
   }
 
   @Test
-  fun `test open problem with selected project reuses problems project`() {
+  fun `test open problem reuses problems project`() {
     val problemsCourse = hyperskillCourseWithFiles(
       projectId = null,
       name = getProblemsProjectName(FakeGradleBasedLanguage.id)
     ) {}
 
-    val request = HyperskillOpenStepWithProjectRequest(1, step2640.id, FakeGradleBasedLanguage.id)
+    val request = HyperskillOpenStepRequest(step2640.id, FakeGradleBasedLanguage.id)
     mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, request)
 
     assertSame(problemsCourse, project.course)
@@ -95,7 +74,7 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
   }
 
   @Test
-  fun `test open problem without selected project does not reuse regular hyperskill project`() {
+  fun `test open problem does not reuse regular hyperskill project and creates problems project`() {
     val regularCourse = hyperskillCourseWithFiles {
       frameworkLesson("lesson1") {
         eduTask("task1", stepId = 1) {
@@ -105,12 +84,16 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
     }
 
     val request = HyperskillOpenStepRequest(step2640.id, FakeGradleBasedLanguage.id)
-    mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, request)
+    mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, request).onError { error("Failed to open the problem: $it") }
 
-    val openedCourse = project.course as HyperskillCourse
+    // the regular project must not be reused: the problem goes to a newly created problems project
+    assertSame(regularCourse, project.course)
+    assertNull(regularCourse.getTopicsSection())
+
+    val openedCourse = mockProjectOpener.courseOpenedInNewProject as? HyperskillCourse
+                       ?: error("A new problems project should have been created")
     assertEquals(getProblemsProjectName(FakeGradleBasedLanguage.id), openedCourse.name)
     assertNull(openedCourse.hyperskillProject)
-    assertNull(regularCourse.getTopicsSection())
     assertProblemLoaded(openedCourse, TOPIC_85_NAME, step2640.title)
   }
 
@@ -152,7 +135,7 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
       }
     })
 
-    mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, HyperskillOpenStepWithProjectRequest(1, 4, language)).onError {
+    mockProjectOpener.open(HyperskillOpenInIdeRequestHandler, HyperskillOpenStepRequest(4, language)).onError {
       checkError(it)
       return
     }

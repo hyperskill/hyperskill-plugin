@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.stepik.hyperskill
 
 import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
 import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
@@ -147,7 +148,9 @@ class HyperskillNextActivityTest : EduTestCase() {
   }
 
   private fun createHyperskillProblemsProject() {
-    hyperskillCourseWithFiles {
+    // The next step can only be opened in the already open project if it is a problems project,
+    // which is identified by its name
+    hyperskillCourseWithFiles(name = getProblemsProjectName(FakeGradleBasedLanguage.id)) {
       section(HYPERSKILL_TOPICS) {
         lesson(theoryStepFromInitialProject.title) {
           theoryTask("Theory", stepId = theoryStepFromInitialProject.id) {
