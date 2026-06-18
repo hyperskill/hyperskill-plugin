@@ -13,7 +13,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.SlowOperations
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.configuration.excludeFromArchive
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
@@ -131,11 +130,11 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
 
     val ref = task.storageRef()
     val parentRef = getParentRef(task)
-    LOG.warn("saveExternalChanges: task='${task.name}', ref=$ref, submissionId=$submissionId, externalState.keys=${externalState.keys}")
+    LOG.debug("saveExternalChanges: task='${task.name}', ref=$ref, submissionId=$submissionId, externalState.keys=${externalState.keys}")
 
     // Filter external state to only include propagatable files (exclude test files from submission)
     val externalPropagatableFiles = externalState.split(task).first
-    LOG.warn("saveExternalChanges: externalPropagatableFiles.keys=${externalPropagatableFiles.keys}")
+    LOG.debug("saveExternalChanges: externalPropagatableFiles.keys=${externalPropagatableFiles.keys}")
 
     // Build full snapshot: user files from submission + non-propagatable files from cache.
     // Submission test files are intentionally ignored; API-provided tests stay authoritative.
@@ -172,7 +171,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       task.record = -1
       YamlFormatSynchronizer.saveItem(task)
     }
-    LOG.warn("saveExternalChanges: task='${task.name}', saved to ref=$ref, parentRef=$parentRef")
+    LOG.debug("saveExternalChanges: task='${task.name}', saved to ref=$ref, parentRef=$parentRef")
   }
 
   override fun updateUserChanges(task: Task, newInitialState: Map<String, String>, newTaskFiles: Map<String, TaskFile>) {
@@ -383,9 +382,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
 
     lesson.currentTaskIndex = targetTaskIndex
-    SlowOperations.knownIssue("EDU-XXXX").use {
-      YamlFormatSynchronizer.saveItem(lesson)
-    }
+    YamlFormatSynchronizer.saveItem(lesson)
     logTiming("saveLesson")
 
     val currentRef = currentTask.storageRef()
@@ -433,9 +430,6 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       val navMessage = "Save changes before navigating from '${currentTask.name}' to '${targetTask.name}'"
       try {
         storage.saveSnapshot(currentRef, fullSnapshot, getParentRef(currentTask), navMessage)
-        if (isUnitTestMode && currentTask.record == -1) {
-          currentTask.record = currentTask.index
-        }
         LOG.info("Saved full snapshot for current task '${currentTask.name}' (ref=$currentRef): ${fullSnapshot.size} files")
       }
       catch (e: IOException) {
@@ -452,7 +446,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     // For forward navigation: use disk state (we just saved it)
     // For backward navigation: use disk state (what's currently there)
     val currentState: FLTaskState = effectiveCurrentPropagatableFiles
-    LOG.warn("Navigation: currentState=${currentState.mapValues { "${it.key}:${it.value.length}chars" }}")
+    LOG.debug("Navigation: currentState=${currentState.mapValues { "${it.key}:${it.value.length}chars" }}")
 
     // 4. Get target state directly from storage snapshot (no template-based diff calculation needed)
     // This is simpler and more reliable than calculating diffs from templates.
@@ -468,7 +462,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       targetTask.allFiles
     }
     logTiming("getTargetState")
-    LOG.warn("Navigation: targetState=${targetState.mapValues { "${it.key}:${it.value.length}chars" }}, fromStorage=$targetHasStorage")
+    LOG.debug("Navigation: targetState=${targetState.mapValues { "${it.key}:${it.value.length}chars" }}, fromStorage=$targetHasStorage")
 
     // 5. Calculate difference between latest states of current and target tasks
     // Note, there are special rules for hyperskill courses for now
@@ -508,9 +502,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     val taskFilesChanged = changes.changes.any { it is Change.PropagateLearnerCreatedTaskFile || it is Change.RemoveTaskFile }
     changes.apply(project, taskDir, targetTask)
     if (taskFilesChanged) {
-      SlowOperations.knownIssue("EDU-XXXX").use {
-        YamlFormatSynchronizer.saveItem(targetTask)
-      }
+      YamlFormatSynchronizer.saveItem(targetTask)
     }
     logTiming("applyChanges")
 
@@ -1286,15 +1278,15 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       return
     }
 
-    LOG.warn("storeOriginalTemplateFiles: task='${task.name}', taskFiles=${task.taskFiles.keys}")
+    LOG.debug("storeOriginalTemplateFiles: task='${task.name}', taskFiles=${task.taskFiles.keys}")
     task.taskFiles.forEach { (name, taskFile) ->
-      LOG.warn("storeOriginalTemplateFiles: file='$name', isVisible=${taskFile.isVisible}, isTestFile=${taskFile.isTestFile}")
+      LOG.debug("storeOriginalTemplateFiles: file='$name', isVisible=${taskFile.isVisible}, isTestFile=${taskFile.isTestFile}")
     }
 
     val templateFiles = task.taskFiles.filterValues { taskFile ->
       taskFile.isVisible && !taskFile.isTestFile && !taskFile.isLearnerCreated
     }
-    LOG.warn("storeOriginalTemplateFiles: filtered templateFiles=${templateFiles.keys}")
+    LOG.debug("storeOriginalTemplateFiles: filtered templateFiles=${templateFiles.keys}")
 
     if (templateFiles.isNotEmpty()) {
       // Store only the content (as String), not the TaskFile objects
@@ -1809,7 +1801,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     }
     val result = taskFile?.shouldBePropagated() ?: true
     if (!result) {
-      LOG.warn("split: path='$path' excluded, isVisible=${taskFile.isVisible}, isEditable=${taskFile.isEditable}")
+      LOG.debug("split: path='$path' excluded, isVisible=${taskFile.isVisible}, isEditable=${taskFile.isEditable}")
     }
     result
   }
@@ -1835,7 +1827,7 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
       // HEAD exists - find the task whose storageRef matches HEAD
       val taskIndex = lesson.taskList.indexOfFirst { it.storageRef() == head }
       if (taskIndex == -1) {
-        LOG.warn("syncCurrentTaskIndexFromStorage: HEAD=$head but no task found with matching storageRef")
+        LOG.debug("syncCurrentTaskIndexFromStorage: HEAD=$head but no task found with matching storageRef")
         // Still mark as synced to allow auto-save to work
         isStorageSynced = true
         return false
@@ -1892,12 +1884,12 @@ class FrameworkLessonManagerImpl(private val project: Project) : FrameworkLesson
     private fun createStorage(project: Project): FrameworkStorage {
       val storageFilePath = constructStoragePath(project)
       val storageExists = storageFilePath.toFile().exists()
-      LOG.warn("CREATE_STORAGE: path=$storageFilePath, exists=$storageExists")
+      LOG.debug("CREATE_STORAGE: path=$storageFilePath, exists=$storageExists")
 
       try {
         val storage = FrameworkStorage(storageFilePath)
         storage.migrate(VERSION)
-        LOG.warn("CREATE_STORAGE: success, version=${storage.version}")
+        LOG.debug("CREATE_STORAGE: success, version=${storage.version}")
         return storage
       }
       catch (e: Exception) {
