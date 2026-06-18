@@ -117,13 +117,25 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     when (request) {
       is HyperskillOpenStepRequest -> {
         val stepId = request.stepId
-        val stepSource = getStepSource(stepId, request.isLanguageSelectedByUser)
-        val isAndroidEnvRequired = stepSource.framework == EduNames.ANDROID
-        val courseFilter: (Course) -> Boolean = if (isAndroidEnvRequired) ::hasAndroidEnvironment else { _ -> true }
-        val (project, course) = findExistingProject(findProject, request, courseFilter) ?: return null
-        val hyperskillCourse = course as HyperskillCourse
-        hyperskillCourse.addProblemsWithTopicWithFiles(project, stepSource)
-        hyperskillCourse.selectedProblem = stepId
+        // Opening a problem must run in the background, not on the EDT. The post-solve "next activity" flow invokes
+        // this path directly on the UI thread, where two things go wrong:
+        //  1. `getStepSource` performs a blocking network request, tripping the "Network requests from EDT are not
+        //     allowed" assertion and freezing the IDE;
+        //  2. `addProblemsWithTopicWithFiles` shows a modal progress that pumps the event queue, so a YAML reload
+        //     queued by the produced file changes can run against a not-yet-complete course model and report
+        //     "parent for '<task>' was not found" when the user checks the problem.
+        // Running the whole step-opening off the EDT keeps the course model consistent before any reload.
+        val (project, hyperskillCourse) = computeUnderProgress(title = EduCoreBundle.message("hyperskill.loading.problems")) {
+          val stepSource = getStepSource(stepId, request.isLanguageSelectedByUser)
+          val isAndroidEnvRequired = stepSource.framework == EduNames.ANDROID
+          val courseFilter: (Course) -> Boolean = if (isAndroidEnvRequired) ::hasAndroidEnvironment else { _ -> true }
+          val (project, course) = findExistingProject(findProject, request, courseFilter) ?: return@computeUnderProgress null
+          val hyperskillCourse = course as HyperskillCourse
+          hyperskillCourse.addProblemsWithTopicWithFiles(project, stepSource)
+          hyperskillCourse.selectedProblem = stepId
+          project to hyperskillCourse
+        } ?: return null
+
         runInEdt {
           requestFocus()
           navigateToStep(project, hyperskillCourse, stepId)
