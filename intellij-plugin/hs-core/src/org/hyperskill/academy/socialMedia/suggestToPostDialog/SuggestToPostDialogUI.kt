@@ -6,17 +6,23 @@ import org.jetbrains.annotations.TestOnly
 
 interface SuggestToPostDialogUI {
   /**
-   * Shows the dialog and returns `true` if the user pressed the "Learn more" (OK) button.
+   * Shows the dialog. Returns `true` only if it was closed via an OK action.
+   * Sharing happens through in-dialog actions, so callers don't rely on the return value.
    */
   fun showAndGet(): Boolean
 }
 
-fun createSuggestToPostDialogUI(project: Project, message: String): SuggestToPostDialogUI {
+fun createSuggestToPostDialogUI(
+  project: Project,
+  message: String,
+  xShareUrl: String,
+  linkedInShareUrl: String
+): SuggestToPostDialogUI {
   return if (isUnitTestMode) {
     MOCK ?: error("You should set mock UI via `withMockSuggestToPostDialogUI`")
   }
   else {
-    SuggestToPostDialog(project, message)
+    SuggestToPostDialog(project, message, xShareUrl, linkedInShareUrl)
   }
 }
 

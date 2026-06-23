@@ -1,7 +1,6 @@
 package org.hyperskill.academy.socialMedia
 
 import com.intellij.openapi.project.Project
-import org.hyperskill.academy.learning.EduBrowser
 import org.hyperskill.academy.learning.checker.CheckListener
 import org.hyperskill.academy.learning.courseFormat.CheckResult
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
@@ -27,9 +26,11 @@ class SuggestToPostOnProjectCompletionListener : CheckListener {
     if (!SocialMediaSettings.getInstance().askToPost) return
     if (!SocialMediaUtils.shouldSuggestToPost(project, task, statusBefore)) return
 
-    val dialog = createSuggestToPostDialogUI(project, SocialMediaUtils.getMessage(task))
-    if (dialog.showAndGet()) {
-      EduBrowser.getInstance().browse(SocialMediaUtils.LEARN_MORE_URL)
-    }
+    createSuggestToPostDialogUI(
+      project,
+      SocialMediaUtils.getDisplayMessage(task),
+      SocialMediaUtils.buildXShareUrl(task),
+      SocialMediaUtils.buildLinkedInShareUrl(task)
+    ).showAndGet()
   }
 }
