@@ -167,10 +167,6 @@ tasks {
   }
 
   withType<PrepareSandboxTask> {
-    from("socialMedia") {
-      into("${projectName.get()}/socialMedia")
-      include("**/*.gif")
-    }
     doLast {
       val kotlinJarRe = """kotlin-(stdlib|reflect|runtime).*\.jar""".toRegex()
       val libraryDir = destinationDir.resolve("${projectName.get()}/lib")

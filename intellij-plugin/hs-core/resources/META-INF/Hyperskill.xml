@@ -29,7 +29,9 @@
 
   <extensions defaultExtensionNs="HyperskillEducational">
     <optionsProvider instance="org.hyperskill.academy.learning.stepik.hyperskill.settings.HyperskillOptions"/>
+    <optionsProvider instance="org.hyperskill.academy.socialMedia.SocialMediaOptionsProvider"/>
     <checkListener implementation="org.hyperskill.academy.learning.stepik.hyperskill.checker.HyperskillCheckListener"/>
+    <checkListener implementation="org.hyperskill.academy.socialMedia.SuggestToPostOnProjectCompletionListener"/>
     <remoteTaskChecker implementation="org.hyperskill.academy.learning.stepik.hyperskill.checker.HyperskillRemoteTaskChecker"/>
     <submissionsProvider implementation="org.hyperskill.academy.learning.stepik.hyperskill.HyperskillSubmissionsProvider"/>
   </extensions>
