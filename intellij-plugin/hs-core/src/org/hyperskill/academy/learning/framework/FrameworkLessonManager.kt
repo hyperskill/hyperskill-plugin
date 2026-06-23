@@ -13,7 +13,7 @@ interface FrameworkLessonManager : EduTestAware {
   fun preparePrevTask(lesson: FrameworkLesson, taskDir: VirtualFile, showDialogIfConflict: Boolean)
 
   fun saveExternalChanges(task: Task, externalState: Map<String, String>, submissionId: Long? = null)
-  fun updateUserChanges(task: Task, newInitialState: Map<String, String>)
+  fun updateUserChanges(task: Task, newInitialState: Map<String, String>, newTaskFiles: Map<String, TaskFile> = emptyMap())
 
   /**
    * Adds new files to an existing snapshot without overwriting existing files.

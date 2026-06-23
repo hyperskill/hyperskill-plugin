@@ -5,6 +5,7 @@ import org.hyperskill.academy.coursecreator.StudyItemType
 import org.hyperskill.academy.coursecreator.StudyItemType.*
 import org.hyperskill.academy.learning.courseFormat.*
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.findFileByRelativePathOrSelf
 
 val StudyItem.studyItemType: StudyItemType
   get() {
@@ -22,12 +23,12 @@ fun StudyItem.getDir(courseDir: VirtualFile): VirtualFile? {
     is Course -> courseDir
     is Section -> {
       val sectionParent = (parentOrNull as? StudyItem) ?: return null
-      courseDir.findFileByRelativePath(sectionParent.getPathToChildren())?.findChild(name)
+      courseDir.findFileByRelativePathOrSelf(sectionParent.getPathToChildren())?.findChild(name)
     }
 
     is Lesson -> {
       val lessonParent = (parentOrNull as? StudyItem) ?: return null
-      lessonParent.getDir(courseDir)?.findFileByRelativePath(lessonParent.getPathToChildren())?.findChild(name)
+      lessonParent.getDir(courseDir)?.findFileByRelativePathOrSelf(lessonParent.getPathToChildren())?.findChild(name)
     }
 
     is Task -> (parentOrNull as? Lesson)

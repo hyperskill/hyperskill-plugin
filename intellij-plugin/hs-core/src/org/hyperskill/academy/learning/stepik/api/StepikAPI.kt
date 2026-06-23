@@ -118,6 +118,7 @@ class EduTaskReply : Reply() {
   var feedback: Feedback? = null
 
   @JsonProperty(SCORE)
+  @JsonInclude(JsonInclude.Include.ALWAYS)
   var score: String = ""
 
   @JsonProperty(SOLUTION)

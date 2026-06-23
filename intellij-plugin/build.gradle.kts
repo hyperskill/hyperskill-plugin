@@ -3,6 +3,7 @@ import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.*
 import org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformTestingExtension
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 import org.jetbrains.intellij.platform.gradle.tasks.RunIdeTask
+import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask
 import org.jetbrains.intellij.platform.gradle.utils.extensionProvider
 
 plugins {
@@ -42,6 +43,23 @@ intellijPlatform {
   buildSearchableOptions = prop("enableBuildSearchableOptions").toBoolean()
 
   pluginVerification {
+    // Fail only on genuinely broken structure / hard compatibility breaks.
+    //
+    // Excluded on purpose (reported in the report but non-failing):
+    //  - INTERNAL_API_USAGES / EXPERIMENTAL / DEPRECATED / SCHEDULED_FOR_REMOVAL:
+    //    informational; JetBrains Marketplace treats them the same way.
+    //  - MISSING_DEPENDENCIES: this is a multi-IDE plugin. IDE-specific content
+    //    modules (hs-Cpp:CLion-Classic -> com.intellij.cidr.lang,
+    //    hs-CSharp -> com.intellij.modules.rider / intellij.rider /
+    //    com.intellij.resharper.unity) intentionally declare deps that don't exist
+    //    in IDEA Ultimate. Such modules are simply not loaded there; the plugin
+    //    still loads and is reported Compatible.
+    failureLevel = listOf(
+      VerifyPluginTask.FailureLevel.COMPATIBILITY_PROBLEMS,
+      VerifyPluginTask.FailureLevel.NON_EXTENDABLE_API_USAGES,
+      VerifyPluginTask.FailureLevel.OVERRIDE_ONLY_API_USAGES,
+      VerifyPluginTask.FailureLevel.INVALID_PLUGIN,
+    )
     ides {
       intellijIde(ideaVersion)
     }

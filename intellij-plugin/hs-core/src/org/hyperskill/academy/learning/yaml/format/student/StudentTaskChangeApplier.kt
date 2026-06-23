@@ -20,7 +20,11 @@ class StudentTaskChangeApplier(project: Project) : TaskChangeApplier(project) {
     // Apply status and feedback from deserialized item
     existingItem.status = deserializedItem.status
     existingItem.feedback = deserializedItem.feedback
-    // Note: record is no longer serialized (legacy field), don't overwrite existing value
+    // `record` is a legacy framework-lesson storage pointer. YAML reloads can deserialize
+    // a default -1 and must not wipe a live in-memory record before migration reads it.
+    if (deserializedItem.record != -1) {
+      existingItem.record = deserializedItem.record
+    }
 
     if (existingItem is RemoteEduTask && deserializedItem is RemoteEduTask) {
       val newCheckProfile = deserializedItem.checkProfile

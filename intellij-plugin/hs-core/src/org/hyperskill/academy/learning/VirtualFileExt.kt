@@ -77,6 +77,10 @@ private fun FileEditor.setViewer(isViewer: Boolean) {
 private val FileEditor.loadingPanel: JBLoadingPanel?
   get() = UIUtil.findComponentOfType(component, JBLoadingPanel::class.java)
 
+fun VirtualFile.findFileByRelativePathOrSelf(path: String): VirtualFile? {
+  return if (path.isEmpty()) this else findFileByRelativePath(path)
+}
+
 fun VirtualFile.getSection(project: Project): Section? {
   return getSection(project.toCourseInfoHolder())
 }
@@ -84,7 +88,7 @@ fun VirtualFile.getSection(project: Project): Section? {
 fun VirtualFile.getSection(holder: CourseInfoHolder<out Course?>): Section? {
   val course = holder.course ?: return null
   if (!isDirectory) return null
-  return if (holder.courseDir.findFileByRelativePath(course.customContentPath) == parent) course.getSection(name) else null
+  return if (holder.courseDir.findFileByRelativePathOrSelf(course.customContentPath) == parent) course.getSection(name) else null
 }
 
 fun VirtualFile.isSectionDirectory(project: Project): Boolean {
@@ -104,7 +108,7 @@ fun VirtualFile.getLesson(holder: CourseInfoHolder<out Course?>): Lesson? {
   if (section != null) {
     return section.getLesson(name)
   }
-  return if (holder.courseDir.findFileByRelativePath(course.customContentPath) == parent) course.getLesson(name) else null
+  return if (holder.courseDir.findFileByRelativePathOrSelf(course.customContentPath) == parent) course.getLesson(name) else null
 }
 
 fun VirtualFile.isLessonDirectory(project: Project): Boolean {
@@ -135,6 +139,9 @@ fun VirtualFile.getTask(project: Project): Task? {
 fun VirtualFile.getTask(holder: CourseInfoHolder<out Course?>): Task? {
   if (!isDirectory) return null
   val lesson: Lesson = parent?.getLesson(holder) ?: return null
+  if (lesson is FrameworkLesson && name == TASK) {
+    return lesson.currentTask()
+  }
   return lesson.getTask(name)
 }
 

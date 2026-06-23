@@ -7,6 +7,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Ref
+import com.intellij.util.concurrency.AppExecutorUtil
 import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.authUtils.requestFocus
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -32,6 +33,7 @@ import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillSolutionLoader
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillStepSource
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
+import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.util.concurrent.*
 
@@ -39,6 +41,14 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
   private val LOG = Logger.getInstance(HyperskillOpenInIdeRequestHandler::class.java)
 
   private const val STAGE_LOADING_TIMEOUT_MS = 60_000L
+
+  /**
+   * Executor used to run stage loading off the calling thread. Defaults to the application pool;
+   * tests inject a same-thread executor so loading runs synchronously while still exercising the
+   * future/timeout/cancellation code path below.
+   */
+  var stagesLoaderExecutor: Executor = AppExecutorUtil.getAppExecutorService()
+    @TestOnly set
 
   override val courseLoadingProcessTitle: String get() = EduCoreBundle.message("hyperskill.loading.project")
 
@@ -60,16 +70,18 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
    * Returns Ok if successful, Err with error message on failure or timeout.
    * Rethrows ProcessCanceledException if the operation was cancelled.
    */
-  private fun loadStagesWithTimeout(
+  @VisibleForTesting
+  fun loadStagesWithTimeout(
     project: Project,
     hyperskillCourse: HyperskillCourse,
-    timeoutMs: Long = STAGE_LOADING_TIMEOUT_MS
-  ): Result<Unit, String> {
-    val future = CompletableFuture.supplyAsync {
+    timeoutMs: Long = STAGE_LOADING_TIMEOUT_MS,
+    loadStages: () -> Unit = {
       computeUnderProgress(project, EduCoreBundle.message("hyperskill.loading.stages")) {
         HyperskillConnector.getInstance().loadStages(hyperskillCourse)
       }
     }
+  ): Result<Unit, String> {
+    val future = CompletableFuture.supplyAsync({ loadStages() }, stagesLoaderExecutor)
 
     return try {
       future.get(timeoutMs, TimeUnit.MILLISECONDS)

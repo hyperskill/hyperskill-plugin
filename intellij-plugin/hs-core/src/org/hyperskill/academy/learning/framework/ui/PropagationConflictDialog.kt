@@ -1,7 +1,9 @@
 package org.hyperskill.academy.learning.framework.ui
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.Messages
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
@@ -193,6 +195,18 @@ class PropagationConflictDialog(
       currentState: Map<String, String>,
       targetState: Map<String, String>
     ): Result {
+      if (ApplicationManager.getApplication().isUnitTestMode) {
+        val answer = Messages.showYesNoDialog(
+          project,
+          EduCoreBundle.message("propagation.dialog.header", currentTaskName, targetTaskName),
+          EduCoreBundle.message("propagation.dialog.title"),
+          EduCoreBundle.message("propagation.dialog.keep"),
+          EduCoreBundle.message("propagation.dialog.replace"),
+          null
+        )
+        return if (answer == Messages.YES) Result.KEEP else Result.REPLACE
+      }
+
       val dialog = PropagationConflictDialog(project, currentTaskName, targetTaskName, currentState, targetState)
       dialog.show()
       return dialog.result

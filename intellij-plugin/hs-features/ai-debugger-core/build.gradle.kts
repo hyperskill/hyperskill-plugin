@@ -18,10 +18,12 @@ dependencies {
   api(libs.educational.ml.library.core) {
     excludeKotlinDeps()
     exclude(group = "net.java.dev.jna")
+    exclude(group = "it.unimi.dsi", module = "fastutil-core")
   }
   api(libs.educational.ml.library.debugger) {
     excludeKotlinDeps()
     exclude(group = "net.java.dev.jna")
+    exclude(group = "it.unimi.dsi", module = "fastutil-core")
   }
 
   compileOnly(libs.kotlinx.serialization) {

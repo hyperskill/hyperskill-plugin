@@ -267,12 +267,19 @@ abstract class FrameworkLessonsUpdateTest<T : Course> : UpdateTestBase<T>() {
 
   @Test
   fun `test check current task index and task record saved`() {
+    // Simulate a project migrated from the old integer-keyed framework storage, where task1
+    // carries a legacy record id. Production navigation no longer assigns record (it is only
+    // preserved or cleared), so the test seeds it directly instead of relying on a test-only branch.
+    val legacyRecord = localCourse.task1.index
+    localCourse.task1.record = legacyRecord
+
     next()
 
     val taskRecordIndexBeforeUpdate = localCourse.task1.record
 
     assertEquals(1, frameworkLesson.currentTaskIndex)
     assertNotSame(-1, taskRecordIndexBeforeUpdate)
+    assertEquals("Record must survive navigation", legacyRecord, taskRecordIndexBeforeUpdate)
 
     val taskText = "fun foo2() {}"
     val testText = """

@@ -29,7 +29,7 @@ class HyperskillTaskBuilder(
     "text",
     CodeTask.CODE_TASK_TYPE -> createTask(blockName)
 
-    else -> null
+    else -> createTask(UnsupportedTask.UNSUPPORTED_TASK_TYPE)
   }
 
   override fun createTask(type: String): Task {

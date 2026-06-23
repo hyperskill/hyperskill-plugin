@@ -5,6 +5,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
+import org.hyperskill.academy.learning.course
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.ext.allTasks
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.navigation.NavigationUtils
 import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
@@ -23,7 +26,7 @@ abstract class TaskNavigationAction : DumbAwareAction() {
     e.presentation.isEnabled = false
     val project = e.project ?: return
     if (!project.isEduProject()) return
-    val currentTask = TaskToolWindowView.getInstance(project).currentTask ?: return
+    val currentTask = project.currentNavigationTask() ?: return
     if (getTargetTask(currentTask) != null || getCustomAction(currentTask) != null) {
       e.presentation.isEnabled = true
     }
@@ -32,7 +35,7 @@ abstract class TaskNavigationAction : DumbAwareAction() {
   override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
   private fun navigateTask(project: Project, place: String) {
-    val currentTask = TaskToolWindowView.getInstance(project).currentTask ?: return
+    val currentTask = project.currentNavigationTask() ?: return
     val customAction = getCustomAction(currentTask)
     if (customAction != null) {
       customAction(project, currentTask)
@@ -41,6 +44,14 @@ abstract class TaskNavigationAction : DumbAwareAction() {
     val targetTask = getTargetTask(currentTask) ?: return
 
     NavigationUtils.navigateToTask(project, targetTask, currentTask)
+  }
+
+  private fun Project.currentNavigationTask(): Task? {
+    TaskToolWindowView.getInstance(this).currentTask?.let { return it }
+    return course?.allTasks
+      ?.mapNotNull { it.lesson as? FrameworkLesson }
+      ?.distinct()
+      ?.firstNotNullOfOrNull { it.currentTask() }
   }
 
   protected abstract fun getTargetTask(sourceTask: Task): Task?
