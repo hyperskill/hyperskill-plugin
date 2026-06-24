@@ -58,8 +58,8 @@ class SuggestToPostDialog(
 
   private class DoNotAskToSuggestOption : DoNotAskOption.Adapter() {
     override fun rememberChoice(isSelected: Boolean, exitCode: Int) {
-      // `isSelected` means "keep showing the dialog next time"; an unchecked box means the user opted out
-      if (!isSelected) {
+      // `isSelected` == true means the user checked "Don't ask again" and wants to opt out
+      if (isSelected) {
         SocialMediaSettings.getInstance().askToPost = false
       }
     }
