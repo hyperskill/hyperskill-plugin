@@ -57,11 +57,12 @@ object SocialMediaUtils {
     "${achievementCore(solvedTask)} ${EduCoreBundle.message("social.media.learn.more.at", COURSES_DISPLAY_LINK)}"
 
   /**
-   * X share intent. The post text intentionally has no link because X renders the [SHARE_URL] from the `url` parameter.
+   * X share intent. The post text includes the "Learn more at ..." part (the same text shown in the dialog),
+   * and the tracked [SHARE_URL] is additionally passed via the `url` parameter.
    * https://twitter.com/intent/tweet?text=...&url=...
    */
   fun buildXShareUrl(solvedTask: Task): String {
-    val text = achievementCore(solvedTask)
+    val text = getDisplayMessage(solvedTask)
     return "https://twitter.com/intent/tweet?text=${encode(text)}&url=${encode(SHARE_URL)}"
   }
 
