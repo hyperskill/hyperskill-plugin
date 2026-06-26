@@ -21,7 +21,7 @@ class HyperskillCheckRemoteEduTaskTest : HyperskillCheckActionTestBase() {
     super.setUp()
     courseWithFiles(courseProducer = ::HyperskillCourse) {
       lesson("Problems") {
-        remoteEduTask("task1", stepId = 4) {
+        remoteEduTask("task1", stepId = 4, checkProfile = "hyperskill_go") {
           taskFile("Task.txt", "fun foo() {}")
           taskFile("tests/Test.txt", "fun foo() {}")
         }

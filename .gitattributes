@@ -1,1 +1,2 @@
 * -crlf
+*.kt text eol=lf

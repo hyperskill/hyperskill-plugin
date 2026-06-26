@@ -137,7 +137,7 @@ sealed class Change {
     @Throws(IOException::class)
     constructor(input: DataInput) : super(input)
     override fun apply(state: MutableMap<String, String>) {
-      state[path] = text
+      state -= path
     }
   }
 

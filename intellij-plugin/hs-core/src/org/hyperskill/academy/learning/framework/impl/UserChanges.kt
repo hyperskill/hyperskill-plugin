@@ -22,9 +22,9 @@ import java.io.IOException
 private val LOG: Logger = Logger.getInstance("org.hyperskill.academy.learning.framework.impl.UserChangesExtensions")
 
 fun UserChanges.apply(project: Project, taskDir: VirtualFile, task: Task) {
-  LOG.warn("UserChanges.apply: applying ${changes.size} changes to taskDir=${taskDir.path}")
+  LOG.debug("UserChanges.apply: applying ${changes.size} changes to taskDir=${taskDir.path}")
   for (change in changes) {
-    LOG.warn("UserChanges.apply: change=${change.javaClass.simpleName}(${change.path}, ${change.text.length} chars)")
+    LOG.debug("UserChanges.apply: change=${change.javaClass.simpleName}(${change.path}, ${change.text.length} chars)")
     change.apply(project, taskDir, task)
   }
 }
@@ -67,16 +67,16 @@ private fun Change.RemoveFile.apply(project: Project, taskDir: VirtualFile, task
 }
 
 private fun Change.ChangeFile.apply(project: Project, taskDir: VirtualFile, task: Task) {
-  LOG.warn("ChangeFile.apply: path=$path, taskDir=${taskDir.path}, textLength=${text.length}")
+  LOG.debug("ChangeFile.apply: path=$path, taskDir=${taskDir.path}, textLength=${text.length}")
   val file = taskDir.findFileByRelativePath(path)
   if (file == null) {
     LOG.warn("ChangeFile.apply: Can't find file `$path` in `$taskDir`")
     return
   }
-  LOG.warn("ChangeFile.apply: Found file at ${file.path}")
+  LOG.debug("ChangeFile.apply: Found file at ${file.path}")
 
   if (file.isToEncodeContent) {
-    LOG.warn("ChangeFile.apply: Using binary content mode")
+    LOG.debug("ChangeFile.apply: Using binary content mode")
     file.doWithoutReadOnlyAttribute {
       runWriteAction {
         file.setBinaryContent(Base64.decodeBase64(text))
@@ -84,31 +84,58 @@ private fun Change.ChangeFile.apply(project: Project, taskDir: VirtualFile, task
     }
   }
   else {
-    LOG.warn("ChangeFile.apply: Using document mode")
-    EduDocumentListener.modifyWithoutListener(task, path) {
-      val document = runReadAction { FileDocumentManager.getInstance().getDocument(file) }
-      if (document != null) {
-        val expandedText = StringUtil.convertLineSeparators(EduMacroUtils.expandMacrosForFile(project.toCourseInfoHolder(), file, text))
-        LOG.warn("ChangeFile.apply: Setting document text, expandedTextLength=${expandedText.length}")
-        file.doWithoutReadOnlyAttribute {
-          runUndoTransparentWriteAction { document.setText(expandedText) }
-        }
-        // ALT-10961: Force save document to disk
-        FileDocumentManager.getInstance().saveDocument(document)
-        LOG.warn("ChangeFile.apply: Document text set and saved successfully")
-      }
-      else {
-        LOG.warn("ChangeFile.apply: Can't get document for `$file`")
-      }
+    LOG.debug("ChangeFile.apply: Using document mode")
+    val modification = {
+      updateTextFile(project, file, text)
+    }
+
+    if (task.getTaskFile(path) == null) {
+      modification()
+    }
+    else {
+      EduDocumentListener.modifyWithoutListener(task, path, modification)
     }
   }
 }
 
+private fun updateTextFile(project: Project, file: VirtualFile, text: String) {
+  val document = runReadAction { FileDocumentManager.getInstance().getDocument(file) }
+  if (document != null) {
+    val expandedText = StringUtil.convertLineSeparators(EduMacroUtils.expandMacrosForFile(project.toCourseInfoHolder(), file, text))
+    LOG.debug("ChangeFile.apply: Setting document text, expandedTextLength=${expandedText.length}")
+    file.doWithoutReadOnlyAttribute {
+      runUndoTransparentWriteAction { document.setText(expandedText) }
+    }
+    // ALT-10961: Force save document to disk
+    FileDocumentManager.getInstance().saveDocument(document)
+    LOG.debug("ChangeFile.apply: Document text set and saved successfully")
+  }
+  else {
+    LOG.warn("ChangeFile.apply: Can't get document for `$file`")
+  }
+}
+
 private fun Change.PropagateLearnerCreatedTaskFile.apply(project: Project, taskDir: VirtualFile, task: Task) {
-  val taskFile = TaskFile(path, text).apply { isLearnerCreated = true }
-  task.addTaskFile(taskFile)
+  val taskFile = task.getTaskFile(path) ?: TaskFile(path, text).also { task.addTaskFile(it) }
+  taskFile.isLearnerCreated = true
+
+  val file = taskDir.findFileByRelativePath(path)
+  if (file == null) {
+    try {
+      EduDocumentListener.modifyWithoutListener(task, path) {
+        GeneratorUtils.createChildFile(project.toCourseInfoHolder(), taskDir, path, InMemoryTextualContents(text))
+      }
+    }
+    catch (e: IOException) {
+      LOG.error("Failed to create learner-created file `${taskDir.path}/$path`", e)
+    }
+  }
+  else {
+    Change.ChangeFile(path, text).apply(project, taskDir, task)
+  }
 }
 
 private fun Change.RemoveTaskFile.apply(project: Project, taskDir: VirtualFile, task: Task) {
   task.removeTaskFile(path)
+  Change.RemoveFile(path).apply(project, taskDir, task)
 }

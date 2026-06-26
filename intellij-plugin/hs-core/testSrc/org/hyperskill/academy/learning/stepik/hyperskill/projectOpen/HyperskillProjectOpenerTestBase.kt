@@ -5,22 +5,32 @@ import org.hyperskill.academy.learning.MockProjectOpener
 import org.hyperskill.academy.learning.courseGeneration.ProjectOpener
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
 import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourse
 import org.hyperskill.academy.learning.stepik.hyperskill.logInFakeHyperskillUser
 import org.hyperskill.academy.learning.stepik.hyperskill.logOutFakeHyperskillUser
+import java.util.concurrent.Executor
 
 abstract class HyperskillProjectOpenerTestBase : EduTestCase() {
   protected val mockConnector: MockHyperskillConnector get() = HyperskillConnector.getInstance() as MockHyperskillConnector
   protected val mockProjectOpener: MockProjectOpener get() = ProjectOpener.getInstance() as MockProjectOpener
 
+  // Run stage loading synchronously in tests (replaces the former isUnitTestMode short-circuit in
+  // HyperskillOpenInIdeRequestHandler) so the future/timeout code path is still exercised.
+  private val directStagesLoaderExecutor = Executor { it.run() }
+  private var savedStagesLoaderExecutor: Executor? = null
+
   override fun setUp() {
     super.setUp()
     mockProjectOpener.project = project
     logInFakeHyperskillUser()
+    savedStagesLoaderExecutor = HyperskillOpenInIdeRequestHandler.stagesLoaderExecutor
+    HyperskillOpenInIdeRequestHandler.stagesLoaderExecutor = directStagesLoaderExecutor
   }
 
   override fun tearDown() {
     try {
+      savedStagesLoaderExecutor?.let { HyperskillOpenInIdeRequestHandler.stagesLoaderExecutor = it }
       mockProjectOpener.project = null
       logOutFakeHyperskillUser()
     }

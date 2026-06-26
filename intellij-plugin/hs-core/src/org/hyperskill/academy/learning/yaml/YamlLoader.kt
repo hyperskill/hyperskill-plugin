@@ -122,7 +122,7 @@ object YamlLoader {
   fun StudyItem.getConfigFileForChild(project: Project, childName: String): VirtualFile? {
     val courseDir = project.courseDir
     val dir = getDir(courseDir) ?: return null
-    val itemDir = dir.findFileByRelativePath(getPathToChildren())?.findChild(childName)
+    val itemDir = dir.findFileByRelativePathOrSelf(getPathToChildren())?.findChild(childName)
 
     val configFile = childrenConfigFileNames.map { itemDir?.findChild(it) }.firstOrNull { it != null }
     if (configFile != null) {
@@ -192,8 +192,8 @@ object YamlLoader {
                  ?: loadingError(EduCoreBundle.message("yaml.editor.invalid.format.parent.not.found", name))
     val customContentPath = course.customContentPath
     val itemContainer = when (this) {
-      is Section -> if (project.courseDir.findFileByRelativePath(customContentPath) == parentDir) course else null
-      is Lesson -> if (project.courseDir.findFileByRelativePath(customContentPath) == parentDir) {
+      is Section -> if (project.courseDir.findFileByRelativePathOrSelf(customContentPath) == parentDir) course else null
+      is Lesson -> if (project.courseDir.findFileByRelativePathOrSelf(customContentPath) == parentDir) {
         course
       }
       else {
@@ -272,7 +272,7 @@ private fun StudyItem.ensureChildrenExist(itemDir: VirtualFile, customContentPat
     is ItemContainer -> {
       items.forEach {
         val itemTypeName = if (it is Task) TASK else EduNames.ITEM
-        itemDir.findFileByRelativePath(this.getPathToChildren(customContentPath))?.findChild(it.name) ?: loadingError(
+        itemDir.findFileByRelativePathOrSelf(this.getPathToChildren(customContentPath))?.findChild(it.name) ?: loadingError(
           noDirForItemMessage(it.name, itemTypeName)
         )
       }
