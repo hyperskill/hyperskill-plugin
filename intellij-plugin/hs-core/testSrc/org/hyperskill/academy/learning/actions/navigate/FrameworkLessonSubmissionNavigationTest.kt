@@ -229,6 +229,53 @@ class FrameworkLessonSubmissionNavigationTest : NavigationTestBase() {
     assertEquals("CONTENT_3_EVEN_LONGER_TEXT", state3["src/Task.kt"])
   }
 
+  @Test
+  fun `test saveExternalChanges keeps template tests when submission contains visible test file`() {
+    val course = createFrameworkCourseWithDifferentContent()
+    val task2 = course.findTask("lesson1", "task2")
+    val lesson = task2.lesson as FrameworkLesson
+
+    val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
+    frameworkLessonManager.cleanUpState()
+    frameworkLessonManager.restoreState()
+
+    frameworkLessonManager.saveExternalChanges(
+      task2,
+      mapOf(
+        "src/Task.kt" to "SUBMISSION_CONTENT",
+        "test/Tests2.kt" to "STALE_SUBMISSION_TEST"
+      )
+    )
+
+    val state = frameworkLessonManager.getTaskState(lesson, task2)
+    assertEquals("SUBMISSION_CONTENT", state["src/Task.kt"])
+    assertEquals("fun tests2() {}", state["test/Tests2.kt"])
+  }
+
+  @Test
+  fun `test first visit to next stage adds target-only propagatable template file`() {
+    val course = courseWithFiles(language = FakeGradleBasedLanguage) {
+      frameworkLesson("lesson1", isTemplateBased = false) {
+        eduTask("task1", stepId = 1001) {
+          taskFile("src/Task.kt", "fun stage1() {}")
+        }
+        eduTask("task2", stepId = 1002) {
+          taskFile("src/Task.kt", "fun stage2() {}")
+          taskFile("src/NewTemplate.kt", "fun newTemplate() {}")
+        }
+      }
+    }
+
+    withVirtualFileListener(course) {
+      val task1 = course.findTask("lesson1", "task1")
+      task1.openTaskFileInEditor("src/Task.kt")
+
+      testAction(NextTaskAction.ACTION_ID)
+    }
+
+    assertEquals("fun newTemplate() {}", findFileInTaskDir("src/NewTemplate.kt").contentsToByteArray().decodeToString())
+  }
+
   private fun findFileInTaskDir(relativePath: String) =
     rootDir.findFileByRelativePath("lesson1/task/$relativePath")
       ?: error("File not found: lesson1/task/$relativePath")

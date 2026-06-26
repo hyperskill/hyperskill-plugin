@@ -6,6 +6,7 @@ import com.intellij.util.io.UnsyncByteArrayOutputStream
 import org.hyperskill.academy.learning.framework.impl.migration.To1VersionRecordConverter
 import org.hyperskill.academy.learning.framework.storage.Change
 import org.hyperskill.academy.learning.framework.storage.UserChanges
+import java.io.ByteArrayInputStream
 import java.io.DataInput
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -32,7 +33,7 @@ class LegacyFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePa
           val recordId = recordIterator.nextId()
           val bytes = readBytes(recordId)
           if (bytes.isNotEmpty() && bytes[0].toInt() == BLOB_TYPE) {
-            val input = DataInputStream(java.io.ByteArrayInputStream(bytes))
+            val input = DataInputStream(ByteArrayInputStream(bytes))
             input.readByte() // skip type
             val hash = input.readUTF()
             contentHashIndex[hash] = recordId
@@ -56,7 +57,13 @@ class LegacyFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePa
     return withReadLock<RecordInfo?, IOException> {
       val bytes = readBytes(recordId)
       if (bytes.isEmpty()) return@withReadLock null
-      val input = DataInputStream(java.io.ByteArrayInputStream(bytes))
+      // Versions 0 and 1 are read here; version >= 2 deliberately falls through to the type-based reader below.
+      when (version) {
+        0 -> return@withReadLock RecordInfo.Legacy(readVersion0UserChanges(DataInputStream(ByteArrayInputStream(bytes))))
+        1 -> return@withReadLock RecordInfo.Legacy(readLegacyUserChanges(DataInputStream(ByteArrayInputStream(bytes))))
+      }
+
+      val input = DataInputStream(ByteArrayInputStream(bytes))
       val type = input.readByte().toInt()
       when (type) {
         LEGACY_CHANGES_TYPE -> RecordInfo.Legacy(readLegacyUserChanges(input))
@@ -68,6 +75,19 @@ class LegacyFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePa
         else -> null
       }
     }
+  }
+
+  @Throws(IOException::class)
+  private fun readVersion0UserChanges(input: DataInput): UserChanges {
+    val size = DataInputOutputUtil.readINT(input)
+    if (size < 0 || size > 10000) {
+      throw IOException("Corrupted data: invalid number of changes $size")
+    }
+    val changes = ArrayList<Change>(size)
+    for (i in 0 until size) {
+      changes += Change.readChange(input)
+    }
+    return UserChanges(changes, -1)
   }
 
   /**
@@ -104,7 +124,14 @@ class LegacyFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePa
     else {
       withReadLock<UserChanges, IOException> {
         val bytes = readBytes(record)
-        val input = DataInputStream(java.io.ByteArrayInputStream(bytes))
+        if (bytes.isEmpty()) return@withReadLock UserChanges.empty()
+        // Versions 0 and 1 are read here; version >= 2 deliberately falls through to the type-based reader below.
+        when (version) {
+          0 -> return@withReadLock readVersion0UserChanges(DataInputStream(ByteArrayInputStream(bytes)))
+          1 -> return@withReadLock readLegacyUserChanges(DataInputStream(ByteArrayInputStream(bytes)))
+        }
+
+        val input = DataInputStream(ByteArrayInputStream(bytes))
         val type = input.readByte().toInt()
         if (type == LEGACY_CHANGES_TYPE) {
           readLegacyUserChanges(input)
@@ -126,7 +153,7 @@ class LegacyFrameworkStorage(storagePath: Path) : FrameworkStorageBase(storagePa
   @Throws(IOException::class)
   private fun readBlob(recordId: Int): String {
     val bytes = readBytes(recordId)
-    val input = DataInputStream(java.io.ByteArrayInputStream(bytes))
+    val input = DataInputStream(ByteArrayInputStream(bytes))
     val type = input.readByte().toInt()
     if (type != BLOB_TYPE) throw IOException("Corrupted data: record $recordId is not a blob (type=$type)")
     val hash = input.readUTF()

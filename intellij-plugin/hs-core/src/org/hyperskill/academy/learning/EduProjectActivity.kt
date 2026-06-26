@@ -24,8 +24,10 @@ import org.hyperskill.academy.coursecreator.framework.SyncChangesStateManager
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
 import org.hyperskill.academy.learning.EduUtilsKt.isNewlyCreated
 import org.hyperskill.academy.learning.courseFormat.Course
+import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.handlers.UserCreatedFileListener
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.navigation.NavigationUtils
@@ -57,6 +59,8 @@ class EduProjectActivity : ProjectActivity {
       LOG.warn("Opened project is with null course")
       return@trackActivity
     }
+
+    cacheFrameworkLessonTemplates(project, course)
 
     withContext(Dispatchers.EDT) {
       val fileEditorManager = FileEditorManager.getInstance(project)
@@ -144,6 +148,26 @@ class EduProjectActivity : ProjectActivity {
     // Android Studio creates `gradlew` not via VFS, so we have to refresh project dir
     runInBackground(project, EduCoreBundle.message("refresh.course.project.directory"), false) {
       VfsUtil.markDirtyAndRefresh(false, true, true, project.courseDir)
+    }
+  }
+
+  /**
+   * Captures the original propagatable template (visible non-test files) of every framework task
+   * before the learner can edit. During first-visit navigation this lets us tell a template file
+   * the learner deleted apart from a genuinely new author template introduced in the target stage.
+   *
+   * Hyperskill courses populate this cache from API when opening a stage in the IDE, so we only need
+   * to cover regular (non-Hyperskill) framework courses here.
+   */
+  private fun cacheFrameworkLessonTemplates(project: Project, course: Course) {
+    if (course is HyperskillCourse) return
+    val frameworkLessonManager = FrameworkLessonManager.getInstance(project)
+    course.visitLessons { lesson ->
+      if (lesson is FrameworkLesson) {
+        for (task in lesson.taskList) {
+          frameworkLessonManager.updateOriginalTemplateFiles(task)
+        }
+      }
     }
   }
 

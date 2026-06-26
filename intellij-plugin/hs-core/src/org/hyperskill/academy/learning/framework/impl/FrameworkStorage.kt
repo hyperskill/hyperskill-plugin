@@ -31,9 +31,20 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
    * We check for the main file being a regular file (not directory).
    */
   fun hasLegacyStorage(): Boolean {
-    val mainFile = storagePath.toFile()
-    // Legacy storage is a file, new storage is a directory
-    return mainFile.exists() && mainFile.isFile
+    if (Files.isRegularFile(storagePath)) return true
+
+    val parent = storagePath.parent ?: return false
+    if (!Files.isDirectory(parent)) return false
+    val fileName = storagePath.fileName.toString()
+    val paths = Files.list(parent)
+    return try {
+      paths.anyMatch { path ->
+        Files.isRegularFile(path) && path.fileName.toString().startsWith("$fileName.")
+      }
+    }
+    finally {
+      paths.close()
+    }
   }
 
   /**
@@ -344,4 +355,3 @@ class FrameworkStorage(private val storagePath: Path) : Disposable {
     }
   }
 }
-

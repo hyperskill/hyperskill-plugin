@@ -7,15 +7,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.refactoring.rename.RenameDialog
 import com.intellij.refactoring.rename.RenamePsiFileProcessor
-import org.hyperskill.academy.learning.handlers.isRenameForbidden
+import org.hyperskill.academy.learning.handlers.shouldEduTaskFileRenameProcessorHandle
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 
 class EduTaskFileRenameProcessor : RenamePsiFileProcessor() {
 
   override fun canProcessElement(element: PsiElement): Boolean {
     if (element !is PsiFile) return false
-    // EduTaskFileRenameProcessor should intercept rename handlers only to forbid renaming of
-    return isRenameForbidden(element.project, element)
+    return shouldEduTaskFileRenameProcessorHandle(element.project, element)
   }
 
   override fun createRenameDialog(

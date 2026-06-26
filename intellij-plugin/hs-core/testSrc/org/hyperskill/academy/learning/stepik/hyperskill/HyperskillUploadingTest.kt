@@ -15,10 +15,9 @@ class HyperskillUploadingTest : EduTestCase() {
     val course = createHyperskillCourse()
     val task = course.findTask("lesson1", "task1")
     val files = getSolutionFiles(project, task)
-    assertEquals(3, files.size)
-    for (file in files) {
-      assertEquals(mapOf("src/Task.kt" to true, "src/Baz.kt" to false, "test/Tests1.kt" to false)[file.name], file.isVisible)
-    }
+    assertEquals(listOf("src/Task.kt", "src/Baz.kt", "test/Tests1.kt", "test/VisibleTests.kt"), files.map { it.name })
+    // test files are always sent with is_visible=false, even if marked visible (ALT-11013)
+    assertEquals(listOf(true, false, false, false), files.map { it.isVisible })
   }
 
   @Test
@@ -54,6 +53,7 @@ class HyperskillUploadingTest : EduTestCase() {
           taskFile("src/Task.kt", "fun foo() {}", visible = true)
           taskFile("src/Baz.kt", "fun baz() {}", visible = false)
           taskFile("test/Tests1.kt", "fun tests1() {}", visible = false)
+          taskFile("test/VisibleTests.kt", "fun visibleTests() {}", visible = true)
         }
       }
     } as HyperskillCourse

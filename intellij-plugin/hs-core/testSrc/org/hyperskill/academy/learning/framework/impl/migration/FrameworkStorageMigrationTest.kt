@@ -70,9 +70,9 @@ class FrameworkStorageMigrationTest : CourseGenerationTestBase<EmptyProjectSetti
 
     // Verify the resulting snapshot contains merged state
     val mergedState = storage.getSnapshot(newRef)
-    assertEquals("Modified content", mergedState["existing.txt"])
-    assertEquals("User content", mergedState["user_created.txt"])
-    assertEquals("Template", mergedState["template.txt"])
+    assertEquals("Modified content", mergedState["existing.txt"]?.content)
+    assertEquals("User content", mergedState["user_created.txt"]?.content)
+    assertEquals("Template", mergedState["template.txt"]?.content)
   }
 
   @Test
