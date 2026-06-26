@@ -12,7 +12,6 @@ import org.hyperskill.academy.learning.*
 import org.hyperskill.academy.learning.authUtils.requestFocus
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
-import org.hyperskill.academy.learning.courseFormat.EduFormatNames.KOTLIN
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
 import org.hyperskill.academy.learning.courseFormat.Lesson
 import org.hyperskill.academy.learning.courseFormat.Section
@@ -128,15 +127,27 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     findProject: ((Course) -> Boolean) -> Pair<Project, Course>?
   ): Project? {
     when (request) {
-      is HyperskillOpenStepRequestBase -> {
+      is HyperskillOpenStepRequest -> {
         val stepId = request.stepId
-        val stepSource = getStepSource(stepId, request.isLanguageSelectedByUser)
-        val isAndroidEnvRequired = stepSource.framework == EduNames.ANDROID
-        val courseFilter: (Course) -> Boolean = if (isAndroidEnvRequired) ::hasAndroidEnvironment else { _ -> true }
-        val (project, course) = findExistingProject(findProject, request, courseFilter) ?: return null
-        val hyperskillCourse = course as HyperskillCourse
-        hyperskillCourse.addProblemsWithTopicWithFiles(project, stepSource)
-        hyperskillCourse.selectedProblem = stepId
+        // Opening a problem must run in the background, not on the EDT. The post-solve "next activity" flow invokes
+        // this path directly on the UI thread, where two things go wrong:
+        //  1. `getStepSource` performs a blocking network request, tripping the "Network requests from EDT are not
+        //     allowed" assertion and freezing the IDE;
+        //  2. `addProblemsWithTopicWithFiles` shows a modal progress that pumps the event queue, so a YAML reload
+        //     queued by the produced file changes can run against a not-yet-complete course model and report
+        //     "parent for '<task>' was not found" when the user checks the problem.
+        // Running the whole step-opening off the EDT keeps the course model consistent before any reload.
+        val (project, hyperskillCourse) = computeUnderProgress(title = EduCoreBundle.message("hyperskill.loading.problems")) {
+          val stepSource = getStepSource(stepId, request.isLanguageSelectedByUser)
+          val isAndroidEnvRequired = stepSource.framework == EduNames.ANDROID
+          val courseFilter: (Course) -> Boolean = if (isAndroidEnvRequired) ::hasAndroidEnvironment else { _ -> true }
+          val (project, course) = findExistingProject(findProject, request, courseFilter) ?: return@computeUnderProgress null
+          val hyperskillCourse = course as HyperskillCourse
+          hyperskillCourse.addProblemsWithTopicWithFiles(project, stepSource)
+          hyperskillCourse.selectedProblem = stepId
+          project to hyperskillCourse
+        } ?: return null
+
         runInEdt {
           requestFocus()
           navigateToStep(project, hyperskillCourse, stepId)
@@ -223,21 +234,10 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
   ): Pair<Project, Course>? {
     return when (request) {
       is HyperskillOpenProjectStageRequest -> findProject { it.matchesById(request.projectId) }
-      is HyperskillOpenStepWithProjectRequest -> {
-        val hyperskillLanguage = request.language
-        val (languageId, languageVersion) = HyperskillLanguages.getLanguageIdAndVersion(hyperskillLanguage) ?: return null
-
-        findProject {
-          it.matchesById(request.projectId) && it.languageId == languageId && it.languageVersion == languageVersion && courseFilter(it)
-        }
-        ?: findProject { course -> course.isHyperskillProblemsCourse(hyperskillLanguage) }
-      }
-
       is HyperskillOpenStepRequest -> {
         val hyperskillLanguage = request.language
-        val (languageId, languageVersion) = HyperskillLanguages.getLanguageIdAndVersion(hyperskillLanguage) ?: return null
-        findProject { it is HyperskillCourse && it.languageId == languageId && it.languageVersion == languageVersion && courseFilter(it) }
-        ?: findProject { course -> course.isHyperskillProblemsCourse(hyperskillLanguage) && courseFilter(course) }
+        HyperskillLanguages.getLanguageIdAndVersion(hyperskillLanguage) ?: return null
+        findProject { course -> course.isHyperskillProblemsCourse(hyperskillLanguage) && courseFilter(course) }
       }
     }
   }
@@ -253,7 +253,8 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
   fun createHyperskillCourse(
     request: HyperskillOpenRequest,
     hyperskillLanguage: String,
-    hyperskillProject: HyperskillProject
+    hyperskillProject: HyperskillProject,
+    stepSource: HyperskillStepSource? = null
   ): Result<HyperskillCourse, CourseValidationResult> {
     val (languageId, languageVersion) = HyperskillLanguages.getLanguageIdAndVersion(hyperskillLanguage)
                                         ?: return Err(
@@ -265,41 +266,26 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
                                           )
                                         )
 
-    if (!hyperskillProject.useIde) {
-      return Err(ValidationErrorMessageWithHyperlinks(EduCoreBundle.message("hyperskill.project.not.supported", HYPERSKILL_PROJECTS_URL)))
-    }
-
-    val eduEnvironment = hyperskillProject.eduEnvironment
-                         ?: return Err(ValidationErrorMessage("Unsupported environment ${hyperskillProject.environment}"))
-
-    if (request is HyperskillOpenStepWithProjectRequest) {
-      // This condition is about opening e.g. Python problem with chosen Kotlin's project,
-      // otherwise - open Kotlin problem in current Kotlin project itself later below
-      if (hyperskillLanguage != hyperskillProject.language) {
-        return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion))
-      }
-
-      // This is about opening Kotlin problem with currently chosen Android's project
-      // But all Android projects are always Kotlin one's
-      // So it should be possible to open problem in IntelliJ IDEA too e.g. (EDU-4641)
-      if (eduEnvironment == EduNames.ANDROID && hyperskillLanguage == KOTLIN) {
-        return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion))
-      }
-
+    if (request is HyperskillOpenStepRequest) {
+      val loadedStepSource = stepSource ?: error("Step source must be loaded for step request")
       // EDU-5994: if Step has a field 'framework' == 'Android', it should be opened only in Android Studio
       // as an Android project.
-      val stepSource = getStepSource(request.stepId, request.isLanguageSelectedByUser)
-      // When the user has selected project on Hyperskill, the Plugin has to check if it is an Android project,
-      // if not: a new one should be created.
-      if (stepSource.framework == EduNames.ANDROID && eduEnvironment != EduNames.ANDROID) {
+      if (loadedStepSource.framework == EduNames.ANDROID) {
         if (!EduUtilsKt.isAndroidStudio()) {
           return Err(ValidationErrorMessageWithHyperlinks(EduCoreBundle.message("rest.service.android.not.supported")))
         }
         return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion, EduNames.ANDROID))
       }
 
+      return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion))
     }
-    if (request is HyperskillOpenStepRequest) return Ok(HyperskillCourse(hyperskillLanguage, languageId, languageVersion))
+
+    if (!hyperskillProject.useIde) {
+      return Err(ValidationErrorMessageWithHyperlinks(EduCoreBundle.message("hyperskill.project.not.supported", HYPERSKILL_PROJECTS_URL)))
+    }
+
+    val eduEnvironment = hyperskillProject.eduEnvironment
+                         ?: return Err(ValidationErrorMessage("Unsupported environment ${hyperskillProject.environment}"))
 
     // Android projects must be opened in Android Studio only
     if (eduEnvironment == EduNames.ANDROID && !EduUtilsKt.isAndroidStudio()) {
@@ -317,67 +303,64 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     indicator.isIndeterminate = false
     indicator.fraction = 0.0
 
-    if (request is HyperskillOpenStepRequest) {
-      LOG.info("Processing HyperskillOpenStepRequest: stepId=${request.stepId}, language=${request.language}")
-      indicator.text2 = EduCoreBundle.message("hyperskill.loading.step.info")
-      indicator.fraction = 0.2
+    return when (request) {
+      is HyperskillOpenStepRequest -> {
+        LOG.info("Processing HyperskillOpenStepRequest: stepId=${request.stepId}, language=${request.language}")
+        indicator.text2 = EduCoreBundle.message("hyperskill.loading.step.info")
+        indicator.fraction = 0.2
 
-      val newProject = HyperskillProject()
-      val hyperskillLanguage = request.language
-      val hyperskillCourse = createHyperskillCourse(request, hyperskillLanguage, newProject).onError { return Err(it) }
+        val newProject = HyperskillProject()
+        val hyperskillLanguage = request.language
+        val stepSource = getStepSource(request.stepId, request.isLanguageSelectedByUser)
+        val hyperskillCourse = createHyperskillCourse(request, hyperskillLanguage, newProject, stepSource).onError { return Err(it) }
 
-      indicator.fraction = 0.5
-      indicator.text2 = EduCoreBundle.message("hyperskill.loading.problems")
-      hyperskillCourse.addProblemsWithTopicWithFiles(null, getStepSource(request.stepId, request.isLanguageSelectedByUser))
-      hyperskillCourse.selectedProblem = request.stepId
+        hyperskillCourse.validateLanguage(hyperskillLanguage).onError {
+          LOG.warn("Language validation failed: $it")
+          return Err(it)
+        }
 
-      indicator.fraction = 1.0
-      LOG.info("HyperskillOpenStepRequest processed in ${System.currentTimeMillis() - totalStartTime}ms")
-      return Ok(hyperskillCourse)
-    }
-
-    request as HyperskillOpenWithProjectRequestBase
-    LOG.info("Fetching project info for projectId=${request.projectId}")
-    indicator.text = EduCoreBundle.message("hyperskill.loading.project.info")
-    indicator.text2 = EduCoreBundle.message("hyperskill.loading.project.info.details")
-    indicator.fraction = 0.1
-
-    val projectStartTime = System.currentTimeMillis()
-    val hyperskillProject = HyperskillConnector.getInstance().getProject(request.projectId).onError {
-      LOG.warn("Failed to fetch project ${request.projectId}: $it")
-      return Err(ValidationErrorMessage(it))
-    }
-    LOG.info("Project info fetched in ${System.currentTimeMillis() - projectStartTime}ms")
-
-    indicator.fraction = 0.2
-    indicator.text = EduCoreBundle.message("hyperskill.creating.course")
-    indicator.text2 = EduCoreBundle.message("hyperskill.creating.course.details")
-
-    val hyperskillLanguage = if (request is HyperskillOpenStepWithProjectRequest) request.language else hyperskillProject.language
-    LOG.info("Creating course for language: $hyperskillLanguage")
-
-    val hyperskillCourse = createHyperskillCourse(request, hyperskillLanguage, hyperskillProject).onError {
-      LOG.warn("Failed to create course: $it")
-      return Err(it)
-    }
-
-    hyperskillCourse.validateLanguage(hyperskillLanguage).onError {
-      LOG.warn("Language validation failed: $it")
-      return Err(it)
-    }
-
-    indicator.fraction = 0.4
-
-    when (request) {
-      is HyperskillOpenStepWithProjectRequest -> {
-        LOG.info("Loading problems for stepId=${request.stepId}")
-        indicator.text = EduCoreBundle.message("hyperskill.loading.problems")
-        indicator.text2 = EduCoreBundle.message("hyperskill.loading.problems.details")
-        hyperskillCourse.addProblemsWithTopicWithFiles(null, getStepSource(request.stepId, request.isLanguageSelectedByUser))
+        indicator.fraction = 0.5
+        indicator.text2 = EduCoreBundle.message("hyperskill.loading.problems")
+        hyperskillCourse.addProblemsWithTopicWithFiles(null, stepSource)
         hyperskillCourse.selectedProblem = request.stepId
+
+        indicator.fraction = 1.0
+        LOG.info("HyperskillOpenStepRequest processed in ${System.currentTimeMillis() - totalStartTime}ms")
+        Ok(hyperskillCourse)
       }
 
       is HyperskillOpenProjectStageRequest -> {
+        LOG.info("Fetching project info for projectId=${request.projectId}")
+        indicator.text = EduCoreBundle.message("hyperskill.loading.project.info")
+        indicator.text2 = EduCoreBundle.message("hyperskill.loading.project.info.details")
+        indicator.fraction = 0.1
+
+        val projectStartTime = System.currentTimeMillis()
+        val hyperskillProject = HyperskillConnector.getInstance().getProject(request.projectId).onError {
+          LOG.warn("Failed to fetch project ${request.projectId}: $it")
+          return Err(ValidationErrorMessage(it))
+        }
+        LOG.info("Project info fetched in ${System.currentTimeMillis() - projectStartTime}ms")
+
+        indicator.fraction = 0.2
+        indicator.text = EduCoreBundle.message("hyperskill.creating.course")
+        indicator.text2 = EduCoreBundle.message("hyperskill.creating.course.details")
+
+        val hyperskillLanguage = hyperskillProject.language
+        LOG.info("Creating course for language: $hyperskillLanguage")
+
+        val hyperskillCourse = createHyperskillCourse(request, hyperskillLanguage, hyperskillProject).onError {
+          LOG.warn("Failed to create course: $it")
+          return Err(it)
+        }
+
+        hyperskillCourse.validateLanguage(hyperskillLanguage).onError {
+          LOG.warn("Language validation failed: $it")
+          return Err(it)
+        }
+
+        indicator.fraction = 0.4
+
         LOG.info("Loading stages for new project, stageId=${request.stageId}")
         indicator.text = EduCoreBundle.message("hyperskill.loading.stages")
         indicator.text2 = EduCoreBundle.message("hyperskill.loading.stages.details")
@@ -388,12 +371,12 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
         indicator.text = EduCoreBundle.message("hyperskill.creating.project.structure")
         indicator.text2 = EduCoreBundle.message("hyperskill.creating.project.structure.details")
         hyperskillCourse.selectedStage = request.stageId
+
+        indicator.fraction = 1.0
+        LOG.info("getCourse completed in ${System.currentTimeMillis() - totalStartTime}ms total")
+        Ok(hyperskillCourse)
       }
     }
-
-    indicator.fraction = 1.0
-    LOG.info("getCourse completed in ${System.currentTimeMillis() - totalStartTime}ms total")
-    return Ok(hyperskillCourse)
   }
 
   @VisibleForTesting
