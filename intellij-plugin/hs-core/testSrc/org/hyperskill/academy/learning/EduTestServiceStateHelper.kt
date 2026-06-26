@@ -210,7 +210,7 @@ private class HardcodedServiceCollector : TestAwareServiceCollector {
       "org.hyperskill.academy.learning.agreement.UserAgreementSettings",
       "org.hyperskill.academy.learning.newproject.coursesStorage.CoursesStorage",
       "org.hyperskill.academy.learning.stepik.hyperskill.metrics.HyperskillMetricsService",
-      "org.hyperskill.academy.socialMedia.x.XSettings",
+      "org.hyperskill.academy.socialMedia.SocialMediaSettings",
     )
 
     private val projectServices = listOf(
