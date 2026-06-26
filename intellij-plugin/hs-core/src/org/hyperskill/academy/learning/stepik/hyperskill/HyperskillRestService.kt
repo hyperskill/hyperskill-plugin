@@ -154,14 +154,10 @@ open class HyperskillRestService : OAuthRestService(HYPERSKILL) {
     if (!HyperskillConnector.getInstance().isLoggedIn()) {
       error("Attempt to open step for unauthorized user")
     }
-    val projectId = getSelectedProjectIdUnderProgress() ?: return openInIDE(
-      HyperskillOpenStepRequest(
-        stepId,
-        language,
-        isLanguageSelectedByUser
-      ), request, context
-    )
-    return openInIDE(HyperskillOpenStepWithProjectRequest(projectId, stepId, language, isLanguageSelectedByUser), request, context)
+    // Problems are always opened in a separate problems project, so the project selected
+    // on Hyperskill is irrelevant here and must not be requested: an extra API call slows
+    // opening down and its failure would block opening the problem
+    return openInIDE(HyperskillOpenStepRequest(stepId, language, isLanguageSelectedByUser), request, context)
   }
 
   private fun getLanguageSelectedByUser(): Result<String, String> {

@@ -28,7 +28,7 @@ import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillStepSource
 import org.hyperskill.academy.learning.stepik.hyperskill.api.WithPaginationMetaData
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
-import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepWithProjectRequest
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepRequest
 import org.hyperskill.academy.learning.stepik.hyperskill.settings.HyperskillSettings
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 import javax.swing.event.HyperlinkEvent
@@ -229,7 +229,7 @@ private fun openStep(project: Project, task: Task?, nextActivityInfo: NextActivi
       val language = HyperskillLanguages.getRequestLanguage(course.languageId) ?: return
       ProjectOpener.getInstance().open(
         HyperskillOpenInIdeRequestHandler,
-        HyperskillOpenStepWithProjectRequest(course.id, nextStep.id, language)
+        HyperskillOpenStepRequest(nextStep.id, language)
       ).onError {
         logger<ProjectOpener>().warn("Opening the next activity resulted in an error: ${it.message}. The error was ignored and not displayed for the user.")
       }

@@ -205,7 +205,38 @@ object YamlLoader {
         EduCoreBundle.message("yaml.editor.invalid.unexpected.item.type", itemType)
       )
     }
+    if (itemContainer == null) {
+      // TODO(ALT-11025): temporary diagnostics for the "parent for '<task>' was not found" error reported on Check.
+      // Captures which item/dir failed to resolve, the live course structure, and the stack trace of whatever
+      // triggered this reload. Remove once the root cause is confirmed.
+      logParentNotFoundDiagnostics(project, parentDir, course, customContentPath)
+    }
     return itemContainer ?: loadingError(EduCoreBundle.message("yaml.editor.invalid.format.parent.not.found", name))
+  }
+
+  private fun StudyItem.logParentNotFoundDiagnostics(
+    project: Project,
+    parentDir: VirtualFile,
+    course: Course,
+    customContentPath: String
+  ) {
+    val sectionDir = parentDir.parent
+    val structure = course.sections.joinToString("; ") { section ->
+      "section '${section.name}'(presentable='${section.presentableName}') -> [${section.lessons.joinToString(", ") { it.name }}]"
+    }
+    LOG.warn(
+      "ALT-11025 parent not found while reloading YAML:" +
+      " item='$name' type=${this::class.simpleName}" +
+      " parentDir='${parentDir.path}' (name='${parentDir.name}')" +
+      " sectionDir='${sectionDir?.path}' (name='${sectionDir?.name}')" +
+      " course=${course::class.simpleName} name='${course.name}' customContentPath='$customContentPath'" +
+      " courseDirByCustomPath='${project.courseDir.findFileByRelativePath(customContentPath)?.path}'" +
+      " parentDir.getLesson='${parentDir.getLesson(project)?.name}'" +
+      " sectionDir.getSection='${sectionDir?.getSection(project)?.name}'" +
+      " course.topLevelLessons=[${course.lessons.joinToString(", ") { it.name }}]" +
+      " course.sectionsWithLessons=[$structure]",
+      Throwable("loadItem trigger stack (ALT-11025 diagnostics)")
+    )
   }
 
   private fun <T : StudyItem> T.applyChanges(project: Project, deserializedItem: T) {
