@@ -21,6 +21,14 @@ dependencies {
   intellijPlatform {
     intellijIde(baseVersion)
     bundledModules("intellij.platform.vcs.impl")
+    bundledModulesSince(
+      baseVersion, 262,
+      "intellij.platform.smRunner",
+      "intellij.platform.testRunner",
+      "intellij.platform.ui.jcef",
+      "intellij.libraries.jcef",
+      "intellij.platform.sqlite",
+    )
     testIntellijPlugins(commonTestPlugins)
     testIntellijPlatformFramework(project)
   }

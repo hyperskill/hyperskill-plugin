@@ -1,5 +1,7 @@
 import groovy.util.Node
 import groovy.xml.XmlParser
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.jvm.JvmTargetValidationMode
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -34,6 +36,17 @@ kotlin {
   }
 }
 
+if (environmentName.toInt() >= 262) {
+  // IntelliJ Platform 2026.2+ is compiled to Java 25 bytecode, which javac from older JDKs
+  // cannot read ("cannot find symbol" for any platform class in Java sources).
+  // Compile with JDK 25 while keeping the Java 21 language level common for all platform versions.
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(25)
+    }
+  }
+}
+
 // It's not possible to use version catalogs in convention plugin as usual,
 // so we have to get the catalog itself and libraries manually
 // See https://docs.gradle.org/current/userguide/version_catalogs.html#sec:buildsrc-version-catalog
@@ -54,6 +67,11 @@ tasks {
   withType<KotlinCompile> {
     // Prevents unexpected incremental compilation errors after changing value of `environmentName` property
     inputs.property("environmentName", providers.gradleProperty("environmentName"))
+    if (environmentName.toInt() >= 261) {
+      // IntelliJ Platform 2026.1+ contains inline Kotlin APIs compiled to Java 25 bytecode.
+      compilerOptions.jvmTarget = JvmTarget.JVM_25
+      jvmTargetValidationMode.set(JvmTargetValidationMode.WARNING)
+    }
   }
 
   processResources {

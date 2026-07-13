@@ -14,6 +14,17 @@ import org.hyperskill.academy.learning.stepik.StepikUser
 import org.hyperskill.academy.learning.stepik.StepikUserInfo
 import org.jdom.Element
 
+// Since 2026.2 JCEF is provided by the separate user-disableable `com.intellij.modules.jcef` plugin,
+// so its classes may be completely missing from the classpath
+fun isJCEFSupported(): Boolean {
+  return try {
+    JBCefApp.isSupported()
+  }
+  catch (e: LinkageError) {
+    false
+  }
+}
+
 @State(name = "HsSettings", storages = [Storage("hyperskill.xml")])
 class EduSettings : PersistentStateComponent<Element> {
   @Transient
@@ -80,7 +91,7 @@ class EduSettings : PersistentStateComponent<Element> {
   }
 
   private fun initialJavaUiLibrary(): JavaUILibrary {
-    return if (JBCefApp.isSupported()) {
+    return if (isJCEFSupported()) {
       JavaUILibrary.JCEF
     }
     else {

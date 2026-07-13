@@ -5,6 +5,7 @@ plugins {
 dependencies {
   intellijPlatform {
     intellijIde(ideaVersion)
+    bundledModulesSince(ideaVersion, 262, "intellij.platform.smRunner", "intellij.platform.testRunner")
 
     intellijPlugins(javaScriptPlugins)
   }

@@ -1,7 +1,6 @@
 package org.hyperskill.academy.python.learning.newproject
 
 import com.intellij.openapi.application.WriteAction
-import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
@@ -31,22 +30,12 @@ open class PyCourseProjectGenerator(
     onConfigurationFinished: () -> Unit
   ) {
     var sdk = projectSettings.sdk
-    if (sdk is PySdkToInstall) {
-      val selectedSdk = sdk
-
-      @Suppress("UnstableApiUsage")
-      val installedSdk = invokeAndWaitIfNeeded {
-        selectedSdk.install(null) {
-          detectSystemWideSdks(null, emptyList())
-        }.getOrElse {
-          LOG.warn(it)
-          null
-        }
-      }
-      if (installedSdk != null) {
-        createAndAddVirtualEnv(project, projectSettings, installedSdk)
-        sdk = projectSettings.sdk
-      }
+    // Platform-dependent: installs Python first if the selected SDK is an "install Python" suggestion.
+    // See `installSdkIfSuggested` implementations in `branches/<version>/src`.
+    val installedSdk = installSdkIfSuggested(sdk)
+    if (installedSdk != null) {
+      createAndAddVirtualEnv(project, projectSettings, installedSdk)
+      sdk = projectSettings.sdk
     }
     else if (sdk is PySdkToCreateVirtualEnv) {
       val homePath = sdk.homePath ?: error("Home path is not passed during fake python sdk creation")

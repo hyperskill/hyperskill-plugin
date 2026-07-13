@@ -1,3 +1,16 @@
+pluginManagement {
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
+  }
+}
+
+plugins {
+  // Allows Gradle to automatically download JDKs required by toolchains (e.g. JDK 25 for platform 2026.2+)
+  id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 rootProject.name = "hyperskill-plugin"
 include(
   "hs-edu-format",
@@ -36,13 +49,5 @@ buildCache {
   local {
     isEnabled = true
     directory = File(rootDir, ".gradle/build-cache")
-  }
-}
-
-pluginManagement {
-  repositories {
-    mavenCentral()
-    gradlePluginPortal()
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
   }
 }

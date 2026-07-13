@@ -664,9 +664,6 @@
     <inspection_tool class="PatternValidation" enabled="true" level="Strong Warning" enabled_by_default="true">
       <option name="CHECK_NON_CONSTANT_VALUES" value="true" />
     </inspection_tool>
-    <inspection_tool class="PluginXmlDynamicPlugin" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="highlightNonDynamicEPUsages" value="true" />
-    </inspection_tool>
     <inspection_tool class="PointcutMethodStyleInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="PointlessArithmeticExpression" enabled="true" level="Strong Warning" enabled_by_default="true">
       <option name="m_ignoreExpressionsContainingConstants" value="true" />

@@ -6,6 +6,7 @@ dependencies {
   intellijPlatform {
     val ideVersion = if (!isIdeaIDE && !isClionIDE) ideaVersion else baseVersion
     intellijIde(ideVersion)
+    bundledModulesSince(ideVersion, 262, "intellij.platform.smRunner", "intellij.platform.testRunner")
 
     intellijPlugins(rustPlugins)
   }

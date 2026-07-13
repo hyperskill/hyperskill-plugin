@@ -6,6 +6,19 @@
     <plugin id="com.intellij.modules.vcs"/>
   </dependencies>
 
+  <!-- Since 2026.2 JCEF lives in a separate user-disableable plugin (`com.intellij.modules.jcef`).
+       The optional dependency gives access to its classes when it's enabled,
+       while JCEF-based UI gracefully degrades to Swing when it's not.
+       On 2025.2/2025.3 the id doesn't exist and the dependency is skipped (JCEF is part of the core there),
+       on 2026.1 it resolves to a core plugin alias. -->
+  <depends optional="true">com.intellij.modules.jcef</depends>
+
+  <!-- Platform modules extracted from the core in newer IDE versions.
+       The included file exists only in `branches/<version>/resources` that need extra module dependencies. -->
+  <xi:include href="/META-INF/platform-modules.xml">
+    <xi:fallback/>
+  </xi:include>
+
   <resource-bundle>messages.EduCoreBundle</resource-bundle>
 
   <applicationListeners>
