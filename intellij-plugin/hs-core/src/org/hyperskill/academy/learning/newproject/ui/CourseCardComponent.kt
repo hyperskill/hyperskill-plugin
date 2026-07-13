@@ -22,7 +22,7 @@ private const val CARD_HEIGHT = 70
 private const val LOGO_SIZE = 40
 
 private val HOVER_COLOR: Color = JBColor.namedColor("SelectCourse.CourseCard.hoverBackground", 0xF5F9FF, 0x282A2C)
-private val SELECTION_COLOR: Color = JBColor.namedColor("SelectCourse.CourseCard.hoverBackground", 0xE9EEF5, 0x36393B)
+private val SELECTION_COLOR: Color = JBColor.namedColor("SelectCourse.CourseCard.selectedBackground", 0xE9EEF5, 0x36393B)
 val GRAY_COLOR: Color = JBColor.namedColor("SelectCourse.grayForeground", JBColor(Gray._120, Gray._135))
 
 open class CourseCardComponent(val course: Course) : JPanel(BorderLayout()) {
