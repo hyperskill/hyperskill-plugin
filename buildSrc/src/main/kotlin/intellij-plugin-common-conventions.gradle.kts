@@ -36,10 +36,13 @@ kotlin {
   }
 }
 
-if (environmentName.toInt() >= 262) {
-  // IntelliJ Platform 2026.2+ is compiled to Java 25 bytecode, which javac from older JDKs
-  // cannot read ("cannot find symbol" for any platform class in Java sources).
-  // Compile with JDK 25 while keeping the Java 21 language level common for all platform versions.
+if (environmentName.toInt() >= 261) {
+  // For 2026.1+ our Kotlin is compiled with `jvmTarget = 25` (see the KotlinCompile block below),
+  // so our own Kotlin output is Java 25 bytecode. javac from older JDKs cannot read Java 25 class
+  // files ("class file has wrong version 69.0, should be 65.0"), which breaks any module whose
+  // Java sources reference Kotlin-compiled classes (e.g. hs-Python). So the Java toolchain must
+  // match the Kotlin target and use JDK 25 as well, while keeping the Java 21 language level
+  // (sourceCompatibility/targetCompatibility) common for all platform versions.
   java {
     toolchain {
       languageVersion = JavaLanguageVersion.of(25)
