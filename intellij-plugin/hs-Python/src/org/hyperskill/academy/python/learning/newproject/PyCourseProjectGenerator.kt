@@ -55,7 +55,7 @@ open class PyCourseProjectGenerator(
     super.afterProjectGenerated(project, projectSettings, openCourseParams, onConfigurationFinished)
   }
 
-  private fun createAndAddVirtualEnv(project: Project, settings: PyProjectSettings, baseSdk: PyDetectedSdk) {
+  private fun createAndAddVirtualEnv(project: Project, settings: PyProjectSettings, baseSdk: Sdk) {
     val virtualEnvPath = project.basePath + "/.idea/VirtualEnvironment"
     val existingSdks = PyConfigurableInterpreterList.getInstance(null).allPythonSdks
     val module = ModuleManager.getInstance(project).sortedModules.firstOrNull()

@@ -180,7 +180,7 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
           val flavor = PythonSdkFlavor.getFlavor(this)
           homePath?.let {
             flavor?.getLanguageLevel(it)
-          } ?: LanguageLevel.getDefault()
+          } ?: versionString?.let(LanguageLevel::fromPythonVersion) ?: LanguageLevel.getDefault()
         }
       }
     }

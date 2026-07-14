@@ -8,6 +8,14 @@ dependencies {
     intellijPlugins(csharpPlugins)
 
     bundledModule("intellij.rider")
+    // Since 2026.2 Rider's core APIs are split into separate layout modules instead of
+    // being exposed transitively by `intellij.rider`.
+    bundledModulesSince(
+      riderVersion, 262,
+      "intellij.rd.client",
+      "intellij.rider.languages",
+      "intellij.rider.rdclient.dotnet",
+    )
   }
 
   implementation(project(":intellij-plugin:hs-core"))
