@@ -7,6 +7,7 @@ dependencies {
     // needed to load `org.toml.lang plugin` for Python plugin in tests
     val ideVersion = if (isRiderIDE) ideaVersion else baseVersion
     intellijIde(ideVersion)
+    bundledModulesSince(ideVersion, 262, "intellij.platform.smRunner", "intellij.platform.testRunner")
 
     intellijPlugins(pythonPlugin)
     testIntellijPlugins(tomlPlugin)

@@ -96,17 +96,18 @@ val Project.rustPlugins: List<String>
   )
 
 val Project.cppPlugins: List<String>
-  get() = listOfNotNull(
-    baseVersion.toTypeWithVersion()
-      .version
-      .takeUnless { /* TODO remove with 252 */ it.startsWith("2025.2") }
-      ?.let { "com.intellij.cmake" },
-    "com.intellij.cidr.lang",
-    "com.intellij.clion",
-    "com.intellij.nativeDebug",
-    "org.jetbrains.plugins.clion.test.google",
-    "org.jetbrains.plugins.clion.test.catch"
-  )
+  get() {
+    val clionBranch = platformBranch(clionVersion)
+    return listOfNotNull(
+      "com.intellij.cmake".takeUnless { /* TODO remove with 252 */ clionBranch == 252 },
+      // The classic language engine was removed from the CLion distribution in 2026.2 (Nova engine only)
+      "com.intellij.cidr.lang".takeIf { clionBranch < 262 },
+      "com.intellij.clion",
+      "com.intellij.nativeDebug",
+      "org.jetbrains.plugins.clion.test.google",
+      "org.jetbrains.plugins.clion.test.catch"
+    )
+  }
 
 val Project.sqlPlugins: List<String>
   get() = listOf(
@@ -163,6 +164,32 @@ fun IntelliJPlatformExtension.PluginVerification.Ides.intellijIde(versionWithCod
   create(type, version) {
     useInstaller.set(false)
     useCache.set(true)
+  }
+}
+
+// Branch number of an IDE dependency notation, e.g. "IU-262.8665-EAP-CANDIDATE-SNAPSHOT" -> 262,
+// "CL-262-EAP-SNAPSHOT" -> 262, "RD-2026.1.2" -> 261, "IU-2025.3" -> 253
+fun platformBranch(versionWithCode: String): Int {
+  val version = versionWithCode.toTypeWithVersion().version
+  return if (version.startsWith("20")) {
+    val parts = version.split('.')
+    (parts[0].substring(2) + parts[1].takeWhile(Char::isDigit)).toInt()
+  }
+  else {
+    version.substringBefore('.').substringBefore('-').toInt()
+  }
+}
+
+// Since 2026.2 (262), some parts of the platform were extracted from the core classpath
+// into separate bundled plugins/modules and require explicit dependencies to compile:
+// - SM test runner -> `intellij.testRunner.plugin` plugin, modules `intellij.platform.smRunner` and `intellij.platform.testRunner`
+// - JCEF -> `com.intellij.modules.jcef` plugin, modules `intellij.platform.ui.jcef` and `intellij.libraries.jcef`
+// - SQLite -> `intellij.platform.sqlite` platform module
+// These module names don't exist in the layout of older IDE versions, so they should be added
+// only when the IDE the module is compiled against is new enough.
+fun IntelliJPlatformDependenciesExtension.bundledModulesSince(ideVersionWithCode: String, sinceBranch: Int, vararg modules: String) {
+  if (platformBranch(ideVersionWithCode) >= sinceBranch) {
+    bundledModules(*modules)
   }
 }
 

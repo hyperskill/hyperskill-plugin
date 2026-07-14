@@ -170,8 +170,9 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
 
         is PyDetectedSdk -> {
           // PyDetectedSdk has empty `sdk.versionString`, so we should manually get language level from homePath if it exists
+          // `PythonSdkFlavor.getFlavor` is used instead of the `sdkFlavor` extension because the latter is internal since 262
           homePath?.let {
-            sdkFlavor.getLanguageLevel(it)
+            PythonSdkFlavor.getFlavor(this)?.getLanguageLevel(it)
           } ?: LanguageLevel.getDefault()
         }
 
@@ -179,7 +180,7 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
           val flavor = PythonSdkFlavor.getFlavor(this)
           homePath?.let {
             flavor?.getLanguageLevel(it)
-          } ?: LanguageLevel.getDefault()
+          } ?: versionString?.let(LanguageLevel::fromPythonVersion) ?: LanguageLevel.getDefault()
         }
       }
     }

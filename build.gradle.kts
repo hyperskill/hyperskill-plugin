@@ -7,9 +7,9 @@ plugins {
 
 idea {
   project {
-    jdkName = "21"
-    languageLevel = IdeaLanguageLevel("11")
     vcs = "Git"
+    jdkName = "25"
+    languageLevel = IdeaLanguageLevel("25")
   }
   module {
     excludeDirs.add(file("dependencies"))

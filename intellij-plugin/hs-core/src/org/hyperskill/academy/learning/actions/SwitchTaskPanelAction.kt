@@ -8,12 +8,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.jcef.JBCefApp
 import org.hyperskill.academy.learning.EduSettings
 import org.hyperskill.academy.learning.EduUtilsKt.isEduProject
 import org.hyperskill.academy.learning.JavaUILibrary
 import org.hyperskill.academy.learning.JavaUILibrary.JCEF
 import org.hyperskill.academy.learning.JavaUILibrary.SWING
+import org.hyperskill.academy.learning.isJCEFSupported
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowFactory
 import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
@@ -69,7 +69,7 @@ class SwitchTaskPanelAction : DumbAwareAction(EduCoreBundle.lazyMessage("action.
 
     private fun collectAvailableJavaUiLibraries(): List<JavaUILibrary> {
       val availableJavaUiLibraries = mutableListOf(SWING)
-      if (JBCefApp.isSupported()) {
+      if (isJCEFSupported()) {
         availableJavaUiLibraries += JCEF
       }
       return availableJavaUiLibraries

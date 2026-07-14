@@ -213,6 +213,7 @@
     <inspection_tool class="EqualsWithItself" enabled="true" level="Strong Warning" enabled_by_default="true">
       <scope name="Tests" level="Strong Warning" enabled="false" />
     </inspection_tool>
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ExceptionCaughtLocallyJS" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ExcessiveLambdaUsage" enabled="true" level="Strong Warning" enabled_by_default="true" />
     <inspection_tool class="ExcessiveRangeCheck" enabled="true" level="Strong Warning" enabled_by_default="true" />
@@ -663,9 +664,6 @@
     <inspection_tool class="ParameterCanBeLocal" enabled="true" level="Strong Warning" enabled_by_default="true" />
     <inspection_tool class="PatternValidation" enabled="true" level="Strong Warning" enabled_by_default="true">
       <option name="CHECK_NON_CONSTANT_VALUES" value="true" />
-    </inspection_tool>
-    <inspection_tool class="PluginXmlDynamicPlugin" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="highlightNonDynamicEPUsages" value="true" />
     </inspection_tool>
     <inspection_tool class="PointcutMethodStyleInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="PointlessArithmeticExpression" enabled="true" level="Strong Warning" enabled_by_default="true">
