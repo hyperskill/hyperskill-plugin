@@ -120,10 +120,11 @@ class CourseGroupModel {
   private inner class HoverMouseHandler : MouseAdapter() {
 
     override fun mouseExited(event: MouseEvent) {
+      val hadHoveredCard = hoveredCard != null
       hoveredCard?.setSelection(false)
       hoveredCard?.onHoverEnded()
 
-      if (hoveredCard == null) {
+      if (!hadHoveredCard) {
         selectedCard?.onHoverEnded()
       }
       hoveredCard = null
@@ -132,7 +133,20 @@ class CourseGroupModel {
     override fun mouseMoved(event: MouseEvent) {
       val cardComponent = getCourseCard(event)
       if (cardComponent != selectedCard) {
+        if (hoveredCard !== cardComponent) {
+          val previousHoveredCard = hoveredCard
+          previousHoveredCard?.setSelection(false)
+          previousHoveredCard?.onHoverEnded()
+          if (previousHoveredCard == null) {
+            selectedCard?.onHoverEnded()
+          }
+        }
         hoveredCard = cardComponent
+      }
+      else if (hoveredCard != null) {
+        hoveredCard?.setSelection(false)
+        hoveredCard?.onHoverEnded()
+        hoveredCard = null
       }
 
       cardComponent?.onHover(cardComponent == selectedCard)

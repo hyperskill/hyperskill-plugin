@@ -9,7 +9,7 @@
       "source" : "org.hyperskill.academy.learning.newproject.ui.CourseCardComponent"
     },
     {
-      "key" : "SelectCourse.CourseCard.hoverBackground",
+      "key" : "SelectCourse.CourseCard.selectedBackground",
       "description" : "The background color for a selected CourseCardComponent in Select Course dialog",
       "deprecated" : false,
       "source" : "org.hyperskill.academy.learning.newproject.ui.CourseCardComponent"
