@@ -173,7 +173,7 @@ fun platformBranch(versionWithCode: String): Int {
   val version = versionWithCode.toTypeWithVersion().version
   return if (version.startsWith("20")) {
     val parts = version.split('.')
-    (parts[0].substring(2) + parts[1]).toInt()
+    (parts[0].substring(2) + parts[1].takeWhile(Char::isDigit)).toInt()
   }
   else {
     version.substringBefore('.').substringBefore('-').toInt()

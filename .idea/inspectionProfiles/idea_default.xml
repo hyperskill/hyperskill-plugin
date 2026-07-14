@@ -213,6 +213,7 @@
     <inspection_tool class="EqualsWithItself" enabled="true" level="Strong Warning" enabled_by_default="true">
       <scope name="Tests" level="Strong Warning" enabled="false" />
     </inspection_tool>
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ExceptionCaughtLocallyJS" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ExcessiveLambdaUsage" enabled="true" level="Strong Warning" enabled_by_default="true" />
     <inspection_tool class="ExcessiveRangeCheck" enabled="true" level="Strong Warning" enabled_by_default="true" />

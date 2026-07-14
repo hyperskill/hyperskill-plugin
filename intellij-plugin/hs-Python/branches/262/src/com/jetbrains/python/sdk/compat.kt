@@ -4,6 +4,7 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.python.sdk.skeleton.PySkeletonUtil
@@ -33,10 +34,20 @@ val Sdk.sdkSeemsValid: Boolean
   get() = isSdkSeemsValid
 
 /**
- * TODO: 262 — `PySdkToInstall` and `getSdksToInstall()` became internal in the Python plugin,
- * so "install Python" SDK suggestions are not offered on this platform.
+ * In 262 installable Python interpreters are no longer SDK instances and their API is internal.
+ * Adapt them to the SDK-based course wizard while keeping all access to the internal API in the
+ * Java bridge (Java does not enforce Kotlin's module-level `internal` visibility).
  */
-fun getSdksToInstall(): List<Sdk> = emptyList()
+fun getSdksToInstall(): List<Sdk> = PythonSdkInstallBridge.getSuggestions().map(::PySdkToInstallCompat)
+
+internal class PySdkToInstallCompat(
+  val suggestion: PythonSdkInstallBridge.Suggestion
+) : ProjectJdkImpl(
+  suggestion.name,
+  PythonSdkType.getInstance(),
+  null,
+  suggestion.version,
+)
 
 internal fun Sdk.adminPermissionsNeeded(): Boolean {
   val pathToCheck = sitePackagesDirectory?.path ?: homePath ?: return false
