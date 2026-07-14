@@ -5,7 +5,7 @@ import com.jetbrains.rd.ide.model.RdPath
 import com.jetbrains.rider.model.RdUnitTestSession
 import com.jetbrains.rider.projectView.SolutionDescriptionFactory
 
-// In 253, SolutionDescriptionFactory.existing requires a displayName parameterфццццццццццццццццццццццць
+// In 253, SolutionDescriptionFactory.existing requires a displayName parameter
 internal fun createExistingSolutionDescription(solutionPath: String) =
   SolutionDescriptionFactory.existing(solutionPath, displayName = null)
 
