@@ -11,7 +11,7 @@
        while JCEF-based UI gracefully degrades to Swing when it's not.
        On 2025.2/2025.3 the id doesn't exist and the dependency is skipped (JCEF is part of the core there),
        on 2026.1 it resolves to a core plugin alias. -->
-  <depends optional="true">com.intellij.modules.jcef</depends>
+  <depends optional="true" config-file="jcef-support.xml">com.intellij.modules.jcef</depends>
 
   <!-- Platform modules extracted from the core in newer IDE versions.
        The included file exists only in `branches/<version>/resources` that need extra module dependencies. -->

@@ -36,8 +36,8 @@ kotlin {
   }
 }
 
-if (environmentName.toInt() >= 261) {
-  // For 2026.1+ our Kotlin is compiled with `jvmTarget = 25` (see the KotlinCompile block below),
+if (environmentName.toInt() >= 262) {
+  // For 2026.2+ our Kotlin is compiled with `jvmTarget = 25` (see the KotlinCompile block below),
   // so our own Kotlin output is Java 25 bytecode. javac from older JDKs cannot read Java 25 class
   // files ("class file has wrong version 69.0, should be 65.0"), which breaks any module whose
   // Java sources reference Kotlin-compiled classes (e.g. hs-Python). So the Java toolchain must
@@ -70,8 +70,8 @@ tasks {
   withType<KotlinCompile> {
     // Prevents unexpected incremental compilation errors after changing value of `environmentName` property
     inputs.property("environmentName", providers.gradleProperty("environmentName"))
-    if (environmentName.toInt() >= 261) {
-      // IntelliJ Platform 2026.1+ contains inline Kotlin APIs compiled to Java 25 bytecode.
+    if (environmentName.toInt() >= 262) {
+      // IntelliJ Platform 2026.2+ contains inline Kotlin APIs compiled to Java 25 bytecode.
       compilerOptions.jvmTarget = JvmTarget.JVM_25
       jvmTargetValidationMode.set(JvmTargetValidationMode.WARNING)
     }
