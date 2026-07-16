@@ -1,5 +1,6 @@
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
+import java.util.zip.ZipFile
 
 plugins {
   id("intellij-plugin-common-conventions")
@@ -34,6 +35,31 @@ afterEvaluate {
       archiveBaseName.set(descriptorName)
     }
   }
+}
+
+val verifyModuleDescriptor = tasks.register("verifyModuleDescriptor") {
+  val composedJar = tasks.named<Jar>("composedJar")
+  inputs.file(composedJar.flatMap { it.archiveFile })
+  doLast {
+    val archive = composedJar.get().archiveFile.get().asFile
+    ZipFile(archive).use { zip ->
+      val descriptors = zip.entries().asSequence().filter { entry ->
+        !entry.isDirectory && '/' !in entry.name && entry.name.endsWith(".xml")
+      }
+      for (descriptor in descriptors) {
+        val content = zip.getInputStream(descriptor).bufferedReader().use { it.readText() }
+        check(!Regex("""<\s*xi:include\b""").containsMatchIn(content)) {
+          "Module descriptor `${archive.name}!/${descriptor.name}` contains an XInclude. " +
+            "IntelliJ loads descriptors from separate module JARs without an XInclude path resolver; " +
+            "generate a flattened descriptor instead."
+        }
+      }
+    }
+  }
+}
+
+tasks.named<Jar>("composedJar") {
+  finalizedBy(verifyModuleDescriptor)
 }
 
 fun findModuleDescriptorName(): String? {
