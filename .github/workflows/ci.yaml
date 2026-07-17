@@ -17,9 +17,8 @@ jobs:
     strategy:
       matrix:
         environmentName:
-          - 252
-          - 253
           - 261
+          - 262
       fail-fast: false
     steps:
       - name: Checkout code
