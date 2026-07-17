@@ -2,6 +2,8 @@
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="com.intellij.modules.python"/>
+    <!-- Python 2026.2+ content-module dependency is inserted here by build.gradle.kts. -->
+    <!-- PYTHON_PLATFORM_MODULE_DEPENDENCIES -->
   </dependencies>
 
   <extensions defaultExtensionNs="com.intellij">

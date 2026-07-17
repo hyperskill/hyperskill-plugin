@@ -82,9 +82,11 @@ class EduProjectActivity : ProjectActivity {
 
     SyncChangesStateManager.getInstance(project).updateSyncChangesState(course)
 
-    writeAction {
-      course.visitTasks {
-        setHighlightLevelForFilesInTask(it, project)
+    withContext(Dispatchers.EDT) {
+      writeAction {
+        course.visitTasks {
+          setHighlightLevelForFilesInTask(it, project)
+        }
       }
     }
   }

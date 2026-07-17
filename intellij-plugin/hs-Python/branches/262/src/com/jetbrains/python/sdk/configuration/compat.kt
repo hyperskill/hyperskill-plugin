@@ -16,12 +16,16 @@ import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.platform.ide.progress.ModalTaskOwner
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
+import com.intellij.python.venv.sdk.flavors.VirtualEnvSdkFlavor
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.jetbrains.python.packaging.PyPackageManagers
 import com.jetbrains.python.packaging.PyTargetEnvCreationManager
+import com.jetbrains.python.sdk.PythonSdkAdditionalData
 import com.jetbrains.python.sdk.PythonSdkType
 import com.jetbrains.python.sdk.baseDir
 import com.jetbrains.python.sdk.excludeInnerVirtualEnv
+import com.jetbrains.python.sdk.flavors.PyFlavorAndData
+import com.jetbrains.python.sdk.flavors.PyFlavorData
 import com.jetbrains.python.sdk.impl.PySdkBundle
 import com.jetbrains.python.sdk.setAssociationToModule
 import com.jetbrains.python.sdk.setAssociationToPath
@@ -108,5 +112,6 @@ private fun createSdkByGenerateTask(
   val homePath = ProgressManager.getInstance().run(generateSdkHomePath)
   val homeFile = StandardFileSystems.local().refreshAndFindFileByPath(homePath)
                  ?: throw ExecutionException("Python interpreter is not found at $homePath")
-  return SdkConfigurationUtil.setupSdk(existingSdks.toTypedArray(), homeFile, PythonSdkType.getInstance(), null, null)
+  val additionalData = PythonSdkAdditionalData(PyFlavorAndData(PyFlavorData.Empty, VirtualEnvSdkFlavor.getInstance()))
+  return SdkConfigurationUtil.setupSdk(existingSdks.toTypedArray(), homeFile, PythonSdkType.getInstance(), additionalData, null)
 }

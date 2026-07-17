@@ -76,10 +76,12 @@ project(':util') {
     }
 }
 
+def utilProject = rootProject.project(':util')
+
 configure(subprojects.findAll { it.name != 'util' }) {
     dependencies {
-        testImplementation project(':util').sourceSets.main.output
-        testImplementation project(':util').sourceSets.test.output
+        testImplementation utilProject.sourceSets.main.output
+        testImplementation utilProject.sourceSets.test.output
     }
 }
 

@@ -26,7 +26,7 @@ fun isJCEFSupported(): Boolean {
 }
 
 @State(name = "HsSettings", storages = [Storage("hyperskill.xml")])
-class EduSettings : PersistentStateComponent<Element> {
+class EduSettings(private val jcefSupportedOverride: Boolean? = null) : PersistentStateComponent<Element> {
   @Transient
   @Volatile
   private var _user: StepikUser? = null
@@ -91,7 +91,7 @@ class EduSettings : PersistentStateComponent<Element> {
   }
 
   private fun initialJavaUiLibrary(): JavaUILibrary {
-    return if (isJCEFSupported()) {
+    return if (jcefSupportedOverride ?: isJCEFSupported()) {
       JavaUILibrary.JCEF
     }
     else {

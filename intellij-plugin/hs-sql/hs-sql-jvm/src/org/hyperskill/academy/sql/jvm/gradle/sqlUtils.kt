@@ -17,6 +17,7 @@ import com.intellij.database.dataSource.artifacts.DatabaseArtifactManager
 import com.intellij.database.model.DasDataSource
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.actions.ConfigurationContext
+import com.intellij.lang.Language
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.progress.ProgressIndicator
@@ -29,7 +30,7 @@ import com.intellij.platform.util.progress.reportRawProgress
 import com.intellij.psi.PsiManager
 import com.intellij.sql.SqlFileType
 import com.intellij.sql.dialects.SqlDialectMappings
-import com.intellij.sql.dialects.h2.H2Dialect
+import com.intellij.sql.dialects.SqlLanguageDialect
 import com.intellij.util.containers.addIfNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
@@ -45,6 +46,7 @@ import org.hyperskill.academy.sql.jvm.gradle.compat.DatabaseArtifactLoaderCompat
 import org.jetbrains.annotations.VisibleForTesting
 
 private val LOG = Logger.getInstance("#org.hyperskill.academy.sql.jvm.gradle.SqlUtils")
+private const val H2_DIALECT_ID = "H2"
 
 fun Task.findDataSource(project: Project): LocalDataSource? {
   val url = databaseUrl(project)
@@ -307,8 +309,17 @@ private fun setSqlMappingForInitScripts(project: Project, tasks: List<Task>) {
   for (task in tasks) {
     val initSql = task.findInitSqlFile(project) ?: continue
     // Dependency on concrete database kind/SQL dialect
-    SqlDialectMappings.getInstance(project).setMapping(initSql, H2Dialect.INSTANCE)
+    setH2DialectMapping(project, initSql)
   }
+}
+
+internal fun setH2DialectMapping(project: Project, file: VirtualFile?) {
+  val h2Dialect = Language.findLanguageByID(H2_DIALECT_ID) as? SqlLanguageDialect
+  if (h2Dialect == null) {
+    LOG.warn("Can't find SQL dialect by `$H2_DIALECT_ID` id")
+    return
+  }
+  SqlDialectMappings.getInstance(project).setMapping(file, h2Dialect)
 }
 
 private fun collectInitializeConfigurations(project: Project, tasks: List<Task>): List<RunnerAndConfigurationSettings> {

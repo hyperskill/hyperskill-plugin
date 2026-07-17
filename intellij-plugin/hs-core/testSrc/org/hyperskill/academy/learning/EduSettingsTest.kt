@@ -1,15 +1,12 @@
 package org.hyperskill.academy.learning
 
-import com.intellij.ui.jcef.JBCefApp
-import io.mockk.every
-import io.mockk.mockkStatic
 import org.junit.Test
 
 class EduSettingsTest : EduSettingsServiceTestBase() {
 
   @Test
-  fun `test serialization with JCEF`() = withJCEFSupported(true) {
-    val settings = EduSettings()
+  fun `test serialization with JCEF`() {
+    val settings = EduSettings(jcefSupportedOverride = true)
     settings.checkState(
       """
       <EduSettings>
@@ -21,8 +18,8 @@ class EduSettingsTest : EduSettingsServiceTestBase() {
   }
 
   @Test
-  fun `test serialization with Swing`() = withJCEFSupported(false) {
-    val settings = EduSettings()
+  fun `test serialization with Swing`() {
+    val settings = EduSettings(jcefSupportedOverride = false)
     settings.checkState(
       """
       <EduSettings>
@@ -34,8 +31,8 @@ class EduSettingsTest : EduSettingsServiceTestBase() {
   }
 
   @Test
-  fun `test set Swing explicitly settings`() = withJCEFSupported(true) {
-    val settings = EduSettings()
+  fun `test set Swing explicitly settings`() {
+    val settings = EduSettings(jcefSupportedOverride = true)
     settings.setJavaUiLibrary(JavaUILibrary.SWING, true)
     settings.checkState(
       """
@@ -48,8 +45,8 @@ class EduSettingsTest : EduSettingsServiceTestBase() {
   }
 
   @Test
-  fun `test switch to JCEF from Swing`() = withJCEFSupported(true) {
-    val settings = EduSettings()
+  fun `test switch to JCEF from Swing`() {
+    val settings = EduSettings(jcefSupportedOverride = true)
     settings.loadStateAndCheck(
       """
       <EduSettings>
@@ -66,8 +63,8 @@ class EduSettingsTest : EduSettingsServiceTestBase() {
   }
 
   @Test
-  fun `test switch to Swing from JCEF`() = withJCEFSupported(false) {
-    val settings = EduSettings()
+  fun `test switch to Swing from JCEF`() {
+    val settings = EduSettings(jcefSupportedOverride = false)
     settings.loadStateAndCheck(
       """
       <EduSettings>
@@ -84,8 +81,8 @@ class EduSettingsTest : EduSettingsServiceTestBase() {
   }
 
   @Test
-  fun `test preserve user choice`() = withJCEFSupported(true) {
-    val settings = EduSettings()
+  fun `test preserve user choice`() {
+    val settings = EduSettings(jcefSupportedOverride = true)
     settings.loadStateAndCheck(
       """
       <EduSettings>
@@ -101,10 +98,4 @@ class EduSettingsTest : EduSettingsServiceTestBase() {
     )
   }
 
-  private fun withJCEFSupported(value: Boolean, action: () -> Unit) {
-    mockkStatic(JBCefApp::class) {
-      every { JBCefApp.isSupported() } returns value
-      action()
-    }
-  }
 }
