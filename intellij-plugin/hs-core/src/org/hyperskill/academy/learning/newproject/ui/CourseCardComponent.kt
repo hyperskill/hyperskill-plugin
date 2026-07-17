@@ -106,7 +106,7 @@ open class CourseCardComponent(val course: Course) : JPanel(BorderLayout()) {
   open fun onHoverEnded() {}
 
   private fun scrollToVisible() {
-    val parent = parent as JComponent
+    val parent = parent as? JComponent ?: return
     val bounds = bounds
     if (!parent.visibleRect.contains(bounds)) {
       parent.scrollRectToVisible(bounds)

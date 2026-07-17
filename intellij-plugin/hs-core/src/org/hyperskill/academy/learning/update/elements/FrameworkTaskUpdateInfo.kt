@@ -216,8 +216,10 @@ data class FrameworkTaskUpdateInfo(
     }
 
     if (virtualChangedFile != null) {
-      writeAction {
+      withContext(Dispatchers.EDT) {
         FileDocumentManager.getInstance().reloadFiles(virtualChangedFile)
+      }
+      writeAction {
         ReadOnlyAttributeUtil.setReadOnlyAttribute(virtualChangedFile, false)
       }
     }

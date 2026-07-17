@@ -123,11 +123,17 @@ val Project.csharpPlugins: List<String>
 // Plugins which we add to tests for all modules.
 // It's the most common plugins which affect the behavior of the plugin code
 val Project.commonTestPlugins: List<String>
-  get() = listOf(
-    imagesPlugin, // adds `svg` file type and makes IDE consider .svg files as text ones
-    yamlPlugin,   // makes IDE consider .yaml files as text ones and affects formatting of yaml files
-    jsonPlugin,   // dependency of a lot of other bundled plugin
-  )
+  get() = buildList {
+    add(imagesPlugin) // adds `svg` file type and makes IDE consider .svg files as text ones
+    add(yamlPlugin)   // makes IDE consider .yaml files as text ones and affects formatting of yaml files
+    add(jsonPlugin)   // dependency of a lot of other bundled plugin
+    if (environmentName.toInt() >= 262) {
+      // Since 2026.2 the SM/test runner modules are provided by this separate bundled plugin.
+      add("intellij.testRunner.plugin")
+      // Loads the extension point used by JCEF-aware UI code in the test application.
+      add("com.intellij.modules.jcef")
+    }
+  }
 
 data class TypeWithVersion(val type: IntelliJPlatformType, val version: String)
 

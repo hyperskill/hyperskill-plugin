@@ -10,6 +10,7 @@ import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindowId
@@ -25,7 +26,6 @@ import org.hyperskill.academy.learning.courseFormat.EduTestInfo.Companion.firstF
 import org.hyperskill.academy.learning.courseFormat.ext.getAllTestDirectories
 import org.hyperskill.academy.learning.courseFormat.ext.getAllTestFiles
 import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
-import org.hyperskill.academy.learning.runReadActionInSmartMode
 
 abstract class EduTaskCheckerBase(task: EduTask, private val envChecker: EnvironmentChecker, project: Project) :
   TaskChecker<EduTask>(task, project) {
@@ -42,7 +42,10 @@ abstract class EduTaskCheckerBase(task: EduTask, private val envChecker: Environ
       return possibleError
     }
 
-    val configurations = runReadActionInSmartMode(project) { createTestConfigurations() }
+    DumbService.getInstance(project).waitForSmartMode()
+    // Run configuration producers may create platform state under a write action.
+    // IDEA 2026.2 rejects that write action when the producer is wrapped in a read action.
+    val configurations = invokeAndWaitIfNeeded { createTestConfigurations() }
     configurations.forEach {
       it.isActivateToolWindowBeforeRun = activateRunToolWindow
     }

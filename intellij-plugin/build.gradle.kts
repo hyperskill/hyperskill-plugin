@@ -92,6 +92,17 @@ dependencies {
 
   intellijPlatform {
     intellijIde(baseVersion)
+    // hs-core tests are compiled in this module. Since 2026.2 these APIs are
+    // no longer part of the IDE's core classpath, so their modules must be
+    // repeated here instead of relying on hs-core's non-transitive platform dependencies.
+    bundledModulesSince(
+      baseVersion, 262,
+      "intellij.platform.smRunner",
+      "intellij.platform.testRunner",
+      "intellij.platform.ui.jcef",
+      "intellij.libraries.jcef",
+      "intellij.platform.sqlite",
+    )
 
     pluginModule(implementation(project("hs-jvm-core")))
     pluginModule(implementation(project("hs-Java")))
@@ -168,6 +179,7 @@ tasks {
   // This is needed because hs-core tests use relative path "testData/" for test resources
   test {
     workingDir = project("hs-core").projectDir
+    systemProperty("idea.home.path", intellijPlatform.platformPath.toString())
   }
 
   // Copy hs-core.xml and Hyperskill.xml to main plugin JAR for XInclude resolution.

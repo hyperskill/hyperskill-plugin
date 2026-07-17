@@ -7,6 +7,8 @@
     <module name="hs-jvm-core"/>
 
     <plugin id="com.intellij.database"/>
+    <!-- Database Tools 2026.2+ module dependencies are inserted here by build.gradle.kts. -->
+    <!-- DATABASE_PLATFORM_MODULE_DEPENDENCIES -->
   </dependencies>
 
   <projectListeners>

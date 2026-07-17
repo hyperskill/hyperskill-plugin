@@ -11,8 +11,6 @@ import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.ide.progress.withBackgroundProgress
-import com.intellij.sql.dialects.SqlDialectMappings
-import com.intellij.sql.dialects.h2.H2Dialect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.hyperskill.academy.learning.course
@@ -36,7 +34,7 @@ class SqlGradleStartupActivity : ProjectActivity {
       // Use withContext(Dispatchers.Main) instead of invokeAndWaitIfNeeded
       withContext(Dispatchers.Main) {
         // Dependency on concrete database kind/SQL dialect
-        SqlDialectMappings.getInstance(project).setMapping(null, H2Dialect.INSTANCE)
+        setH2DialectMapping(project, null)
         createDataSources(project, course.allTasks)
       }
 

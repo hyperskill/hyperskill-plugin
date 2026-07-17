@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.application.impl.TestOnlyThreading
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.progress.ProgressIndicator
@@ -63,7 +64,9 @@ object EduActionUtils {
     }
     while (true) {
       try {
-        UIUtil.dispatchAllInvocationEvents()
+        TestOnlyThreading.releaseTheAcquiredWriteIntentLockThenExecuteActionAndTakeWriteIntentLockBack {
+          UIUtil.dispatchAllInvocationEvents()
+        }
         future[10, TimeUnit.MILLISECONDS]
         return
       }
