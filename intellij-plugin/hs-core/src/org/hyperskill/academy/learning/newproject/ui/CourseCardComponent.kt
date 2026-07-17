@@ -1,5 +1,6 @@
 package org.hyperskill.academy.learning.newproject.ui
 
+import com.intellij.ui.ColorUtil
 import com.intellij.ui.Gray
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.panels.NonOpaquePanel
@@ -86,7 +87,10 @@ open class CourseCardComponent(val course: Course) : JPanel(BorderLayout()) {
   }
 
   private fun updateColors(background: Color) {
-    UIUtil.setBackgroundRecursively(this, background)
+    // Some themes define wildcard hover backgrounds with alpha. Applying such a color recursively
+    // makes every nested panel darken it again and leaves text from previous paints visible.
+    val opaqueBackground = ColorUtil.alphaBlending(background, SelectCourseBackgroundColor)
+    UIUtil.setBackgroundRecursively(this, opaqueBackground)
   }
 
   fun setSelection(isSelectedOrHover: Boolean, scroll: Boolean = false) {
