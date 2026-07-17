@@ -34,13 +34,10 @@ open class PyCourseProjectGenerator(
     // See `installSdkIfSuggested` implementations in `branches/<version>/src`.
     val installedSdk = installSdkIfSuggested(sdk)
     if (installedSdk != null) {
-      createAndAddVirtualEnv(project, projectSettings, installedSdk)
-      sdk = projectSettings.sdk
+      sdk = createAndAddVirtualEnv(project, projectSettings, installedSdk)
     }
     else if (sdk is PySdkToCreateVirtualEnv) {
-      val homePath = sdk.homePath ?: error("Home path is not passed during fake python sdk creation")
-      createAndAddVirtualEnv(project, projectSettings, PyDetectedSdk(homePath))
-      sdk = projectSettings.sdk
+      sdk = createAndAddVirtualEnv(project, projectSettings, prepareSdkForVirtualEnvCreation(sdk))
     }
     sdk = updateSdkIfNeeded(project, sdk)
     LOG.warn("PyCourseProjectGenerator: After updateSdkIfNeeded, sdk = ${sdk?.name} at ${sdk?.homePath}")
@@ -48,14 +45,15 @@ open class PyCourseProjectGenerator(
     LOG.warn("PyCourseProjectGenerator: After setDirectoryProjectSdk")
     if (sdk == null) {
       LOG.warn("PyCourseProjectGenerator: SDK is null, skipping package installation")
-      return
     }
-    LOG.warn("PyCourseProjectGenerator: About to install packages")
-    installRequiredPackages(project, sdk)
+    else {
+      LOG.warn("PyCourseProjectGenerator: About to install packages")
+      installRequiredPackages(project, sdk)
+    }
     super.afterProjectGenerated(project, projectSettings, openCourseParams, onConfigurationFinished)
   }
 
-  private fun createAndAddVirtualEnv(project: Project, settings: PyProjectSettings, baseSdk: Sdk) {
+  private fun createAndAddVirtualEnv(project: Project, settings: PyProjectSettings, baseSdk: Sdk): Sdk? {
     val virtualEnvPath = project.basePath + "/.idea/VirtualEnvironment"
     val existingSdks = PyConfigurableInterpreterList.getInstance(null).allPythonSdks
     val module = ModuleManager.getInstance(project).sortedModules.firstOrNull()
@@ -76,7 +74,7 @@ open class PyCourseProjectGenerator(
     }
     catch (e: Exception) {
       LOG.warn("Failed to create virtual env in $virtualEnvPath", e)
-      return
+      return null
     }
     settings.sdk = sdk
     SdkConfigurationUtil.addSdk(sdk)
@@ -84,6 +82,7 @@ open class PyCourseProjectGenerator(
     if (module != null) {
       setAssociationToModule(sdk, module)
     }
+    return sdk
   }
 
   companion object {

@@ -9,6 +9,11 @@ import com.jetbrains.python.sdk.detectSystemWideSdks
 
 private val LOG = logger<PyCourseProjectGenerator>()
 
+internal fun prepareSdkForVirtualEnvCreation(sdk: PySdkToCreateVirtualEnv): Sdk {
+  val homePath = sdk.homePath ?: error("Home path is not passed during fake python sdk creation")
+  return PyDetectedSdk(homePath)
+}
+
 /**
  * If [sdk] is an "install Python" suggestion ([PySdkToInstall]), downloads and installs Python
  * and returns the freshly detected system-wide SDK, or `null` if the installation failed.
