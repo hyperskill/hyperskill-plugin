@@ -2,6 +2,18 @@ plugins {
   id("intellij-plugin-module-conventions")
 }
 
+private val riderPlatformModuleDependenciesMarker = "<!-- RIDER_PLATFORM_MODULE_DEPENDENCIES -->"
+private val riderPlatformModuleDependencies = if (environmentName.toInt() >= 262) {
+  listOf(
+    "intellij.rd.client",
+    "intellij.rider.languages",
+    "intellij.rider.rdclient.dotnet",
+  ).joinToString("\n") { "    <module name=\"$it\"/>" }
+}
+else {
+  ""
+}
+
 dependencies {
   intellijPlatform {
     intellijIde(riderVersion)
@@ -23,6 +35,15 @@ dependencies {
 }
 
 tasks {
+  processResources {
+    inputs.property("riderPlatformModuleDependencies", riderPlatformModuleDependencies)
+    filesMatching("hs-CSharp.xml") {
+      filter { line ->
+        if (riderPlatformModuleDependenciesMarker in line) riderPlatformModuleDependencies else line
+      }
+    }
+  }
+
   // Tests are disabled due to failures on TeamCity with 2025.2+
   // Rider's testFramework.jar location differs from other IDEs
   // TODO: EDU-XXXX - investigate and fix CSharp test failures
