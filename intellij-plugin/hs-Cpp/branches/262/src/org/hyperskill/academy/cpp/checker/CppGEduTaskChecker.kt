@@ -2,7 +2,6 @@ package org.hyperskill.academy.cpp.checker
 
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.project.Project
-import com.jetbrains.cidr.execution.testing.google.CidrGoogleTestRunConfigurationType
 import org.hyperskill.academy.cpp.CppConfigurator
 import org.hyperskill.academy.cpp.CppGTestCourseBuilder
 import org.hyperskill.academy.cpp.CppProjectSettings
@@ -20,7 +19,7 @@ class CppGTestConfigurator : CppConfigurator() {
       override fun getEduTaskChecker(task: EduTask, project: Project): TaskChecker<EduTask> =
         object : CppEduTaskChecker(task, envChecker, project) {
           override fun getFactory(): ConfigurationFactory =
-            CidrGoogleTestRunConfigurationType.getInstance().getFactory()
+            getTestConfigurationFactory(GOOGLE_TEST_CONFIGURATION_TYPE_ID)
         }
     }
 }
