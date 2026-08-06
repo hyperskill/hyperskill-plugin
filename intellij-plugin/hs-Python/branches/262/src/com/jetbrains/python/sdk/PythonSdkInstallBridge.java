@@ -2,6 +2,7 @@ package com.jetbrains.python.sdk;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.ui.SimpleColoredComponent;
 import kotlin.ResultKt;
 import kotlin.jvm.functions.Function0;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,14 @@ public final class PythonSdkInstallBridge {
 
     public @NotNull String getVersion() {
       return version;
+    }
+
+    /**
+     * Renders the suggestion the same way the Python plugin renders its own installable interpreters.
+     * Without it they are shown as regular SDKs and marked as invalid, because they are not installed yet.
+     */
+    public void renderInList(@NotNull SimpleColoredComponent component) {
+      delegate.renderInList(component);
     }
   }
 

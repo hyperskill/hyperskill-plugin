@@ -1,6 +1,7 @@
 package org.hyperskill.academy.python.learning.newproject
 
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.util.CheckedDisposable
@@ -68,14 +69,17 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
   @RequiresBackgroundThread
   private fun collectPySdks(course: Course, context: UserDataHolder): List<Sdk> {
     // Find all base Python SDKs
-    val baseSdks = findBaseSdks(emptyList(), null, context)
-      // It's important to check validity here, in background thread,
-      // because it caches a result of checking if python binary is executable.
-      // If the first (uncached) invocation is invoked in EDT, it may throw exception and break UI rendering.
-      // See https://youtrack.jetbrains.com/issue/EDU-6371
-      .filter { it.sdkSeemsValid }
+    val detectedSdks = findBaseSdks(emptyList(), null, context)
+    LOG.warn("collectPySdks: detected ${detectedSdks.size} base SDKs: ${detectedSdks.joinToString { "${it.name} at ${it.homePath}" }}")
+
+    // It's important to check validity here, in background thread,
+    // because it caches a result of checking if python binary is executable.
+    // If the first (uncached) invocation is invoked in EDT, it may throw exception and break UI rendering.
+    // See https://youtrack.jetbrains.com/issue/EDU-6371
+    val baseSdks = detectedSdks.filter { it.seemsValid() }
 
     if (baseSdks.isEmpty()) {
+      LOG.warn("collectPySdks: no valid base SDK found, suggesting to install Python")
       return getSdksToInstall()
     }
 
@@ -103,7 +107,37 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
       // Sort by version descending - newer versions first
       .sortedByDescending { it.languageLevel }
 
-    return fakeSdks.takeIf { it.isNotEmpty() } ?: getSdksToInstall()
+    if (fakeSdks.isEmpty()) {
+      LOG.warn("collectPySdks: no detected SDK matches the course, suggesting to install Python")
+      return getSdksToInstall()
+    }
+
+    // Local interpreters first, then suggestions to download versions that are not installed locally
+    val installedLevels = fakeSdks.mapTo(hashSetOf()) { it.languageLevel }
+    val sdksToInstall = getSdksToInstall().filterNot { it.languageLevel in installedLevels }
+    return fakeSdks + sdksToInstall
+  }
+
+  /**
+   * Since 262 the validity check throws for an SDK the Python plugin does not consider well-formed,
+   * for example without [com.jetbrains.python.sdk.PythonSdkAdditionalData]. Such an SDK is skipped
+   * instead of dropping the whole list of detected interpreters.
+   */
+  private fun Sdk.seemsValid(): Boolean {
+    val valid = try {
+      sdkSeemsValid
+    }
+    catch (e: ProcessCanceledException) {
+      throw e
+    }
+    catch (e: Exception) {
+      LOG.warn("collectPySdks: validity check failed for $name at $homePath", e)
+      false
+    }
+    if (!valid) {
+      LOG.warn("collectPySdks: skipping invalid SDK $name at $homePath")
+    }
+    return valid
   }
 
   override fun getSettings(): PyProjectSettings = projectSettings
@@ -177,10 +211,13 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
         }
 
         else -> {
-          val flavor = PythonSdkFlavor.getFlavor(this)
-          homePath?.let {
-            flavor?.getLanguageLevel(it)
-          } ?: versionString?.let(LanguageLevel::fromPythonVersion) ?: LanguageLevel.getDefault()
+          // "Install Python" suggestions are not installed yet and have no home path (an empty one since 262,
+          // see `PySdkToInstallCompat`). Detecting a flavor by such a path throws, so their version comes from
+          // `versionString` only
+          val sdkHome = homePath?.takeIf { it.isNotBlank() }
+          sdkHome?.let { PythonSdkFlavor.getFlavor(this)?.getLanguageLevel(it) }
+          ?: versionString?.let(LanguageLevel::fromPythonVersion)
+          ?: LanguageLevel.getDefault()
         }
       }
     }

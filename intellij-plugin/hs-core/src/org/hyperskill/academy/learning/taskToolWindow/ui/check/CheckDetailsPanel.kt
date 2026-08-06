@@ -8,9 +8,7 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.components.AnActionLink
-import com.intellij.ui.content.Content
 import com.intellij.util.Alarm
 import com.intellij.util.ui.JBUI
 import org.hyperskill.academy.learning.actions.CompareWithAnswerAction
@@ -26,7 +24,6 @@ import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.stepik.hyperskill.PostHyperskillProjectToGithub
 import org.hyperskill.academy.learning.taskToolWindow.addActionLinks
 import org.hyperskill.academy.learning.taskToolWindow.ui.LightColoredActionLink
-import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowFactory
 import org.hyperskill.academy.learning.taskToolWindow.ui.check.CheckMessagePanel.Companion.FOCUS_BORDER_WIDTH
 import org.hyperskill.academy.learning.xmlUnescaped
 import java.awt.BorderLayout
@@ -75,14 +72,6 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
     addActionLinks(course, linksPanel, 16, 0)
 
     if (course is HyperskillCourse) {
-      if (course.isTaskInProject(task) && checkResult.status == CheckStatus.Failed) {
-        val showMoreInfo = LightColoredActionLink(
-          EduCoreBundle.message("hyperskill.review.topics.action.link"),
-          SwitchTaskTabAction(project, 1)
-        )
-        linksPanel.add(showMoreInfo)
-      }
-
       if (PostHyperskillProjectToGithub.isAvailable(task)) {
         val postToGithubLink = LightColoredActionLink(
           EduCoreBundle.message("hyperskill.action.post.to.github"),
@@ -152,21 +141,6 @@ class CheckDetailsPanel(project: Project, task: Task, checkResult: CheckResult, 
         outputShown = false
         actionLink.text = EduCoreBundle.message("label.full.output.show")
       }
-    }
-  }
-
-  class SwitchTaskTabAction(private val project: Project, private val index: Int) : DumbAwareAction(null as String?) {
-    override fun actionPerformed(e: AnActionEvent) {
-      selectTab(project, index)
-    }
-  }
-
-  companion object {
-    fun selectTab(project: Project, index: Int): Content? {
-      val window = ToolWindowManager.getInstance(project).getToolWindow(TaskToolWindowFactory.STUDY_TOOL_WINDOW)
-      val tab = window?.contentManager?.getContent(index) ?: return null
-      window.contentManager.setSelectedContent(tab)
-      return tab
     }
   }
 

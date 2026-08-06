@@ -9,11 +9,14 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.ComponentWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.ColoredListCellRenderer
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.jetbrains.python.sdk.PyDetectedSdk
-import com.jetbrains.python.sdk.PySdkListCellRenderer
+import com.jetbrains.python.sdk.PySdkToInstallCompat
 import com.jetbrains.python.sdk.PythonSdkType
+import javax.swing.JList
 import javax.swing.JTextField
 import javax.swing.plaf.basic.BasicComboBoxEditor
 
@@ -33,7 +36,7 @@ class PySdkPathChoosingComboBox : ComponentWithBrowseButton<ComboBox<Any>>(Combo
   }
 
   init {
-    childComponent.renderer = PySdkListCellRenderer()
+    childComponent.renderer = PySdkComboBoxRenderer()
     addActionListener {
       val descriptor = PythonSdkType.getInstance().homeChooserDescriptor
       FileChooser.chooseFiles(descriptor, null, null) { chosenFiles ->
@@ -69,6 +72,36 @@ class PySdkPathChoosingComboBox : ComponentWithBrowseButton<ComboBox<Any>>(Combo
       childComponent.isEditable = false
     }
     repaint()
+  }
+}
+
+/**
+ * The platform's `PySdkListCellRenderer` cannot be used here: its presentation marks an SDK as `[invalid]`
+ * when `isSdkSeemsValid` fails, and since 262 that check requires SDK metadata our items do not have —
+ * an "install Python" suggestion has no home path until installed, and a venv-template SDK
+ * ([org.hyperskill.academy.python.learning.newproject.PySdkToCreateVirtualEnv]) has no working directory.
+ * So install suggestions are rendered by the Python plugin's own code for installable interpreters,
+ * and everything else is rendered directly: icon, name, version and location.
+ */
+private class PySdkComboBoxRenderer : ColoredListCellRenderer<Any>() {
+
+  override fun customizeCellRenderer(list: JList<out Any>, value: Any?, index: Int, selected: Boolean, hasFocus: Boolean) {
+    when (value) {
+      is PySdkToInstallCompat -> value.suggestion.renderInList(this)
+
+      is Sdk -> {
+        icon = PythonSdkType.getInstance().icon
+        append(value.name)
+        val version = value.versionString
+        if (!version.isNullOrBlank() && version != value.name) {
+          append(" $version", SimpleTextAttributes.GRAYED_SMALL_ATTRIBUTES)
+        }
+        val homePath = value.homePath
+        if (!homePath.isNullOrBlank()) {
+          append("  ${FileUtil.getLocationRelativeToUserHome(homePath)}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+        }
+      }
+    }
   }
 }
 
