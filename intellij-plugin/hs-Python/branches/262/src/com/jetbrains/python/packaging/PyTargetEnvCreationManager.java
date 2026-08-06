@@ -110,8 +110,10 @@ public class PyTargetEnvCreationManager {
     HelpersAwareTargetEnvironmentRequest helpersAwareTargetRequest = getPythonTargetInterpreter();
     TargetEnvironmentRequest targetEnvironmentRequest = helpersAwareTargetRequest.getTargetEnvironmentRequest();
 
+    // BACKCOMPAT: 262 - `PythonHelper.LEGACY_VIRTUALENV_ZIPAPP` (the virtualenv zipapp for Python 2.7 & 3.6) was removed
+    // in 262.9437, so the bundled modern zipapp is the only option and Python older than 3.7 is no longer supported here.
     PythonScriptExecution pythonExecution = PythonScripts.prepareHelperScriptExecution(
-      isLegacyPython(languageLevel) ? PythonHelper.LEGACY_VIRTUALENV_ZIPAPP : PythonHelper.VIRTUALENV_ZIPAPP,
+      PythonHelper.VIRTUALENV_ZIPAPP,
       helpersAwareTargetRequest);
     if (useGlobalSite) {
       pythonExecution.addParameter("--system-site-packages");
@@ -135,13 +137,6 @@ public class PyTargetEnvCreationManager {
       throw new ExecutionException(PySdkBundle.message("python.sdk.package.managing.not.supported.for.sdk", getSdk().getName()));
     }
     return request;
-  }
-
-  /**
-   * Is it a legacy python version that we still support
-   */
-  private static @NotNull Boolean isLegacyPython(@NotNull LanguageLevel languageLevel) {
-    return languageLevel.isPython2() || languageLevel.isOlderThan(LanguageLevel.PYTHON37);
   }
 
   private @NotNull String getPythonProcessResult(@NotNull PythonExecution pythonExecution,

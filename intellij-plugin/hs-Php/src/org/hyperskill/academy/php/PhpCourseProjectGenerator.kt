@@ -1,6 +1,7 @@
 package org.hyperskill.academy.php
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.php.composer.ComposerDataService
 import com.jetbrains.php.composer.ComposerUtils
 import com.jetbrains.php.composer.actions.ComposerInstallAction
@@ -58,16 +59,21 @@ class PhpCourseProjectGenerator(
   private fun installComposer(project: Project) {
     val courseDir = project.courseDir
     val composerFile = courseDir.findChild(ComposerUtils.CONFIG_DEFAULT_FILENAME) ?: return
-    project.invokeLater {
-      val executor = ComposerInstallAction.createExecutor(
-        project,
-        ComposerDataService.getInstance(project).composerExecution,
-        composerFile,
-        ComposerOptionsManager.DEFAULT_COMMAND_LINE_OPTIONS,
-        null,
-        true
-      )
-      executor.execute()
-    }
+    // `invokeLater` is an inline function declared in `hs-core`, so the lambda body is compiled into a synthetic class
+    // attributed to `openApiExt.kt`, i.e. to `hs-core`, which does not depend on `com.jetbrains.php`.
+    // Keep the Composer API calls in a separate non-inline method so that they stay in this module for the plugin verifier.
+    project.invokeLater { runComposerInstall(project, composerFile) }
+  }
+
+  private fun runComposerInstall(project: Project, composerFile: VirtualFile) {
+    val executor = ComposerInstallAction.createExecutor(
+      project,
+      ComposerDataService.getInstance(project).composerExecution,
+      composerFile,
+      ComposerOptionsManager.DEFAULT_COMMAND_LINE_OPTIONS,
+      null,
+      true
+    )
+    executor.execute()
   }
 }
