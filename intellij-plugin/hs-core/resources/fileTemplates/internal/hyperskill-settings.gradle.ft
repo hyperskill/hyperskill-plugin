@@ -13,6 +13,12 @@ buildscript {
   }
 }
 
+## Lets Gradle download the Java toolchain requested in build.gradle instead of failing with
+## "Toolchain download repositories have not been configured" when that JDK is not installed locally.
+plugins {
+  id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
 ## Should be the same as `org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.sanitizeName`
 
 static String sanitizeName(String name) {

@@ -62,17 +62,33 @@ object YamlLoader {
 
     val existingItem = getStudyItemForConfig(project, configFile)
     val deserializedItem = deserializeItemProcessingErrors(configFile, project, loadFromVFile, mapper) ?: return
+    // Recovery path: the course model is missing or broken and the user edited `course-info.yaml`. It is handled
+    // before `ensureChildrenExist` below so that a course whose child directories are not resolvable yet can still be
+    // reloaded, instead of failing with `no dir for item` and leaving the project with no model at all.
+    if (existingItem == null && deserializedItem is Course) {
+      StudyTaskManager.getInstance(project).course = YamlDeepLoader.loadCourse(project)
+      return
+    }
+
+    // The course model itself is unavailable, so this is a plugin-state problem, not a problem with the user's config.
+    // Reporting `Parent for '<x>' was not found` here blames the user's YAML for something they cannot fix, and the
+    // code below would call `persistEduFiles`/`addItemAsNew`/`saveItem` against a model that does not exist.
+    // Bailing out also means any remaining `parent not found` report provably comes from `getParentItem`'s second
+    // exit, which carries the ALT-11025 diagnostics.
+    if (existingItem == null && StudyTaskManager.getInstance(project).course == null) {
+      LOG.warn(
+        "Skipping YAML reload of `${configFile.path}`: no course is loaded for project `${project.name}`." +
+        " See the earlier `Error while loading course` entry for the original failure."
+      )
+      return
+    }
+
     val customContentPath = existingItem?.course.customContentPath
     deserializedItem.ensureChildrenExist(configFile.parent, customContentPath)
 
     if (existingItem == null) {
       // this code is called if item wasn't loaded because of broken config
       // and now if config fixed, we'll add item to a parent
-      if (deserializedItem is Course) {
-        StudyTaskManager.getInstance(project).course = YamlDeepLoader.loadCourse(project)
-        return
-      }
-
       val itemDir = configFile.parent
       deserializedItem.name = itemDir.name
       val parentItem = deserializedItem.getParentItem(project, itemDir.parent)
@@ -102,10 +118,21 @@ object YamlLoader {
     mapper: ObjectMapper = basicMapper(),
   ): List<T> {
     val content = mutableListOf<T>()
+    var unresolvedChildren = false
     for (titledItem in contentList) {
-      val configFile: VirtualFile = getConfigFileForChild(project, titledItem.name) ?: continue
-      val deserializeItem = deserializeItemProcessingErrors(configFile, project, mapper = mapper, parentItem = this) as? T ?: continue
+      val configFile: VirtualFile? = getConfigFileForChild(project, titledItem.name)
+      if (configFile == null) {
+        unresolvedChildren = true
+        continue
+      }
+      val deserializeItem = deserializeItemProcessingErrors(configFile, project, mapper = mapper, parentItem = this) as? T
+      if (deserializeItem == null) {
+        unresolvedChildren = true
+        continue
+      }
       if (this is Lesson && isHyperskillTopicsLesson() && deserializeItem is UnsupportedTask) {
+        // A deliberate skip, not an unresolved child: topic lessons legitimately contain tasks this IDE cannot
+        // support, so this must not mark the lesson partially loaded and block saving it.
         LOG.warn(
           "Skipping unsupported task `${titledItem.name}` while loading Hyperskill topic lesson `${name}` from ${configFile.path}"
         )
@@ -116,6 +143,8 @@ object YamlLoader {
       content.add(deserializeItem)
     }
 
+    // Recomputed on every load rather than latched, so a later complete load clears it again.
+    isPartiallyLoaded = unresolvedChildren
     return content
   }
 

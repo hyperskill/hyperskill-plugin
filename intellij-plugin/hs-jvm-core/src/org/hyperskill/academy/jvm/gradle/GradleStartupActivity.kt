@@ -29,9 +29,10 @@ class GradleStartupActivity : ProjectActivity {
       return
     }
     if (EduGradleUtils.isConfiguredWithGradle(project)) {
-      val buildScriptMigrated = migrateLegacyBuildGradle(project)
+      val buildScriptMigrated = migrateScript(project, GradleConstants.DEFAULT_SCRIPT_NAME, ::migrateLegacyUtilSourceSetReferences)
+      val settingsMigrated = migrateScript(project, GradleConstants.SETTINGS_FILE_NAME, ::addToolchainResolver)
       updateGradleSettings(project)
-      if (buildScriptMigrated) {
+      if (buildScriptMigrated || settingsMigrated) {
         // The import triggered by project opening has already read the outdated script,
         // so it has to be re-run to pick up the migrated one.
         GradleCourseRefresher.firstAvailable()?.refresh(project, RefreshCause.DEPENDENCIES_UPDATED)
@@ -65,34 +66,28 @@ class GradleStartupActivity : ProjectActivity {
   }
 
   /**
-   * Rewrites `project(':util').sourceSets.*.output` references left in build scripts of old projects.
+   * Applies [migration] to the Gradle script named [scriptName] in the project root.
    *
-   * Inside a `dependencies { }` block such a call is resolved against `DependencyHandler`,
-   * which since Gradle 9 provides its own `project(String)` returning a `ProjectDependency` instead of a `Project`,
-   * so `sourceSets` is no longer resolvable there. Qualifying the call with `rootProject` makes it resolve
-   * against `Project` again, which is valid for every Gradle version, so the migration is not tied to a
-   * particular IDE or Gradle version.
-   *
-   * @return `true` if the build script was actually changed
+   * @return `true` if the script was actually changed
    */
-  private suspend fun migrateLegacyBuildGradle(project: Project): Boolean {
+  private suspend fun migrateScript(project: Project, scriptName: String, migration: (String) -> String): Boolean {
     val projectDir = project.guessProjectDir() ?: return false
-    val buildFile = projectDir.findChild(GradleConstants.DEFAULT_SCRIPT_NAME) ?: return false
-    if (buildFile.isDirectory) return false
+    val scriptFile = projectDir.findChild(scriptName) ?: return false
+    if (scriptFile.isDirectory) return false
 
     return try {
-      val originalContent = VfsUtilCore.loadText(buildFile)
-      val migratedContent = migrateLegacyUtilSourceSetReferences(originalContent)
+      val originalContent = VfsUtilCore.loadText(scriptFile)
+      val migratedContent = migration(originalContent)
       if (migratedContent == originalContent) return false
 
       writeAction {
-        VfsUtil.saveText(buildFile, migratedContent)
+        VfsUtil.saveText(scriptFile, migratedContent)
       }
-      LOG.info("Migrated legacy util sourceSets references in ${buildFile.path}")
+      LOG.info("Migrated ${scriptFile.path}")
       true
     }
     catch (e: IOException) {
-      LOG.warn("Failed to migrate legacy util sourceSets references in ${buildFile.path}", e)
+      LOG.warn("Failed to migrate ${scriptFile.path}", e)
       false
     }
   }
@@ -117,8 +112,65 @@ class GradleStartupActivity : ProjectActivity {
     private val LEGACY_UTIL_SOURCE_SET_REFERENCE =
       Regex("""(?<![\w.])project\((['"]):util\1\)\.sourceSets\.(?:main|test)\.output""")
 
+    /**
+     * Rewrites `project(':util').sourceSets.*.output` references left in build scripts of old projects.
+     *
+     * Inside a `dependencies { }` block such a call is resolved against `DependencyHandler`,
+     * which since Gradle 9 provides its own `project(String)` returning a `ProjectDependency` instead of a `Project`,
+     * so `sourceSets` is no longer resolvable there. Qualifying the call with `rootProject` makes it resolve
+     * against `Project` again, which is valid for every Gradle version, so the migration is not tied to a
+     * particular IDE or Gradle version.
+     */
     @VisibleForTesting
     fun migrateLegacyUtilSourceSetReferences(content: String): String =
       content.replace(LEGACY_UTIL_SOURCE_SET_REFERENCE) { matchResult -> "rootProject.${matchResult.value}" }
+
+    private const val FOOJAY_RESOLVER_ID = "org.gradle.toolchains.foojay-resolver-convention"
+    private const val FOOJAY_RESOLVER_VERSION = "1.0.0"
+
+    /** Matches the `hs-gradle-plugin` classpath entry that only Hyperskill settings scripts contain */
+    private const val HS_GRADLE_PLUGIN = "hs-gradle-plugin"
+
+    private val BUILD_SCRIPT_BLOCK_START = Regex("""(?m)^\s*buildscript\s*\{""")
+
+    /** Leading blank line separates the inserted block from the `buildscript { }` block above it */
+    private val TOOLCHAIN_RESOLVER_BLOCK = """
+      |
+      |
+      |plugins {
+      |  id '$FOOJAY_RESOLVER_ID' version '$FOOJAY_RESOLVER_VERSION'
+      |}
+    """.trimMargin()
+
+    /**
+     * Adds the Foojay toolchain resolver to `settings.gradle` of already generated Hyperskill projects.
+     *
+     * The generated build script requests a Java toolchain of `max(<Gradle daemon JVM>, hs.java.version)`.
+     * Without a resolver Gradle cannot provision that JDK, so the build fails with
+     * "Toolchain download repositories have not been configured" whenever it is not installed locally.
+     *
+     * Only scripts generated from the Hyperskill template are touched, and the resolver is inserted right after
+     * the leading `buildscript { }` block because `plugins { }` may only be preceded by `buildscript { }`
+     * and `pluginManagement { }`.
+     */
+    @VisibleForTesting
+    fun addToolchainResolver(content: String): String {
+      if (FOOJAY_RESOLVER_ID in content || HS_GRADLE_PLUGIN !in content) return content
+      val insertionOffset = buildScriptBlockEndOffset(content) ?: return content
+      return content.substring(0, insertionOffset) + TOOLCHAIN_RESOLVER_BLOCK + content.substring(insertionOffset)
+    }
+
+    /** Offset right after the closing brace of the leading `buildscript { }` block, or `null` if there is none */
+    private fun buildScriptBlockEndOffset(content: String): Int? {
+      val blockStart = BUILD_SCRIPT_BLOCK_START.find(content) ?: return null
+      var depth = 0
+      for (offset in blockStart.range.last..content.lastIndex) {
+        when (content[offset]) {
+          '{' -> depth++
+          '}' -> if (--depth == 0) return offset + 1
+        }
+      }
+      return null
+    }
   }
 }

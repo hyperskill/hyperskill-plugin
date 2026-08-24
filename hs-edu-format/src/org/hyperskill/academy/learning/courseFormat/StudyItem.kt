@@ -23,6 +23,22 @@ abstract class StudyItem() {
   var id: Int = 0 // id on remote resource (Stepik, Marketplace)
   var contentTags: List<String> = listOf()
 
+  /**
+   * `true` when this item's children could not be fully resolved during the last load: a child directory or its config
+   * file was missing, or a child failed to deserialize. Such an item holds fewer children than the config file on disk
+   * claims, so writing it back would persist the truncated `content:` list and permanently drop the missing children.
+   *
+   * [org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer.saveItem] refuses to write the *structural* config
+   * while this is set; the remote config keeps being written, as it holds no `content:` list.
+   * It is recomputed on every load rather than latched, so a later complete load clears it again.
+   *
+   * Note this covers children only. A [org.hyperskill.academy.learning.courseFormat.tasks.Task] whose task files
+   * could not be resolved is deliberately *not* marked here: its `status` lives in the same config file, so blocking
+   * the save would stop the solved state from being persisted.
+   */
+  @Transient
+  var isPartiallyLoaded: Boolean = false
+
   @Transient
   private var _parent: ItemContainer? = null
 

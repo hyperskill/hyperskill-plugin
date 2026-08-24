@@ -94,15 +94,24 @@ class EduProjectActivity : ProjectActivity {
   @VisibleForTesting
   @RequiresBlockingContext
   fun migrateYaml(project: Project, course: Course) {
-    migrateCanCheckLocallyYaml(project, course)
+    // `saveAll` rewrites every config file from the in-memory model. If that model resolved only partially
+    // (see `YamlLoader.deserializeContent` and `YamlDeepLoader.removeNonExistingTaskFiles`, both of which silently
+    // drop unresolvable children), running it on every project open turns a transient loading problem into permanent
+    // data loss on disk. Save only when a migration actually ran: the YAML-format migration in
+    // `YamlDeepLoader.loadCourse` already has its own `needMigration`-gated `saveAll`.
+    if (!migrateCanCheckLocallyYaml(project, course)) return
     YamlFormatSynchronizer.saveAll(project)
   }
 
-  private fun migrateCanCheckLocallyYaml(project: Project, course: Course) {
+  /**
+   * Returns `true` if a migration was performed and the configs have to be written back to disk.
+   */
+  private fun migrateCanCheckLocallyYaml(project: Project, course: Course): Boolean {
     val propertyComponent = PropertiesComponent.getInstance(project)
-    if (propertyComponent.getBoolean(YAML_MIGRATED)) return
+    if (propertyComponent.getBoolean(YAML_MIGRATED)) return false
     propertyComponent.setValue(YAML_MIGRATED, true)
-    if (course !is HyperskillCourse) return
+    if (course !is HyperskillCourse) return false
+    return true
   }
 
   // In general, it's hack to select proper Project View pane for course projects

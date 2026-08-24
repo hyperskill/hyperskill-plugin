@@ -17,7 +17,6 @@ import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.BuildNumber
-import com.intellij.openapi.vfs.newvfs.RefreshQueueImpl
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.ui.tree.TreeVisitor
 import com.intellij.ui.treeStructure.Tree
@@ -121,7 +120,7 @@ abstract class SqlCourseGenerationTestBase : JvmCourseGenerationTestBase() {
   private fun waitFsSynchronizationFinished() {
     ApplicationManager.getApplication().assertIsDispatchThread()
     UIUtil.dispatchAllInvocationEvents()
-    while (RefreshQueueImpl.isRefreshInProgress) {
+    while (isVfsRefreshInProgress()) {
       PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
     }
   }
