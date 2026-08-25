@@ -2,6 +2,11 @@ plugins {
   id("intellij-plugin-module-conventions")
 }
 
+// `branches/261|262/src/com/jetbrains/python/**` holds copies of and shims around Python plugin internals
+// (`PyTargetEnvCreationManager`, the `compat.kt` files). They call package-private and `internal` members of the
+// Python plugin, which is only possible from that plugin's own package, so `verifyClasses` has to allow them.
+ext[VERIFY_CLASSES_ALLOWED_PACKAGES] = "com.jetbrains.python"
+
 private val pythonPlatformModuleDependenciesMarker = "<!-- PYTHON_PLATFORM_MODULE_DEPENDENCIES -->"
 private val pythonPlatformModuleDependencies = if (environmentName.toInt() >= 262) {
   listOf(

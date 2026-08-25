@@ -1,11 +1,11 @@
-package org.hyperskill.academy.jvm.gradle
+package org.hyperskill.academy.learning.gradle
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class GradleLegacyBuildScriptMigrationTest {
 
-  private fun migrate(content: String): String = GradleStartupActivity.migrateLegacyUtilSourceSetReferences(content)
+  private fun migrate(content: String): String = GradleScriptMigration.migrateLegacyUtilSourceSetReferences(content)
 
   @Test
   fun `test legacy references are qualified with rootProject`() {

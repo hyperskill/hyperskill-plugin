@@ -147,6 +147,12 @@ private fun findModulePackage(project: Project): String? {
 private fun verifyClasses(project: Project) {
   val pkg = findModulePackage(project) ?: return
   val expectedDir = pkg.replace('.', '/')
+  // Packages the module explicitly opted out for, see `VERIFY_CLASSES_ALLOWED_PACKAGES`.
+  val allowedDirs = (project.findProperty(VERIFY_CLASSES_ALLOWED_PACKAGES) as? String)
+    .orEmpty()
+    .split(',')
+    .map { it.trim().replace('.', '/') }
+    .filter { it.isNotEmpty() }
 
   var hasErrors = false
   for (classesDir in project.sourceSets.main.get().output.classesDirs) {
@@ -154,7 +160,7 @@ private fun verifyClasses(project: Project) {
     for (file in classesDir.walk()) {
       if (file.isFile && file.extension == "class") {
         val relativePath = basePath.relativize(file.toPath())
-        if (!relativePath.startsWith(expectedDir)) {
+        if (!relativePath.startsWith(expectedDir) && allowedDirs.none { relativePath.startsWith(it) }) {
           logger.error("Wrong package of `${relativePath.joinToString(".").removeSuffix(".class")}` class. Expected `$pkg`")
           hasErrors = true
         }

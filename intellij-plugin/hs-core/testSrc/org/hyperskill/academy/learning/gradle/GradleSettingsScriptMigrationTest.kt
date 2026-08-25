@@ -1,11 +1,11 @@
-package org.hyperskill.academy.jvm.gradle
+package org.hyperskill.academy.learning.gradle
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class GradleSettingsScriptMigrationTest {
 
-  private fun migrate(content: String): String = GradleStartupActivity.addToolchainResolver(content)
+  private fun migrate(content: String): String = GradleScriptMigration.addToolchainResolver(content)
 
   private val hyperskillSettings = """
     buildscript {
