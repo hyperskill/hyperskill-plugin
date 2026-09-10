@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.annotations.VisibleForTesting
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.project.BaseProjectDirectories.Companion.getBaseDirectories
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.messages.Topic
 import org.hyperskill.academy.learning.*
@@ -221,8 +223,8 @@ object YamlLoader {
                  ?: loadingError(EduCoreBundle.message("yaml.editor.invalid.format.parent.not.found", name))
     val customContentPath = course.customContentPath
     val itemContainer = when (this) {
-      is Section -> if (project.courseDir.findFileByRelativePathOrSelf(customContentPath) == parentDir) course else null
-      is Lesson -> if (project.courseDir.findFileByRelativePathOrSelf(customContentPath) == parentDir) {
+      is Section -> if (project.courseDir.findFileByRelativePathOrSelf(customContentPath).isSameFileAs(parentDir)) course else null
+      is Lesson -> if (project.courseDir.findFileByRelativePathOrSelf(customContentPath).isSameFileAs(parentDir)) {
         course
       }
       else {
@@ -260,6 +262,14 @@ object YamlLoader {
       " sectionDir='${sectionDir?.path}' (name='${sectionDir?.name}')" +
       " course=${course::class.simpleName} name='${course.name}' customContentPath='$customContentPath'" +
       " courseDirByCustomPath='${project.courseDir.findFileByRelativePath(customContentPath)?.path}'" +
+      // `courseDir` is derived from `guessProjectDir()`, which picks an arbitrary element whenever the project has
+      // more than one base directory. These fields say whether the comparison failed because the course root was
+      // resolved to the wrong directory, or because the item is genuinely missing from the model.
+      " courseDir='${project.courseDir.path}' (valid=${project.courseDir.isValid})" +
+      " basePath='${project.basePath}'" +
+      " courseDirIsParentDir=${project.courseDir == parentDir}" +
+      " courseDirPathEqualsParentDir=${FileUtil.pathsEqual(project.courseDir.path, parentDir.path)}" +
+      " baseDirs=[${project.getBaseDirectories().joinToString { it.path }}]" +
       " parentDir.getLesson='${parentDir.getLesson(project)?.name}'" +
       " sectionDir.getSection='${sectionDir?.getSection(project)?.name}'" +
       " course.topLevelLessons=[${course.lessons.joinToString(", ") { it.name }}]" +

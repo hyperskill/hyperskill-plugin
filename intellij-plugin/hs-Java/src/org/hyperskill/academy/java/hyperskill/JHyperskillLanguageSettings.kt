@@ -7,7 +7,7 @@ import org.hyperskill.academy.jvm.hyperskillJdkVersion
 import org.hyperskill.academy.learning.courseFormat.Course
 
 class JHyperskillLanguageSettings : JLanguageSettings() {
-  override fun minJvmSdkVersion(course: Course): ParsedJavaVersion {
+  override fun requiredJdkVersion(course: Course): ParsedJavaVersion {
     return JavaVersionParseSuccess(hyperskillJdkVersion)
   }
 }

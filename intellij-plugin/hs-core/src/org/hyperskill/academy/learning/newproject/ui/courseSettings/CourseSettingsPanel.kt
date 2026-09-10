@@ -178,7 +178,9 @@ class CourseSettingsPanel(
 
   fun validateSettings(course: Course?): SettingsValidationResult {
     val settingsValidationResult = languageSettings?.validate(course, locationString) ?: SettingsValidationResult.OK
-    if (settingsValidationResult is SettingsValidationResult.Ready && settingsValidationResult.validationMessage != null) {
+    val hasMessageToShow = settingsValidationResult is SettingsValidationResult.ReadyWithWarning
+                           || (settingsValidationResult is SettingsValidationResult.Ready && settingsValidationResult.validationMessage != null)
+    if (hasMessageToShow) {
       setOn(true)
     }
 

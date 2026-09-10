@@ -3,13 +3,16 @@ package org.hyperskill.academy.jvm.gradle
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VfsUtilCore
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.hyperskill.academy.jvm.ProjectJdkRepair
 import org.hyperskill.academy.jvm.gradle.generation.EduGradleUtils
 import org.hyperskill.academy.jvm.gradle.generation.EduGradleUtils.setupGradleProject
 import org.hyperskill.academy.jvm.gradle.generation.EduGradleUtils.updateGradleSettings
@@ -31,6 +34,22 @@ class GradleStartupActivity : ProjectActivity {
     if (EduGradleUtils.isConfiguredWithGradle(project)) {
       val buildScriptMigrated = migrateScript(project, GradleConstants.BUILD_GRADLE)
       val settingsMigrated = migrateScript(project, GradleConstants.SETTINGS_GRADLE)
+      // Before `updateGradleSettings`, which derives the Gradle JVM from the project one.
+      // Nothing here may escape: the platform rethrows a `CancellationException` out of a startup activity without
+      // logging anything, and `ProcessCanceledException` is one, so a JDK scan cancelled deep inside the platform
+      // would silently skip everything below and leave the project without Gradle settings and without a trace.
+      try {
+        ProjectJdkRepair.ensureProjectJdk(project)
+      }
+      catch (e: ProcessCanceledException) {
+        LOG.warn("Ensuring the project JDK was cancelled")
+      }
+      catch (e: CancellationException) {
+        throw e
+      }
+      catch (e: Throwable) {
+        LOG.warn("Failed to ensure the project JDK", e)
+      }
       updateGradleSettings(project)
       if (buildScriptMigrated || settingsMigrated) {
         // The import triggered by project opening has already read the outdated script,

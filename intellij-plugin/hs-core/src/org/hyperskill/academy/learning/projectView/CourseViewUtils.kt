@@ -88,7 +88,7 @@ object CourseViewUtils {
    * This avoids using TaskFile.isTestFile extension which requires task reference to be set.
    */
   private fun isTestFile(task: Task, path: String): Boolean {
-    val configurator = task.course.configurator ?: return false
+    val configurator = task.courseOrNull?.configurator ?: return false
     return configurator.isTestFile(task, path)
   }
 
@@ -141,7 +141,7 @@ object CourseViewUtils {
   }
 
   private fun getSyncChangesModifier(item: StudyItem): Icon? {
-    val project = item.course.project ?: return null
+    val project = item.courseOrNull?.project ?: return null
     val syncChangesStateManager = SyncChangesStateManager.getInstance(project)
     val state = when (item) {
       is Task -> syncChangesStateManager.getSyncChangesState(item)
@@ -166,23 +166,12 @@ object CourseViewUtils {
     }
 
   private fun Lesson.isSolved() = taskList.all {
-    val project = it.project ?: return false
+    val project = it.courseOrNull?.project ?: return false
     it.status == CheckStatus.Solved || SubmissionsManager.getInstance(project).containsCorrectSubmission(it.id)
   }
 
-  val Task.icon: Icon
-    get() {
-      return when (this) {
-        is IdeTask -> if (isSolved) IdeTaskSolved else CourseView.IdeTask
-        is TheoryTask -> if (isSolved) TheoryTaskSolved else CourseView.TheoryTask
-        else -> if (status == CheckStatus.Unchecked) CourseView.Task
-        else if (isSolved || containsCorrectSubmissions()) TaskSolved
-        else TaskFailed
-      }
-    }
-
   private fun Task.containsCorrectSubmissions(): Boolean {
-    val project = course.project ?: return false
+    val project = courseOrNull?.project ?: return false
     return SubmissionsManager.getInstance(project).containsCorrectSubmission(id)
   }
 

@@ -1,12 +1,15 @@
 package org.hyperskill.academy.learning.stepik.hyperskill.checker
 
+import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType.ERROR
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.text.nullize
 import org.hyperskill.academy.learning.*
+import org.hyperskill.academy.learning.courseFormat.CheckFeedback
 import org.hyperskill.academy.learning.courseFormat.CheckResult
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.attempts.Attempt
@@ -18,6 +21,7 @@ import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.messages.EduFormatBundle
 import org.hyperskill.academy.learning.notification.EduNotificationManager
+import org.hyperskill.academy.learning.projectView.ProgressUtil.updateCourseProgress
 import org.hyperskill.academy.learning.stepik.api.StepikBasedConnector.Companion.getStepikBasedConnector
 import org.hyperskill.academy.learning.stepik.api.StepikBasedSubmission
 import org.hyperskill.academy.learning.stepik.hyperskill.HYPERSKILL_DEFAULT_HOST
@@ -29,8 +33,11 @@ import org.hyperskill.academy.learning.stepik.hyperskill.submissions.HyperskillS
 import org.hyperskill.academy.learning.submissions.SolutionFile
 import org.hyperskill.academy.learning.submissions.SubmissionsManager
 import org.hyperskill.academy.learning.submissions.getSolutionFiles
+import org.hyperskill.academy.learning.taskToolWindow.ui.TaskToolWindowView
+import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 object HyperskillCheckConnector {
@@ -76,26 +83,72 @@ object HyperskillCheckConnector {
   }
 
   fun postEduTaskSolution(task: Task, project: Project, result: CheckResult) {
-    when (val attemptResponse = HyperskillConnector.getInstance().postAttempt(task)) {
-      is Err -> showErrorDetails(project, attemptResponse.error)
-      is Ok -> {
-        val feedback = if (result.details == null) result.message.xmlUnescaped else "${result.message.xmlUnescaped}\n${result.details}"
-        postEduSubmission(attemptResponse.value, project, task, feedback)
-        checkStageToBeCompleted(task)
-      }
-    }
-  }
-
-  private fun postEduSubmission(attempt: Attempt, project: Project, task: Task, feedback: String) {
-    val files = getSolutionFilesResult(project, task).onError { error ->
-      showErrorDetails(project, EduCoreBundle.message("error.failed.to.collect.files", task.name))
-      LOG.error(error)
+    val attempt = HyperskillConnector.getInstance().postAttempt(task).onError { error ->
+      solutionNotAccepted(project, task, error)
       return
     }
+    val feedback = if (result.details == null) result.message.xmlUnescaped else "${result.message.xmlUnescaped}\n${result.details}"
+    val submission = postEduSubmission(attempt, project, task, feedback).onError { error ->
+      solutionNotAccepted(project, task, error)
+      return
+    }
+    val rejectionMessage = submission.rejectionMessage(task)
+    if (rejectionMessage != null) {
+      solutionNotAccepted(project, task, rejectionMessage)
+      return
+    }
+    SubmissionsManager.getInstance(project).addToSubmissionsWithStatus(task.id, task.status, submission)
+    checkStageToBeCompleted(task)
+  }
+
+  private fun postEduSubmission(
+    attempt: Attempt,
+    project: Project,
+    task: Task,
+    feedback: String
+  ): Result<StepikBasedSubmission, String> {
+    val files = getSolutionFilesResult(project, task).onError { error ->
+      LOG.error(error)
+      return Err(EduCoreBundle.message("error.failed.to.collect.files", task.name))
+    }
     val submission = HyperskillSubmissionFactory.createEduTaskSubmission(task, attempt, files, feedback)
-    when (val response = HyperskillConnector.getInstance().postSubmission(submission)) {
-      is Err -> showErrorDetails(project, response.error)
-      is Ok -> SubmissionsManager.getInstance(project).addToSubmissionsWithStatus(task.id, task.status, response.value)
+    return HyperskillConnector.getInstance().postSubmission(submission)
+  }
+
+  /**
+   * A submission for an edu task carries the score the IDE has determined itself, so the status sent back by the server
+   * is only meaningful as an objection to it: the server either disagrees with a solved local check or explains why it
+   * did not accept the solution at all, e.g. because the stage is locked behind a subscription.
+   */
+  private fun StepikBasedSubmission.rejectionMessage(task: Task): String? {
+    val submissionStatus = status ?: return null
+    if (submissionStatus == EVALUATION_STATUS || submissionStatus == CheckStatus.Solved.rawStatus) return null
+
+    val explanation = hint.nullize() ?: feedback?.message.nullize()
+    if (explanation != null) return explanation
+    return if (task.status == CheckStatus.Solved) EduCoreBundle.message("error.solution.rejected", EduNames.JBA) else null
+  }
+
+  /**
+   * The local check result is shown and saved before the solution is posted
+   * (see `CheckAction.StudyCheckTask.onSuccess`), so a solution the server did not accept has to be rolled back here:
+   * otherwise the task keeps the solved status it was given by the local tests only.
+   */
+  private fun solutionNotAccepted(project: Project, task: Task, error: String) {
+    showErrorDetails(project, error)
+    if (task.status != CheckStatus.Solved) return
+
+    task.status = CheckStatus.Unchecked
+    task.feedback = CheckFeedback(Date(), CheckResult(CheckStatus.Unchecked, error))
+    YamlFormatSynchronizer.saveItem(task)
+    runInEdt {
+      if (project.isDisposed) return@runInEdt
+      val taskToolWindow = TaskToolWindowView.getInstance(project)
+      if (taskToolWindow.currentTask?.id == task.id) {
+        taskToolWindow.updateCheckPanel(task)
+      }
+      updateCourseProgress(project)
+      ProjectView.getInstance(project).refresh()
     }
   }
 
@@ -220,7 +273,7 @@ object HyperskillCheckConnector {
     EduNotificationManager.create(
       ERROR,
       EduCoreBundle.message("error.failed.to.post.solution"),
-      EduFormatBundle.message("help.use.guide", EduNames.FAILED_TO_POST_TO_JBA_URL)
+      EduCoreBundle.message("error.failed.to.post.solution.reason", error, EduNames.FAILED_TO_POST_TO_JBA_URL)
     ).addAction(NotificationAction.createSimpleExpiring("Open in Browser") {
       EduBrowser.getInstance().browse(EduNames.FAILED_TO_POST_TO_JBA_URL)
     })

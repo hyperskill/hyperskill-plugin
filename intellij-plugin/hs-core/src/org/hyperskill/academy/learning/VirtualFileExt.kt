@@ -27,6 +27,7 @@ import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.components.JBLoadingPanel
 import com.intellij.util.SlowOperations
 import com.intellij.util.concurrency.annotations.RequiresBlockingContext
+import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.concurrency.annotations.RequiresWriteLock
 import com.intellij.util.io.ReadOnlyAttributeUtil
 import com.intellij.util.ui.UIUtil
@@ -81,6 +82,16 @@ fun VirtualFile.findFileByRelativePathOrSelf(path: String): VirtualFile? {
   return if (path.isEmpty()) this else findFileByRelativePath(path)
 }
 
+/**
+ * Compares by path rather than by instance: the course root is re-resolved on every access through
+ * `guessProjectDir()`, so relying on both sides being the very same [VirtualFile] object makes the whole course
+ * structure unresolvable as soon as they are not.
+ */
+fun VirtualFile?.isSameFileAs(other: VirtualFile?): Boolean {
+  if (this == null || other == null) return false
+  return this == other || FileUtil.pathsEqual(path, other.path)
+}
+
 fun VirtualFile.getSection(project: Project): Section? {
   return getSection(project.toCourseInfoHolder())
 }
@@ -88,7 +99,7 @@ fun VirtualFile.getSection(project: Project): Section? {
 fun VirtualFile.getSection(holder: CourseInfoHolder<out Course?>): Section? {
   val course = holder.course ?: return null
   if (!isDirectory) return null
-  return if (holder.courseDir.findFileByRelativePathOrSelf(course.customContentPath) == parent) course.getSection(name) else null
+  return if (holder.courseDir.findFileByRelativePathOrSelf(course.customContentPath).isSameFileAs(parent)) course.getSection(name) else null
 }
 
 fun VirtualFile.isSectionDirectory(project: Project): Boolean {
@@ -108,7 +119,7 @@ fun VirtualFile.getLesson(holder: CourseInfoHolder<out Course?>): Lesson? {
   if (section != null) {
     return section.getLesson(name)
   }
-  return if (holder.courseDir.findFileByRelativePathOrSelf(course.customContentPath) == parent) course.getLesson(name) else null
+  return if (holder.courseDir.findFileByRelativePathOrSelf(course.customContentPath).isSameFileAs(parent)) course.getLesson(name) else null
 }
 
 fun VirtualFile.isLessonDirectory(project: Project): Boolean {
@@ -309,6 +320,7 @@ fun VirtualFile.setHighlightLevel(project: Project, highlightLevel: EduFileError
   }
 }
 
+@RequiresEdt
 fun VirtualFile.setHighlightLevelInsideWriteAction(project: Project, highlightLevel: EduFileErrorHighlightLevel) {
   checkIsWriteActionAllowed()
 
@@ -326,6 +338,8 @@ fun VirtualFile.setHighlightLevelInsideWriteAction(project: Project, highlightLe
 
   // TriggerCompilerHighlightingService will fail if the document for the virtualFile is null.
   // Read the documentation for FileDocumentManager.getDocument to find out when the document may be null.
+  // `getDocument` may create the document, which is EDT-only since 2026.2, hence @RequiresEdt on this function:
+  // callers have to take the write lock on the EDT (`edtWriteAction`), not with a background write action.
   if (FileDocumentManager.getInstance().getDocument(this) == null) return
 
   HighlightLevelUtil.forceRootHighlighting(psiFile, fileHighlightLevel) // this utility method makes additional null checks

@@ -76,14 +76,16 @@ const val LAST_NAME = "last_name"
 const val IS_GUEST = "is_guest"
 
 
+// The lists are not `lateinit`: an error response may well carry no list at all, and then the request has to fail
+// with the usual error result instead of an `UninitializedPropertyAccessException`
 class SubmissionsList : WithPaginationMetaData() {
   @JsonProperty(SUBMISSIONS)
-  lateinit var submissions: List<StepikBasedSubmission>
+  var submissions: List<StepikBasedSubmission> = emptyList()
 }
 
 class AttemptsList : WithPaginationMetaData() {
   @JsonProperty(ATTEMPTS)
-  lateinit var attempts: List<Attempt>
+  var attempts: List<Attempt> = emptyList()
 }
 
 // Auxiliary:

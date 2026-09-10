@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.taskToolWindow.htmlTransformers.steps
 
 import org.hyperskill.academy.learning.JavaUILibrary
+import org.hyperskill.academy.learning.courseFormat.ext.courseOrNull
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.taskToolWindow.htmlTransformers.HtmlTransformer
 import org.hyperskill.academy.learning.taskToolWindow.htmlTransformers.HtmlTransformerContext
@@ -15,7 +16,7 @@ import org.jsoup.nodes.TextNode
 object HintsWrapper : HtmlTransformer {
 
   override fun transform(html: Document, context: HtmlTransformerContext): Document {
-    if (context.task.course is HyperskillCourse) {
+    if (context.task.courseOrNull is HyperskillCourse) {
       return html
     }
 

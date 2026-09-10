@@ -481,7 +481,11 @@ object HyperskillOpenInIdeRequestHandler : OpenInIdeRequestHandler<HyperskillOpe
     topicLesson: Lesson,
     tasks: List<Task>
   ) {
-    GeneratorUtils.createSection(project, topicsSection, project.courseDir)
+    // The `Topics` directory may already exist while the section is missing from the in-memory course, e.g. because
+    // its config could not be loaded. Creating a "unique" directory then renames the section to `Topics (1)`,
+    // persists that name into course-info.yaml and orphans everything under the real `Topics` -- repeat, and the
+    // project ends up with `Topics (1)`, `Topics (2)`, ... each holding a part of the learner's work.
+    GeneratorUtils.createSection(project, topicsSection, project.courseDir, reuseExistingDir = true)
     tasks.forEach { task -> YamlFormatSynchronizer.saveItemWithRemoteInfo(task) }
     YamlFormatSynchronizer.saveItem(topicLesson)
     YamlFormatSynchronizer.saveItem(topicsSection)

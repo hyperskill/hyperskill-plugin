@@ -115,7 +115,9 @@ class TabManager(private val project: Project) : Disposable {
   }
 
   fun updateTaskDescription(task: Task?) {
-    task ?: return
-    descriptionTab.update(task)
+    // A null task still has to reach the tool window: it renders the "open any task" placeholder there.
+    // Returning early instead leaves the browser showing whatever it was constructed with, which is a
+    // `file:///jbcefbrowser/...` URL that does not exist -- the user sees Chromium's ERR_FILE_NOT_FOUND page.
+    descriptionTab.updateTaskDescription(task)
   }
 }

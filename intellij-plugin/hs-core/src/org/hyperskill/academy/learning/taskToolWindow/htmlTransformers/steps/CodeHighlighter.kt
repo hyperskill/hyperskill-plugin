@@ -1,6 +1,7 @@
 package org.hyperskill.academy.learning.taskToolWindow.htmlTransformers.steps
 
 import com.intellij.openapi.fileTypes.PlainTextLanguage
+import org.hyperskill.academy.learning.courseFormat.ext.courseOrNull
 import org.hyperskill.academy.learning.courseFormat.ext.languageById
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.taskToolWindow.htmlTransformers.HtmlTransformer
@@ -13,7 +14,7 @@ object CodeHighlighter : HtmlTransformer {
     val task = context.task
     val project = context.project
 
-    val course = task.course
+    val course = task.courseOrNull ?: return html
     val language = if (course is HyperskillCourse) PlainTextLanguage.INSTANCE else course.languageById ?: return html
 
     return highlightCodeFragments(project, html, language)

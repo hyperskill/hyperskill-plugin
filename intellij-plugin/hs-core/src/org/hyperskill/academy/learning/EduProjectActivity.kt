@@ -4,7 +4,7 @@ import com.intellij.ide.projectView.ProjectView
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.writeAction
+import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -82,11 +82,11 @@ class EduProjectActivity : ProjectActivity {
 
     SyncChangesStateManager.getInstance(project).updateSyncChangesState(course)
 
-    withContext(Dispatchers.EDT) {
-      writeAction {
-        course.visitTasks {
-          setHighlightLevelForFilesInTask(it, project)
-        }
+    // `edtWriteAction` and not `writeAction`: since 2026.2 the latter takes the write lock on a background thread,
+    // and `setHighlightLevelForFilesInTask` needs the EDT (see `VirtualFile.setHighlightLevelInsideWriteAction`).
+    edtWriteAction {
+      course.visitTasks {
+        setHighlightLevelForFilesInTask(it, project)
       }
     }
   }

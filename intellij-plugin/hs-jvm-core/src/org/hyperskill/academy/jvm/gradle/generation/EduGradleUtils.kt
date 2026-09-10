@@ -13,8 +13,9 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.util.lang.JavaVersion
 import org.hyperskill.academy.jvm.gradle.GradleWrapperListener
+import org.hyperskill.academy.jvm.hasExistingHome
+import org.hyperskill.academy.jvm.releaseFeatureVersion
 import org.hyperskill.academy.jvm.messages.EduJVMBundle
 import org.hyperskill.academy.learning.CourseInfoHolder
 import org.hyperskill.academy.learning.StudyTaskManager
@@ -204,35 +205,18 @@ object EduGradleUtils {
    */
   private fun findCompatibleJdk(maxFeatureVersion: Int): Sdk? {
     return ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance())
+      // An uninstalled JDK is still listed in the table and still reports its version, but running the Gradle daemon
+      // on it fails with `Invalid Gradle JDK configuration found`
+      .filter { it.hasExistingHome }
       .mapNotNull { sdk -> sdk.releaseFeatureVersion?.let { sdk to it } }
       .filter { (_, featureVersion) -> featureVersion in MIN_SUPPORTED_JDK_FEATURE_VERSION..maxFeatureVersion }
       .maxByOrNull { (_, featureVersion) -> featureVersion }
       ?.first
   }
 
-  /**
-   * Feature version of a JDK, or `null` if it is a pre-release build.
-   *
-   * The Gradle integration refuses to run on EA and project builds (`26-ea`, `23-valhalla`, ...) and falls back
-   * to an arbitrary installation instead, so such JDKs must never be offered as the Gradle JVM.
-   *
-   * Note that [JavaSdk.getVersion] is deliberately not used here: `JavaSdkVersion` has no entry for a JDK newer
-   * than the one the IDE knows about, so it reports `null` for it, and such a JDK would be silently skipped.
-   */
-  private val Sdk.releaseFeatureVersion: Int?
-    get() {
-      val version = versionString ?: return null
-      if (PRE_RELEASE_JDK_VERSION.containsMatchIn(version)) return null
-      val javaVersion = JavaVersion.tryParse(version) ?: return null
-      return if (javaVersion.ea) null else javaVersion.feature
-    }
-
   private val Sdk.javaSdkVersion: JavaSdkVersion? get() = JavaSdk.getInstance().getVersion(this)
 
   private const val MIN_SUPPORTED_JDK_FEATURE_VERSION = 8
-
-  /** Matches a feature version followed by a pre-release qualifier: `26-ea`, `25-internal`, `23-valhalla`. */
-  private val PRE_RELEASE_JDK_VERSION = Regex("""\d+(\.\d+)*-[A-Za-z]""")
 
   fun updateGradleSettings(project: Project) {
     val projectBasePath = project.basePath ?: error("Failed to find base path for the project during gradle project setup")

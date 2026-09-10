@@ -58,19 +58,30 @@ object GeneratorUtils {
     unpackAdditionalFiles(holder, ALL_EXCEPT_IDEA_DIRECTORY)
   }
 
+  /**
+   * @param reuseExistingDir keeps [item] in a directory of the same name if one already exists, instead of creating
+   * a uniquely named sibling. Pass it when the section is known to be the one that directory belongs to, so that a
+   * section missing from the in-memory course cannot be re-created next to its own files.
+   */
   @RequiresBlockingContext
   @Throws(IOException::class)
-  fun createSection(project: Project, item: Section, baseDir: VirtualFile): VirtualFile {
-    return createSection(project.toCourseInfoHolder(), item, baseDir)
+  fun createSection(project: Project, item: Section, baseDir: VirtualFile, reuseExistingDir: Boolean = false): VirtualFile {
+    return createSection(project.toCourseInfoHolder(), item, baseDir, reuseExistingDir)
   }
 
   @RequiresBlockingContext
   @Throws(IOException::class)
-  private fun createSection(holder: CourseInfoHolder<out Course?>, item: Section, baseDir: VirtualFile): VirtualFile {
+  private fun createSection(
+    holder: CourseInfoHolder<out Course?>,
+    item: Section,
+    baseDir: VirtualFile,
+    reuseExistingDir: Boolean = false
+  ): VirtualFile {
     val parentDir = runInWriteActionAndWait {
       VfsUtil.createDirectoryIfMissing(baseDir, item.parent.getPathToChildren())
     }
-    val sectionDir = createUniqueDir(parentDir, item)
+    val existingDir = if (reuseExistingDir) parentDir.findChild(item.name)?.takeIf { it.isDirectory } else null
+    val sectionDir = existingDir ?: createUniqueDir(parentDir, item)
 
     for (lesson in item.lessons) {
       createLesson(holder, lesson, sectionDir)

@@ -38,6 +38,22 @@ fun StudyItem.getDir(courseDir: VirtualFile): VirtualFile? {
   }
 }
 
+/**
+ * The course this item belongs to, or `null` if the item is not attached to one.
+ *
+ * Unlike [StudyItem.course] it doesn't fail on items with a missing parent link, which happens when the course
+ * structure couldn't be fully restored from the config files.
+ */
+val StudyItem.courseOrNull: Course?
+  get() {
+    var item: StudyItem? = this
+    while (item != null) {
+      if (item is Course) return item
+      item = item.parentOrNull
+    }
+    return null
+  }
+
 fun StudyItem.visitTasks(action: (Task) -> Unit) {
   when (this) {
     is LessonContainer -> visitTasks(action)
