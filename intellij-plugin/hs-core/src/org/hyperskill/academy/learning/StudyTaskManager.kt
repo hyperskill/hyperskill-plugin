@@ -6,6 +6,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
@@ -34,6 +35,11 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable, Ed
     get() = _course
     set(course) {
       _course = course
+      if (course != null) {
+        // The course was resolved through another path, e.g. the `course-info.yaml` recovery in `YamlLoader.doLoad`
+        // or course generation. Clear the failure flag so a later reload is not blocked by a stale failure.
+        courseLoadedWithError = false
+      }
       course?.fireCourseSetEvent()
     }
 
@@ -66,6 +72,10 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable, Ed
           loadCourse(project)
         }
         catch (th: Throwable) {
+          // Important: ProcessCanceledException must be propagated as-is in the IntelliJ Platform.
+          // Swallowing it here would latch `courseLoadedWithError` on a merely cancelled read action, leaving the
+          // project without a course for the rest of the session with no way to recover short of a restart.
+          if (th is ProcessCanceledException) throw th
           LOG.error("Error while loading course", th)
           null
         }
@@ -93,6 +103,7 @@ class StudyTaskManager(private val project: Project) : DumbAware, Disposable, Ed
   @TestOnly
   override fun cleanUpState() {
     course = null
+    courseLoadedWithError = false
   }
 
   companion object {

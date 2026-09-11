@@ -121,18 +121,21 @@ fun <T> Response<T>.executeParsingErrors(omitErrors: Boolean = false): Result<Re
       Err("${message("error.service.maintenance")}\n\n$error") // 502, 503
     in HTTP_INTERNAL_ERROR..HTTP_VERSION ->
       Err("${message("error.service.down")}\n\n$error") // 500x
-    HTTP_FORBIDDEN, HTTP_UNAUTHORIZED -> {
-      val errorMessage = processForbiddenErrorMessage(error) ?: message("error.access.denied")
-      Err(errorMessage)
-    }
+    // 401 means the access token is not valid anymore, and it's the generic message that makes
+    // `StepikBasedConnector.withTokenRefreshIfFailed` refresh the tokens and repeat the request
+    HTTP_UNAUTHORIZED -> Err(processErrorMessage(error, MESSAGE_FIELD) ?: message("error.access.denied"))
+
+    // Unlike 401, 403 is not about an expired token: the server explains why the request is not allowed,
+    // e.g. that the stage is locked behind a subscription, so its own text is the useful one
+    HTTP_FORBIDDEN -> Err(processErrorMessage(error, MESSAGE_FIELD, DETAIL_FIELD) ?: message("error.access.denied"))
 
     HTTP_UNAVAILABLE_FOR_LEGAL_REASONS -> { // 451
       LOG.warning(message("error.agreement.not.accepted"))
       Err(fullErrorText)
     }
 
-    in HTTP_BAD_REQUEST..HTTP_UNSUPPORTED_TYPE ->
-      Err(message("error.unexpected.error", error)) // 400x
+    in HTTP_BAD_REQUEST..HTTP_UNSUPPORTED_TYPE -> // 400x
+      Err(processErrorMessage(error, MESSAGE_FIELD, DETAIL_FIELD) ?: message("error.unexpected.error", error))
     else -> {
       LOG.warning("Code $code is not handled")
       Err(message("error.unexpected.error", error))
@@ -140,15 +143,19 @@ fun <T> Response<T>.executeParsingErrors(omitErrors: Boolean = false): Result<Re
   }
 }
 
-private fun processForbiddenErrorMessage(jsonText: String): String? {
+/**
+ * Extracts the explanation the server put into the error body, looking at [fields] in the given order.
+ * Returns `null` when the body is not a JSON object or none of the fields carries any text.
+ */
+private fun processErrorMessage(jsonText: String, vararg fields: String): String? {
   return try {
     val factory = JsonFactory()
     val mapper = ObjectMapper(factory)
     val module = SimpleModule()
     mapper.registerModule(module)
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    val courseNode = mapper.readTree(jsonText) as ObjectNode
-    courseNode.get("message")?.asText()
+    val errorNode = mapper.readTree(jsonText) as ObjectNode
+    fields.firstNotNullOfOrNull { field -> errorNode.get(field)?.asText()?.takeIf { it.isNotBlank() } }
   }
   catch (_: ClassCastException) {
     null
@@ -157,5 +164,8 @@ private fun processForbiddenErrorMessage(jsonText: String): String? {
     null
   }
 }
+
+private const val MESSAGE_FIELD = "message"
+private const val DETAIL_FIELD = "detail"
 
 const val HTTP_UNAVAILABLE_FOR_LEGAL_REASONS: Int = 451

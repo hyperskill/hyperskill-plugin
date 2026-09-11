@@ -6,10 +6,10 @@ import org.hyperskill.academy.java.JConfigurator
 import org.hyperskill.academy.java.JCourseBuilder
 import org.hyperskill.academy.jvm.JdkLanguageSettings
 import org.hyperskill.academy.jvm.JdkProjectSettings
-import org.hyperskill.academy.jvm.ParsedJavaVersion
 import org.hyperskill.academy.jvm.gradle.GradleCourseBuilderBase
 import org.hyperskill.academy.jvm.gradle.GradleHyperskillConfigurator
 import org.hyperskill.academy.jvm.gradle.generation.GradleCourseProjectGenerator
+import org.hyperskill.academy.jvm.requiredJdkVersion
 import org.hyperskill.academy.learning.EduCourseBuilder
 import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -45,10 +45,9 @@ class JHyperskillConfigurator : GradleHyperskillConfigurator<JdkProjectSettings>
     GradleCourseProjectGenerator(builder, course) {
 
     override fun getJdk(settings: JdkProjectSettings): Sdk? {
-      return super.getJdk(settings) ?: JdkLanguageSettings.findSuitableJdk(
-        ParsedJavaVersion.fromJavaSdkDescriptionString(course.languageVersion),
-        settings.model
-      )
+      // `course.languageVersion` is the language level of a Hyperskill Java course ("11"), not the JDK its checker
+      // needs, so it must not be used here: it would accept a JDK the course cannot be checked with
+      return super.getJdk(settings) ?: JdkLanguageSettings.findSuitableJdk(course.requiredJdkVersion, settings.model)
     }
   }
 

@@ -1,10 +1,12 @@
 package org.hyperskill.academy.learning.stepik.hyperskill.update
 
+import kotlinx.coroutines.runBlocking
 import org.hyperskill.academy.learning.CourseBuilder
 import org.hyperskill.academy.learning.SectionBuilder
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.fileTree
 import org.hyperskill.academy.learning.update.UpdateTestBase
+import org.hyperskill.academy.learning.update.elements.SectionDeletionInfo
 import org.junit.Test
 
 class HyperskillSectionUpdateTest : UpdateTestBase<HyperskillCourse>() {
@@ -422,6 +424,31 @@ class HyperskillSectionUpdateTest : UpdateTestBase<HyperskillCourse>() {
       file("settings.gradle")
     }
     expectedStructure.assertEquals(rootDir)
+  }
+
+  @Test
+  fun `test sections without a server id are paired by name`() {
+    // Sections created locally, like the Hyperskill "Topics" section, never receive a server id. Pairing them by
+    // id alone matches every one of them with the first remote id-less section and deletes the rest from disk.
+    localCourse = createBasicHyperskillCourse {
+      section("Topics") {
+        lesson("lesson1", id = 1) {
+          eduTask("task1", stepId = 1) { taskFile("src/Task.kt") }
+        }
+      }
+      section("Topics (1)") {
+        lesson("lesson2", id = 2) {
+          eduTask("task2", stepId = 2) { taskFile("src/Task.kt") }
+        }
+      }
+    }
+
+    val remoteCourse = toRemoteCourse { }
+
+    val updates = runBlocking { getUpdater(localCourse).collect(remoteCourse) }
+
+    val deleted = updates.filterIsInstance<SectionDeletionInfo>().map { it.localItem.name }
+    assertEquals("Sections were paired with the wrong counterpart", emptyList<String>(), deleted)
   }
 
   override fun initiateLocalCourse() {

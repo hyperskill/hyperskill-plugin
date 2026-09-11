@@ -277,6 +277,7 @@ object NavigationUtils {
     }
   }
 
+  @RequiresEdt
   fun setHighlightLevelForFilesInTask(task: Task, project: Project) {
     checkIsWriteActionAllowed()
     for (taskFile in task.taskFiles.values) {

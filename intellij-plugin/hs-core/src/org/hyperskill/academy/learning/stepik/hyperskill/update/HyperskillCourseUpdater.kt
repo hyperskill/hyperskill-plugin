@@ -61,9 +61,10 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
       val lessonFromServer = connector.getLesson(this) ?: return null
       addLesson(lessonFromServer)
       if (isFeatureEnabled(EduExperimentalFeatures.NEW_COURSE_UPDATE)) {
-        runBlockingCancellable {
+        val topicsMirrored = runBlockingCancellable {
           addTopicSectionToRemoteCourseIfAbsent(hyperskillCourse)
         }
+        if (!topicsMirrored) return null
       }
       init(this, false)
     }
@@ -196,27 +197,38 @@ class HyperskillCourseUpdater(private val project: Project, val course: Hyperski
     }
   }
 
+  /**
+   * @return `false` if the topics could not be mirrored completely, in which case the reconstructed remote course
+   * is missing content that exists locally and must not be used to update the project.
+   */
   @VisibleForTesting
-  suspend fun addTopicSectionToRemoteCourseIfAbsent(remoteCourse: HyperskillCourse) {
-    if (remoteCourse.getTopicsSection() != null) return
+  suspend fun addTopicSectionToRemoteCourseIfAbsent(remoteCourse: HyperskillCourse): Boolean {
+    if (remoteCourse.getTopicsSection() != null) return true
 
     val topicSection = course.getTopicsSection()
-    val localTopics = topicSection?.lessons ?: return
+    val localTopics = topicSection?.lessons ?: return true
 
     val remoteTopicsSection = remoteCourse.createTopicsSection()
     for (topic in localTopics) {
       val remoteSteps = withContext(Dispatchers.IO) {
         HyperskillConnector.getInstance().getProblems(course, topic).associateBy { it.id }
       }
-      if (remoteSteps.isEmpty()) continue
+      // `getProblems` reports any request failure as an empty list, so an empty response for a topic that has tasks
+      // locally is indistinguishable from a network error. Leaving the topic out of the remote course would make the
+      // updater treat it as deleted on the server and erase the learner's files, so give up on the whole update.
+      if (remoteSteps.isEmpty() && topic.taskList.isNotEmpty()) {
+        LOG.warn("No problems loaded for topic `${topic.name}`, skipping the course update")
+        return false
+      }
 
       val remoteTopic = remoteTopicsSection.createTopicLesson(topic.presentableName)
       for (step in topic.taskList) {
         val remoteTask = remoteSteps[step.id] ?: continue
         remoteTopic.addTask(remoteTask)
       }
-      remoteTopic.init(remoteCourse, false)
+      remoteTopic.init(remoteTopicsSection, false)
     }
+    return true
   }
 
   private fun updateCourse(remoteCourse: HyperskillCourse) {

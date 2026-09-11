@@ -14,6 +14,20 @@ import org.jetbrains.annotations.TestOnly
 abstract class StudyItemUpdater<T : StudyItem, U : StudyItemUpdate<T>>(protected val project: Project) : ItemUpdater<T> {
   protected abstract suspend fun collect(localItems: List<T>, remoteItems: List<T>): List<U>
 
+  /**
+   * Sections and lessons created locally (Hyperskill topics) never receive a server id, so several of them share
+   * id `0`. Matching purely by id then pairs the first id-less remote item with every id-less local item and turns
+   * all the remaining ones into deletions, which erase the learner's files. Names disambiguate those.
+   */
+  protected fun <I : StudyItem> Collection<I>.findCounterpartOf(localItem: I): I? {
+    firstOrNull { it.id != 0 && it.id == localItem.id }?.let { return it }
+    if (localItem.id != 0) return null
+
+    val idLessItems = filter { it.id == 0 }
+    // `singleOrNull` keeps a renamed item paired with its counterpart while it is the only candidate
+    return idLessItems.firstOrNull { it.name == localItem.name } ?: idLessItems.singleOrNull()
+  }
+
   @TestOnly
   protected suspend fun update(localItems: List<T>, remoteItems: List<T>) {
     val updates = collect(localItems, remoteItems)

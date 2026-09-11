@@ -151,8 +151,21 @@ object YamlDeepLoader {
       // set parent to get dir
       task.parent = this
       val taskDir = task.getDir(project.courseDir)
+      if (taskDir == null) {
+        // The task directory is not resolvable right now (VFS not refreshed yet, Gradle sync in flight, ...).
+        // Dropping every task file here would make `YamlFormatSynchronizer.saveAll` persist an empty `files:` list,
+        // turning a transient loading problem into permanent content loss, so keep the model as it is.
+        LOG.warn("Task dir for `${task.name}` was not found, keeping its task files as is")
+        continue
+      }
       val invalidTaskFilesNames = task.taskFiles
-        .filter { (name, _) -> taskDir?.findFileByRelativePath(name) == null }.map { it.key }
+        .filter { (name, _) -> taskDir.findFileByRelativePath(name) == null }.map { it.key }
+      if (invalidTaskFilesNames.isNotEmpty()) {
+        // Contrary to the doc above, these files no longer survive in the config file: any later `saveItem(task)`
+        // rewrites `files:` from this truncated model. Log what disappeared so a report like GH-59 -- where a Gradle
+        // sync removed the task modules and source files went missing -- can be diagnosed from the log alone.
+        LOG.warn("Task files not found under `${taskDir.path}`, removing from task `${task.name}`: $invalidTaskFilesNames")
+      }
       invalidTaskFilesNames.forEach { task.removeTaskFile(it) }
     }
   }

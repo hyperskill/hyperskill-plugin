@@ -23,6 +23,7 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillProject
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillStage
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTopic
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.gradle.GradleScriptMigration
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.network.executeHandlingExceptions
 import org.hyperskill.academy.learning.network.executeParsingErrors
@@ -272,6 +273,11 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
       LOG.warn("Failed to load additional files for $projectId stages because of: $e")
       return
     }
+
+    // Migrate here and not where the files are written to disk: the course updater decides whether an additional file
+    // has to be rewritten by comparing the remote content with the one on disk, so keeping the outdated content in the
+    // model would make it revert the migrated scripts on every update check.
+    GradleScriptMigration.migrateAdditionalFiles(courseInfo.additionalFiles)
 
     course.additionalFiles = courseInfo.additionalFiles
     course.solutionsHidden = courseInfo.solutionsHidden

@@ -8,6 +8,13 @@ import kotlin.reflect.KProperty
 
 const val VERIFY_CLASSES_TASK_NAME = "verifyClasses"
 
+/**
+ * Extra property a module sets to let [VERIFY_CLASSES_TASK_NAME] accept classes outside its own package.
+ * Comma-separated package prefixes. Only for shims that must sit in a platform package to reach its
+ * package-private or `internal` API -- there is no other way to call it.
+ */
+const val VERIFY_CLASSES_ALLOWED_PACKAGES = "verifyClassesAllowedPackages"
+
 private const val IDE_IDEA = "idea"
 private const val IDE_CLION = "clion"
 private const val IDE_PYCHARM = "pycharm"

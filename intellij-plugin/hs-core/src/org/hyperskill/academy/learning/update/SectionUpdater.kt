@@ -37,7 +37,7 @@ abstract class SectionUpdater(project: Project, private val course: Course) : St
 
       // sections to be updated
       val localSection = localSections.firstOrNull() ?: continue
-      val remoteSection = remoteSections.find { it.id == localSection.id }
+      val remoteSection = remoteSections.findCounterpartOf(localSection)
       if (remoteSection == null) {
         updates.add(SectionDeletionInfo(localSection))
         localSections.remove(localSection)

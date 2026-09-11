@@ -1,8 +1,6 @@
 package org.hyperskill.academy.learning.projectView
 
-import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.projectView.ViewSettings
-import com.intellij.ide.projectView.impl.nodes.ProjectViewDirectoryHelper
 import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
@@ -21,6 +19,18 @@ open class DirectoryNode(
   task: Task?
 ) : EduNode<Task>(project, value, viewSettings, task) {
 
+  /** The task is only kept to decide which children are visible; the node itself stands for the directory. */
+  override val presentedItem: Task?
+    get() = null
+
+  override val presentableName: String
+    get() {
+      val name = value.virtualFile.name
+      val course = StudyTaskManager.getInstance(myProject).course ?: return super.presentableName
+      // A source or test directory always keeps its own name, whatever the project view would shorten it to
+      return if (name == course.sourceDir || name in course.testDirs) name else super.presentableName
+    }
+
   override fun canNavigate(): Boolean = true
 
   public override fun modifyChildNode(childNode: AbstractTreeNode<*>): AbstractTreeNode<*>? {
@@ -33,19 +43,5 @@ open class DirectoryNode(
 
   open fun createChildFileNode(originalNode: AbstractTreeNode<*>, psiFile: PsiFile): AbstractTreeNode<*> {
     return originalNode
-  }
-
-  override fun updateImpl(data: PresentationData) {
-    val course = StudyTaskManager.getInstance(myProject).course ?: return
-    val dir = value
-    val directoryFile = dir.virtualFile
-    val name = directoryFile.name
-    if (name == course.sourceDir || course.testDirs.contains(name)) {
-      data.presentableText = name
-    }
-    else {
-      val parentValue = parentValue
-      data.presentableText = ProjectViewDirectoryHelper.getInstance(myProject).getNodeName(settings, parentValue, dir)
-    }
   }
 }

@@ -68,6 +68,7 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
     val existingChildren = existingItem.items
     val preservedChildren = mutableListOf<StudyItem>()
     val mapper = mapper()
+    var unresolvedChildren = false
     for (titledItem in deserializedItem.items) {
       val child = existingChildren.find { it.name == titledItem.name }
       if (child != null) {
@@ -77,9 +78,17 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
       else {
         // this code adding new child item if it was added in config and there's a dir
         // it is called from `YamlLoader.loadItem`
-        val configFile = existingItem.getConfigFileForChild(project, titledItem.name) ?: continue
+        val configFile = existingItem.getConfigFileForChild(project, titledItem.name)
+        if (configFile == null) {
+          unresolvedChildren = true
+          continue
+        }
 
-        val deserializedChild = deserializeItemProcessingErrors(configFile, project, mapper = mapper) ?: continue
+        val deserializedChild = deserializeItemProcessingErrors(configFile, project, mapper = mapper)
+        if (deserializedChild == null) {
+          unresolvedChildren = true
+          continue
+        }
         deserializedChild.name = titledItem.name
         deserializedChild.index = titledItem.index
         deserializedChild.parent = existingItem
@@ -89,6 +98,9 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
     }
     // update items so as removed items are no longer in the course
     existingItem.items = preservedChildren
+    // A child named in the config could not be resolved, so `preservedChildren` is shorter than what the config file
+    // on disk claims. Recomputed on every apply rather than latched, so a later complete load clears it again.
+    existingItem.isPartiallyLoaded = unresolvedChildren
     existingItem.init(existingItem.parent, false)
   }
 }

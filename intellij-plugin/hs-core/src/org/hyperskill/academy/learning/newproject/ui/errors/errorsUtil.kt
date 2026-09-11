@@ -10,6 +10,7 @@ fun getErrorState(course: Course?, validateSettings: (Course) -> SettingsValidat
 
     languageError = when (validationResult) {
       is SettingsValidationResult.Pending -> ErrorState.SDKPending
+      is SettingsValidationResult.ReadyWithWarning -> ErrorState.LanguageSettingsWarning(validationResult.validationMessage)
       is SettingsValidationResult.Ready -> {
         val validationMessage = validationResult.validationMessage
         validationMessage?.let { ErrorState.LanguageSettingsError(it) } ?: ErrorState.None

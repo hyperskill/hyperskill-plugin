@@ -51,6 +51,10 @@ class DescriptionTab(project: Project) : TaskToolWindowTab(project) {
     taskTextToolWindow.updateTaskSpecificPanel(task)
   }
 
+  fun updateTaskDescription(task: Task?) {
+    taskTextToolWindow.update(task)
+  }
+
   override fun update(task: Task) {
     taskTextToolWindow.update(task)
   }

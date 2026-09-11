@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.application.impl.TestOnlyThreading
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.progress.ProgressIndicator
@@ -16,6 +15,7 @@ import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.getContainingTask
 import org.hyperskill.academy.learning.isUnitTestMode
 import org.hyperskill.academy.learning.selectedTaskFile
+import org.hyperskill.academy.platform.runWithoutWriteIntentLock
 import org.jetbrains.annotations.NonNls
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
@@ -64,7 +64,7 @@ object EduActionUtils {
     }
     while (true) {
       try {
-        TestOnlyThreading.releaseTheAcquiredWriteIntentLockThenExecuteActionAndTakeWriteIntentLockBack {
+        runWithoutWriteIntentLock {
           UIUtil.dispatchAllInvocationEvents()
         }
         future[10, TimeUnit.MILLISECONDS]

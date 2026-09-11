@@ -3,6 +3,7 @@ package org.hyperskill.academy.learning.yaml
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -14,6 +15,7 @@ import com.intellij.openapi.fileTypes.UnknownFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.UserDataHolderEx
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findFile
@@ -51,8 +53,11 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 
 object YamlFormatSynchronizer {
+  private val LOG = Logger.getInstance(YamlFormatSynchronizer::class.java)
+
   val LOAD_FROM_CONFIG = Key<Boolean>("Hyperskill.loadItem")
   val SAVE_TO_CONFIG = Key<Boolean>("Hyperskill.saveItem")
+  private val SYNCHRONIZATION_STARTED = Key<Boolean>("Hyperskill.synchronizationStarted")
 
   fun saveAll(project: Project) {
     // If there is no course associated with the project, there is nothing to save.
@@ -83,6 +88,17 @@ object YamlFormatSynchronizer {
     val errorMessageToLog = "Failed to find project for course"
     val project = course.project ?: error(errorMessageToLog)
     if (!YamlFormatSettings.shouldCreateConfigFiles(project)) {
+      return
+    }
+    // The item holds fewer children than its config file on disk claims, because some of them could not be resolved
+    // during the last load. Writing it out now would persist the truncated `content:` list and permanently drop the
+    // missing children from the course. Skipping the save keeps the on-disk structure intact until a load succeeds.
+    //
+    // Only the structural config is guarded. `*-remote-info.yaml` carries no `content:` list, so a partially loaded
+    // item has to keep persisting its remote state (id, update date, submissions) as usual -- otherwise a single
+    // unresolvable child would silently freeze the remote state of its whole container for the rest of the session.
+    if (item.isPartiallyLoaded && configName == item.configFileName) {
+      LOG.warn("Skipping save of ${item.itemType} `${item.name}`: its children were not fully resolved during load")
       return
     }
 
@@ -118,6 +134,11 @@ object YamlFormatSynchronizer {
     if (isUnitTestMode) {
       return
     }
+
+    // `StudyTaskManager.initializeCourse` may call this more than once for the same project now that a load failure
+    // is no longer latched forever. Without this guard every extra call would register another global document
+    // listener and another message bus connection, multiplying the notifications each YAML edit produces.
+    if (!(project as UserDataHolderEx).replace(SYNCHRONIZATION_STARTED, null, true)) return
 
     val disposable = StudyTaskManager.getInstance(project)
     EditorFactory.getInstance().eventMulticaster.addDocumentListener(YamlSynchronizationListener(project), disposable)

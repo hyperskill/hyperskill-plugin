@@ -4,9 +4,9 @@ import com.intellij.ide.projectView.ViewSettings
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
-import com.intellij.psi.PsiFile
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.TASK
 import org.hyperskill.academy.learning.courseFormat.FrameworkLesson
+import org.hyperskill.academy.learning.courseFormat.ext.courseOrNull
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.navigation.NavigationUtils
@@ -23,7 +23,7 @@ class FrameworkLessonNode private constructor(
 
   override fun modifyChildNode(childNode: AbstractTreeNode<*>): AbstractTreeNode<*>? {
     val task = item.currentTask() ?: return null
-    return CourseViewUtils.modifyTaskChildNode(myProject, childNode, task, ::createChildFileNode) { dir ->
+    return CourseViewUtils.modifyTaskChildNode(myProject, childNode, task, { node, _ -> node }) { dir ->
       DirectoryNode(myProject, dir, settings, task)
     }
   }
@@ -39,7 +39,7 @@ class FrameworkLessonNode private constructor(
 
   override val additionalInfo: String?
     get() {
-      val course = item.course
+      val course = item.courseOrNull
       return if (course is HyperskillCourse && item == course.getProjectLesson()) {
         val (tasksSolved, tasksTotal) = ProgressUtil.countProgress(item)
         if (tasksTotal == 0) {
@@ -49,10 +49,6 @@ class FrameworkLessonNode private constructor(
       }
       else super.additionalInfo
     }
-
-  private fun createChildFileNode(originalNode: AbstractTreeNode<*>, psiFile: PsiFile): AbstractTreeNode<*> {
-    return originalNode
-  }
 
   companion object {
 

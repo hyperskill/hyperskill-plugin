@@ -199,7 +199,7 @@ fun Task.getFormattedTaskText(project: Project): String? {
   text = StringUtil.replace(text, "%IDE_NAME%", ApplicationNamesInfo.getInstance().fullProductName)
   val textBuffer = StringBuffer(text)
   replaceActionIDsWithShortcuts(textBuffer)
-  if (course is HyperskillCourse) {
+  if (courseOrNull is HyperskillCourse) {
     removeHyperskillTags(textBuffer)
   }
   return textBuffer.toString()
@@ -227,7 +227,10 @@ fun Task.getTaskDirectory(project: Project): VirtualFile? {
 
 @RequiresReadLock
 fun Task.getTaskText(project: Project): String? {
-  val taskTextFile = getDescriptionFile(project, guessFormat = true) ?: return null
+  // The description file is looked up through the task directory, so it goes missing whenever the item is not
+  // properly attached to the course. Falling back to the text kept in the model shows the description instead of
+  // an empty tool window in that case.
+  val taskTextFile = getDescriptionFile(project, guessFormat = true) ?: return descriptionText.ifEmpty { null }
   val taskDescription = taskTextFile.getTextFromTaskTextFile() ?: return descriptionText
 
   if (taskTextFile.extension == DescriptionFormat.MD.extension) {

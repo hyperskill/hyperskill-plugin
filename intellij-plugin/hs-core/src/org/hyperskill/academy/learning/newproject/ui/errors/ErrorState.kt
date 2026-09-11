@@ -70,6 +70,12 @@ sealed class ErrorState(
 
   class LanguageSettingsError(message: ValidationMessage) : ErrorState(LANGUAGE_SETTINGS_ERROR, message, false)
 
+  /**
+   * Non-blocking counterpart of [LanguageSettingsError]: the message is shown, but the course can still be started
+   * because the plugin fixes the settings itself during project creation.
+   */
+  class LanguageSettingsWarning(message: ValidationMessage) : ErrorState(LANGUAGE_SETTINGS_WARNING, message, true)
+
   object JCEFRequired : ErrorState(
     NO_JCEF, ValidationMessage(
       EduCoreBundle.message("validation.no.jcef")
@@ -174,6 +180,8 @@ sealed class ErrorState(
  */
 private enum class ErrorSeverity {
   OK,
+
+  LANGUAGE_SETTINGS_WARNING,
 
   LANGUAGE_SETTINGS_PENDING,
 

@@ -3,12 +3,12 @@ package org.hyperskill.academy.jvm.gradle.checker
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.JavaSdkVersionUtil
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.roots.ui.configuration.ProjectSettingsService
 import org.hyperskill.academy.jvm.gradle.GradleCourseRefresher
 import org.hyperskill.academy.jvm.gradle.generation.EduGradleUtils
 import org.hyperskill.academy.jvm.hyperskillJdkVersion
+import org.hyperskill.academy.jvm.isHyperskillJdkVersion
 import org.hyperskill.academy.jvm.messages.EduJVMBundle
 import org.hyperskill.academy.learning.EduNames.ENVIRONMENT_CONFIGURATION_LINK_GRADLE
 import org.hyperskill.academy.learning.RefreshCause
@@ -27,7 +27,7 @@ open class GradleEnvironmentChecker : EnvironmentChecker() {
   override fun getEnvironmentError(project: Project, task: Task): CheckResult? {
     val sdk = ProjectRootManager.getInstance(project).projectSdk ?: return noSdkConfiguredResult
 
-    if (task.course is HyperskillCourse && JavaSdkVersionUtil.getJavaSdkVersion(sdk) != hyperskillJdkVersion) {
+    if (task.course is HyperskillCourse && !sdk.isHyperskillJdkVersion()) {
       return getIncorrectHyperskillJDKResult(project)
     }
 

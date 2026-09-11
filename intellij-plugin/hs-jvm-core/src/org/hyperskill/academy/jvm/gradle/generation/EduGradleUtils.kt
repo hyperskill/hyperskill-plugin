@@ -14,6 +14,8 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import org.hyperskill.academy.jvm.gradle.GradleWrapperListener
+import org.hyperskill.academy.jvm.hasExistingHome
+import org.hyperskill.academy.jvm.releaseFeatureVersion
 import org.hyperskill.academy.jvm.messages.EduJVMBundle
 import org.hyperskill.academy.learning.CourseInfoHolder
 import org.hyperskill.academy.learning.StudyTaskManager
@@ -85,9 +87,14 @@ object EduGradleUtils {
 
   private fun setUpGradleJvm(project: Project, projectSettings: GradleProjectSettings, sdk: Sdk?) {
     if (sdk == null) return
+    // `setGradleSettings` is called on every project opening, so a non-empty `gradleJvm` here is either
+    // the value we picked before or the one the user chose explicitly. Overwriting it changes the JVM
+    // the Gradle daemon runs on, and with it `JavaVersion.current()`, which the generated Hyperskill
+    // build scripts use to compute the requested Java toolchain.
+    if (!projectSettings.gradleJvm.isNullOrBlank()) return
 
     val gradleVersion = getGradleVersion(project)
-    val maxCompatibleJdk = gradleVersion?.let { getMaxCompatibleJdkVersion(it) }
+    val maxCompatibleJdk = gradleVersion?.let { getMaxCompatibleJdkFeatureVersion(it) }
 
     // If we know Gradle version and max compatible JDK, try to find a compatible JDK
     if (maxCompatibleJdk != null) {
@@ -164,43 +171,52 @@ object EduGradleUtils {
   }
 
   /**
-   * Returns maximum JDK version compatible with the given Gradle version.
+   * Returns the maximum JDK feature version compatible with the given Gradle version,
+   * or `null` for a Gradle version newer than the table below: guessing there would pin the daemon
+   * to an outdated JDK, so it's better to leave the choice to the platform.
+   *
    * Based on https://docs.gradle.org/current/userguide/compatibility.html
    */
-  private fun getMaxCompatibleJdkVersion(gradleVersion: String): JavaSdkVersion? {
+  private fun getMaxCompatibleJdkFeatureVersion(gradleVersion: String): Int? {
     val parts = gradleVersion.split(".")
     val major = parts.getOrNull(0)?.toIntOrNull() ?: return null
     val minor = parts.getOrNull(1)?.toIntOrNull() ?: 0
 
     return when {
-      major >= 9 -> JavaSdkVersion.JDK_23  // Gradle 9.x supports JDK 23
-      major >= 8 && minor >= 10 -> JavaSdkVersion.JDK_23
-      major >= 8 && minor >= 8 -> JavaSdkVersion.JDK_22
-      major >= 8 && minor >= 5 -> JavaSdkVersion.JDK_21
-      major >= 8 && minor >= 3 -> JavaSdkVersion.JDK_20
-      major >= 8 -> JavaSdkVersion.JDK_19
-      major >= 7 && minor >= 6 -> JavaSdkVersion.JDK_19
-      major >= 7 && minor >= 5 -> JavaSdkVersion.JDK_18
-      major >= 7 && minor >= 3 -> JavaSdkVersion.JDK_17
-      major >= 7 -> JavaSdkVersion.JDK_16
-      else -> JavaSdkVersion.JDK_11
+      major > 9 -> null
+      major == 9 && minor >= 1 -> 25
+      major == 9 -> 24
+      major == 8 && minor >= 14 -> 24
+      major == 8 && minor >= 10 -> 23
+      major == 8 && minor >= 8 -> 22
+      major == 8 && minor >= 5 -> 21
+      major == 8 && minor >= 3 -> 20
+      major == 8 -> 19
+      major == 7 && minor >= 6 -> 19
+      major == 7 && minor >= 5 -> 18
+      major == 7 && minor >= 3 -> 17
+      major == 7 -> 16
+      else -> 11
     }
   }
 
   /**
-   * Finds the highest available JDK that is compatible with the given max version.
+   * Finds the highest available release JDK that is compatible with the given max feature version.
    */
-  private fun findCompatibleJdk(maxVersion: JavaSdkVersion): Sdk? {
-    val javaSdk = JavaSdk.getInstance()
-    return ProjectJdkTable.getInstance().allJdks
-      .filter { javaSdk.isOfVersionOrHigher(it, JavaSdkVersion.JDK_1_8) }
-      .mapNotNull { sdk -> javaSdk.getVersion(sdk)?.let { version -> sdk to version } }
-      .filter { (_, version) -> version <= maxVersion }
-      .maxByOrNull { (_, version) -> version.ordinal }
+  private fun findCompatibleJdk(maxFeatureVersion: Int): Sdk? {
+    return ProjectJdkTable.getInstance().getSdksOfType(JavaSdk.getInstance())
+      // An uninstalled JDK is still listed in the table and still reports its version, but running the Gradle daemon
+      // on it fails with `Invalid Gradle JDK configuration found`
+      .filter { it.hasExistingHome }
+      .mapNotNull { sdk -> sdk.releaseFeatureVersion?.let { sdk to it } }
+      .filter { (_, featureVersion) -> featureVersion in MIN_SUPPORTED_JDK_FEATURE_VERSION..maxFeatureVersion }
+      .maxByOrNull { (_, featureVersion) -> featureVersion }
       ?.first
   }
 
   private val Sdk.javaSdkVersion: JavaSdkVersion? get() = JavaSdk.getInstance().getVersion(this)
+
+  private const val MIN_SUPPORTED_JDK_FEATURE_VERSION = 8
 
   fun updateGradleSettings(project: Project) {
     val projectBasePath = project.basePath ?: error("Failed to find base path for the project during gradle project setup")
