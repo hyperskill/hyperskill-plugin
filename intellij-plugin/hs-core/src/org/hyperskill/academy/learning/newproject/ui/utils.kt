@@ -99,12 +99,15 @@ fun createHyperlinkWithContextHelp(actionWrapper: ToolbarActionWrapper): JPanel 
   val action = actionWrapper.action
   val hyperlinkLabel = HyperlinkLabel(actionWrapper.text.get())
   hyperlinkLabel.addHyperlinkListener {
+    // `now = false` runs the action update off EDT (suspending) instead of blocking it in
+    // `runBlockingForActionExpand`, which can deadlock against a background write action.
+    // See https://github.com/hyperskill/hyperskill-plugin/issues/61
     ActionManager.getInstance().tryToExecute(
       action,
       null,
       hyperlinkLabel,
       BrowseCoursesDialog.ACTION_PLACE,
-      true
+      false
     )
   }
 

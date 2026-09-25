@@ -7,6 +7,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.ui.DialogWrapper
@@ -87,14 +88,20 @@ class ErrorStateHyperlinkListener(private val parentDisposable: Disposable) : Hy
       Logger.getInstance(CoursesPanel::class.java).error("$switchUILibraryAction action not found")
       return
     }
+    // `now = false` runs the action update off EDT (suspending) instead of blocking it in
+    // `runBlockingForActionExpand`, which can deadlock against a background write action.
+    // See https://github.com/hyperskill/hyperskill-plugin/issues/61
+    val modalityState = ModalityState.stateForComponent(coursePanel)
     ActionManager.getInstance().tryToExecute(
       action,
       null,
       coursePanel,
       ActionPlaces.UNKNOWN,
-      true
-    )
-    doValidation(coursePanel)
+      false
+    ).doWhenProcessed {
+      // the callback may be resolved on a background thread, and `doValidation` touches Swing
+      ApplicationManager.getApplication().invokeLater({ doValidation(coursePanel) }, modalityState)
+    }
   }
 
   private fun doValidation(coursePanel: CoursePanel) {

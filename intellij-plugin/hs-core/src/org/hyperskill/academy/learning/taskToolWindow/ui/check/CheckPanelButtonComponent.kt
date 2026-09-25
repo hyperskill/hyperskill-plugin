@@ -1,7 +1,10 @@
 package org.hyperskill.academy.learning.taskToolWindow.ui.check
 
-import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.ActionUiKind
 import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.util.ui.JBUI
 import org.apache.commons.lang3.StringUtils
 import org.hyperskill.academy.learning.actions.ActionWithProgressIcon
@@ -74,14 +77,14 @@ class CheckPanelButtonComponent private constructor() : JPanel(BorderLayout()) {
       this.isDefault = isDefault
     }
     if (isEnabled) {
-      button.addActionListener { e ->
-        ActionManager.getInstance().tryToExecute(
-          action,
-          null,
-          this,
-          CheckPanel.ACTION_PLACE,
-          true
-        )
+      button.addActionListener {
+        // Use `ActionUtil.performAction` instead of `ActionManager.tryToExecute`: the latter runs a blocking action
+        // update session on EDT (`runBlockingForActionExpand`), which can deadlock against a background write action.
+        // The update is useless here anyway - enablement is already decided by `isEnabled` above.
+        // See https://github.com/hyperskill/hyperskill-plugin/issues/61
+        val dataContext = DataManager.getInstance().getDataContext(this)
+        val event = AnActionEvent.createEvent(action, dataContext, null, CheckPanel.ACTION_PLACE, ActionUiKind.NONE, null)
+        ActionUtil.performAction(action, event)
       }
     }
     return button
