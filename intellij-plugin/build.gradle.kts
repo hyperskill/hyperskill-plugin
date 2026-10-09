@@ -185,6 +185,10 @@ tasks {
   test {
     workingDir = project("hs-core").projectDir
     systemProperty("idea.home.path", intellijPlatform.platformPath.toString())
+    // In unit test mode the Rust plugin uses `TestCargoProjectsServiceImpl` from its own test sources, which isn't shipped.
+    // On 2025.2 it is requested on every document change (`RsGeneratedSourcesWritingAccessProvider`), failing most tests.
+    // No test here needs Rust, and hs-Rust tests are disabled for the same reason
+    systemProperty("idea.suppressed.plugins.id", "com.jetbrains.rust")
   }
 
   // Copy hs-core.xml and Hyperskill.xml to main plugin JAR for XInclude resolution.
