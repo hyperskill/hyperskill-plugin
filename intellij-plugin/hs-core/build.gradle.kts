@@ -29,6 +29,9 @@ dependencies {
       "intellij.libraries.jcef",
       "intellij.platform.sqlite",
     )
+    intellijPlugins(platformPluginsExtractedFromCore)
+    // `TestServiceMessageConsumer` uses the TeamCity service messages library, which is not part of the core classpath since 2026.3
+    testBundledModulesSince(baseVersion, 263, "intellij.libraries.teamcity.service.messages")
     testIntellijPlugins(commonTestPlugins)
     testIntellijPlatformFramework(project)
   }

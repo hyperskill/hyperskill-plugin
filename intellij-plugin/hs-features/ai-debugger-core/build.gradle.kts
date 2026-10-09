@@ -3,9 +3,25 @@ plugins {
   alias(libs.plugins.kotlinSerializationPlugin)
 }
 
+// Since 2026.3 these modules have their own classloaders instead of being embedded into the core,
+// so they require explicit dependencies. They don't exist in the layout of 2025.x at all
+private val debuggerPlatformModules = if (environmentName.toInt() >= 263) {
+  listOf(
+    "intellij.platform.debugger",
+    "intellij.platform.externalSystem",
+    "intellij.platform.externalSystem.impl",
+  )
+}
+else {
+  emptyList()
+}
+private val debuggerPlatformModuleDependenciesMarker = "<!-- AI_DEBUGGER_PLATFORM_MODULE_DEPENDENCIES -->"
+private val debuggerPlatformModuleDependencies = debuggerPlatformModules.joinToString("\n") { "    <module name=\"$it\"/>" }
+
 dependencies {
   intellijPlatform {
     intellijIde(baseVersion)
+    bundledModules(debuggerPlatformModules)
   }
 
   implementation(project(":intellij-plugin:hs-core"))
@@ -33,4 +49,13 @@ dependencies {
   }
 
   testImplementation(project(":intellij-plugin:hs-core", "testOutput"))
+}
+
+tasks.processResources {
+  inputs.property("debuggerPlatformModuleDependencies", debuggerPlatformModuleDependencies)
+  filesMatching("ai-debugger-core.xml") {
+    filter { line ->
+      if (debuggerPlatformModuleDependenciesMarker in line) debuggerPlatformModuleDependencies else line
+    }
+  }
 }

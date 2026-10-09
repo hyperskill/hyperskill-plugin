@@ -28,6 +28,7 @@ dependencies {
       "intellij.rider.languages",
       "intellij.rider.rdclient.dotnet",
     )
+    intellijPlugins(platformPluginsExtractedFromCore)
   }
 
   implementation(project(":intellij-plugin:hs-core"))

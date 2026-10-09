@@ -1,4 +1,10 @@
 <idea-plugin package="org.hyperskill.academy.ai.debugger.core">
+  <!--suppress PluginXmlValidity -->
+  <dependencies>
+    <!-- Platform 2026.3+ module dependencies are inserted here by build.gradle.kts. -->
+    <!-- AI_DEBUGGER_PLATFORM_MODULE_DEPENDENCIES -->
+  </dependencies>
+
   <resource-bundle>messages.AIDebuggerCoreBundle</resource-bundle>
 
   <actions>
