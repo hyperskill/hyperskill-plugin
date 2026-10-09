@@ -3,6 +3,7 @@ package org.hyperskill.academy.cpp.coursecreator
 import org.hyperskill.academy.coursecreator.archive.ExpectedCourseFileAttributes
 import org.hyperskill.academy.coursecreator.archive.FileAttributesTest
 import org.hyperskill.academy.cpp.CppConfigurator
+import org.hyperskill.academy.cpp.revertNovaCodeInsightSettings
 import org.junit.runners.Parameterized.Parameters
 
 class CppFileAttributesTest(
@@ -11,6 +12,15 @@ class CppFileAttributesTest(
 ) : FileAttributesTest(filePath, expectedAttributes) {
 
   override val configurator = CppConfigurator()
+
+  override fun tearDown() {
+    try {
+      revertNovaCodeInsightSettings()
+    }
+    finally {
+      super.tearDown()
+    }
+  }
 
   companion object {
     @JvmStatic

@@ -105,3 +105,9 @@ val downloadHyperskillCss by tasks.registering {
 tasks.processResources {
   dependsOn(downloadHyperskillCss)
 }
+
+tasks.test {
+  // hs-core applies only the base IntelliJ Platform plugin, so its own test runtime lacks the IDE (even Kotlin stdlib)
+  // and every test fails with `NoClassDefFoundError`. Its test sources run as part of `:intellij-plugin:test` instead
+  enabled = false
+}

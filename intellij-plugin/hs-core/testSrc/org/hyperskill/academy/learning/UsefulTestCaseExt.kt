@@ -4,6 +4,8 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.PluginManager
 import com.intellij.lang.Language
 import com.intellij.testFramework.UsefulTestCase
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProvider
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProviderEP
 import org.hyperskill.academy.learning.configuration.EduConfigurator
 import org.hyperskill.academy.learning.configuration.EducationalExtensionPoint
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames
@@ -27,5 +29,17 @@ inline fun <reified T : EduConfigurator<*>> UsefulTestCase.registerConfigurator(
   extension.environment = environment
   extension.pluginDescriptor = testPluginDescriptor
   EducationalExtensionPoint.EP_NAME.point.registerExtension(extension, testRootDisposable)
+}
+
+inline fun <reified T : CourseCompatibilityProvider> UsefulTestCase.registerCompatibilityProvider(
+  language: Language,
+  environment: String = DEFAULT_ENVIRONMENT
+) {
+  val extension = CourseCompatibilityProviderEP()
+  extension.language = language.id
+  extension.implementationClass = T::class.java.name
+  extension.environment = environment
+  extension.pluginDescriptor = testPluginDescriptor
+  CourseCompatibilityProviderEP.EP_NAME.point.registerExtension(extension, testRootDisposable)
 }
 

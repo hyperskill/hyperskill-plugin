@@ -269,7 +269,7 @@ class TaskDescriptionTest : EduTestCase() {
   }
 
   private fun doTestImageReplacedFromSrcset(expectedImage: String) {
-    val taskText = """<p <img class=image-fullsize src=https://light.png srcset=https://dark.png width=400></p>""".trimIndent()
+    val taskText = """<p><img class=image-fullsize src=https://light.png srcset=https://dark.png width=400></p>""".trimIndent()
     courseWithFiles {
       lesson {
         eduTask(taskDescription = taskText, taskDescriptionFormat = DescriptionFormat.HTML) {
@@ -316,7 +316,8 @@ class TaskDescriptionTest : EduTestCase() {
       <html>
        <head></head>
        <body>
-        <p><img class="image-fullsize" src="$expectedImage" data-dark-src="https://dark.png" width="400"></p><iframe width="560" height="315" src="$expectedURL" title="YouTube video...autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen data-dark-src="https://course.edu/dark.html"></iframe>
+        <p><img class="image-fullsize" src="$expectedImage" data-dark-src="https://dark.png" width="400"></p>
+        <iframe width="560" height="315" src="$expectedURL" title="YouTube video...autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen data-dark-src="https://course.edu/dark.html"></iframe>
        </body>
       </html>
     """.trimIndent()

@@ -43,6 +43,8 @@ class SqlGradleCourseBuilderTest : JvmCourseGenerationTestBase() {
         }
         file("task.html")
       }
+      // Gradle 9 requires the `util` module from the course templates to exist during project configuration
+      dir("util/src")
       file("build.gradle")
       file("settings.gradle")
     }.assertEquals(rootDir)

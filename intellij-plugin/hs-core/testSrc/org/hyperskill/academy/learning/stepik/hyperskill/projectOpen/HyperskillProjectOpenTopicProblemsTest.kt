@@ -2,9 +2,11 @@ package org.hyperskill.academy.learning.stepik.hyperskill.projectOpen
 
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.progress.EmptyProgressIndicator
+import org.hyperskill.academy.learning.compatibility.CourseCompatibilityProvider
 import org.hyperskill.academy.learning.configurators.FakeGradleBasedLanguage
 import org.hyperskill.academy.learning.course
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
+import org.hyperskill.academy.learning.courseFormat.PluginInfo
 import org.hyperskill.academy.learning.courseFormat.ext.CourseValidationResult
 import org.hyperskill.academy.learning.courseFormat.ext.PluginsRequired
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
@@ -12,6 +14,7 @@ import org.hyperskill.academy.learning.hasParams
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.onError
 import org.hyperskill.academy.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.registerCompatibilityProvider
 import org.hyperskill.academy.learning.stepik.hyperskill.getProblemsProjectName
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepRequest
@@ -107,7 +110,9 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
 
   @Test
   fun `test language supported with plugin`() {
-    doLanguageValidationTest("python") {
+    // Plugins of all real languages are loaded in tests, so a language whose plugin is missing is emulated
+    registerCompatibilityProvider<NotInstalledPluginCompatibilityProvider>(FakeGradleBasedLanguage)
+    doLanguageValidationTest(FakeGradleBasedLanguage.id) {
       assertTrue("actual: $it", it is PluginsRequired)
     }
   }
@@ -195,4 +200,9 @@ class HyperskillProjectOpenTopicProblemsTest : HyperskillProjectOpenerTestBase()
       step12164, topic1034
     )
   }
+}
+
+class NotInstalledPluginCompatibilityProvider : CourseCompatibilityProvider {
+  override fun requiredPlugins(): List<PluginInfo> = listOf(PluginInfo("org.hyperskill.academy.test.notInstalledPlugin"))
+  override val technologyName: String = "Not installed plugin technology"
 }

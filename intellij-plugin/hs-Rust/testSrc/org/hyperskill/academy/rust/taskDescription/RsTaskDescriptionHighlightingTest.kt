@@ -28,9 +28,7 @@ class RsTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
     Inline code `if condition { 1 } else { 2 }`
   """, """
     <html>
-     <head>
-      ...
-     </head>
+     <head>...</head>
      <body>
       <div class="wrapper">
        <p>Code block with default language:</p><span class="code-block">
@@ -70,9 +68,7 @@ class RsTaskDescriptionHighlightingTest : TaskDescriptionHighlightingTestBase() 
     </html>
   """, """
     <html>
-     <head>
-      ...
-     </head>
+     <head>...</head>
      <body>
       <div class="wrapper">
        <p>Code block with default language:</p><span class="code-block">

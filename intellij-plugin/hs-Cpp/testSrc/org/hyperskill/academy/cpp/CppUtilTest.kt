@@ -8,6 +8,15 @@ import org.junit.Test
 
 class CppUtilTest : EduTestCase() {
 
+  override fun tearDown() {
+    try {
+      revertNovaCodeInsightSettings()
+    }
+    finally {
+      super.tearDown()
+    }
+  }
+
   @Test
   fun `test find CMake command - project`() = checkCMakeCommand(
     """

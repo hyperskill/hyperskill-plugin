@@ -60,6 +60,11 @@ dependencies {
   testImplementation(libs.findLibrary("openTest4J").get())
   testImplementation(libs.findLibrary("classgraph").get())
   testImplementationWithoutKotlin(libs.findLibrary("kotlin.test.junit").get())
+  // Most modules reuse hs-core test classes through its `testOutput` configuration, which carries only the classes.
+  // Base classes like `EduTestCase` need hs-core's own test dependencies at runtime, otherwise every test class fails
+  // with `NoClassDefFoundError: okhttp3/mockwebserver/MockResponse`
+  testImplementationWithoutKotlin(libs.findLibrary("mockwebserver").get())
+  testImplementationWithoutKotlin(libs.findLibrary("mockk").get())
 }
 
 tasks {

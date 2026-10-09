@@ -1,6 +1,5 @@
 package org.hyperskill.academy.cpp
 
-import com.jetbrains.cidr.lang.OCLanguage
 import org.hyperskill.academy.learning.FindTaskFileTestBase
 import org.hyperskill.academy.learning.course
 import org.hyperskill.academy.learning.courseFormat.Course
@@ -9,6 +8,15 @@ import org.junit.Test
 class CppFindTaskTest : FindTaskFileTestBase<CppProjectSettings>() {
 
   override val defaultSettings = CppProjectSettings()
+
+  override fun tearDown() {
+    try {
+      revertNovaCodeInsightSettings()
+    }
+    finally {
+      super.tearDown()
+    }
+  }
 
   @Test
   fun `test get task dir from top-level lesson`() {
@@ -77,7 +85,7 @@ class CppFindTaskTest : FindTaskFileTestBase<CppProjectSettings>() {
   }
 
   private fun getCourseForTests(): Course {
-    return course(language = OCLanguage.getInstance(), environment = "GoogleTest") {
+    return course(language = cppLanguage, environment = "GoogleTest") {
       section {
         lesson {
           eduTask {

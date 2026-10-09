@@ -1,12 +1,12 @@
 package org.hyperskill.academy.cpp.actions.move
 
 import com.intellij.psi.PsiElement
-import com.jetbrains.cidr.lang.OCLanguage
+import org.hyperskill.academy.cpp.cppLanguage
 import org.hyperskill.academy.learning.actions.move.MoveHandlerTestBase
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.junit.Test
 
-class CppMoveHandlerTest : MoveHandlerTestBase(OCLanguage.getInstance(), environment = "Catch") {
+class CppMoveHandlerTest : MoveHandlerTestBase(cppLanguage, environment = "Catch") {
 
   @Test
   fun `test do not forbid move refactoring for functions`() {
