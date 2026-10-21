@@ -13,6 +13,10 @@
        on 2026.1 it resolves to a core plugin alias. -->
   <depends optional="true" config-file="jcef-support.xml">com.intellij.modules.jcef</depends>
 
+  <!-- Since 2026.3 XML support is a separate user-disableable plugin (`com.intellij.xml`).
+       Before that, the id is an alias of the core, so the optional dependency is always satisfied. -->
+  <depends optional="true" config-file="xml-support.xml">com.intellij.modules.xml</depends>
+
   <!-- Platform modules extracted from the core in newer IDE versions.
        The included file exists only in `branches/<version>/resources` that need extra module dependencies. -->
   <xi:include href="/META-INF/platform-modules.xml">
@@ -271,10 +275,6 @@
     <registryKey key="hyperskill.course.update.check.interval"
                  description="Sets is course up to date check interval in seconds"
                  defaultValue="18000"/>
-
-    <!--for educators-->
-    <xml.xmlSuppressionProvider
-        implementation="org.hyperskill.academy.coursecreator.taskDescription.ShortcutInTaskDescriptionSuppressionProvider"/>
 
     <!-- Rename -->
     <renamePsiElementProcessor implementation="org.hyperskill.academy.coursecreator.handlers.rename.CCDescriptionFileRenameProcessor"

@@ -79,6 +79,13 @@ val Project.jsonPlugin: String get() = "com.intellij.modules.json"
 val Project.yamlPlugin: String get() = "org.jetbrains.plugins.yaml"
 val Project.radlerPlugin: String get() = "org.jetbrains.plugins.clion.radler"
 val Project.imagesPlugin: String get() = "com.intellij.platform.images"
+val Project.xmlPlugin: String get() = "com.intellij.xml"
+val Project.vcsPlugin: String get() = "com.intellij.platform.vcs"
+
+// Since 2026.3 VCS (including `intellij.platform.sqlite`) and XML/HTML support are no longer part of the core:
+// they moved to separate bundled plugins. Before that, these ids don't exist, so they must not be requested.
+val Project.platformPluginsExtractedFromCore: List<String>
+  get() = if (environmentName.toInt() >= 263) listOf(vcsPlugin, xmlPlugin) else emptyList()
 
 private fun Project.propertyOrDefault(name: String, default: String): String =
   findProperty(name) as? String ?: default
@@ -140,6 +147,8 @@ val Project.commonTestPlugins: List<String>
       // Loads the extension point used by JCEF-aware UI code in the test application.
       add("com.intellij.modules.jcef")
     }
+    // The plugin hard-depends on VCS, and task descriptions need the HTML file type
+    addAll(platformPluginsExtractedFromCore)
   }
 
 data class TypeWithVersion(val type: IntelliJPlatformType, val version: String)
@@ -203,6 +212,12 @@ fun platformBranch(versionWithCode: String): Int {
 fun IntelliJPlatformDependenciesExtension.bundledModulesSince(ideVersionWithCode: String, sinceBranch: Int, vararg modules: String) {
   if (platformBranch(ideVersionWithCode) >= sinceBranch) {
     bundledModules(*modules)
+  }
+}
+
+fun IntelliJPlatformDependenciesExtension.testBundledModulesSince(ideVersionWithCode: String, sinceBranch: Int, vararg modules: String) {
+  if (platformBranch(ideVersionWithCode) >= sinceBranch) {
+    testBundledModules(*modules)
   }
 }
 

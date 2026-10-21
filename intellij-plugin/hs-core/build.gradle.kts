@@ -29,6 +29,9 @@ dependencies {
       "intellij.libraries.jcef",
       "intellij.platform.sqlite",
     )
+    intellijPlugins(platformPluginsExtractedFromCore)
+    // `TestServiceMessageConsumer` uses the TeamCity service messages library, which is not part of the core classpath since 2026.3
+    testBundledModulesSince(baseVersion, 263, "intellij.libraries.teamcity.service.messages")
     testIntellijPlugins(commonTestPlugins)
     testIntellijPlatformFramework(project)
   }
@@ -101,4 +104,10 @@ val downloadHyperskillCss by tasks.registering {
 
 tasks.processResources {
   dependsOn(downloadHyperskillCss)
+}
+
+tasks.test {
+  // hs-core applies only the base IntelliJ Platform plugin, so its own test runtime lacks the IDE (even Kotlin stdlib)
+  // and every test fails with `NoClassDefFoundError`. Its test sources run as part of `:intellij-plugin:test` instead
+  enabled = false
 }

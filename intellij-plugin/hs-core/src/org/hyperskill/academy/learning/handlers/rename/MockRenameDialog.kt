@@ -14,6 +14,8 @@ class MockRenameDialogFactory(
   var isDialogShown: Boolean = false
   var isRenameInvoked: Boolean = false
 
+  private val dialogs = mutableListOf<EduRenameDialogBase>()
+
   override fun createRenameDialog(
     project: Project,
     element: PsiElement,
@@ -23,7 +25,19 @@ class MockRenameDialogFactory(
     val delegateDialog = delegate!!.createRenameDialog(project, element, nameSuggestionContext, editor)
     val mockDialog = MockRenameDialog(this, delegateDialog, project, element, nameSuggestionContext, editor)
     mockDialog.setMockNewName(newItemName)
+    dialogs += delegateDialog
+    dialogs += mockDialog
     return mockDialog
+  }
+
+  /**
+   * The dialogs are never shown in tests, so nothing disposes them otherwise.
+   * Their scope choosers keep computing search scopes in the background after the test,
+   * against a project that is already reused by another test
+   */
+  fun disposeDialogs() {
+    dialogs.forEach { it.disposeIfNeeded() }
+    dialogs.clear()
   }
 }
 

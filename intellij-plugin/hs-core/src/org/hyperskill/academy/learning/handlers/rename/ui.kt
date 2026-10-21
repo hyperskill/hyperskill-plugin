@@ -38,6 +38,7 @@ fun withMockRenameDialogFactory(mock: MockRenameDialogFactory, action: () -> Uni
   }
   finally {
     MOCK = null
+    mock.disposeDialogs()
   }
 }
 

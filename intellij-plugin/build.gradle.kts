@@ -103,6 +103,8 @@ dependencies {
       "intellij.libraries.jcef",
       "intellij.platform.sqlite",
     )
+    intellijPlugins(platformPluginsExtractedFromCore)
+    testBundledModulesSince(baseVersion, 263, "intellij.libraries.teamcity.service.messages")
 
     pluginModule(implementation(project("hs-jvm-core")))
     pluginModule(implementation(project("hs-Java")))
@@ -135,6 +137,9 @@ dependencies {
   // Test dependencies from hs-core (needed for running hs-core tests via main plugin)
   testImplementationWithoutKotlin(libs.mockwebserver)
   testImplementationWithoutKotlin(libs.mockk)
+  // hs-core tests use Jackson directly. hs-core ships it as an `implementation` dependency, which isn't visible here,
+  // and since 2026.3 the IDE's own Jackson is no longer part of the core classpath either
+  testImplementationWithoutKotlin(libs.jackson.dataformat.yaml)
 }
 
 // Include hs-core test sources in the main plugin test source set
@@ -180,6 +185,10 @@ tasks {
   test {
     workingDir = project("hs-core").projectDir
     systemProperty("idea.home.path", intellijPlatform.platformPath.toString())
+    // In unit test mode the Rust plugin uses `TestCargoProjectsServiceImpl` from its own test sources, which isn't shipped.
+    // On 2025.2 it is requested on every document change (`RsGeneratedSourcesWritingAccessProvider`), failing most tests.
+    // No test here needs Rust, and hs-Rust tests are disabled for the same reason
+    systemProperty("idea.suppressed.plugins.id", "com.jetbrains.rust")
   }
 
   // Copy hs-core.xml and Hyperskill.xml to main plugin JAR for XInclude resolution.

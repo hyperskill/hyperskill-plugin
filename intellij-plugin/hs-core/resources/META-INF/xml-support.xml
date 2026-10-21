@@ -1,0 +1,7 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <!--for educators-->
+    <xml.xmlSuppressionProvider
+        implementation="org.hyperskill.academy.coursecreator.taskDescription.ShortcutInTaskDescriptionSuppressionProvider"/>
+  </extensions>
+</idea-plugin>

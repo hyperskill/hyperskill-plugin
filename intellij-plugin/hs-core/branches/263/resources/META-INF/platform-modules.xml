@@ -1,0 +1,11 @@
+<idea-plugin>
+  <!-- Since 2026.2 these platform parts are separate content modules and require explicit dependencies:
+       - SM test runner -> `intellij.testRunner.plugin` plugin, modules `intellij.platform.smRunner` and `intellij.platform.testRunner`
+       - SQLite -> `intellij.platform.sqlite` content module. Since 2026.3 it belongs to the VCS plugin (`com.intellij.platform.vcs`),
+         which, unlike before, is user-disableable, but the plugin already hard-depends on it via `com.intellij.modules.vcs`. -->
+  <dependencies>
+    <module name="intellij.platform.smRunner"/>
+    <module name="intellij.platform.testRunner"/>
+    <module name="intellij.platform.sqlite"/>
+  </dependencies>
+</idea-plugin>

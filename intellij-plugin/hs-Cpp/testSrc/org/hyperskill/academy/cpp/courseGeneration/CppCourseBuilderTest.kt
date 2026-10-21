@@ -1,7 +1,7 @@
 package org.hyperskill.academy.cpp.courseGeneration
 
-import com.jetbrains.cidr.lang.OCLanguage
 import org.hyperskill.academy.cpp.CppProjectSettings
+import org.hyperskill.academy.cpp.cppLanguage
 import org.hyperskill.academy.learning.course
 import org.hyperskill.academy.learning.courseGeneration.CourseGenerationTestBase
 import org.hyperskill.academy.learning.fileTree
@@ -13,7 +13,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
 
   @Test
   fun `test study edu course structure with top-level lesson`() {
-    val course = course(language = OCLanguage.getInstance(), environment = "Catch") {
+    val course = course(language = cppLanguage, environment = "Catch") {
       lesson("lesson") {
         eduTask("task") {
           taskFile("src/task.cpp")
@@ -47,7 +47,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
 
   @Test
   fun `test study edu course structure with section`() {
-    val course = course(language = OCLanguage.getInstance(), environment = "Catch") {
+    val course = course(language = cppLanguage, environment = "Catch") {
       section("section") {
         lesson("lesson") {
           eduTask("task") {
@@ -83,7 +83,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
 
   @Test
   fun `test study course structure with top-level section and lesson`() {
-    val course = course(language = OCLanguage.getInstance(), environment = "Catch") {
+    val course = course(language = cppLanguage, environment = "Catch") {
       section("section") {
         lesson("lesson") {
           eduTask("task") {
@@ -136,7 +136,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
 
   @Test
   fun `test study edu course structure with different tasks`() {
-    val course = course(language = OCLanguage.getInstance(), environment = "Catch") {
+    val course = course(language = cppLanguage, environment = "Catch") {
       lesson("lesson") {
         eduTask("edu") {
           taskFile("src/task.cpp")
@@ -196,7 +196,7 @@ class CppCourseBuilderTest : CourseGenerationTestBase<CppProjectSettings>() {
 
   @Test
   fun `test study edu course creates nothing if CMakeLists already exists`() {
-    val course = course(language = OCLanguage.getInstance(), environment = "Catch") {
+    val course = course(language = cppLanguage, environment = "Catch") {
       additionalFiles {
         eduFile("CMakeLists.txt", "file 1")
         eduFile("cmake/utils.cmake", "file 2")

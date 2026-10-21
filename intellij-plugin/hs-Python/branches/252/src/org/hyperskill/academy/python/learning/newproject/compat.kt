@@ -3,9 +3,11 @@ package org.hyperskill.academy.python.learning.newproject
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.projectRoots.Sdk
+import com.jetbrains.python.psi.LanguageLevel
 import com.jetbrains.python.sdk.PyDetectedSdk
 import com.jetbrains.python.sdk.PySdkToInstall
 import com.jetbrains.python.sdk.detectSystemWideSdks
+import com.jetbrains.python.sdk.flavors.PythonSdkFlavor
 
 private val LOG = logger<PyCourseProjectGenerator>()
 
@@ -32,3 +34,8 @@ internal fun installSdkIfSuggested(sdk: Sdk?): PyDetectedSdk? {
     }
   }
 }
+
+/**
+ * Language level of the interpreter at [homePath], detected by its [flavor].
+ */
+internal fun languageLevelOf(flavor: PythonSdkFlavor<*>, homePath: String): LanguageLevel? = flavor.getLanguageLevel(homePath)
