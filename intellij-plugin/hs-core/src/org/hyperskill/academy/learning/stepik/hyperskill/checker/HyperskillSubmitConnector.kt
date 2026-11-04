@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.Err
 import org.hyperskill.academy.learning.Ok
 import org.hyperskill.academy.learning.Result
+import org.hyperskill.academy.learning.courseFormat.attempts.Attempt
 import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.ext.getText
 import org.hyperskill.academy.learning.courseFormat.ext.languageById
@@ -96,6 +97,10 @@ object HyperskillSubmitConnector {
 
     val taskSubmission = HyperskillSubmissionFactory.createRemoteEduTaskSubmission(task, attempt, files)
     return connector.postSubmission(taskSubmission)
+  }
+
+  fun submitQuizTask(attempt: Attempt, reply: Map<String, Any?>): Result<StepikBasedSubmission, String> {
+    return HyperskillConnector.getInstance().postSubmission(HyperskillSubmissionFactory.createQuizTaskSubmission(attempt, reply))
   }
 
   private val LOG: Logger = logger<HyperskillSubmitConnector>()

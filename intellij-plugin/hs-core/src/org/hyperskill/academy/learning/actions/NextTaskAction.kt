@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.navigation.NavigationUtils
+import org.hyperskill.academy.learning.stepik.hyperskill.completeTheoryStepInBackground
 import org.hyperskill.academy.learning.stepik.hyperskill.openNextActivity
 import org.hyperskill.academy.learning.taskToolWindow.ui.check.CheckPanel
 import org.jetbrains.annotations.NonNls
@@ -23,6 +24,10 @@ class NextTaskAction : TaskNavigationAction() {
 
   override fun getCustomAction(task: Task): ((Project, Task) -> Unit)? {
     return if (NavigationUtils.isLastHyperskillProblem(task)) ::openNextActivity else null
+  }
+
+  override fun beforeNavigation(project: Project, task: Task) {
+    completeTheoryStepInBackground(project, task)
   }
 
   companion object {

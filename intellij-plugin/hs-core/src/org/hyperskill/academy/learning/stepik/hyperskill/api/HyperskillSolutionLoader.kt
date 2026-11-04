@@ -16,6 +16,7 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
 import org.hyperskill.academy.learning.courseFormat.tasks.EduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.stepik.api.CodeTaskReply
@@ -41,7 +42,8 @@ class HyperskillSolutionLoader(project: Project) : SolutionLoaderBase(project) {
     val allFiles: Map<String, Solution> = when (task) {
       is EduTask -> lastSubmission.eduTaskFiles
       is CodeTask -> lastSubmission.codeTaskFiles(task)
-      is UnsupportedTask -> emptyMap()
+      // Only the status is synchronized: the quiz form takes the answer from the last submission when it is opened
+      is QuizTask, is UnsupportedTask -> emptyMap()
       else -> {
         LOG.warn("Solutions for task ${task.name} of type ${task::class.simpleName} not loaded")
         emptyMap()

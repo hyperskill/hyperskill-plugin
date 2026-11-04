@@ -29,6 +29,11 @@ fun htmlWithResources(
   return absolutizePaths(project, textWithResources, task)
 }
 
+fun insertBeforeBodyEnd(html: String, fragment: String): String {
+  val bodyEnd = html.lastIndexOf("</body>")
+  return if (bodyEnd == -1) html + fragment else html.substring(0, bodyEnd) + fragment + html.substring(bodyEnd)
+}
+
 fun wrapHintTagsInsideHTML(document: Document, wrapHint: (e: Element, number: String, title: String) -> String): Document {
   val hints = document.getElementsByClass("hint")
 

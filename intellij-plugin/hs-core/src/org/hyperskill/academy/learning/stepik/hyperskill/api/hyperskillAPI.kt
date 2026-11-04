@@ -207,6 +207,36 @@ class ProjectsList {
   lateinit var projects: List<HyperskillProject>
 }
 
+class LearningActivitiesList {
+  @JsonProperty("learning-activities")
+  var activities: List<HyperskillLearningActivity> = emptyList()
+}
+
+/**
+ * An item of the learner's study plan. The website continues with the next one of them after a completed topic.
+ */
+class HyperskillLearningActivity {
+  @JsonProperty("type")
+  var type: Int = -1
+
+  /**
+   * The step to start with for [LEARN_TOPIC], the stage for [IMPLEMENT_STAGE].
+   */
+  @JsonProperty("target_id")
+  var targetId: Int? = null
+
+  /**
+   * The topic of a [LEARN_TOPIC] activity.
+   */
+  @JsonProperty("topic_id")
+  var topicId: Int? = null
+
+  companion object {
+    const val LEARN_TOPIC = 10
+    const val IMPLEMENT_STAGE = 20
+  }
+}
+
 class HyperskillStepsList : WithPaginationMetaData() {
   @JsonProperty(STEPS)
   lateinit var steps: List<HyperskillStepSource>

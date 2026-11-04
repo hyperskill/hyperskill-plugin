@@ -1,7 +1,10 @@
 package org.hyperskill.academy.learning.stepik.hyperskill
 
+import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType.ERROR
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
@@ -23,11 +26,15 @@ import org.hyperskill.academy.learning.framework.FrameworkLessonManager
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.navigation.NavigationUtils
 import org.hyperskill.academy.learning.notification.EduNotificationManager
+import org.hyperskill.academy.learning.projectView.ProgressUtil
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillAccount
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillLearningActivity
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillStepSource
 import org.hyperskill.academy.learning.stepik.hyperskill.api.WithPaginationMetaData
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenInIdeRequestHandler
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenProjectStageRequest
+import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenRequest
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillOpenStepRequest
 import org.hyperskill.academy.learning.stepik.hyperskill.settings.HyperskillSettings
 import org.hyperskill.academy.learning.yaml.YamlFormatSynchronizer
@@ -177,10 +184,43 @@ fun openNextActivity(project: Project, task: Task) {
   }
 
   val nextActivityInfo = computeUnderProgress(project, EduCoreBundle.message("hyperskill.next.activity"), true) {
+    completeTheoryStep(project, task)
     getNextStep(task.id)
   }
 
   openStep(project, task, nextActivityInfo)
+}
+
+/**
+ * Like on the website, a theory step becomes completed when the learner moves on from it.
+ * Until then the server keeps it as the next step of the topic, and the topic can't be completed.
+ */
+fun completeTheoryStepInBackground(project: Project, task: Task) {
+  if (isUnitTestMode) {
+    completeTheoryStep(project, task)
+  }
+  else {
+    ApplicationManager.getApplication().executeOnPooledThread { completeTheoryStep(project, task) }
+  }
+}
+
+private fun completeTheoryStep(project: Project, task: Task) {
+  if (task !is TheoryTask || task.status == CheckStatus.Solved) return
+  val course = task.course as? HyperskillCourse ?: return
+  if (course.isTaskInProject(task) || HyperskillSettings.INSTANCE.account == null) return
+
+  HyperskillConnector.getInstance().completeTheoryStep(task.id).onError { error ->
+    LOG.warn("Failed to complete the theory step ${task.id}: $error")
+    return
+  }
+
+  task.status = CheckStatus.Solved
+  YamlFormatSynchronizer.saveItem(task)
+  runInEdt {
+    if (project.isDisposed) return@runInEdt
+    ProgressUtil.updateCourseProgress(project)
+    ProjectView.getInstance(project).refresh()
+  }
 }
 
 fun openTopic(project: Project, topic: HyperskillTopic) {
@@ -227,13 +267,22 @@ private fun openStep(project: Project, task: Task?, nextActivityInfo: NextActivi
 
       val course = project.course ?: return
       val language = HyperskillLanguages.getRequestLanguage(course.languageId) ?: return
-      ProjectOpener.getInstance().open(
-        HyperskillOpenInIdeRequestHandler,
-        HyperskillOpenStepRequest(nextStep.id, language)
-      ).onError {
-        logger<ProjectOpener>().warn("Opening the next activity resulted in an error: ${it.message}. The error was ignored and not displayed for the user.")
-      }
+      openNextActivityRequest(HyperskillOpenStepRequest(nextStep.id, language))
     }
+
+    is NextActivityInfo.ProjectStage -> {
+      openNextActivityRequest(HyperskillOpenProjectStageRequest(nextActivityInfo.projectId, nextActivityInfo.stageId))
+    }
+  }
+}
+
+/**
+ * Problems open in the `<Language> Problems` IDE project, and a stage opens in the IDE project of the Hyperskill project:
+ * [HyperskillOpenInIdeRequestHandler] finds the right one by the type of the request.
+ */
+private fun openNextActivityRequest(request: HyperskillOpenRequest) {
+  ProjectOpener.getInstance().open(HyperskillOpenInIdeRequestHandler, request).onError {
+    logger<ProjectOpener>().warn("Opening the next activity resulted in an error: ${it.message}. The error was ignored and not displayed for the user.")
   }
 }
 
@@ -253,7 +302,45 @@ private fun getNextStep(taskId: Int): NextActivityInfo {
     return NextActivityInfo.NoTopic
   }
 
-  return getNextStepInTopic(topicId, taskId)
+  val nextStepInTopic = getNextStepInTopic(topicId, taskId)
+  if (nextStepInTopic is NextActivityInfo.TopicCompleted) {
+    return getNextStudyPlanActivity(topicId) ?: nextStepInTopic
+  }
+  return nextStepInTopic
+}
+
+/**
+ * What the website offers to continue with after a completed topic.
+ *
+ * @return `null` if the IDE can't open it, e.g. when it is time to select a project or to leave a feedback.
+ * The page of the completed topic offers it then.
+ */
+private fun getNextStudyPlanActivity(completedTopicId: Int): NextActivityInfo? {
+  val connector = HyperskillConnector.getInstance()
+  val activity = connector.getNextLearningActivity().onError { error ->
+    LOG.warn("Failed to get the next activity of the study plan: $error")
+    return null
+  } ?: return null
+  val targetId = activity.targetId ?: return null
+
+  return when (activity.type) {
+    HyperskillLearningActivity.LEARN_TOPIC -> {
+      // The study plan is updated asynchronously, so it can still point to the topic that has just been completed
+      if (activity.topicId == completedTopicId) return null
+      val step = connector.getStepSource(targetId).onError { error ->
+        LOG.warn("Failed to get the step $targetId of the next topic: $error")
+        return null
+      }
+      NextActivityInfo.Next(step, activity.topicId ?: completedTopicId)
+    }
+
+    HyperskillLearningActivity.IMPLEMENT_STAGE -> {
+      val projectId = connector.getCurrentUserInfo()?.hyperskillProjectId ?: return null
+      NextActivityInfo.ProjectStage(projectId, targetId)
+    }
+
+    else -> null
+  }
 }
 
 private fun getNextStepInTopic(topicId: Int, taskId: Int?): NextActivityInfo {
@@ -315,6 +402,8 @@ private sealed class NextActivityInfo {
   data object NoTopic : NextActivityInfo()
 
   class Next(val stepSource: HyperskillStepSource, val topicId: Int) : NextActivityInfo()
+
+  class ProjectStage(val projectId: Int, val stageId: Int) : NextActivityInfo()
 
   class NotCalculated(val topicId: Int) : NextActivityInfo()
 }

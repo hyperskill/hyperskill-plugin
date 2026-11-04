@@ -19,9 +19,13 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
+import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.JavaUILibrary
 import org.hyperskill.academy.learning.StudyTaskManager
+import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
+import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.stepik.hyperskill.stepLink
 import org.hyperskill.academy.learning.taskToolWindow.links.SwingToolWindowLinkHandler
 import java.awt.BorderLayout
 import java.io.IOException
@@ -59,7 +63,14 @@ class SwingToolWindow(project: Project) : TaskToolWindow(project) {
   }
 
   override fun updateTaskInfoPanel(task: Task?) {
-    taskInfoTextPane.text = getTaskDescription(project, task, uiMode)
+    val description = getTaskDescription(project, task, uiMode)
+    taskInfoTextPane.text = if (task is QuizTask) {
+      // The quiz form needs JCEF, so this quiz can be solved only on the website
+      insertBeforeBodyEnd(description, "<p>${EduCoreBundle.message("hyperskill.quiz.solve.on.website", stepLink(task.id), EduNames.JBA)}</p>")
+    }
+    else {
+      description
+    }
   }
 
   override fun updateTaskSpecificPanel(task: Task?) {

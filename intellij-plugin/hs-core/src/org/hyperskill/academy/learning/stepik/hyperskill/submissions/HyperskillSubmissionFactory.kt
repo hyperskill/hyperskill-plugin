@@ -7,6 +7,7 @@ import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.stepik.api.CodeTaskReply
 import org.hyperskill.academy.learning.stepik.api.EduTaskReply
 import org.hyperskill.academy.learning.stepik.api.Feedback
+import org.hyperskill.academy.learning.stepik.api.QuizReply
 import org.hyperskill.academy.learning.stepik.api.StepikBasedSubmission
 import org.hyperskill.academy.learning.submissions.SolutionFile
 
@@ -16,6 +17,10 @@ object HyperskillSubmissionFactory {
     reply.code = answer
     reply.language = language
     return StepikBasedSubmission(attempt, reply)
+  }
+
+  fun createQuizTaskSubmission(attempt: Attempt, reply: Map<String, Any?>): StepikBasedSubmission {
+    return StepikBasedSubmission(attempt, QuizReply(reply))
   }
 
   fun createEduTaskSubmission(task: Task, attempt: Attempt, files: List<SolutionFile>, feedback: String): StepikBasedSubmission {

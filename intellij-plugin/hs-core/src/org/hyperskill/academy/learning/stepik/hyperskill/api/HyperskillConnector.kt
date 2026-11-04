@@ -370,15 +370,23 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
   }
 
   override fun getActiveAttempt(task: Task): Result<Attempt?, String> {
+    return getAttempts(task.id).map { attempts -> attempts.firstOrNull { it.isActive && it.isRunning } }
+  }
+
+  fun getAttempts(stepId: Int): Result<List<Attempt>, String> {
     return withTokenRefreshIfFailed {
       val userId = account?.userInfo?.id
                    ?: return@withTokenRefreshIfFailed Err("Trying to get list of attempts for unauthorized user")
-      val attempts = withPageIteration { page -> hyperskillEndpoints.attempts(task.id, userId, page).executeAndExtractFromBody() }
+      val attempts = withPageIteration { page -> hyperskillEndpoints.attempts(stepId, userId, page).executeAndExtractFromBody() }
         .onError { return@withTokenRefreshIfFailed Err(it) }
         .flatMap { it.attempts }
+      Ok(attempts)
+    }
+  }
 
-      val activeAttempt = attempts.firstOrNull { it.isActive && it.isRunning }
-      Ok(activeAttempt)
+  fun getNextLearningActivity(): Result<HyperskillLearningActivity?, String> {
+    return withTokenRefreshIfFailed {
+      hyperskillEndpoints.nextLearningActivity().executeAndExtractFromBody().map { it.activities.firstOrNull() }
     }
   }
 
@@ -393,6 +401,10 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
 
   override fun postSubmission(submission: StepikBasedSubmission): Result<StepikBasedSubmission, String> {
     return withTokenRefreshIfFailed { hyperskillEndpoints.submission(submission).executeAndExtractFirst(SubmissionsList::submissions) }
+  }
+
+  fun completeTheoryStep(stepId: Int): Result<Unit, String> {
+    return withTokenRefreshIfFailed { hyperskillEndpoints.completeTheoryStep(stepId).executeParsingErrors(true).map { } }
   }
 
   override fun postAttempt(task: Task): Result<Attempt, String> {

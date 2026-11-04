@@ -13,6 +13,7 @@ import org.hyperskill.academy.learning.courseFormat.EduFormatNames.SECTION
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.TASK
 import org.hyperskill.academy.learning.courseFormat.ext.configurator
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTaskType
 import org.hyperskill.academy.learning.courseFormat.tasks.*
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils
 import org.hyperskill.academy.learning.courseGeneration.GeneratorUtils.IdeaDirectoryUnpackMode.ONLY_IDEA_DIRECTORY
@@ -242,6 +243,19 @@ class LessonBuilder<T : Lesson>(val course: Course, section: Section?, val lesso
     updateDate: Date = Date(0),
     buildTask: TaskBuilder.() -> Unit = {}
   ) = task(EduTask(), name, customPresentableName, taskDescription, taskDescriptionFormat, stepId, updateDate, buildTask)
+
+  fun quizTask(
+    name: String? = null,
+    blockName: String = HyperskillTaskType.CHOICE.type,
+    taskDescription: String? = null,
+    stepId: Int = 0,
+    updateDate: Date = Date(0),
+    buildTask: TaskBuilder.() -> Unit = {}
+  ) {
+    val quizTask = QuizTask()
+    quizTask.blockName = blockName
+    task(quizTask, name, null, taskDescription, DescriptionFormat.HTML, stepId, updateDate, buildTask)
+  }
 
   fun remoteEduTask(
     name: String? = null,
