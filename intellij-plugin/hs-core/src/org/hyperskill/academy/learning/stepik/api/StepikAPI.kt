@@ -2,6 +2,9 @@
 
 package org.hyperskill.academy.learning.stepik.api
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.intellij.openapi.diagnostic.logger
@@ -113,6 +116,28 @@ class CodeTaskReply : Reply() {
 
   @JsonProperty(CODE)
   var code: String? = null
+}
+
+/**
+ * A reply to a quiz step. Its fields depend on the block type (`choices`, `ordering`, `number`, etc.),
+ * and only the quiz form and the server know them, see `hyperskill_quiz.js`.
+ */
+@JsonIgnoreProperties(VERSION)
+class QuizReply() : Reply() {
+  private val replyFields = linkedMapOf<String, Any?>()
+
+  val fields: Map<String, Any?>
+    @JsonAnyGetter
+    get() = replyFields
+
+  constructor(fields: Map<String, Any?>) : this() {
+    replyFields.putAll(fields)
+  }
+
+  @JsonAnySetter
+  fun setField(name: String, value: Any?) {
+    replyFields[name] = value
+  }
 }
 
 class EduTaskReply : Reply() {

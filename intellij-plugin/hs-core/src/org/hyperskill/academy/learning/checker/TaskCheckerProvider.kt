@@ -21,6 +21,7 @@ interface TaskCheckerProvider {
     return when (task) {
       is RemoteEduTask,
       is CodeTask,
+      is QuizTask,
       is TheoryTask,
       is UnsupportedTask -> null
 

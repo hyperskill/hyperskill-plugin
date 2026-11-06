@@ -39,6 +39,8 @@ object EduFormatNames {
   const val ROWS = "rows"
   const val COLUMNS = "columns"
   const val IS_CHECKBOX = "is_checkbox"
+  const val LINES = "lines"
+  const val COMPONENTS = "components"
 
   const val DEFAULT_ENVIRONMENT = ""
 

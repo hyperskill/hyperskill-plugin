@@ -29,6 +29,8 @@ class HyperskillTaskBuilder(
     "text",
     CodeTask.CODE_TASK_TYPE -> createTask(blockName)
 
+    in QuizTask.BLOCK_NAMES -> createTask(blockName!!)
+
     else -> createTask(UnsupportedTask.UNSUPPORTED_TASK_TYPE)
   }
 
@@ -43,7 +45,7 @@ class HyperskillTaskBuilder(
       }
 
       when (this) {
-        is CodeTask -> {
+        is CodeTask, is QuizTask -> {
           name = stepSource.title
         }
 

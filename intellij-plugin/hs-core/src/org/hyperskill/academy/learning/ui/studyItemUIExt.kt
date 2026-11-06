@@ -3,8 +3,10 @@ package org.hyperskill.academy.learning.ui
 import com.intellij.openapi.util.NlsActions
 import org.hyperskill.academy.coursecreator.StudyItemType
 import org.hyperskill.academy.coursecreator.presentableName
+import org.hyperskill.academy.learning.JavaUILibrary
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
+import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
 import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
@@ -25,6 +27,7 @@ fun Task.getUICheckLabel(): String {
   return when (this) {
     is TheoryTask -> EduCoreBundle.message("action.check.run.text")
     is UnsupportedTask -> EduCoreBundle.message("hyperskill.unsupported.check.task")
+    is QuizTask -> if (JavaUILibrary.isSwing()) EduCoreBundle.message("hyperskill.unsupported.check.task") else defaultMessage
     else -> defaultMessage
   }
 }

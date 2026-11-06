@@ -51,7 +51,7 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
         HyperskillTaskType.PYCHARM -> { _: String -> pycharmTask() }
         HyperskillTaskType.REMOTE_EDU -> { _: String -> pycharmTask(REMOTE_EDU_TASK_TYPE) }
         HyperskillTaskType.TEXT -> { _: String -> pycharmTask(THEORY_TASK_TYPE) }
-        else -> this::unsupportedTask
+        else -> if (it.type in QuizTask.BLOCK_NAMES) { name: String -> quizTask(name, it.type) } else this::unsupportedTask
       }
     })
 
@@ -133,6 +133,14 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
   private fun unsupportedTask(@NonNls name: String): Task {
     return UnsupportedTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked).apply {
       descriptionFormat = DescriptionFormat.HTML
+      initTaskFiles(this)
+    }
+  }
+
+  private fun quizTask(name: String, blockName: String): Task {
+    return QuizTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked, blockName).apply {
+      descriptionFormat = DescriptionFormat.HTML
+      descriptionText = step.text
       initTaskFiles(this)
     }
   }

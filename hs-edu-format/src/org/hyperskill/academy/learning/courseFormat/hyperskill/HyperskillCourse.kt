@@ -7,6 +7,7 @@ import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROBLEMS
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_PROJECTS_URL
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
+import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.wrapWithUtm
 import java.util.concurrent.ConcurrentHashMap
@@ -116,7 +117,7 @@ class HyperskillCourse : Course {
       HyperskillTaskType.CODE.type,
       HyperskillTaskType.PYCHARM.type,
       HyperskillTaskType.TEXT.type,
-    )
+    ) + QuizTask.BLOCK_NAMES
 
     fun isStepSupported(type: String?): Boolean = type in SUPPORTED_STEP_TYPES
   }

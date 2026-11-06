@@ -2,8 +2,10 @@ package org.hyperskill.academy.learning.courseFormat.attempts
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.COLUMNS
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.COMPONENTS
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.IS_CHECKBOX
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.IS_MULTIPLE_CHOICE
+import org.hyperskill.academy.learning.courseFormat.EduFormatNames.LINES
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.OPTIONS
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.PAIRS
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.ROWS
@@ -28,6 +30,12 @@ class Dataset {
   @JsonProperty(IS_CHECKBOX)
   var isCheckbox: Boolean = false
 
+  @JsonProperty(LINES)
+  var lines: List<String>? = null
+
+  @JsonProperty(COMPONENTS)
+  var components: List<Component>? = null
+
   constructor()
   constructor(emptyDataset: String)  // stepik returns empty string instead of null
 
@@ -37,5 +45,19 @@ class Dataset {
 
     @JsonProperty("second")
     val second: String = ""
+  }
+
+  /**
+   * A part of a `fill-blanks` step: the text with the blanks goes first, then an `input` or a `select` for every blank.
+   */
+  class Component {
+    @JsonProperty("type")
+    val type: String = ""
+
+    @JsonProperty("text")
+    val text: String = ""
+
+    @JsonProperty(OPTIONS)
+    val options: List<String> = emptyList()
   }
 }
