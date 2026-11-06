@@ -9,9 +9,9 @@ cd educational-plugin
 
 ## Configuring development environment
 
-1. Java 17 is required for development.
+1. Java 21 is required for development.
    For example, you can install [openJDK](https://openjdk.java.net/install/)
-   or [Amazon Corretto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
+   or [Amazon Corretto](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html)
 2. Open project directory in IntelliJ IDEA.
    You can get the latest IntelliJ IDEA Community Edition [here](https://www.jetbrains.com/idea/download/).
 3. Import Gradle project. If you are not familiar with IntelliJ IDEA Gradle integration, check out
@@ -21,8 +21,9 @@ cd educational-plugin
    *runIdea*, *runPyCharm*, *runCLion*, *runStudio*, *runWebStorm*, and *runGoLand*
    should be used
 6. To build plugin distribution use *:buildPlugin* Gradle task.
-   It creates an archive at `build/distributions` which can be installed into your IDE via `Install plugin from disk...` action found in
-   `Settings > Plugins`.
+   It creates an archive at `intellij-plugin/build/distributions` which can be installed into your IDE via `Install plugin from disk...`
+   action found in `Settings > Plugins`.
+   See [BuildingPlugin.md](/documentation/BuildingPlugin.md) to build it for different platform versions.
 
 # Supporting different platforms
 
