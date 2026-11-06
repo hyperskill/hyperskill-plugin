@@ -3,6 +3,8 @@
     <!--suppress PluginXmlValidity -->
     <module name="ai-debugger-core"/>
     <plugin id="com.intellij.modules.java"/>
+    <!-- Java debugger 2026.1+ module dependencies are inserted here by build.gradle.kts. -->
+    <!-- JAVA_DEBUGGER_MODULE_DEPENDENCIES -->
   </dependencies>
 
   <extensions defaultExtensionNs="HyperskillEducational">
