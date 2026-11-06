@@ -13,10 +13,6 @@ abstract class OAuthLoginOptions<T : OAuthAccount<out UserInfo>> : LoginOptions<
 
   override fun getCurrentAccount(): T? = connector.account
 
-  override fun setCurrentAccount(account: T?) {
-    connector.account = account
-  }
-
   override fun createAuthorizeListener(): HyperlinkAdapter =
     object : HyperlinkAdapter() {
       override fun hyperlinkActivated(e: HyperlinkEvent) {
@@ -25,7 +21,6 @@ abstract class OAuthLoginOptions<T : OAuthAccount<out UserInfo>> : LoginOptions<
     }
 
   open fun postLoginActions() {
-    lastSavedAccount = getCurrentAccount()
     updateLoginLabels()
   }
 
@@ -34,7 +29,6 @@ abstract class OAuthLoginOptions<T : OAuthAccount<out UserInfo>> : LoginOptions<
       override fun hyperlinkActivated(event: HyperlinkEvent) {
         val currentConnector = connector
         if (currentConnector is EduOAuthCodeFlowConnector) {
-          lastSavedAccount = null
           currentConnector.doLogout(authorizationPlace = AuthorizationPlace.SETTINGS)
           updateLoginLabels()
         }
