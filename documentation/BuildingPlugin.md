@@ -20,7 +20,7 @@ All IDEs of the same branch (IDEA, PyCharm, CLion, Rider, and so on) use the sam
 - **JDK 25** for environments `262` and later. You don't have to install it: Gradle downloads it on first use.
 - **Network access** to the JetBrains repositories and Marketplace. The first build of an environment downloads IDEA, CLion and Rider of that
   branch, because language modules compile against them.
-- **Disk space** for those IDEs. They are stored in `.intellijPlatform/ides`.
+- **Disk space** for those IDEs: plan for about 40 GB per environment, downloads included. The extracted IDEs are in `.intellijPlatform/ides`.
 - **No credentials.** Only publishing needs a token, see [CI](#ci).
 
 ## Build one environment
@@ -36,7 +36,7 @@ On Windows PowerShell:
 ```
 
 The result is `intellij-plugin/build/distributions/HyperskillAcademy-<pluginVersion>-<platform>.zip`,
-for example `HyperskillAcademy-2026.22-2026.2.zip`.
+for example `HyperskillAcademy-2026.21-2026.2.zip`.
 
 Without `-PenvironmentName`, Gradle uses the value from `gradle.properties`.
 The command-line option changes neither that file nor the project model in your IDE. To develop against another environment, edit
@@ -44,7 +44,7 @@ The command-line option changes neither that file nor the project model in your 
 
 ## Build all environments
 
-Run the builds one after another, because they share the same build directories.
+Run the builds one after another. An uncached build of one environment takes around 10 minutes, and repeat builds are much faster.
 Each build keeps the zips of the other environments, and `clean` removes them all.
 
 ```bash
@@ -62,6 +62,18 @@ foreach ($n in 252, 253, 261, 262, 263) {
 }
 ```
 
+## Avoid overlapping builds
+
+Don't run two builds in one checkout at the same time, and don't switch branches during a build. They use the same directories, so a build can
+fail, or succeed and produce a wrong zip. In one such case, a zip named for 2026.1 contained the `plugin.xml` of 2026.3, so a 2026.1 IDE would
+reject it.
+
+To keep working while a build runs, build in a separate `git worktree`. It can reuse the IDEs you have already downloaded:
+
+```bash
+./gradlew buildPlugin -PenvironmentName=262 -Porg.jetbrains.intellij.platform.intellijPlatformIdesCache=/path/to/main/checkout/.intellijPlatform/ides
+```
+
 ## Build options
 
 Pass these as `-P<name>=<value>`, or set them in `gradle.properties`.
@@ -77,8 +89,8 @@ Pass these as `-P<name>=<value>`, or set them in `gradle.properties`.
 same file name as a regular build, so don't distribute the result.
 
 > [!WARNING]
-> PowerShell splits an unquoted argument at a dot, so `-PpluginVersion=2026.22.1` reaches Gradle as `-PpluginVersion=2026` and `.22.1`.
-> Quote such values: `"-PpluginVersion=2026.22.1"`.
+> PowerShell splits an unquoted argument at a dot, so `-PpluginVersion=2026.21.1` reaches Gradle as `-PpluginVersion=2026` and `.21.1`.
+> Quote any argument that contains a dot: `"-PpluginVersion=2026.21.1"`.
 
 ## Check a build
 
@@ -134,8 +146,10 @@ release. The `JB_MARKETPLACE_TOKEN` and `JB_MARKETPLACE_CHANNEL` environment var
 
 | Symptom                                                                       | Cause and fix                                                                                                                                                                                     |
 |-------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ``Property `ideaVersion` is not defined in gradle.properties``                | `environmentName` has no matching `gradle-<environmentName>.properties`. Use a value from the table above.                                                                                        |
+| `No environment files were found for the '<value>' environment`               | `environmentName` has no matching `gradle-<environmentName>.properties`. Use a value from the table above.                                                                                        |
+| `Source file or directory not found`, `Could not delete`, `Unable to delete directory` | Another build is using this checkout, or the branch changed during the build. Wait for the other build to finish, then build again.                                                         |
+| `Gradle build daemon disappeared unexpectedly`                                | Something ended the Gradle process, such as a memory shortage or another tool stopping Java processes. Build again, and if you then see cache errors, use the next row.                            |
 | `class file has wrong version 69.0, should be 65.0`                           | The Kotlin `jvmTarget` and the Java toolchain got out of sync. Both blocks in `intellij-plugin-common-conventions.gradle.kts` must use the same `environmentName` threshold.                       |
-| `Corrupted TAR archive`, or an `IOException` on a jar in the Gradle cache     | An earlier build was killed partway through. Run `./gradlew --stop`, then delete the file named in the error so that Gradle downloads or rebuilds it.                                              |
-| The IDE reports the plugin as incompatible                                    | The zip is for another environment, or the IDE build is older than `customSinceBuild`. See [Install a build](#install-a-build).                                                                   |
+| `Corrupted TAR archive`, or an `IOException` on a jar in the Gradle cache     | An earlier build was killed partway through. Run `./gradlew --stop`, which also stops builds in other checkouts, then delete the file named in the error so that Gradle downloads or rebuilds it.  |
+| The IDE reports the plugin as incompatible                                    | The zip is for another environment, or the IDE build is older than `customSinceBuild`. See [Install a build](#install-a-build). If neither applies, the zip may come from [overlapping builds](#avoid-overlapping-builds), so build it again. |
 | Running out of disk space                                                     | Old IDE versions stay in `.intellijPlatform/ides` after a version bump. Delete the folders that no `gradle-*.properties` file refers to.                                                           |
