@@ -68,7 +68,7 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
     val existingChildren = existingItem.items
     val preservedChildren = mutableListOf<StudyItem>()
     val mapper = mapper()
-    var unresolvedChildren = false
+    val unresolved = mutableListOf<UnresolvedContentEntry>()
     for (titledItem in deserializedItem.items) {
       val child = existingChildren.find { it.name == titledItem.name }
       if (child != null) {
@@ -79,14 +79,9 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
         // this code adding new child item if it was added in config and there's a dir
         // it is called from `YamlLoader.loadItem`
         val configFile = existingItem.getConfigFileForChild(project, titledItem.name)
-        if (configFile == null) {
-          unresolvedChildren = true
-          continue
-        }
-
-        val deserializedChild = deserializeItemProcessingErrors(configFile, project, mapper = mapper)
+        val deserializedChild = configFile?.let { deserializeItemProcessingErrors(it, project, mapper = mapper) }
         if (deserializedChild == null) {
-          unresolvedChildren = true
+          unresolved += UnresolvedContentEntry(titledItem.name, preservedChildren.lastOrNull()?.name)
           continue
         }
         deserializedChild.name = titledItem.name
@@ -98,9 +93,9 @@ open class ItemContainerChangeApplier<T : ItemContainer>(val project: Project) :
     }
     // update items so as removed items are no longer in the course
     existingItem.items = preservedChildren
-    // A child named in the config could not be resolved, so `preservedChildren` is shorter than what the config file
-    // on disk claims. Recomputed on every apply rather than latched, so a later complete load clears it again.
-    existingItem.isPartiallyLoaded = unresolvedChildren
+    // Children named in the config that could not be resolved stay in it on the next save.
+    // Recomputed on every apply rather than latched, so a later complete load clears it again.
+    existingItem.unresolvedContent = unresolved
     existingItem.init(existingItem.parent, false)
   }
 }

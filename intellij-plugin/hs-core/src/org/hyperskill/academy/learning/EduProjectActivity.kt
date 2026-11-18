@@ -95,9 +95,9 @@ class EduProjectActivity : ProjectActivity {
   @RequiresBlockingContext
   fun migrateYaml(project: Project, course: Course) {
     // `saveAll` rewrites every config file from the in-memory model. If that model resolved only partially
-    // (see `YamlLoader.deserializeContent` and `YamlDeepLoader.removeNonExistingTaskFiles`, both of which silently
-    // drop unresolvable children), running it on every project open turns a transient loading problem into permanent
-    // data loss on disk. Save only when a migration actually ran: the YAML-format migration in
+    // (see `YamlDeepLoader.removeNonExistingTaskFiles`, which silently drops unresolvable task files), running it on
+    // every project open turns a transient loading problem into permanent data loss on disk. Save only when a
+    // migration actually ran: the YAML-format migration in
     // `YamlDeepLoader.loadCourse` already has its own `needMigration`-gated `saveAll`.
     if (!migrateCanCheckLocallyYaml(project, course)) return
     YamlFormatSynchronizer.saveAll(project)
