@@ -48,3 +48,8 @@ secret.properties
 intellij-plugin/hs-core/resources/style/hyperskill_task.css
 
 .kotlin/
+
+# Claude Code: local worktrees and personal settings (skills in .claude/skills are shared)
+.claude/worktrees/
+.claude/settings.local.json
+__pycache__/
