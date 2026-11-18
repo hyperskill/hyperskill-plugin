@@ -52,6 +52,10 @@ The plugin supports multiple IntelliJ Platform versions. The target version is c
 
 To switch versions, change `environmentName` and reload Gradle.
 
+Updating the IDE versions in `gradle-<env>.properties` is a two-step loop: `/ide-update-loop` checks for new
+versions, builds against them and reports the failures; `/ide-update-fix <items>` applies the accepted ones and
+rebuilds until green. Its scripts are in `.claude/skills/ide-update-loop/scripts/`.
+
 ## Architecture
 
 ### Module Structure
