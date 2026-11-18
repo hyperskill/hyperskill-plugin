@@ -114,27 +114,26 @@ object YamlLoader {
     }
   }
 
-  internal inline fun <reified T : StudyItem> StudyItem.deserializeContent(
+  internal inline fun <reified T : StudyItem> ItemContainer.deserializeContent(
     project: Project,
     contentList: List<T>,
     mapper: ObjectMapper = basicMapper(),
   ): List<T> {
     val content = mutableListOf<T>()
-    var unresolvedChildren = false
+    val unresolved = mutableListOf<UnresolvedContentEntry>()
     for (titledItem in contentList) {
       val configFile: VirtualFile? = getConfigFileForChild(project, titledItem.name)
-      if (configFile == null) {
-        unresolvedChildren = true
-        continue
+      val deserializeItem = configFile?.let {
+        deserializeItemProcessingErrors(it, project, mapper = mapper, parentItem = this) as? T
       }
-      val deserializeItem = deserializeItemProcessingErrors(configFile, project, mapper = mapper, parentItem = this) as? T
-      if (deserializeItem == null) {
-        unresolvedChildren = true
+      if (configFile == null || deserializeItem == null) {
+        LOG.warn("Cannot resolve `${titledItem.name}` listed in the content of $itemType `$name`, keeping it in the config")
+        unresolved += UnresolvedContentEntry(titledItem.name, content.lastOrNull()?.name)
         continue
       }
       if (this is Lesson && isHyperskillTopicsLesson() && deserializeItem is UnsupportedTask) {
         // A deliberate skip, not an unresolved child: topic lessons legitimately contain tasks this IDE cannot
-        // support, so this must not mark the lesson partially loaded and block saving it.
+        // support, so the next save drops them from the lesson config.
         LOG.warn(
           "Skipping unsupported task `${titledItem.name}` while loading Hyperskill topic lesson `${name}` from ${configFile.path}"
         )
@@ -146,7 +145,7 @@ object YamlLoader {
     }
 
     // Recomputed on every load rather than latched, so a later complete load clears it again.
-    isPartiallyLoaded = unresolvedChildren
+    unresolvedContent = unresolved
     return content
   }
 

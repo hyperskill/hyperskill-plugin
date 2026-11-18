@@ -105,10 +105,12 @@ abstract class CourseYamlMixin {
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   private lateinit var environment: String
 
-  @JsonSerialize(contentConverter = StudyItemConverter::class)
-  @JsonProperty(CONTENT)
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  private lateinit var _items: List<StudyItem>
+  // Not the `items` themselves: the names also keep the entries that could not be resolved on load,
+  // see `ItemContainer.unresolvedContent`
+  val contentNames: List<String>
+    @JsonProperty(CONTENT)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    get() = throw NotImplementedInMixin()
 
   @JsonProperty(SOLUTIONS_HIDDEN)
   @JsonInclude(JsonInclude.Include.NON_DEFAULT)
