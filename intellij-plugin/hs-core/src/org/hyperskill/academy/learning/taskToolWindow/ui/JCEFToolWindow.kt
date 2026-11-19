@@ -13,6 +13,7 @@ import org.hyperskill.academy.learning.JavaUILibrary
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.taskToolWindow.links.JCefToolWindowLinkHandler
+import org.hyperskill.academy.learning.taskToolWindow.ui.quiz.QuizFormBridge
 import org.jetbrains.annotations.TestOnly
 import javax.swing.JComponent
 
@@ -20,6 +21,8 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
   private val taskInfoJBCefBrowser = JCEFHtmlPanel(true, JBCefApp.getInstance().createClient(), null)
 
   private val taskSpecificJBCefBrowser = JCEFHtmlPanel(true, JBCefApp.getInstance().createClient(), null)
+
+  private val quizFormBridge: QuizFormBridge
 
   init {
     val jcefLinkInToolWindowHandler = JCefToolWindowLinkHandler(project)
@@ -34,6 +37,8 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
     taskSpecificJBCefBrowser.jbCefClient.setProperty(JBCefClient.Properties.JS_QUERY_POOL_SIZE, TASK_SPECIFIC_PANEL_JS_QUERY_POOL_SIZE)
 
     taskInfoJBCefBrowser.disableNavigation()
+    quizFormBridge = QuizFormBridge(project, taskInfoJBCefBrowser)
+    Disposer.register(this, quizFormBridge)
     Disposer.register(this, taskInfoJBCefBrowser)
     Disposer.register(this, taskSpecificJBCefBrowser)
 
@@ -72,12 +77,13 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
       EduCoreBundle.message("task.description.not.found")
     }
 
-    taskInfoJBCefBrowser.loadHTML(taskDescription)
+    taskInfoJBCefBrowser.loadHTML(quizFormBridge.addFormToDescription(task, taskDescription))
     taskInfoJBCefBrowser.component.isVisible = true
   }
 
   override fun updateTaskSpecificPanel(task: Task?) {
     taskSpecificJBCefBrowser.component.isVisible = false
+    quizFormBridge.reloadForm(task)
   }
 
   override fun dispose() {
@@ -89,7 +95,7 @@ class JCEFToolWindow(project: Project) : TaskToolWindow(project) {
 
     private const val EMPTY_HTML = "<html><body></body></html>"
 
-    // maximum number of created qs queries in termsQueryManager
+    // maximum number of created js queries, see QuizFormBridge
     private const val TASK_INFO_PANEL_JS_QUERY_POOL_SIZE = 3
 
     // maximum number of created qs queries in taskSpecificQueryManager

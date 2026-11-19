@@ -16,6 +16,8 @@ abstract class TaskNavigationAction : DumbAwareAction() {
 
   protected open fun getCustomAction(task: Task): ((Project, Task) -> Unit)? = null
 
+  protected open fun beforeNavigation(project: Project, task: Task) {}
+
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
     if (!project.isEduProject()) return
@@ -43,6 +45,7 @@ abstract class TaskNavigationAction : DumbAwareAction() {
     }
     val targetTask = getTargetTask(currentTask) ?: return
 
+    beforeNavigation(project, currentTask)
     NavigationUtils.navigateToTask(project, targetTask, currentTask)
   }
 

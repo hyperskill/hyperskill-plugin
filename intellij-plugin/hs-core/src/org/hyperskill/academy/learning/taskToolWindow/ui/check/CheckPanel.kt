@@ -17,6 +17,7 @@ import org.hyperskill.academy.learning.course
 import org.hyperskill.academy.learning.courseFormat.CheckResult
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
 import org.hyperskill.academy.learning.messages.EduCoreBundle
@@ -104,9 +105,6 @@ class CheckPanel(private val project: Project, parentDisposable: Disposable) : J
       return CheckResult(task.status)
     }
     else {
-      if (task.isChangedOnFailed && task.status == CheckStatus.Failed) {
-        feedback.message = EduCoreBundle.message("action.retry.shuffle.message")
-      }
       return feedback.toCheckResult(task.status)
     }
   }
@@ -148,8 +146,10 @@ class CheckPanel(private val project: Project, parentDisposable: Disposable) : J
 
   private fun updateCheckButtonWrapper(task: Task) {
     checkButtonWrapper.removeAll()
-    when (task) {
-      is TheoryTask -> {}
+    when {
+      task is TheoryTask -> {}
+      // A solved quiz keeps showing the given answer, so there is nothing to check anymore
+      task is QuizTask && task.isSolved -> {}
       else -> {
         val isDefault = !(task.isChangedOnFailed && task.status == CheckStatus.Failed || task.isSolved)
         val isEnabled = !(task.isChangedOnFailed && task.status == CheckStatus.Failed)
@@ -168,7 +168,8 @@ class CheckPanel(private val project: Project, parentDisposable: Disposable) : J
     }
 
     val nextTask = NavigationUtils.nextTask(task)
-    if (nextTask != null || (task.status == CheckStatus.Solved && NavigationUtils.isLastHyperskillProblem(task))) {
+    val canAskForNextActivity = task.status == CheckStatus.Solved || task is TheoryTask
+    if (nextTask != null || (canAskForNextActivity && NavigationUtils.isLastHyperskillProblem(task))) {
       updateCheckButtonWrapper(task) // to update the 'Check' button state
       val hasRunButton = getCustomRunConfigurationForRunner(project, task) != null
       val isDefault = (task is TheoryTask || task.isSolved) && !hasRunButton
