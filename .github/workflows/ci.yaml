@@ -15,6 +15,10 @@ jobs:
     runs-on: arc-runners-large
     timeout-minutes: 60
     strategy:
+      # The runner pods have no memory limit and share 16 GB nodes, so both jobs can land on one node.
+      # Two of these builds don't fit in its memory: the node kills the pod of the job that is further along,
+      # and GitHub reports "The self-hosted runner lost communication with the server". Run them one at a time.
+      max-parallel: 1
       matrix:
         environmentName:
           - 261
@@ -39,6 +43,16 @@ jobs:
         run: |
           BASE_VERSION=$(grep '^pluginVersion=' gradle.properties | cut -d'=' -f2)
           echo "VERSION=${BASE_VERSION}.${{ github.run_number }}" >> $GITHUB_ENV
+
+      # After compilation, the Gradle daemon and the idle Kotlin compiler daemons hold ~5 GB that tests don't need.
+      # Stopping them leaves room on the node for jobs of other workflow runs.
+      - name: Compile
+        run: ./gradlew :intellij-plugin:testClasses :hs-edu-format:testClasses :hs-framework-storage:testClasses -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}
+
+      - name: Stop build daemons
+        run: |
+          ./gradlew --stop
+          pkill -f org.jetbrains.kotlin.daemon.KotlinCompileDaemon || true
 
       - name: Run tests
         run: ./gradlew :intellij-plugin:test :hs-edu-format:test :hs-framework-storage:test -PenvironmentName=${{ matrix.environmentName }} -PpluginVersion=${{ env.VERSION }}

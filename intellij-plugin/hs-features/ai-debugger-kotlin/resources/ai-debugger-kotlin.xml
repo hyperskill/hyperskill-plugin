@@ -10,6 +10,5 @@
     <intermediateBreakpointProcessor language="kotlin"
                                      implementationClass="org.hyperskill.academy.ai.debugger.kotlin.KtIntermediateBreakpointProcessor"/>
     <testFinder language="kotlin" implementationClass="org.hyperskill.academy.ai.debugger.kotlin.impl.KtTestFinder"/>
-    <testFinder language="JAVA" implementationClass="org.hyperskill.academy.ai.debugger.java.impl.JTestFinder"/>
   </extensions>
 </idea-plugin>

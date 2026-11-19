@@ -23,12 +23,7 @@ abstract class LoginOptions<T : Account<out UserInfo>> : OptionsProvider {
   private var mainPanel: JPanel = JPanel()
   private var loginListener: HyperlinkAdapter? = null
 
-  protected var lastSavedAccount: T? = null
-  private var initialAccount: T? = null
-
   abstract fun getCurrentAccount(): T?
-
-  abstract fun setCurrentAccount(account: T?)
 
   protected abstract fun profileUrl(account: T): String
 
@@ -61,11 +56,6 @@ abstract class LoginOptions<T : Account<out UserInfo>> : OptionsProvider {
 
   protected open fun getAdditionalComponents(): List<JComponent> = emptyList()
 
-  private fun initAccounts() {
-    initialAccount = getCurrentAccount()
-    lastSavedAccount = getCurrentAccount()
-  }
-
   private fun addBrowseProfileLabel() {
     browseProfileLabel = createTextPane()
     browseProfileLabel.background = UIUtil.getPanelBackground()
@@ -89,38 +79,26 @@ abstract class LoginOptions<T : Account<out UserInfo>> : OptionsProvider {
 
   override fun createComponent(): JComponent? {
     initUI()
-    initAccounts()
     return mainPanel
   }
 
-  override fun isModified(): Boolean {
-    return getCurrentAccount() != initialAccount
-  }
+  // Logging in or out takes effect immediately, so the account is never a pending edit of this page.
+  // Since 2026.2 the non-modal Settings window calls `reset` on a page that became modified while the window was unfocused,
+  // and logging in happens in the browser, so comparing accounts here would undo every login made from this page.
+  override fun isModified(): Boolean = false
 
   override fun reset() {
-    if (lastSavedAccount != initialAccount) {
-      setCurrentAccount(initialAccount)
-    }
-    lastSavedAccount = initialAccount
     updateLoginLabels()
   }
 
-  override fun apply() {
-    if (isModified) {
-      initialAccount = lastSavedAccount
-      if (getCurrentAccount() != initialAccount) {
-        setCurrentAccount(initialAccount)
-      }
-      updateLoginLabels()
-    }
-  }
+  override fun apply() {}
 
   protected fun updateLoginLabels() {
     if (loginListener != null) {
       loginLink.removeHyperlinkListener(loginListener)
     }
 
-    val selectedAccount = lastSavedAccount
+    val selectedAccount = getCurrentAccount()
 
     val userInfo = selectedAccount?.userInfo
     if (selectedAccount == null || userInfo == null) {

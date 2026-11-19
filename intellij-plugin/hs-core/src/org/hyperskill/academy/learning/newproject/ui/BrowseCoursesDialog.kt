@@ -8,7 +8,6 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
-import com.intellij.openapi.updateSettings.impl.UpdateChecker
 import com.intellij.openapi.util.Disposer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,7 +54,7 @@ class BrowseCoursesDialog : OpenCourseDialogBase(), CoroutineScope {
       // TODO: find out a better way to be notified when plugin installation finishes
       .subscribe(Notifications.TOPIC, object : Notifications {
         override fun notify(notification: Notification) {
-          if (notification.groupId == UpdateChecker.getNotificationGroup().displayId) {
+          if (notification.groupId == IDE_AND_PLUGIN_UPDATES_NOTIFICATION_GROUP) {
             panel.doValidation()
             // TODO: investigate why it leads to IDE freeze when you install python plugin
             // ApplicationManager.getApplication().invokeLater {
@@ -69,5 +68,10 @@ class BrowseCoursesDialog : OpenCourseDialogBase(), CoroutineScope {
   companion object {
     @NonNls
     const val ACTION_PLACE = "COURSE_SELECTION_DIALOG"
+
+    // The group of `UpdateChecker.getNotificationGroup()`. The class itself can't be used:
+    // since 2026.3 it belongs to the internal `intellij.platform.ide.updateChecker` module, which plugins can't depend on
+    @NonNls
+    private const val IDE_AND_PLUGIN_UPDATES_NOTIFICATION_GROUP = "IDE and Plugin Updates"
   }
 }
