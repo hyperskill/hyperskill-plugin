@@ -25,6 +25,7 @@ import org.hyperskill.academy.learning.StudyTaskManager
 import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.isAnsweredWithoutForm
 import org.hyperskill.academy.learning.stepik.hyperskill.stepLink
 import org.hyperskill.academy.learning.taskToolWindow.links.SwingToolWindowLinkHandler
 import java.awt.BorderLayout
@@ -64,7 +65,7 @@ class SwingToolWindow(project: Project) : TaskToolWindow(project) {
 
   override fun updateTaskInfoPanel(task: Task?) {
     val description = getTaskDescription(project, task, uiMode)
-    taskInfoTextPane.text = if (task is QuizTask) {
+    taskInfoTextPane.text = if (task is QuizTask && !task.isAnsweredWithoutForm) {
       // The quiz form needs JCEF, so this quiz can be solved only on the website
       insertBeforeBodyEnd(description, "<p>${EduCoreBundle.message("hyperskill.quiz.solve.on.website", stepLink(task.id), EduNames.JBA)}</p>")
     }

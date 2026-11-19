@@ -290,14 +290,180 @@ window.hsQuiz = (() => {
     return select;
   }
 
+  function renderPrompt(container, state, emit) {
+    renderTextInput(container, state, emit, 'prompt', () => {
+      const textarea = element('textarea');
+      textarea.rows = 6;
+      return textarea;
+    });
+    container.querySelector('textarea').placeholder = 'Enter your prompt here...';
+  }
+
+  // The query is written in the task file, the form only says so. A checked step shows the query it was checked with.
+  function renderSql(container, {reply, disabled}) {
+    if (disabled && reply?.solve_sql) {
+      container.append(element('div', 'hs-quiz-note', 'Your query:'), codeBlock(reply.solve_sql));
+      return;
+    }
+    container.append(element('div', 'hs-quiz-note', 'Write the query in <code>query.sql</code> and click Check.'));
+  }
+
+  function codeBlock(text) {
+    const pre = element('pre', 'hs-quiz-code-block');
+    pre.textContent = text;
+    return pre;
+  }
+
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const rest = seconds % 60;
+    return `${minutes}:${String(rest).padStart(2, '0')}`;
+  }
+
+  function actionButton(text, action) {
+    const button = element('button', 'hs-quiz-button');
+    button.type = 'button';
+    button.textContent = text;
+    button.addEventListener('click', () => {
+      button.disabled = true;
+      action();
+    });
+    return button;
+  }
+
+  // Like on the website: the attempt starts the timer, so it is created when the learner downloads the dataset.
+  // The answer is the output of the learner's program for the dataset, pasted into the form.
+  function renderDataset(container, state, emit) {
+    const {hasAttempt, disabled, options} = state;
+    const timeLimit = options?.time_limit;
+    const download = (restart) => post({event: 'download', restart});
+
+    if (!hasAttempt) {
+      const limit = timeLimit ? ` You will have ${formatTime(timeLimit)} to send the answer.` : '';
+      container.append(
+        element('div', 'hs-quiz-note', `Download the dataset to start solving.${limit}`),
+        actionButton('Download the dataset', () => download(false)),
+      );
+      return;
+    }
+
+    if (!disabled) {
+      const timer = element('div', 'hs-quiz-note');
+      const restartButton = actionButton('Download a new dataset', () => download(true));
+      const againButton = actionButton('Download the dataset again', () => download(false));
+      const actions = element('div', 'hs-quiz-actions');
+      container.append(timer, actions);
+
+      let timeLeft = state.timeLeft;
+      const showTime = () => {
+        const isExpired = timeLeft === 0;
+        timer.textContent = isExpired
+          ? 'Time limit exceeded. Download a new dataset to start the timer again.'
+          : timeLeft == null ? `The dataset is in ${DATASET_FILE}.` : `The dataset is in ${DATASET_FILE}. Time left: ${formatTime(timeLeft)}`;
+        actions.replaceChildren(isExpired ? restartButton : againButton);
+      };
+      showTime();
+      if (timeLeft != null && timeLeft > 0) {
+        const timerId = setInterval(() => {
+          if (!container.isConnected) {
+            clearInterval(timerId);
+            return;
+          }
+          timeLeft = Math.max(timeLeft - 1, 0);
+          showTime();
+          if (timeLeft === 0) clearInterval(timerId);
+        }, 1000);
+      }
+    }
+
+    renderTextInput(container, state, emit, 'file', () => {
+      const textarea = element('textarea');
+      textarea.rows = 6;
+      return textarea;
+    });
+  }
+
+  // An html step is answered with its task files: the form shows the page they make and its checklist,
+  // and runs the checklist when the plugin asks for the score, see `hyperskill_html_tests.js`.
+  const htmlPage = {frame: null, checklist: [], list: null, sources: {html: '', css: ''}};
+
+  function renderHtml(container, {options, sources, disabled, reply}) {
+    htmlPage.checklist = options?.checklist || [];
+    htmlPage.sources = disabled && reply?.html != null ? {html: reply.html, css: reply.css || ''} : sources || {html: '', css: ''};
+
+    const frame = element('iframe', 'hs-quiz-html-preview');
+    frame.setAttribute('sandbox', 'allow-same-origin');
+    frame.title = 'Preview';
+    htmlPage.frame = frame;
+    htmlPage.list = element('ul', 'hs-quiz-checklist');
+
+    container.append(
+      element('div', 'hs-quiz-note', disabled ? 'Your page:' : 'Edit <code>index.html</code> and <code>style.css</code>, the page is updated as you type.'),
+      frame,
+      element('div', 'hs-quiz-note', 'Checklist'),
+      htmlPage.list,
+    );
+    // The frame gets its document once it is in the page
+    setTimeout(() => updateSources(htmlPage.sources), 0);
+  }
+
+  function runHtmlChecklist(sources) {
+    htmlPage.sources = sources;
+    if (!htmlPage.frame || !htmlPage.frame.isConnected) return null;
+
+    const {results, score} = window.hsHtmlTests.run(htmlPage.frame, htmlPage.checklist, sources);
+    // Fonts and images can change the height of the page after it is rendered, so it is measured once more a bit later
+    const frame = htmlPage.frame;
+    const fitFrame = () => {
+      const document = frame.contentWindow.document;
+      const height = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
+      frame.style.height = `${Math.min(Math.max(height + 2, 120), 600)}px`;
+    };
+    fitFrame();
+    setTimeout(fitFrame, 100);
+    htmlPage.list.replaceChildren(...results.map(({name, isSuccess}) => {
+      const item = element('li', isSuccess ? 'hs-quiz-check-passed' : 'hs-quiz-check-failed');
+      item.textContent = `${isSuccess ? '✓' : '✗'} ${name}`;
+      return item;
+    }));
+    return score;
+  }
+
+  function updateSources(sources) {
+    try {
+      runHtmlChecklist(sources);
+    }
+    catch (e) {
+      console.warn('Failed to run the checklist', e);
+    }
+  }
+
+  // `null` tells the plugin that the checklist couldn't be run, which isn't the same as a page that fails it
+  function checkHtml(sources) {
+    let score = null;
+    try {
+      score = runHtmlChecklist(sources);
+    }
+    catch (e) {
+      console.warn('Failed to run the checklist', e);
+    }
+    post({event: 'score', score, sources});
+  }
+
+  const DATASET_FILE = 'dataset.txt';
+
   const renderers = {
     'choice': renderChoice,
+    'dataset': renderDataset,
     'fill-blanks': renderFillBlanks,
+    'html': renderHtml,
     'matching': renderMatching,
     'math': renderMath,
     'number': renderNumber,
     'parsons': renderParsons,
+    'prompt': renderPrompt,
     'sorting': renderSorting,
+    'sql': renderSql,
     'string': renderString,
     'table': renderTable,
   };
@@ -342,5 +508,5 @@ window.hsQuiz = (() => {
     post({event: 'ready'});
   }
 
-  return {start, render};
+  return {start, render, updateSources, checkHtml};
 })();

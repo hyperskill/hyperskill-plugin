@@ -11,6 +11,7 @@ import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
 import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
 import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.isAnsweredWithoutForm
 
 
 fun Task.getUIName(): String = if (course is HyperskillCourse) {
@@ -27,7 +28,7 @@ fun Task.getUICheckLabel(): String {
   return when (this) {
     is TheoryTask -> EduCoreBundle.message("action.check.run.text")
     is UnsupportedTask -> EduCoreBundle.message("hyperskill.unsupported.check.task")
-    is QuizTask -> if (JavaUILibrary.isSwing()) EduCoreBundle.message("hyperskill.unsupported.check.task") else defaultMessage
+    is QuizTask -> if (JavaUILibrary.isSwing() && !isAnsweredWithoutForm) EduCoreBundle.message("hyperskill.unsupported.check.task") else defaultMessage
     else -> defaultMessage
   }
 }

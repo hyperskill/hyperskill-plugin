@@ -10,6 +10,8 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.HtmlChecklistRunner
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.HtmlChecklistService
 import org.junit.Test
 
 class HyperskillCheckQuizTaskTest : HyperskillCheckActionTestBase() {
@@ -21,8 +23,90 @@ class HyperskillCheckQuizTaskTest : HyperskillCheckActionTestBase() {
         quizTask("quiz", stepId = STEP_ID) {
           taskFile("Task.txt", "")
         }
+        quizTask("sql", blockName = "sql", stepId = STEP_ID) {
+          taskFile(QuizTask.SQL_FILE_NAME, "SELECT 1;")
+        }
+        quizTask("empty sql", blockName = "sql", stepId = STEP_ID) {
+          taskFile(QuizTask.SQL_FILE_NAME, "  \n")
+        }
+        quizTask("html", blockName = "html", stepId = STEP_ID) {
+          taskFile(QuizTask.HTML_FILE_NAME, "<p>Hi</p>")
+          taskFile(QuizTask.CSS_FILE_NAME, "p {}")
+        }
+        quizTask("dataset", blockName = "dataset", stepId = STEP_ID) {
+          taskFile("Task.txt", "")
+        }
       }
     }
+  }
+
+  override fun tearDown() {
+    try {
+      HtmlChecklistService.getInstance(project).runner = null
+    }
+    catch (e: Throwable) {
+      addSuppressedException(e)
+    }
+    finally {
+      super.tearDown()
+    }
+  }
+
+  @Test
+  fun `test sql query is sent from its file`() {
+    configureResponses(submissions(status = "correct"))
+    val task = findTask(0, 1) as QuizTask
+
+    checkCheckAction(task, CheckStatus.Solved)
+
+    val submission = ObjectMapper().readTree(postedSubmissions.single())
+    // There is no form to request the attempt, so it is requested by the check
+    assertEquals(NEW_ATTEMPT_ID, submission["attempt"].asInt())
+    assertEquals("""{"solve_sql":"SELECT 1;\n"}""", submission["reply"].toString())
+  }
+
+  @Test
+  fun `test empty sql query is not sent`() {
+    configureResponses(submissions(status = "correct"))
+
+    checkCheckAction(findTask(0, 2), CheckStatus.Unchecked, EduCoreBundle.message("hyperskill.quiz.no.answer"))
+
+    assertEmpty(postedSubmissions)
+  }
+
+  @Test
+  fun `test html page is sent with the score of its checklist`() {
+    configureResponses(submissions(status = "correct"))
+    val task = findTask(0, 3) as QuizTask
+    HtmlChecklistService.getInstance(project).runner = HtmlChecklistRunner { checkedTask, sources ->
+      assertSame(task, checkedTask)
+      assertEquals(mapOf("html" to "<p>Hi</p>", "css" to "p {}"), sources)
+      1
+    }
+
+    checkCheckAction(task, CheckStatus.Solved)
+
+    val submission = ObjectMapper().readTree(postedSubmissions.single())
+    // Like on the website, the sources end with a new line
+    assertEquals("""{"html":"<p>Hi</p>\n","css":"p {}\n","score":1}""", submission["reply"].toString())
+  }
+
+  @Test
+  fun `test html page without the form is synced with the website`() {
+    configureResponses(submissions(status = "correct"))
+
+    checkCheckAction(findTask(0, 3), CheckStatus.Solved)
+
+    assertEmpty(postedSubmissions)
+  }
+
+  @Test
+  fun `test dataset is not checked before it is downloaded`() {
+    configureResponses(submissions(status = "correct"))
+
+    checkCheckAction(findTask(0, 4), CheckStatus.Unchecked, EduCoreBundle.message("hyperskill.dataset.download.first"))
+
+    assertEmpty(postedSubmissions)
   }
 
   @Test

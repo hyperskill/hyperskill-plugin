@@ -2,20 +2,27 @@ package org.hyperskill.academy.learning.stepik.hyperskill
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.intellij.openapi.vfs.VfsUtilCore
 import org.hyperskill.academy.learning.EduTestCase
 import org.hyperskill.academy.learning.MockResponseFactory
+import org.hyperskill.academy.learning.courseDir
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
+import org.hyperskill.academy.learning.courseFormat.attempts.Attempt
+import org.hyperskill.academy.learning.courseFormat.ext.getDir
 import org.hyperskill.academy.learning.courseFormat.EduFormatNames.HYPERSKILL_TOPICS
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
+import org.hyperskill.academy.learning.onError
 import org.hyperskill.academy.learning.pathWithoutPrams
+import org.hyperskill.academy.learning.stepik.HtmlStepOptions
 import org.hyperskill.academy.learning.stepik.Step
 import org.hyperskill.academy.learning.stepik.api.StepikBasedConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillStepSource
 import org.hyperskill.academy.learning.stepik.hyperskill.api.MockHyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.courseGeneration.HyperskillTaskBuilder
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.downloadDataset
 import org.hyperskill.academy.learning.stepik.hyperskill.quiz.loadQuizFormState
 import org.hyperskill.academy.learning.yaml.YamlDeserializer
 import org.hyperskill.academy.learning.yaml.YamlMapper
@@ -172,12 +179,129 @@ class HyperskillQuizTaskTest : EduTestCase() {
   }
 
   @Test
-  fun `test blocks that need the website stay unsupported`() {
+  fun `test video steps stay unsupported`() {
     val course = createCourseWithQuiz()
 
-    for (blockName in listOf("dataset", "html", "prompt", "sql", "video")) {
-      assertInstanceOf(HyperskillTaskBuilder(course, stepSource(blockName)).build(), UnsupportedTask::class.java)
+    assertInstanceOf(HyperskillTaskBuilder(course, stepSource("video")).build(), UnsupportedTask::class.java)
+  }
+
+  @Test
+  fun `test html step is answered with the page files made from its templates`() {
+    val course = createCourseWithQuiz()
+    val stepSource = stepSource("html")
+    stepSource.block?.options = HtmlStepOptions().apply {
+      htmlTemplate = "<p>Hello</p>"
+      cssTemplate = "p { color: red; }"
     }
+
+    val task = HyperskillTaskBuilder(course, stepSource).build() as QuizTask
+
+    assertEquals(listOf(QuizTask.HTML_FILE_NAME, QuizTask.CSS_FILE_NAME), task.taskFiles.keys.toList())
+    assertEquals("<p>Hello</p>", task.getTaskFile(QuizTask.HTML_FILE_NAME)?.text)
+    assertEquals("p { color: red; }", task.getTaskFile(QuizTask.CSS_FILE_NAME)?.text)
+  }
+
+  @Test
+  fun `test sql step is answered with a query file`() {
+    val task = HyperskillTaskBuilder(createCourseWithQuiz(), stepSource("sql")).build() as QuizTask
+
+    assertEquals(listOf(QuizTask.SQL_FILE_NAME), task.taskFiles.keys.toList())
+    assertEquals("", task.getTaskFile(QuizTask.SQL_FILE_NAME)?.text)
+  }
+
+  @Test
+  fun `test dataset step does not start the timer when it is opened`() {
+    val task = createQuizTask(blockName = "dataset")
+    configureResponses(attempts = emptyList(), stepOptions = """{"time_limit": 300, "samples": [["1 2", "3"]]}""")
+
+    val state = loadQuizFormState(task)
+
+    assertEquals(0, postedAttempts)
+    assertNull(task.attempt)
+    assertFalse(state.hasAttempt)
+    assertNull(state.error)
+    assertEquals(300, state.options["time_limit"])
+  }
+
+  @Test
+  fun `test dataset step continues the attempt with the time that is left`() {
+    val task = createQuizTask(blockName = "dataset")
+    configureResponses(
+      attempts = listOf(attempt(22, "active", dataset = """{"file": ""}""", timeLeft = 120)),
+      stepOptions = """{"time_limit": 300}"""
+    )
+
+    val state = loadQuizFormState(task)
+
+    assertEquals(0, postedAttempts)
+    assertEquals(22, task.attempt?.id)
+    assertTrue(state.hasAttempt)
+    assertEquals(120L, state.timeLeft)
+  }
+
+  @Test
+  fun `test html form gets the checklist of the step`() {
+    val task = createQuizTask(blockName = "html")
+    val checklist = """[{"name": "Has a title", "selector": "h1", "tests": [{"type": "hasElement", "data": {}}]}]"""
+    configureResponses(
+      attempts = listOf(attempt(22, "active", dataset = "{}")),
+      stepOptions = """{"html_template": "", "css_template": "", "checklist": $checklist}"""
+    )
+
+    val state = loadQuizFormState(task)
+
+    val json = StepikBasedConnector.createObjectMapper(SimpleModule()).valueToTree<JsonNode>(state.toMap())
+    val check = json["options"]["checklist"][0]
+    assertEquals("Has a title", check["name"].asText())
+    assertEquals("h1", check["selector"].asText())
+    assertEquals("hasElement", check["tests"][0]["type"].asText())
+  }
+
+  @Test
+  fun `test dataset is downloaded next to the task files`() {
+    val task = createQuizTask(blockName = "dataset")
+    configureResponses(attempts = emptyList(), dataset = "1 2 3\n")
+
+    val file = downloadDataset(project, task, startNew = false).onError { error("Failed to download the dataset: $it") }
+
+    assertEquals(1, postedAttempts)
+    assertEquals(NEW_ATTEMPT_ID, task.attempt?.id)
+    assertEquals(QuizTask.DATASET_FILE_NAME, file.name)
+    assertEquals(task.getDir(project.courseDir), file.parent)
+    assertEquals("1 2 3\n", VfsUtilCore.loadText(file))
+  }
+
+  @Test
+  fun `test dataset of the running attempt is downloaded again without a new attempt`() {
+    val task = createQuizTask(blockName = "dataset")
+    configureResponses(attempts = emptyList(), dataset = "4 5 6\n")
+    task.attempt = Attempt(STEP_ID).apply {
+      id = NEW_ATTEMPT_ID
+      timeLeft = 60
+    }
+    task.reply = mapOf("file" to "15")
+
+    downloadDataset(project, task, startNew = false).onError { error("Failed to download the dataset: $it") }
+
+    assertEquals(0, postedAttempts)
+    assertEquals(mapOf("file" to "15"), task.reply)
+  }
+
+  @Test
+  fun `test new dataset starts a new attempt and forgets the answer`() {
+    val task = createQuizTask(blockName = "dataset")
+    configureResponses(attempts = emptyList(), dataset = "7 8 9\n")
+    task.attempt = Attempt(STEP_ID).apply {
+      id = 21
+      timeLeft = 0
+    }
+    task.reply = mapOf("file" to "15")
+
+    downloadDataset(project, task, startNew = true).onError { error("Failed to download the dataset: $it") }
+
+    assertEquals(1, postedAttempts)
+    assertEquals(NEW_ATTEMPT_ID, task.attempt?.id)
+    assertNull(task.reply)
   }
 
   @Test
@@ -198,17 +322,17 @@ class HyperskillQuizTaskTest : EduTestCase() {
     assertNull(restored.reply)
   }
 
-  private fun createCourseWithQuiz(): HyperskillCourse = hyperskillCourseWithFiles(projectId = null) {
+  private fun createCourseWithQuiz(blockName: String = "choice"): HyperskillCourse = hyperskillCourseWithFiles(projectId = null) {
     section(HYPERSKILL_TOPICS) {
       lesson("Topic") {
-        quizTask("Quiz", stepId = STEP_ID) {
+        quizTask("Quiz", blockName = blockName, stepId = STEP_ID) {
           taskFile("Task.txt", "")
         }
       }
     }
   }
 
-  private fun createQuizTask(): QuizTask = createCourseWithQuiz().getProblem(STEP_ID) as QuizTask
+  private fun createQuizTask(blockName: String = "choice"): QuizTask = createCourseWithQuiz(blockName).getProblem(STEP_ID) as QuizTask
 
   private fun stepSource(blockName: String) = HyperskillStepSource().apply {
     id = STEP_ID
@@ -219,7 +343,12 @@ class HyperskillQuizTaskTest : EduTestCase() {
     }
   }
 
-  private fun configureResponses(attempts: List<String>, submissions: List<String> = emptyList()) {
+  private fun configureResponses(
+    attempts: List<String>,
+    submissions: List<String> = emptyList(),
+    stepOptions: String? = null,
+    dataset: String? = null
+  ) {
     mockConnector.withResponseHandler(testRootDisposable) { request, _ ->
       when (request.pathWithoutPrams) {
         "/api/attempts" -> {
@@ -232,17 +361,29 @@ class HyperskillQuizTaskTest : EduTestCase() {
           }
         }
 
+        "/api/attempts/$NEW_ATTEMPT_ID/dataset" -> dataset?.let { MockResponseFactory.fromString(it) }
         "/api/submissions" -> MockResponseFactory.fromString(list("submissions", submissions))
+        "/api/steps" -> stepOptions?.let { MockResponseFactory.fromString(list("steps", listOf(step(it)))) }
         else -> null
       }
     }
   }
 
+  private fun step(options: String): String {
+    val task = (getCourse() as HyperskillCourse).getProblem(STEP_ID) as QuizTask
+    return """{"id": $STEP_ID, "title": "Step", "position": 1, "block": {"name": "${task.blockName}", "text": "", "options": $options}}"""
+  }
+
   private fun list(name: String, items: List<String>): String =
     """{"meta": {"page": 1, "has_next": false, "has_previous": false}, "$name": [${items.joinToString(",")}]}"""
 
-  private fun attempt(id: Int, status: String, dataset: String = """{"is_multiple_choice": true, "options": ["a", "b"]}"""): String =
-    """{"id": $id, "status": "$status", "step": $STEP_ID, "time": "2026-01-01T00:00:00Z", "dataset": $dataset}"""
+  private fun attempt(
+    id: Int,
+    status: String,
+    dataset: String = """{"is_multiple_choice": true, "options": ["a", "b"]}""",
+    timeLeft: Int? = null
+  ): String =
+    """{"id": $id, "status": "$status", "step": $STEP_ID, "time": "2026-01-01T00:00:00Z", "time_left": $timeLeft, "dataset": $dataset}"""
 
   private fun submission(id: Int, attempt: Int, status: String, reply: String): String =
     """{"id": $id, "attempt": $attempt, "status": "$status", "step": $STEP_ID, "time": "2026-01-01T00:00:00Z", "reply": $reply}"""

@@ -29,6 +29,13 @@ dependencies {
       "intellij.libraries.jcef",
       "intellij.platform.sqlite",
     )
+    // Not on the core classpath since 2026.3. They come transitively through `intellij.platform.vcs.impl`, but the Gradle plugin
+    // sometimes generates its descriptor without dependencies, and then `VcsBundle` and `RestService` are missing
+    bundledModulesSince(
+      baseVersion, 263,
+      "intellij.platform.vcs.core",
+      "intellij.platform.builtInServer.impl",
+    )
     intellijPlugins(platformPluginsExtractedFromCore)
     // `TestServiceMessageConsumer` uses the TeamCity service messages library, which is not part of the core classpath since 2026.3
     testBundledModulesSince(baseVersion, 263, "intellij.libraries.teamcity.service.messages")

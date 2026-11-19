@@ -14,6 +14,7 @@ import org.hyperskill.academy.learning.courseFormat.CheckResult
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.attempts.Attempt
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTaskType
 import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
 import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask
@@ -30,6 +31,11 @@ import org.hyperskill.academy.learning.stepik.hyperskill.HYPERSKILL_URL
 import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillLoginListener
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.markStageAsCompleted
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.HtmlChecklistService
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.isDataset
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.readHtmlSources
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.readSqlReply
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.toHtmlReply
 import org.hyperskill.academy.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory
 import org.hyperskill.academy.learning.submissions.SolutionFile
 import org.hyperskill.academy.learning.submissions.SubmissionsManager
@@ -241,11 +247,32 @@ object HyperskillCheckConnector {
   /**
    * An attempt appears when the quiz form has been loaded. Without it (there is no JCEF, or the attempt could not be
    * requested) the learner can only solve the quiz on the website, so all the check can do is find out how that went.
+   *
+   * A `sql` step is answered with its query file, so it is checked without the form too. An `html` step is answered
+   * with its files as well, but the score comes from the checklist, which only the form can run.
    */
   fun checkQuizTask(project: Project, task: QuizTask): CheckResult {
-    val attempt = task.attempt ?: return checkBySubmissions(task)
-    val reply = task.reply ?: return CheckResult(CheckStatus.Unchecked, EduCoreBundle.message("hyperskill.quiz.no.answer"))
+    val noAnswer = CheckResult(CheckStatus.Unchecked, EduCoreBundle.message("hyperskill.quiz.no.answer"))
+    val reply = when (task.blockName) {
+      HyperskillTaskType.SQL.type -> readSqlReply(project, task) ?: return noAnswer
+      HyperskillTaskType.HTML.type -> {
+        val sources = readHtmlSources(project, task) ?: return noAnswer
+        val score = HtmlChecklistService.getInstance(project).runner?.score(task, sources) ?: return checkBySubmissions(task)
+        toHtmlReply(sources, score)
+      }
 
+      else -> {
+        if (task.attempt == null) {
+          return if (task.isDataset) CheckResult(CheckStatus.Unchecked, EduCoreBundle.message("hyperskill.dataset.download.first"))
+          else checkBySubmissions(task)
+        }
+        task.reply ?: return noAnswer
+      }
+    }
+
+    val attempt = task.attempt ?: HyperskillConnector.getInstance().postAttempt(task).onError { error ->
+      return failedToSubmit(project, task, error)
+    }
     val submission = HyperskillSubmitConnector.submitQuizTask(attempt, reply).onError { error ->
       return failedToSubmit(project, task, error)
     }

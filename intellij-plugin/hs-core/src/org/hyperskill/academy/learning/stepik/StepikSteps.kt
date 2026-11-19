@@ -65,6 +65,11 @@ const val QUALITY = "quality"
 const val URL = "url"
 const val CODE_TEMPLATES_HEADER = "code_templates_header_lines_count"
 const val CODE_TEMPLATES_FOOTER = "code_templates_footer_lines_count"
+const val HTML_BLOCK_NAME = "html"
+const val HTML_TEMPLATE = "html_template"
+const val CSS_TEMPLATE = "css_template"
+const val CHECKLIST = "checklist"
+const val TIME_LIMIT = "time_limit"
 
 class Step {
   @JsonProperty(TEXT)
@@ -89,7 +94,9 @@ class Step {
   )
   @JsonSubTypes(
     JsonSubTypes.Type(PyCharmStepOptions::class, name = PYCHARM),
-    JsonSubTypes.Type(ChoiceStepOptions::class, name = CHOICE)
+    JsonSubTypes.Type(ChoiceStepOptions::class, name = CHOICE),
+    JsonSubTypes.Type(HtmlStepOptions::class, name = HTML_BLOCK_NAME),
+    JsonSubTypes.Type(DatasetStepOptions::class, name = DATASET)
   )
   // this property is named differently in get and post queries, so we need to define different
   // names for getter (POST queries as data is serialized for query payload)
@@ -211,6 +218,34 @@ fun collectTaskFiles(project: Project, task: Task): MutableList<TaskFile> {
     }
   }
   return files
+}
+
+/**
+ * A web page to make: the HTML and CSS to start with, and the checklist the page is checked with on the client.
+ */
+class HtmlStepOptions : StepOptions {
+  @JsonProperty(HTML_TEMPLATE)
+  var htmlTemplate: String? = null
+
+  @JsonProperty(CSS_TEMPLATE)
+  var cssTemplate: String? = null
+
+  /**
+   * Checks of the page in the format of the website: `[{name, selector, tests: [{type, data}]}]`.
+   */
+  @JsonProperty(CHECKLIST)
+  var checklist: List<Map<String, Any?>>? = null
+}
+
+/**
+ * Data to process: it comes with an attempt, and the answer is due within [timeLimit] seconds after the attempt starts.
+ */
+class DatasetStepOptions : StepOptions {
+  @JsonProperty(TIME_LIMIT)
+  var timeLimit: Int? = null
+
+  @JsonProperty(SAMPLES)
+  var samples: List<List<String>>? = null
 }
 
 class ChoiceStepOptions : StepOptions {
