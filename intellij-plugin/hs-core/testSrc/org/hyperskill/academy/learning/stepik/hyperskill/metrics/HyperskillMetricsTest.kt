@@ -1,13 +1,16 @@
 package org.hyperskill.academy.learning.stepik.hyperskill.metrics
 
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMUtil
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.ui.BalloonLayout
 import com.intellij.util.xmlb.XmlSerializer
+import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.EduTestCase
 import org.hyperskill.academy.learning.MockResponseFactory
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
@@ -17,16 +20,41 @@ import org.hyperskill.academy.learning.findTask
 import org.hyperskill.academy.learning.pathWithoutPrams
 import org.hyperskill.academy.learning.stepik.hyperskill.api.*
 import org.hyperskill.academy.learning.stepik.hyperskill.hyperskillCourseWithFiles
+import org.hyperskill.academy.learning.stepik.hyperskill.logInFakeHyperskillUser
+import org.hyperskill.academy.learning.stepik.hyperskill.logOutFakeHyperskillUser
 import org.hyperskill.academy.learning.stepik.hyperskill.metrics.HyperskillMetricsService.Companion.getRoute
 import org.junit.Test
 import java.awt.Rectangle
+import java.net.HttpURLConnection.*
 import java.nio.file.Paths
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.JComponent
+import kotlin.concurrent.thread
 
 class HyperskillMetricsTest : EduTestCase() {
   private val metricsService: HyperskillMetricsService get() = HyperskillMetricsService.getInstance()
   private val mockConnector: MockHyperskillConnector get() = HyperskillConnector.getInstance() as MockHyperskillConnector
+
+  // Events are sent only for a logged-in user
+  override fun setUp() {
+    super.setUp()
+    logInFakeHyperskillUser()
+  }
+
+  override fun tearDown() {
+    try {
+      logOutFakeHyperskillUser()
+    }
+    catch (e: Throwable) {
+      addSuppressedException(e)
+    }
+    finally {
+      super.tearDown()
+    }
+  }
 
   @Test
   fun `test current serialization format`() {
@@ -271,6 +299,111 @@ class HyperskillMetricsTest : EduTestCase() {
     assertNull(pendingFrontendEvents.find { it.route == task0.getRoute() })
   }
 
+  @Test
+  fun `test frontend events rejected by server are dropped`() {
+    createHyperskillCourse()
+    addViewEvents(listOf(findTask(0, 0), findTask(1, 0)))
+    respondToEvents(FRONTEND_EVENTS_PATH, AtomicInteger(HTTP_BAD_REQUEST))
+
+    HyperskillMetricsScheduler.sendFrontendEvents()
+
+    assertEmpty(metricsService.allFrontendEvents(emptyQueue = false))
+  }
+
+  @Test
+  fun `test frontend events kept when server may accept them later`() {
+    createHyperskillCourse()
+    val viewEvents = addViewEvents(listOf(findTask(0, 0), findTask(1, 0)))
+    val responseCode = AtomicInteger()
+    respondToEvents(FRONTEND_EVENTS_PATH, responseCode)
+
+    for (code in listOf(HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_TOO_MANY_REQUESTS, HTTP_INTERNAL_ERROR, HTTP_UNAVAILABLE)) {
+      responseCode.set(code)
+      HyperskillMetricsScheduler.sendFrontendEvents()
+      compareFrontendEvents(viewEvents, metricsService.allFrontendEvents(emptyQueue = false))
+    }
+  }
+
+  @Test
+  fun `test time spent events rejected by server are dropped`() {
+    metricsService.taskStarted(1)
+    metricsService.taskStopped()
+    respondToEvents(TIME_SPENT_EVENTS_PATH, AtomicInteger(HTTP_BAD_REQUEST))
+
+    HyperskillMetricsScheduler.sendTimeSpentEvents()
+
+    assertEmpty(metricsService.allTimeSpentEvents(reset = false))
+  }
+
+  @Test
+  fun `test time spent events kept after server error`() {
+    metricsService.taskStarted(1)
+    metricsService.taskStopped()
+    respondToEvents(TIME_SPENT_EVENTS_PATH, AtomicInteger(HTTP_INTERNAL_ERROR))
+
+    HyperskillMetricsScheduler.sendTimeSpentEvents()
+
+    assertEquals(listOf(1), metricsService.allTimeSpentEvents(reset = false).map { it.step })
+  }
+
+  @Test
+  fun `test saved events without action or route are dropped`() {
+    metricsService.loadState(deserializeFromFile("hyperskill_events_without_action_or_route.xml"))
+
+    val loadedEvents = metricsService.allFrontendEvents(emptyQueue = false)
+    compareFrontendEvents(listOf(createHyperskillFrontendEvent("/learn/step/123", Date(222))), loadedEvents)
+  }
+
+  @Test
+  fun `test overlapping reads take every event once`() {
+    createHyperskillCourse()
+    val task = findTask(0, 0)
+    val eventsCount = 20_000
+
+    val writerDone = AtomicBoolean(false)
+    val writer = thread {
+      repeat(eventsCount) { metricsService.doAddViewEvent(task) }
+      writerDone.set(true)
+    }
+    val takenEvents = ConcurrentLinkedQueue<HyperskillFrontendEvent>()
+    val readers = List(4) {
+      thread {
+        while (!writerDone.get() || metricsService.allFrontendEvents(emptyQueue = false).isNotEmpty()) {
+          // Reading without taking is what saving the state does
+          metricsService.allFrontendEvents(emptyQueue = false)
+          takenEvents += metricsService.allFrontendEvents(emptyQueue = true)
+        }
+      }
+    }
+    writer.join()
+    readers.forEach { it.join() }
+
+    assertEquals(eventsCount, takenEvents.size)
+    val distinctEvents = Collections.newSetFromMap(IdentityHashMap<HyperskillFrontendEvent, Boolean>()).apply { addAll(takenEvents) }
+    assertEquals(eventsCount, distinctEvents.size)
+    assertTrue(takenEvents.all { it.hasActionAndRoute() })
+  }
+
+  @Test
+  fun `test only loading this plugin starts sending events`() {
+    val scheduler = HyperskillMetricsScheduler()
+    val otherPlugin = PluginManagerCore.getPlugin(PluginManagerCore.CORE_ID) ?: error("No platform plugin descriptor")
+    val thisPlugin = PluginManagerCore.getPlugin(PluginId.getId(EduNames.PLUGIN_ID)) ?: error("No Hyperskill plugin descriptor")
+
+    scheduler.pluginLoaded(otherPlugin)
+    assertFalse(metricsService.isSendingStarted)
+
+    scheduler.pluginLoaded(thisPlugin)
+    assertTrue(metricsService.isSendingStarted)
+    assertFalse("Sending must start only once", metricsService.markSendingStarted())
+  }
+
+  private fun respondToEvents(path: String, responseCode: AtomicInteger) {
+    mockConnector.withResponseHandler(testRootDisposable) { request, _ ->
+      if (request.pathWithoutPrams == path) MockResponseFactory.fromString("[]", responseCode.get()) else null
+    }
+  }
+
   private fun createHyperskillCourse() = hyperskillCourseWithFiles {
     frameworkLesson("lesson1") {
       eduTask("task1", stepId = 1) {
@@ -346,4 +479,10 @@ class HyperskillMetricsTest : EduTestCase() {
   }
 
   override fun getTestDataPath(): String = "testData/stepik/hyperskill/metrics"
+
+  companion object {
+    private const val FRONTEND_EVENTS_PATH = "/api/frontend-events"
+    private const val TIME_SPENT_EVENTS_PATH = "/api/time-spent-events"
+    private const val HTTP_TOO_MANY_REQUESTS = 429
+  }
 }

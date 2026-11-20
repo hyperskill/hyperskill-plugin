@@ -25,6 +25,7 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTopic
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.gradle.GradleScriptMigration
 import org.hyperskill.academy.learning.messages.EduCoreBundle
+import org.hyperskill.academy.learning.network.executeCall
 import org.hyperskill.academy.learning.network.executeHandlingExceptions
 import org.hyperskill.academy.learning.network.executeParsingErrors
 import org.hyperskill.academy.learning.stepik.PyCharmStepOptions
@@ -403,12 +404,37 @@ abstract class HyperskillConnector : EduOAuthCodeFlowConnector<HyperskillAccount
     return withTokenRefreshIfFailed { hyperskillEndpoints.websocket().executeAndExtractFromBody() }
   }
 
-  fun sendFrontendEvents(events: List<HyperskillFrontendEvent>): Result<Any, String> {
-    return withTokenRefreshIfFailed { hyperskillEndpoints.sendFrontendEvents(events).executeParsingErrors(true) }
+  fun sendFrontendEvents(events: List<HyperskillFrontendEvent>): Result<Any, HyperskillEventsSendError> {
+    return sendEvents { hyperskillEndpoints.sendFrontendEvents(events) }
   }
 
-  fun sendTimeSpentEvents(events: List<HyperskillTimeSpentEvent>): Result<Any, String> {
-    return withTokenRefreshIfFailed { hyperskillEndpoints.sendTimeSpentEvents(events).executeParsingErrors() }
+  fun sendTimeSpentEvents(events: List<HyperskillTimeSpentEvent>): Result<Any, HyperskillEventsSendError> {
+    return sendEvents { hyperskillEndpoints.sendTimeSpentEvents(events) }
+  }
+
+  private fun sendEvents(createCall: () -> Call<Any>): Result<Any, HyperskillEventsSendError> {
+    val result = withTokenRefreshIfFailed {
+      createCall().executeCall(omitErrors = true).flatMap { response ->
+        // A rejection is told apart below. Parsing it as an error here would also log its body,
+        // which lists a validation error for every event of the batch
+        if (response.code() in HyperskillEventsSendError.REJECTION_CODES) Ok(response)
+        else response.executeParsingErrors(omitErrors = true)
+      }
+    }
+
+    return when (result) {
+      is Err -> Err(HyperskillEventsSendError.Failed(result.error))
+      is Ok -> {
+        val response = result.value
+        val code = response.code()
+        if (code in HyperskillEventsSendError.REJECTION_CODES) {
+          Err(HyperskillEventsSendError.Rejected(code, response.errorBody()?.string().orEmpty()))
+        }
+        else {
+          Ok(response)
+        }
+      }
+    }
   }
 
   private fun <T> Call<T>.executeAndExtractFromBody(): Result<T, String> {
