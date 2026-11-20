@@ -244,6 +244,9 @@ class HyperskillFrontendEvent {
   @JsonProperty(CONTEXT)
   var context: HyperskillFrontendEventContext = HyperskillFrontendEventContext()
 
+  /** The server never accepts an event without these fields, and rejects the whole batch that contains one */
+  fun hasActionAndRoute(): Boolean = ::action.isInitialized && ::route.isInitialized
+
   override fun toString(): String {
     return "HyperskillFrontendEvent(action=$action, route='$route', clientTime=$clientTime, context=$context)"
   }

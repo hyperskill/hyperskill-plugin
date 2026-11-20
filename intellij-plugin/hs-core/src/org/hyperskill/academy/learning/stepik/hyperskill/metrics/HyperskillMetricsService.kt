@@ -2,6 +2,8 @@ package org.hyperskill.academy.learning.stepik.hyperskill.metrics
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.*
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.util.xmlb.annotations.XCollection
 import org.hyperskill.academy.learning.EduTestAware
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
@@ -14,6 +16,7 @@ import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.DoubleAdder
 import kotlin.math.min
 
@@ -22,6 +25,7 @@ open class HyperskillMetricsService : PersistentStateComponent<HyperskillMetrics
   private val frontendEvents: Deque<HyperskillFrontendEvent> = ConcurrentLinkedDeque()
   private val timeSpentEvents: MutableMap<Int, DoubleAdder> = mutableMapOf()
   private var taskInProgress: Pair<Int, Long>? = null
+  private val sendingStarted = AtomicBoolean(false)
 
   private val lock = Object()
 
@@ -82,27 +86,25 @@ open class HyperskillMetricsService : PersistentStateComponent<HyperskillMetrics
     pendingEvents.subList(0, min(FRONTEND_EVENTS_LIMIT, pendingEvents.size)).asReversed().forEach { frontendEvents.addFirst(it) }
   }
 
+  /**
+   * Returns the queued events, and with [emptyQueue] takes them out of the queue.
+   *
+   * A send may overlap with another send or with saving the state, and an overlapping reader takes everything it finds
+   * in the queue as an event. So nothing but real events may be put there, not even a marker for the end of a snapshot
+   */
   fun allFrontendEvents(emptyQueue: Boolean = true): List<HyperskillFrontendEvent> {
-    val snapshot = mutableListOf<HyperskillFrontendEvent>()
-
-    // non-blocking way to get snapshot of current events in queue
-    val deathPill = HyperskillFrontendEvent()
-    frontendEvents.add(deathPill)
-
-    val iterator = frontendEvents.iterator()
-    while (iterator.hasNext()) {
-      val nextEvent = iterator.next()
-      if (nextEvent === deathPill) {
-        iterator.remove()
-        break
-      }
-      if (emptyQueue) {
-        iterator.remove()
-      }
-      snapshot.add(nextEvent)
+    if (!emptyQueue) {
+      return frontendEvents.toList()
     }
 
-    return snapshot
+    // Events added meanwhile wait for the next send.
+    // pollFirst is atomic, so two overlapping sends never take the same event
+    val count = frontendEvents.size
+    val events = ArrayList<HyperskillFrontendEvent>(count)
+    while (events.size < count) {
+      events += frontendEvents.pollFirst() ?: break
+    }
+    return events
   }
 
   fun allTimeSpentEvents(reset: Boolean): List<HyperskillTimeSpentEvent> {
@@ -140,9 +142,23 @@ open class HyperskillMetricsService : PersistentStateComponent<HyperskillMetrics
   }
 
   override fun loadState(state: State) {
-    frontendEvents.addAll(state.events)
+    // Older versions could save events without action and route. The server rejects every batch that contains one
+    val (validEvents, invalidEvents) = state.events.partition { it.hasActionAndRoute() }
+    if (invalidEvents.isNotEmpty()) {
+      LOG.info("Dropped ${invalidEvents.size} saved events without action or route")
+    }
+    frontendEvents.addAll(validEvents)
     addAllTimeSpentEvents(state.timeSpentEvents)
   }
+
+  /**
+   * Returns `true` for the first call only.
+   * Events must be sent by a single pair of jobs: overlapping sends multiply the requests to the server
+   */
+  fun markSendingStarted(): Boolean = sendingStarted.compareAndSet(false, true)
+
+  @get:VisibleForTesting
+  val isSendingStarted: Boolean get() = sendingStarted.get()
 
   override fun dispose() {
     // do nothing
@@ -153,6 +169,7 @@ open class HyperskillMetricsService : PersistentStateComponent<HyperskillMetrics
     frontendEvents.clear()
     timeSpentEvents.clear()
     taskInProgress = null
+    sendingStarted.set(false)
   }
 
   class State : BaseState() {
@@ -164,6 +181,8 @@ open class HyperskillMetricsService : PersistentStateComponent<HyperskillMetrics
   }
 
   companion object {
+    private val LOG: Logger = logger<HyperskillMetricsService>()
+
     fun getInstance(): HyperskillMetricsService = service()
 
     // it is approximately 300 bytes per event, lets keep hyperskill.xml file less than 2 MB (except time spent events)
