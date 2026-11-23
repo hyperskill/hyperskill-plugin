@@ -13,11 +13,13 @@ import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.eel.provider.localEel
 import com.jetbrains.python.sdk.flavors.PyFlavorAndData
 import com.jetbrains.python.sdk.flavors.PyFlavorData
 import com.jetbrains.python.sdk.flavors.PythonSdkFlavor
 import com.jetbrains.python.sdk.skeleton.PySkeletonUtil
 import org.hyperskill.academy.python.learning.newproject.FakePythonSdkFlavor
+import org.jetbrains.annotations.VisibleForTesting
 import java.lang.reflect.InvocationTargetException
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -82,44 +84,12 @@ private fun findPythonInstallManagerPaths(): List<String> {
 private const val SYSTEM_PYTHON_MODULE = "intellij.python.community.services.systemPython"
 
 /**
- * Returns binary paths of the local interpreters known to the Python plugin's `SystemPythonService`.
- *
- * The service lives in the [SYSTEM_PYTHON_MODULE] content module marked `visibility="internal"`, and the plugin
- * loader rejects descriptor `<module>` dependencies on internal modules from other vendors' plugins.
- * So instead of a compile-time dependency, the service is reached through the classloader of its module.
+ * Returns binary paths of the local interpreters known to the Python plugin's `SystemPythonService`,
+ * or an empty list if the service cannot be reached.
  */
 private fun findSystemPythonPaths(): List<String> {
-  try {
-    val moduleDescriptor = PluginManagerCore.getPluginSet().getEnabledModules()
-      .filterIsInstance<ContentModuleDescriptor>()
-      .firstOrNull { it.moduleId.name == SYSTEM_PYTHON_MODULE }
-    if (moduleDescriptor == null) {
-      LOG.warn("findSystemPythonPaths: $SYSTEM_PYTHON_MODULE module is not enabled")
-      return emptyList()
-    }
-    val loader = moduleDescriptor.pluginClassLoader
-    if (loader == null) {
-      LOG.warn("findSystemPythonPaths: $SYSTEM_PYTHON_MODULE module has no classloader")
-      return emptyList()
-    }
-
-    val serviceInterface = Class.forName("com.intellij.python.community.services.systemPython.SystemPythonService", true, loader)
-    val service = Class.forName("com.intellij.python.community.services.systemPython.ApiKt", true, loader)
-      .getMethod("SystemPythonService")
-      .invoke(null)
-
-    // `suspend fun findSystemPythons(eelApi: EelApi = localEel, forceRefresh: Boolean = false): List<SystemPython>`,
-    // invoked through the compiler-generated default-arguments bridge: mask 0b11 applies both default values
-    val findSystemPythons = serviceInterface.methods.single { it.name == "findSystemPythons\$default" }
-    val pythons = runBlockingMaybeCancellable {
-      suspendCoroutineUninterceptedOrReturn<Any?> { continuation ->
-        findSystemPythons.invoke(null, service, null, false, continuation, 0b11, null)
-      } as List<*>
-    }
-
-    return pythons.filterNotNull().map { python ->
-      python.javaClass.getMethod("getPythonBinary").invoke(python).toString()
-    }
+  return try {
+    querySystemPythonPaths()
   }
   catch (e: ProcessCanceledException) {
     throw e
@@ -130,7 +100,43 @@ private fun findSystemPythonPaths(): List<String> {
     val cause = (e as? InvocationTargetException)?.cause ?: e
     if (cause is ProcessCanceledException) throw cause
     LOG.warn("findSystemPythonPaths: SystemPythonService is not available", cause)
-    return emptyList()
+    emptyList()
+  }
+}
+
+/**
+ * Asks the Python plugin's `SystemPythonService` for the local interpreters and returns their binary paths.
+ * Throws if the service cannot be reached or fails.
+ *
+ * The service lives in the [SYSTEM_PYTHON_MODULE] content module marked `visibility="internal"`, and the plugin
+ * loader rejects descriptor `<module>` dependencies on internal modules from other vendors' plugins.
+ * So instead of a compile-time dependency, the service is reached through the classloader of its module.
+ */
+@VisibleForTesting
+internal fun querySystemPythonPaths(): List<String> {
+  val moduleDescriptor = PluginManagerCore.getPluginSet().getEnabledModules()
+    .filterIsInstance<ContentModuleDescriptor>()
+    .firstOrNull { it.moduleId.name == SYSTEM_PYTHON_MODULE }
+    ?: error("$SYSTEM_PYTHON_MODULE module is not enabled")
+  val loader = moduleDescriptor.pluginClassLoader ?: error("$SYSTEM_PYTHON_MODULE module has no classloader")
+
+  val serviceInterface = Class.forName("com.intellij.python.community.services.systemPython.SystemPythonService", true, loader)
+  val service = Class.forName("com.intellij.python.community.services.systemPython.ApiKt", true, loader)
+    .getMethod("SystemPythonService")
+    .invoke(null)
+
+  // `suspend fun findSystemPythons(eelApi: EelApi, forceRefresh: Boolean = false): List<SystemPython>`.
+  // In 262 `eelApi` defaulted to `localEel`, and the default-arguments bridge filled it in; since 263 it has no
+  // default, so the bridge passes `null` through and the service fails with an NPE. The local machine is passed explicitly.
+  val findSystemPythons = serviceInterface.methods.single { it.name == "findSystemPythons" && it.parameterCount == 3 }
+  val pythons = runBlockingMaybeCancellable {
+    suspendCoroutineUninterceptedOrReturn<Any?> { continuation ->
+      findSystemPythons.invoke(service, localEel, false, continuation)
+    } as List<*>
+  }
+
+  return pythons.filterNotNull().map { python ->
+    python.javaClass.getMethod("getPythonBinary").invoke(python).toString()
   }
 }
 
