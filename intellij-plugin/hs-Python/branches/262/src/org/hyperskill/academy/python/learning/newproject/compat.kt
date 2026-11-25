@@ -18,6 +18,11 @@ private val LOG = logger<PyCourseProjectGenerator>()
  */
 internal fun prepareSdkForVirtualEnvCreation(sdk: PySdkToCreateVirtualEnv): Sdk = sdk
 
+/**
+ * Whether [sdk] is an "install Python" suggestion, which is installed by [installSdkIfSuggested].
+ */
+internal fun isSdkToInstall(sdk: Sdk): Boolean = sdk is PySdkToInstallCompat
+
 @Suppress("DEPRECATION_ERROR")
 internal fun installSdkIfSuggested(sdk: Sdk?): Sdk? {
   if (sdk !is PySdkToInstallCompat) return null

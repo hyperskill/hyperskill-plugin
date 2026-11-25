@@ -17,6 +17,11 @@ internal fun prepareSdkForVirtualEnvCreation(sdk: PySdkToCreateVirtualEnv): Sdk 
 }
 
 /**
+ * Whether [sdk] is an "install Python" suggestion, which is installed by [installSdkIfSuggested].
+ */
+internal fun isSdkToInstall(sdk: Sdk): Boolean = sdk is PySdkToInstall
+
+/**
  * If [sdk] is an "install Python" suggestion ([PySdkToInstall]), downloads and installs Python
  * and returns the freshly detected system-wide SDK, or `null` if the installation failed.
  * Returns `null` if [sdk] is not such a suggestion.

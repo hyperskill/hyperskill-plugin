@@ -24,9 +24,11 @@ import org.hyperskill.academy.learning.courseFormat.EduFormatNames.PYTHON_3_VERS
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.newproject.ui.errors.SettingsValidationResult
 import org.hyperskill.academy.learning.newproject.ui.errors.ValidationMessage
+import org.hyperskill.academy.learning.newproject.ui.errors.ValidationMessageType
 import org.hyperskill.academy.learning.newproject.ui.errors.ready
 import org.hyperskill.academy.python.learning.messages.EduPythonBundle
 import org.jetbrains.annotations.Nls
+import org.jetbrains.annotations.VisibleForTesting
 import java.awt.BorderLayout
 import java.awt.event.ItemEvent
 import javax.swing.JComponent
@@ -65,9 +67,48 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
     )
   }
 
-  // Inspired by `com.jetbrains.python.sdk.add.PyAddSdkPanelKt.addBaseInterpretersAsync` implementation
   @RequiresBackgroundThread
   private fun collectPySdks(course: Course, context: UserDataHolder): List<Sdk> {
+    val localSdks = collectLocalPySdks(course, context)
+    if (localSdks.isEmpty()) {
+      LOG.warn("collectPySdks: no detected SDK matches the course, suggesting to install Python")
+    }
+
+    // Local interpreters first, then suggestions to download versions that are not installed locally
+    val installedLevels = localSdks.mapTo(hashSetOf()) { it.languageLevel }
+    val sdksToInstall = getSdksToInstall().filterNot { it.languageLevel in installedLevels }
+
+    val requirement = course.pythonVersionRequirement ?: return localSdks + sdksToInstall
+    LOG.info("collectPySdks: the course pins Python $requirement in $PYTHON_VERSION_FILE")
+    return pinnedPySdks(requirement, localSdks, sdksToInstall) ?: (localSdks + sdksToInstall)
+  }
+
+  /**
+   * Narrows the interpreters offered for a course to the Python version it pins in its [PYTHON_VERSION_FILE]:
+   * the matching local interpreters if there are any, otherwise the matching ones to download.
+   *
+   * Returns `null` when neither exists, e.g. on Linux, where the Python plugin has nothing to download.
+   * The course is offered all its interpreters then, and [validate] warns that the selected one is not the pinned version.
+   */
+  @VisibleForTesting
+  internal fun pinnedPySdks(requirement: PythonVersionRequirement, localSdks: List<Sdk>, sdksToInstall: List<Sdk>): List<Sdk>? {
+    val matchingLocalSdks = localSdks.filter { requirement.isSatisfiedBy(it.languageLevel) }
+    if (matchingLocalSdks.isNotEmpty()) return matchingLocalSdks
+
+    val matchingSdksToInstall = sdksToInstall.filter { requirement.isSatisfiedBy(it.languageLevel) }
+    if (matchingSdksToInstall.isNotEmpty()) return matchingSdksToInstall
+
+    LOG.warn("pinnedPySdks: Python $requirement is neither installed nor available to install")
+    return null
+  }
+
+  /**
+   * Local interpreters applicable to [course], newest first.
+   *
+   * Inspired by `com.jetbrains.python.sdk.add.PyAddSdkPanelKt.addBaseInterpretersAsync` implementation
+   */
+  @RequiresBackgroundThread
+  private fun collectLocalPySdks(course: Course, context: UserDataHolder): List<Sdk> {
     // Find all base Python SDKs
     val detectedSdks = findBaseSdks(emptyList(), null, context)
     LOG.warn("collectPySdks: detected ${detectedSdks.size} base SDKs: ${detectedSdks.joinToString { "${it.name} at ${it.homePath}" }}")
@@ -79,13 +120,13 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
     val baseSdks = detectedSdks.filter { it.seemsValid() }
 
     if (baseSdks.isEmpty()) {
-      LOG.warn("collectPySdks: no valid base SDK found, suggesting to install Python")
-      return getSdksToInstall()
+      LOG.warn("collectPySdks: no valid base SDK found")
+      return emptyList()
     }
 
     // Create fake SDK (PySdkToCreateVirtualEnv) for each base SDK
     // This ensures all SDKs use the same code path and work consistently
-    val fakeSdks = baseSdks.mapNotNull { baseSdk ->
+    return baseSdks.mapNotNull { baseSdk ->
       val homePath = baseSdk.homePath ?: return@mapNotNull null
       val languageLevel = baseSdk.languageLevel
 
@@ -106,16 +147,6 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
     }
       // Sort by version descending - newer versions first
       .sortedByDescending { it.languageLevel }
-
-    if (fakeSdks.isEmpty()) {
-      LOG.warn("collectPySdks: no detected SDK matches the course, suggesting to install Python")
-      return getSdksToInstall()
-    }
-
-    // Local interpreters first, then suggestions to download versions that are not installed locally
-    val installedLevels = fakeSdks.mapTo(hashSetOf()) { it.languageLevel }
-    val sdksToInstall = getSdksToInstall().filterNot { it.languageLevel in installedLevels }
-    return fakeSdks + sdksToInstall
   }
 
   /**
@@ -186,7 +217,37 @@ open class PyLanguageSettings : LanguageSettings<PyProjectSettings>() {
       return SettingsValidationResult.Ready(validationMessage)
     }
 
-    return SettingsValidationResult.OK
+    val requirement = course.pythonVersionRequirement ?: return SettingsValidationResult.OK
+    return validatePinnedVersion(requirement, sdk, languageLevel)
+  }
+
+  /**
+   * A pinned Python version is not enforced: an interpreter of another version is still allowed, with a warning,
+   * because there is no way to get the pinned one on some systems (see [pinnedPySdks]).
+   */
+  private fun validatePinnedVersion(
+    requirement: PythonVersionRequirement,
+    sdk: Sdk,
+    languageLevel: LanguageLevel
+  ): SettingsValidationResult {
+    val validationMessage = when {
+      !requirement.isSatisfiedBy(languageLevel) -> {
+        val message = EduPythonBundle.message("python.version.file.mismatch", requirement, languageLevel.toPythonVersion())
+        ValidationMessage(
+          "$message<br>${EduPythonBundle.message("configure.python.environment.help")}",
+          ENVIRONMENT_CONFIGURATION_LINK_PYTHON,
+          ValidationMessageType.WARNING
+        )
+      }
+
+      // Installed while the project is generated, see `PyCourseProjectGenerator.afterProjectGenerated`
+      isSdkToInstall(sdk) -> {
+        ValidationMessage(EduPythonBundle.message("python.version.file.will.be.installed", requirement), type = ValidationMessageType.WARNING)
+      }
+
+      else -> return SettingsValidationResult.OK
+    }
+    return SettingsValidationResult.ReadyWithWarning(validationMessage)
   }
 
   private val Sdk.languageLevel: LanguageLevel
