@@ -7,9 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hyperskill.academy.learning.courseFormat.Section
-import org.hyperskill.academy.learning.courseFormat.StudyItem
+import org.hyperskill.academy.learning.json.mixins.NotImplementedInMixin
 import org.hyperskill.academy.learning.yaml.errorHandling.formatError
 import org.hyperskill.academy.learning.yaml.errorHandling.unnamedItemAtMessage
 import org.hyperskill.academy.learning.yaml.format.YamlMixinNames.CONTENT
@@ -28,9 +27,11 @@ abstract class SectionYamlMixin {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private var customPresentableName: String? = null
 
-  @JsonProperty(CONTENT)
-  @JsonSerialize(contentConverter = StudyItemConverter::class)
-  private lateinit var _items: List<StudyItem>
+  // Not the `items` themselves: the names also keep the entries that could not be resolved on load,
+  // see `ItemContainer.unresolvedContent`
+  val contentNames: List<String>
+    @JsonProperty(CONTENT)
+    get() = throw NotImplementedInMixin()
 
   @JsonProperty(TAGS)
   @JsonInclude(JsonInclude.Include.NON_EMPTY)

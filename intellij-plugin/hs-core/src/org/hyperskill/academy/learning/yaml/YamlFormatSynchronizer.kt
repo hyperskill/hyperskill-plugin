@@ -3,7 +3,6 @@ package org.hyperskill.academy.learning.yaml
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -53,8 +52,6 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 
 object YamlFormatSynchronizer {
-  private val LOG = Logger.getInstance(YamlFormatSynchronizer::class.java)
-
   val LOAD_FROM_CONFIG = Key<Boolean>("Hyperskill.loadItem")
   val SAVE_TO_CONFIG = Key<Boolean>("Hyperskill.saveItem")
   private val SYNCHRONIZATION_STARTED = Key<Boolean>("Hyperskill.synchronizationStarted")
@@ -90,18 +87,10 @@ object YamlFormatSynchronizer {
     if (!YamlFormatSettings.shouldCreateConfigFiles(project)) {
       return
     }
-    // The item holds fewer children than its config file on disk claims, because some of them could not be resolved
-    // during the last load. Writing it out now would persist the truncated `content:` list and permanently drop the
-    // missing children from the course. Skipping the save keeps the on-disk structure intact until a load succeeds.
-    //
-    // Only the structural config is guarded. `*-remote-info.yaml` carries no `content:` list, so a partially loaded
-    // item has to keep persisting its remote state (id, update date, submissions) as usual -- otherwise a single
-    // unresolvable child would silently freeze the remote state of its whole container for the rest of the session.
-    if (item.isPartiallyLoaded && configName == item.configFileName) {
-      LOG.warn("Skipping save of ${item.itemType} `${item.name}`: its children were not fully resolved during load")
-      return
-    }
-
+    // A container whose children were not all resolved during the last load is saved like any other: its `content:`
+    // keeps the unresolved names (see `ItemContainer.unresolvedContent`), so the save neither drops them nor has to be
+    // skipped. Skipping it lost every child added later, e.g. each Hyperskill topic opened after one topic folder
+    // went missing.
     item.saveConfig(project, configName, mapper)
   }
 
