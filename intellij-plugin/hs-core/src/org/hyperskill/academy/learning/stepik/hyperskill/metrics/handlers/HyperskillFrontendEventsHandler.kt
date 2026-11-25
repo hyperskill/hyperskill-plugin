@@ -2,6 +2,7 @@ package org.hyperskill.academy.learning.stepik.hyperskill.metrics.handlers
 
 import org.hyperskill.academy.learning.Result
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
+import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillEventsSendError
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillFrontendEvent
 import org.hyperskill.academy.learning.stepik.hyperskill.metrics.HyperskillMetricsService
 
@@ -9,7 +10,7 @@ object HyperskillFrontendEventsHandler : HyperskillEventsHandler<HyperskillFront
   override val pendingEvents: List<HyperskillFrontendEvent>
     get() = HyperskillMetricsService.getInstance().allFrontendEvents(true)
 
-  override fun sendEvents(events: List<HyperskillFrontendEvent>): Result<Any, String> {
+  override fun sendEvents(events: List<HyperskillFrontendEvent>): Result<Any, HyperskillEventsSendError> {
     return HyperskillConnector.getInstance().sendFrontendEvents(events)
   }
 
