@@ -23,7 +23,7 @@ object SocialMediaUtils {
 
   /**
    * Hyperskill courses page the achievement points to. UTM tags are part of the agreed link and must be kept as is.
-   * Used both as the `url` parameter of the X share intent and embedded into the LinkedIn share text.
+   * Embedded into the share text for both X and LinkedIn.
    */
   const val SHARE_URL: String =
     "https://hyperskill.org/courses?source=ide_share&utm_source=jetbrains&utm_medium=social&utm_campaign=ide_plugin"
@@ -53,7 +53,7 @@ object SocialMediaUtils {
     return allProjectTasksSolved
   }
 
-  /** The achievement sentence without any link. Shown as the base of the dialog message and used as the X post text. */
+  /** The achievement sentence without any link. The base of both the dialog message and the share text. */
   private fun achievementCore(solvedTask: Task): String {
     val course = solvedTask.course
     val projectName = (course as? HyperskillCourse)?.getProjectLesson()?.presentableName ?: course.presentableName
@@ -65,23 +65,26 @@ object SocialMediaUtils {
     "${achievementCore(solvedTask)} ${EduCoreBundle.message("social.media.learn.more.at", COURSES_DISPLAY_LINK)}"
 
   /**
-   * X share intent. The post text includes the "Learn more at ..." part (the same text shown in the dialog),
-   * and the tracked [SHARE_URL] is additionally passed via the `url` parameter.
-   * https://twitter.com/intent/tweet?text=...&url=...
+   * Text of the post itself: the achievement plus the tracked [SHARE_URL]. It must contain exactly one link,
+   * so it never includes [COURSES_DISPLAY_LINK]: X turns a bare `hyperskill.org/courses` into a second link.
    */
-  fun buildXShareUrl(solvedTask: Task): String {
-    val text = getDisplayMessage(solvedTask)
-    return "https://twitter.com/intent/tweet?text=${encode(text)}&url=${encode(SHARE_URL)}"
-  }
+  fun getShareText(solvedTask: Task): String =
+    "${achievementCore(solvedTask)} ${EduCoreBundle.message("social.media.learn.more.at", SHARE_URL)}"
 
   /**
-   * LinkedIn share intent. LinkedIn has no separate `url` parameter, so the tracked [SHARE_URL] is embedded into the text.
+   * X share intent. The link is part of [getShareText], so the intent's `url` parameter is not passed:
+   * X appends it to the text, and the post would show the link twice.
+   * https://twitter.com/intent/tweet?text=...
+   */
+  fun buildXShareUrl(solvedTask: Task): String =
+    "https://twitter.com/intent/tweet?text=${encode(getShareText(solvedTask))}"
+
+  /**
+   * LinkedIn share intent. LinkedIn has no separate `url` parameter, so the link is part of [getShareText].
    * https://www.linkedin.com/feed/?shareActive=true&text=...
    */
-  fun buildLinkedInShareUrl(solvedTask: Task): String {
-    val text = "${achievementCore(solvedTask)} ${EduCoreBundle.message("social.media.learn.more.at", SHARE_URL)}"
-    return "https://www.linkedin.com/feed/?shareActive=true&text=${encode(text)}"
-  }
+  fun buildLinkedInShareUrl(solvedTask: Task): String =
+    "https://www.linkedin.com/feed/?shareActive=true&text=${encode(getShareText(solvedTask))}"
 
   /**
    * Loads the full-resolution banner and returns a DPI-aware icon that downscales it to the exact device size
