@@ -2,6 +2,8 @@
   <!--suppress PluginXmlValidity -->
   <dependencies>
     <plugin id="org.jetbrains.plugins.go"/>
+    <!-- Go 2026.3+ module dependencies are inserted here by build.gradle.kts. -->
+    <!-- GO_MODULE_DEPENDENCIES -->
   </dependencies>
 
   <extensions defaultExtensionNs="HyperskillEducational">
