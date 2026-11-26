@@ -1,7 +1,6 @@
 package org.hyperskill.academy.learning.newproject.ui.welcomeScreen
 
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.CourseInfo
 import com.intellij.util.SlowOperations
 import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.Tag
@@ -10,15 +9,22 @@ import org.hyperskill.academy.learning.EduNames
 import org.hyperskill.academy.learning.courseFormat.Course
 import org.hyperskill.academy.learning.courseFormat.CourseMode
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
-import org.hyperskill.academy.learning.newproject.ui.logo
-import javax.swing.Icon
 
 private const val PROGRAMMING_LANGUAGE = "programmingLanguage"
 private const val PROGRAMMING_LANGUAGE_ID = "programmingLanguageId"
 private const val PROGRAMMING_LANGUAGE_VERSION = "programmingLanguageVersion"
 
 @Tag(EduNames.COURSE)
-class JBACourseFromStorage() : CourseInfo() {
+class JBACourseFromStorage() {
+  // These used to be inherited from the platform's `CourseInfo`, which moved to the separate `intellij.platform.ide.learnIde` module in 2027.1.
+  // The names and defaults are kept so that the stored courses read back the same
+  var id: Int = -1
+  var name: String = ""
+  var description: String = ""
+  var location: String = ""
+  var tasksTotal: Int = 0
+  var tasksSolved: Int = 0
+
   var type: String = ""
   var courseMode = CourseMode.STUDENT
   var environment = ""
@@ -52,11 +58,6 @@ class JBACourseFromStorage() : CourseInfo() {
 
   // to be compatible with previous version
   private var programmingLanguageVersion: String? = null
-
-  override var icon: Icon?
-    @Transient
-    get() = this.toCourse().logo
-    set(_) {}
 
   constructor(location: String = "", course: Course, tasksTotal: Int = 0, tasksSolved: Int = 0) : this() {
     this.type = course.itemType
