@@ -1,49 +1,21 @@
 package org.hyperskill.academy.learning.newproject.coursesStorage
 
 import com.intellij.openapi.components.*
-import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.CourseDataStorage
-import com.intellij.openapi.wm.impl.welcomeScreen.learnIde.coursesInProgress.CourseInfo
 import org.hyperskill.academy.learning.EduTestAware
-import org.hyperskill.academy.learning.courseFormat.Course
-import org.hyperskill.academy.learning.courseFormat.CourseMode
 import org.hyperskill.academy.learning.newproject.ui.welcomeScreen.JBACourseFromStorage
 import org.jetbrains.annotations.TestOnly
 
+// It doesn't implement the platform's `CourseDataStorage`: nothing registers it as a `coursesStorageProvider` for the welcome screen Learn tab,
+// and since 2027.1 that API lives in the separate `intellij.platform.ide.learnIde` module, so referencing it broke Browse Courses
 @State(name = "HyperskillCoursesStorage", storages = [Storage("hsCoursesStorage.xml", roamingType = RoamingType.DISABLED)])
 @Service
-class CoursesStorage : CourseDataStorage, CoursesStorageBase(), EduTestAware {
+class CoursesStorage : CoursesStorageBase(), EduTestAware {
 
-  override fun getCoursePath(course: Course): String? = getCoursePath(JBACourseFromStorage().apply {
-    this.name = course.name
-    this.id = course.id
-    this.courseMode = course.courseMode
-    this.languageId = course.languageId
-    this.languageVersion = course.languageVersion
-  })
-
-  private fun getCourseMetaInfo(name: String, id: Int, courseMode: CourseMode, languageId: String): JBACourseFromStorage? {
-    return state.courses.find {
-      it.name == name
-      && it.id == id
-      && it.courseMode == courseMode
-      && it.languageId == languageId
-    }
-  }
-
-  override fun getCoursePath(courseInfo: CourseInfo): String? {
-    return if (courseInfo is JBACourseFromStorage) {
-      getCourseMetaInfo(courseInfo.name, courseInfo.id, courseInfo.courseMode, courseInfo.languageId)?.location
-    }
-    else {
-      null
-    }
-  }
-
-  override fun removeCourseByLocation(location: String): Boolean {
+  fun removeCourseByLocation(location: String): Boolean {
     return super.doRemoveCourseByLocation(location)
   }
 
-  override fun getAllCourses(): List<CourseInfo> {
+  fun getAllCourses(): List<JBACourseFromStorage> {
     return state.courses
   }
 
