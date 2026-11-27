@@ -51,7 +51,7 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
         HyperskillTaskType.PYCHARM -> { _: String -> pycharmTask() }
         HyperskillTaskType.REMOTE_EDU -> { _: String -> pycharmTask(REMOTE_EDU_TASK_TYPE) }
         HyperskillTaskType.TEXT -> { _: String -> pycharmTask(THEORY_TASK_TYPE) }
-        else -> this::unsupportedTask
+        else -> if (it.type in QuizTask.BLOCK_NAMES) { name: String -> quizTask(name, it.type) } else this::unsupportedTask
       }
     })
 
@@ -135,6 +135,38 @@ open class StepikTaskBuilder(private val course: Course, stepSource: StepSource)
       descriptionFormat = DescriptionFormat.HTML
       initTaskFiles(this)
     }
+  }
+
+  private fun quizTask(name: String, blockName: String): Task {
+    return QuizTask(name, stepId, stepPosition, updateDate, CheckStatus.Unchecked, blockName).apply {
+      descriptionFormat = DescriptionFormat.HTML
+      descriptionText = step.text
+      val answerFiles = answerFileContents(blockName)
+      if (answerFiles == null) {
+        initTaskFiles(this)
+      }
+      else {
+        for ((fileName, text) in answerFiles) {
+          val taskFile = TaskFile()
+          taskFile.name = fileName
+          taskFile.contents = InMemoryTextualContents(text)
+          addTaskFile(taskFile)
+        }
+      }
+    }
+  }
+
+  /**
+   * What the files a step is answered with start with, see [QuizTask.ANSWER_FILES], or `null` if the form is enough.
+   */
+  private fun answerFileContents(blockName: String): List<Pair<String, String>>? = when (blockName) {
+    HyperskillTaskType.HTML.type -> {
+      val options = step.options as? HtmlStepOptions
+      listOf(QuizTask.HTML_FILE_NAME to options?.htmlTemplate.orEmpty(), QuizTask.CSS_FILE_NAME to options?.cssTemplate.orEmpty())
+    }
+
+    HyperskillTaskType.SQL.type -> listOf(QuizTask.SQL_FILE_NAME to "")
+    else -> null
   }
 
   private fun pycharmTask(type: String? = null): Task {

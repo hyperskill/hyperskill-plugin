@@ -14,7 +14,9 @@ import org.hyperskill.academy.learning.courseFormat.CheckResult
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.attempts.Attempt
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillTaskType
 import org.hyperskill.academy.learning.courseFormat.tasks.CodeTask
+import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.RemoteEduTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.UnsupportedTask
@@ -29,6 +31,11 @@ import org.hyperskill.academy.learning.stepik.hyperskill.HYPERSKILL_URL
 import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillLoginListener
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.markStageAsCompleted
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.QuizFormService
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.isDataset
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.readHtmlSources
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.readSqlReply
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.toHtmlReply
 import org.hyperskill.academy.learning.stepik.hyperskill.submissions.HyperskillSubmissionFactory
 import org.hyperskill.academy.learning.submissions.SolutionFile
 import org.hyperskill.academy.learning.submissions.SubmissionsManager
@@ -42,6 +49,7 @@ import java.util.concurrent.TimeUnit
 
 object HyperskillCheckConnector {
   const val EVALUATION_STATUS = "evaluation"
+  private const val REJECTED_STATUS = "rejected"
 
   private val LOG = Logger.getInstance(HyperskillCheckConnector::class.java)
   private val CODE_TASK_CHECK_TIMEOUT = TimeUnit.MINUTES.toSeconds(2)
@@ -51,6 +59,7 @@ object HyperskillCheckConnector {
 
   fun isRemotelyChecked(task: Task): Boolean = when (task) {
     is CodeTask,
+    is QuizTask,
     is RemoteEduTask,
     is UnsupportedTask -> true
 
@@ -235,7 +244,44 @@ object HyperskillCheckConnector {
     }
   }
 
-  fun checkUnsupportedTask(task: UnsupportedTask): CheckResult {
+  /**
+   * An attempt appears when the quiz form has been loaded. Without it (there is no JCEF, or the attempt could not be
+   * requested) the learner can only solve the quiz on the website, so all the check can do is find out how that went.
+   *
+   * A `sql` step is answered with its query file, so it is checked without the form too. An `html` step is answered
+   * with its files as well, but the score comes from the checklist, which only the form can run.
+   */
+  fun checkQuizTask(project: Project, task: QuizTask): CheckResult {
+    val noAnswer = CheckResult(CheckStatus.Unchecked, EduCoreBundle.message("hyperskill.quiz.no.answer"))
+    val reply = when (task.blockName) {
+      HyperskillTaskType.SQL.type -> readSqlReply(project, task) ?: return noAnswer
+      HyperskillTaskType.HTML.type -> {
+        val sources = readHtmlSources(project, task) ?: return noAnswer
+        val score = QuizFormService.getInstance(project).form?.score(task, sources) ?: return checkBySubmissions(task)
+        toHtmlReply(sources, score)
+      }
+
+      else -> {
+        if (task.attempt == null) {
+          return if (task.isDataset) CheckResult(CheckStatus.Unchecked, EduCoreBundle.message("hyperskill.dataset.download.first"))
+          else checkBySubmissions(task)
+        }
+        task.reply ?: return noAnswer
+      }
+    }
+
+    val attempt = task.attempt ?: HyperskillConnector.getInstance().postAttempt(task).onError { error ->
+      return failedToSubmit(project, task, error)
+    }
+    val submission = HyperskillSubmitConnector.submitQuizTask(attempt, reply).onError { error ->
+      return failedToSubmit(project, task, error)
+    }
+    return periodicallyCheckSubmissionResult(project, submission, task)
+  }
+
+  fun checkUnsupportedTask(task: UnsupportedTask): CheckResult = checkBySubmissions(task)
+
+  private fun checkBySubmissions(task: Task): CheckResult {
     val checkIdResult = task.checkId()
     if (checkIdResult != null) {
       return checkIdResult
@@ -293,6 +339,11 @@ object HyperskillCheckConnector {
 
   fun StepikBasedSubmission.toCheckResult(): CheckResult {
     val status = status ?: return CheckResult.failedToCheck
+    if (status == REJECTED_STATUS) {
+      // The server has not checked the answer at all, e.g. the limit of submissions is reached, so it is not a wrong one
+      val explanation = hint.nullize() ?: feedback?.message.nullize()
+      return CheckResult(CheckStatus.Unchecked, explanation ?: EduCoreBundle.message("error.solution.rejected", EduNames.JBA))
+    }
     val isSolved = status != "wrong"
     var message = hint.nullize() ?: "${StringUtil.capitalize(status)} solution"
     if (isSolved) {

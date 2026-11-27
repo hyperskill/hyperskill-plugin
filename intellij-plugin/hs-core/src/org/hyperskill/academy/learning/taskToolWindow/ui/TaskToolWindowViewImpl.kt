@@ -35,6 +35,7 @@ import org.hyperskill.academy.learning.actions.EduActionUtils.getCurrentTask
 import org.hyperskill.academy.learning.courseFormat.CheckResult
 import org.hyperskill.academy.learning.courseFormat.CheckStatus
 import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
+import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.courseFormat.tasks.Task
 import org.hyperskill.academy.learning.courseFormat.tasks.TheoryTask
 import org.hyperskill.academy.learning.isHeadlessEnvironment
@@ -268,7 +269,7 @@ class TaskToolWindowViewImpl(project: Project, scope: CoroutineScope) : TaskTool
     if (task.isChangedOnFailed) {
       updateCheckPanel(task)
     }
-    if (checkResult.status == CheckStatus.Failed) {
+    if (checkResult.status == CheckStatus.Failed || task is QuizTask) {
       tabManager.updateTaskSpecificPanel(task)
     }
   }

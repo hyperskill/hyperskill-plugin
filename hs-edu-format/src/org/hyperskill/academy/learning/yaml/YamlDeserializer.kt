@@ -130,9 +130,14 @@ object YamlDeserializer {
       // for student mode
       CODE_TASK_TYPE -> CodeTask::class.java
       UNSUPPORTED_TASK_TYPE -> UnsupportedTask::class.java
+      in QuizTask.BLOCK_NAMES -> QuizTask::class.java
       else -> formatError(unsupportedItemTypeMessage(type, TASK))
     }
-    return treeToValue(treeNode, clazz)
+    val task = treeToValue(treeNode, clazz)
+    if (task is QuizTask) {
+      task.blockName = type
+    }
+    return task
   }
 
   private fun <T : StudyItem> ObjectMapper.migrateStudyItemYamlTree(

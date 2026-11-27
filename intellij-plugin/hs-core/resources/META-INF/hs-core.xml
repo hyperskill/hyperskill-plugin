@@ -262,6 +262,7 @@
     <!-- Notifications   -->
     <editorNotificationProvider implementation="org.hyperskill.academy.learning.stepik.UpdateCourseNotificationProvider"/>
     <editorNotificationProvider implementation="org.hyperskill.academy.learning.editor.EduTaskFileNotificationProvider"/>
+    <editorNotificationProvider implementation="org.hyperskill.academy.learning.taskToolWindow.ui.quiz.QuizFormNotificationProvider"/>
     <editorNotificationProvider implementation="org.hyperskill.academy.learning.yaml.YamlConfigNotificationProvider"/>
 
     <!-- org.hyperskill.academy.learning.notification.EduNotificationManager.JETBRAINS_ACADEMY_GROUP_ID -->

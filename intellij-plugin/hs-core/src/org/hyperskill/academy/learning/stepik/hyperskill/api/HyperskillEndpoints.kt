@@ -33,6 +33,12 @@ interface HyperskillEndpoints {
   @GET("api/steps")
   fun steps(@Query("ids", encoded = true) ids: String): Call<HyperskillStepsList>
 
+  @POST("api/steps/{id}/complete")
+  fun completeTheoryStep(@Path("id") stepId: Int): Call<ResponseBody>
+
+  @GET("api/learning-activities/next")
+  fun nextLearningActivity(): Call<LearningActivitiesList>
+
   @GET("api/projects/{id}/additional-files/${StepikNames.ADDITIONAL_INFO}")
   fun additionalFiles(@Path("id") id: Int): Call<CourseAdditionalInfo>
 
