@@ -31,7 +31,7 @@ import org.hyperskill.academy.learning.stepik.hyperskill.HYPERSKILL_URL
 import org.hyperskill.academy.learning.stepik.hyperskill.HyperskillLoginListener
 import org.hyperskill.academy.learning.stepik.hyperskill.api.HyperskillConnector
 import org.hyperskill.academy.learning.stepik.hyperskill.markStageAsCompleted
-import org.hyperskill.academy.learning.stepik.hyperskill.quiz.HtmlChecklistService
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.QuizFormService
 import org.hyperskill.academy.learning.stepik.hyperskill.quiz.isDataset
 import org.hyperskill.academy.learning.stepik.hyperskill.quiz.readHtmlSources
 import org.hyperskill.academy.learning.stepik.hyperskill.quiz.readSqlReply
@@ -257,7 +257,7 @@ object HyperskillCheckConnector {
       HyperskillTaskType.SQL.type -> readSqlReply(project, task) ?: return noAnswer
       HyperskillTaskType.HTML.type -> {
         val sources = readHtmlSources(project, task) ?: return noAnswer
-        val score = HtmlChecklistService.getInstance(project).runner?.score(task, sources) ?: return checkBySubmissions(task)
+        val score = QuizFormService.getInstance(project).form?.score(task, sources) ?: return checkBySubmissions(task)
         toHtmlReply(sources, score)
       }
 

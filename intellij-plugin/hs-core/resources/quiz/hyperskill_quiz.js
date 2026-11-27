@@ -4,9 +4,13 @@
 // format of the `reply` field of a submission. The formats are the ones of the website, see `components/step/problems/*.vue`.
 window.hsQuiz = (() => {
   const MAX_PARSONS_LEVEL = 10;
+  const DRAG_THRESHOLD_PX = 4;
+  const AUTO_SCROLL_EDGE_PX = 32;
+  const AUTO_SCROLL_STEP_PX = 12;
 
   let stepId = 0;
   let send = () => {};
+  let isRendered = false;
 
   const post = (message) => send(JSON.stringify({...message, step: stepId}));
 
@@ -70,12 +74,118 @@ window.hsQuiz = (() => {
       && [...value].sort((a, b) => a - b).every((item, index) => item === index);
   }
 
+  function moveItem(items, from, to) {
+    const [item] = items.splice(from, 1);
+    items.splice(to, 0, item);
+  }
+
+  function card(isDraggable, ...children) {
+    const result = element('div', isDraggable ? 'hs-quiz-card hs-quiz-draggable' : 'hs-quiz-card');
+    if (isDraggable) {
+      const grip = element('span', 'hs-quiz-grip');
+      grip.setAttribute('aria-hidden', 'true');
+      result.append(grip);
+    }
+    result.append(...children);
+    return result;
+  }
+
+  function pageBackground() {
+    const color = getComputedStyle(document.body).backgroundColor;
+    return color && color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)' ? color : 'Canvas';
+  }
+
+  // Cards of the list can be dragged up and down, like on the website. Only the cards move: the captions of a matching
+  // stay where they are. The other cards make room for the dragged one, and it lands in the place it was dropped at.
+  function makeReorderable(list, reorder) {
+    list.addEventListener('pointerdown', (event) => {
+      const dragged = event.target.closest('.hs-quiz-draggable');
+      if (event.button !== 0 || !dragged || !list.contains(dragged) || event.target.closest('button')) return;
+
+      const cards = [...list.querySelectorAll('.hs-quiz-draggable')];
+      const from = cards.indexOf(dragged);
+      const slots = cards.map((item) => {
+        const rect = item.getBoundingClientRect();
+        return {top: rect.top + window.scrollY, middle: rect.top + window.scrollY + rect.height / 2};
+      });
+      const startY = event.pageY;
+      let clientY = event.clientY;
+      let target = from;
+      let isDragging = false;
+      let frame = 0;
+
+      function update() {
+        // The card stays within the list, or a card dragged past its end would make the page longer and longer.
+        // It can go a bit past the middles of the first and the last cards, to take their places.
+        const minOffset = slots[0].middle - slots[from].middle - 1;
+        const maxOffset = slots[slots.length - 1].middle - slots[from].middle + 1;
+        const offset = Math.min(Math.max(clientY + window.scrollY - startY, minOffset), maxOffset);
+        dragged.style.transform = `translateY(${offset}px)`;
+        const middle = slots[from].middle + offset;
+        target = slots.filter((slot, index) => index !== from && slot.middle < middle).length;
+        cards.forEach((item, index) => {
+          let shift = 0;
+          if (from < target && index > from && index <= target) shift = slots[index - 1].top - slots[index].top;
+          if (target < from && index >= target && index < from) shift = slots[index + 1].top - slots[index].top;
+          if (index !== from) item.style.transform = shift ? `translateY(${shift}px)` : '';
+        });
+      }
+
+      function autoScroll() {
+        frame = 0;
+        const step = clientY < AUTO_SCROLL_EDGE_PX ? -AUTO_SCROLL_STEP_PX
+          : clientY > window.innerHeight - AUTO_SCROLL_EDGE_PX ? AUTO_SCROLL_STEP_PX : 0;
+        const scrollY = window.scrollY;
+        window.scrollBy(0, step);
+        if (window.scrollY === scrollY) return;
+        update();
+        frame = requestAnimationFrame(autoScroll);
+      }
+
+      function onMove(moveEvent) {
+        clientY = moveEvent.clientY;
+        if (!isDragging) {
+          if (Math.abs(moveEvent.pageY - startY) < DRAG_THRESHOLD_PX) return;
+          isDragging = true;
+          dragged.style.background = pageBackground();
+          dragged.classList.add('hs-quiz-dragged');
+          list.classList.add('hs-quiz-sorting');
+        }
+        update();
+        if (!frame) frame = requestAnimationFrame(autoScroll);
+      }
+
+      function onEnd(endEvent) {
+        dragged.removeEventListener('pointermove', onMove);
+        dragged.removeEventListener('pointerup', onEnd);
+        dragged.removeEventListener('pointercancel', onEnd);
+        if (frame) cancelAnimationFrame(frame);
+        if (!isDragging) return;
+
+        list.classList.remove('hs-quiz-sorting');
+        dragged.classList.remove('hs-quiz-dragged');
+        cards.forEach((item) => {
+          item.style.transform = '';
+        });
+        dragged.style.background = '';
+        if (endEvent.type === 'pointerup' && target !== from) reorder(from, target);
+      }
+
+      // Without it a drag would select the text of the cards
+      event.preventDefault();
+      dragged.setPointerCapture(event.pointerId);
+      dragged.addEventListener('pointermove', onMove);
+      dragged.addEventListener('pointerup', onEnd);
+      dragged.addEventListener('pointercancel', onEnd);
+    });
+  }
+
   function renderOrderedList(container, {size, ordering, itemHtml, captionHtml, disabled}, emit) {
     const current = isOrdering(ordering, size) ? [...ordering] : [...Array(size).keys()];
     const list = element('div', 'hs-quiz-list');
 
     function move(position, target) {
-      [current[position], current[target]] = [current[target], current[position]];
+      moveItem(current, position, target);
       draw();
       emit({ordering: current});
     }
@@ -84,19 +194,18 @@ window.hsQuiz = (() => {
       list.replaceChildren(...current.map((item, position) => {
         const row = element('div', 'hs-quiz-row');
         if (captionHtml) row.append(element('div', 'hs-quiz-caption', captionHtml(position)));
-
-        const card = element('div', 'hs-quiz-card');
-        card.append(
+        row.append(card(
+          !disabled,
           element('div', 'hs-quiz-card-text', itemHtml(item)),
           moveButton('↑', 'Move up', disabled || position === 0, () => move(position, position - 1)),
           moveButton('↓', 'Move down', disabled || position === size - 1, () => move(position, position + 1)),
-        );
-        row.append(card);
+        ));
         return row;
       }));
       typeset(list);
     }
 
+    if (!disabled) makeReorderable(list, move);
     container.append(list);
     draw();
     emit({ordering: current});
@@ -136,7 +245,7 @@ window.hsQuiz = (() => {
     }
 
     function move(position, target) {
-      [current[position], current[target]] = [current[target], current[position]];
+      moveItem(current, position, target);
       changed();
     }
 
@@ -150,20 +259,20 @@ window.hsQuiz = (() => {
         const text = element('div', 'hs-quiz-card-text hs-quiz-code', lines[line.line_number]);
         text.style.paddingLeft = `${line.level * 2}em`;
 
-        const card = element('div', 'hs-quiz-card');
-        card.append(
+        const row = element('div', 'hs-quiz-row');
+        row.append(card(
+          !disabled,
           text,
           moveButton('←', 'Decrease indent', disabled || line.level === 0, () => indent(line, -1)),
           moveButton('→', 'Increase indent', disabled || line.level === MAX_PARSONS_LEVEL, () => indent(line, 1)),
           moveButton('↑', 'Move up', disabled || position === 0, () => move(position, position - 1)),
           moveButton('↓', 'Move down', disabled || position === current.length - 1, () => move(position, position + 1)),
-        );
-        const row = element('div', 'hs-quiz-row');
-        row.append(card);
+        ));
         return row;
       }));
     }
 
+    if (!disabled) makeReorderable(list, move);
     container.append(list);
     draw();
     emit({lines: current});
@@ -480,9 +589,18 @@ window.hsQuiz = (() => {
     container.replaceChildren(box);
   }
 
+  function highlight(container) {
+    container.classList.remove('hs-quiz-highlight');
+    // Restarts the animation if it is still running
+    void container.offsetWidth;
+    container.classList.add('hs-quiz-highlight');
+    container.addEventListener('animationend', () => container.classList.remove('hs-quiz-highlight'), {once: true});
+  }
+
   function render(state) {
     const container = document.getElementById('hs-quiz');
     container.replaceChildren();
+    container.classList.remove('hs-quiz-answer');
     if (state.error) {
       renderFallback(container, state.error, state.stepLink);
       return;
@@ -491,15 +609,33 @@ window.hsQuiz = (() => {
     // A reply is sent even for the initial state, as a sorting has a valid answer before the learner touches anything.
     // Nothing can be answered in a disabled form, so there is nothing to send.
     const emit = state.disabled ? () => {} : (reply) => post({event: 'reply', reply});
+    const form = element('div');
+    container.append(element('div', 'hs-quiz-title', 'Your answer'), form);
     try {
-      renderers[state.blockName](container, state, emit);
+      renderers[state.blockName](form, state, emit);
     }
     catch (e) {
       console.warn(`Can't show a quiz of type ${state.blockName}`, e);
       renderFallback(container, 'This problem can\'t be shown here.', state.stepLink);
       return;
     }
+    container.classList.add('hs-quiz-answer');
     typeset(container);
+
+    // Learners are used to answering in the editor, so the form is pointed out when the step is opened
+    if (!isRendered && !state.disabled) highlight(container);
+    isRendered = true;
+  }
+
+  // Shows the form to the learner who asked for it from the editor: scrolls to it and puts the focus into it
+  function focus() {
+    const container = document.getElementById('hs-quiz');
+    container.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+    const control = container.querySelector(
+      'input:not(:disabled), textarea:not(:disabled), select:not(:disabled), button:not(:disabled)'
+    );
+    control?.focus({preventScroll: true});
+    highlight(container);
   }
 
   function start(id, sender) {
@@ -508,5 +644,5 @@ window.hsQuiz = (() => {
     post({event: 'ready'});
   }
 
-  return {start, render, updateSources, checkHtml};
+  return {start, render, focus, updateSources, checkHtml};
 })();

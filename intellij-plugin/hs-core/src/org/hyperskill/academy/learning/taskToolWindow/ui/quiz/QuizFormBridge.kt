@@ -16,6 +16,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
@@ -28,8 +29,8 @@ import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.notification.EduNotificationManager
 import org.hyperskill.academy.learning.onError
 import org.hyperskill.academy.learning.stepik.api.StepikBasedConnector
-import org.hyperskill.academy.learning.stepik.hyperskill.quiz.HtmlChecklistRunner
-import org.hyperskill.academy.learning.stepik.hyperskill.quiz.HtmlChecklistService
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.QuizForm
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.QuizFormService
 import org.hyperskill.academy.learning.stepik.hyperskill.quiz.downloadDataset
 import org.hyperskill.academy.learning.stepik.hyperskill.quiz.loadQuizFormState
 import org.hyperskill.academy.learning.stepik.hyperskill.quiz.readHtmlSources
@@ -45,9 +46,9 @@ import java.util.concurrent.TimeoutException
  * The page asks for its content itself when it is loaded, so there is no need to track when it is ready to execute scripts.
  *
  * An `html` step is answered with its task files: the form shows the page made of them, and runs its checklist when the
- * task is checked, see [HtmlChecklistRunner].
+ * task is checked, see [QuizForm.score].
  */
-class QuizFormBridge(private val project: Project, private val browser: JBCefBrowserBase) : Disposable, HtmlChecklistRunner {
+class QuizFormBridge(private val project: Project, private val browser: JBCefBrowserBase) : Disposable, QuizForm {
   private val query = JBCefJSQuery.create(browser)
   private val sourcesUpdate = Alarm(Alarm.ThreadToUse.POOLED_THREAD, this)
 
@@ -79,7 +80,7 @@ class QuizFormBridge(private val project: Project, private val browser: JBCefBro
         }
       }
     }, this)
-    HtmlChecklistService.getInstance(project).runner = this
+    QuizFormService.getInstance(project).form = this
   }
 
   fun addFormToDescription(task: Task?, description: String): String {
@@ -128,6 +129,13 @@ class QuizFormBridge(private val project: Project, private val browser: JBCefBro
     finally {
       if (pendingScore === pending) pendingScore = null
     }
+  }
+
+  override fun focus(task: QuizTask) {
+    if (task !== shownTask || !isPageLoaded) return
+    val component = browser.component ?: return
+    IdeFocusManager.getInstance(project).requestFocus(component, true)
+    executeJavaScript("hsQuiz.focus();")
   }
 
   private fun handleMessage(message: String) {
@@ -205,8 +213,8 @@ class QuizFormBridge(private val project: Project, private val browser: JBCefBro
   }
 
   override fun dispose() {
-    val service = HtmlChecklistService.getInstance(project)
-    if (service.runner === this) service.runner = null
+    val service = QuizFormService.getInstance(project)
+    if (service.form === this) service.form = null
   }
 
   private class PendingScore(val taskId: Int, val sources: Map<String, String>) {

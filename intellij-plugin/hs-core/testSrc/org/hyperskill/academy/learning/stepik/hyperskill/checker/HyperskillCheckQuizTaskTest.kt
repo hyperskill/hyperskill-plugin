@@ -10,8 +10,8 @@ import org.hyperskill.academy.learning.courseFormat.hyperskill.HyperskillCourse
 import org.hyperskill.academy.learning.courseFormat.tasks.QuizTask
 import org.hyperskill.academy.learning.messages.EduCoreBundle
 import org.hyperskill.academy.learning.pathWithoutPrams
-import org.hyperskill.academy.learning.stepik.hyperskill.quiz.HtmlChecklistRunner
-import org.hyperskill.academy.learning.stepik.hyperskill.quiz.HtmlChecklistService
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.QuizForm
+import org.hyperskill.academy.learning.stepik.hyperskill.quiz.QuizFormService
 import org.junit.Test
 
 class HyperskillCheckQuizTaskTest : HyperskillCheckActionTestBase() {
@@ -42,7 +42,7 @@ class HyperskillCheckQuizTaskTest : HyperskillCheckActionTestBase() {
 
   override fun tearDown() {
     try {
-      HtmlChecklistService.getInstance(project).runner = null
+      QuizFormService.getInstance(project).form = null
     }
     catch (e: Throwable) {
       addSuppressedException(e)
@@ -78,10 +78,15 @@ class HyperskillCheckQuizTaskTest : HyperskillCheckActionTestBase() {
   fun `test html page is sent with the score of its checklist`() {
     configureResponses(submissions(status = "correct"))
     val task = findTask(0, 3) as QuizTask
-    HtmlChecklistService.getInstance(project).runner = HtmlChecklistRunner { checkedTask, sources ->
-      assertSame(task, checkedTask)
-      assertEquals(mapOf("html" to "<p>Hi</p>", "css" to "p {}"), sources)
-      1
+    val checkedTask = task
+    QuizFormService.getInstance(project).form = object : QuizForm {
+      override fun score(task: QuizTask, sources: Map<String, String>): Any {
+        assertSame(checkedTask, task)
+        assertEquals(mapOf("html" to "<p>Hi</p>", "css" to "p {}"), sources)
+        return 1
+      }
+
+      override fun focus(task: QuizTask) {}
     }
 
     checkCheckAction(task, CheckStatus.Solved)
